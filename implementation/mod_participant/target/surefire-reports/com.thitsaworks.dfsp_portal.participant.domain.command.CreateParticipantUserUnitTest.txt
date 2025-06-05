@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUserUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.010 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUserUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUserUnitTest.test_createUserSuccessfully -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUser.execute(com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUser$Input)" because "this.createParticipantUser" is null
+	at com.thitsaworks.dfsp_portal.participant.domain.command.CreateParticipantUserUnitTest.test_createUserSuccessfully(CreateParticipantUserUnitTest.java:24)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

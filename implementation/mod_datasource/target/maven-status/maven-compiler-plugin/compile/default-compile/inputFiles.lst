@@ -1,0 +1,8 @@
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\MySqlWriteDbConfiguration.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\cache\AerospikeConfiguration.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\ReadTransactional.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\CentralLedgerReadDbConfiguration.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\WriteTransactional.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\cache\HazelcastConfiguration.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\CentralLedgerReadTransactional.java
+C:\NNEWORKING\ml-operation-portal\implementation\mod_datasource\src\main\java\com\thitsaworks\dfsp_portal\datasource\persistence\MySqlReadDbConfiguration.java

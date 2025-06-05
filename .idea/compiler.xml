@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="mod_audit" />
+        <module name="mod_central_ledger" />
+        <module name="app_scheduler" />
+        <module name="mod_iam" />
+        <module name="mod_vault" />
+        <module name="app_report_downloader" />
+        <module name="mod_querydsl" />
+        <module name="mod_hubuser" />
+        <module name="uc_participant" />
+        <module name="mod_report_querydsl" />
+        <module name="mod_report" />
+        <module name="web_api_hub_operator" />
+        <module name="mod_component" />
+        <module name="uc_hub_operator" />
+        <module name="uc_common" />
+        <module name="mod_datasource" />
+        <module name="mod_participant" />
+        <module name="uc_central_ledger" />
+        <module name="web_api_participant" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="app_report_downloader" options="-parameters" />
+      <module name="mod_audit" options="-parameters" />
+      <module name="mod_central_ledger" options="-parameters" />
+      <module name="mod_component" options="-parameters" />
+      <module name="mod_datasource" options="-parameters" />
+      <module name="mod_hubuser" options="-parameters" />
+      <module name="mod_iam" options="-parameters" />
+      <module name="mod_participant" options="-parameters" />
+      <module name="mod_querydsl" options="-parameters" />
+      <module name="mod_report" options="-parameters" />
+      <module name="mod_report_querydsl" options="-parameters" />
+      <module name="mod_vault" options="-parameters" />
+      <module name="mojaloop-dfsp-portal" options="-parameters" />
+      <module name="uc_central_ledger" options="-parameters" />
+      <module name="uc_common" options="-parameters" />
+      <module name="uc_hub_operator" options="-parameters" />
+      <module name="uc_participant" options="-parameters" />
+      <module name="web_api_hub_operator" options="-parameters" />
+      <module name="web_api_participant" options="-parameters" />
+    </option>
+  </component>
+</project>

@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipantUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.011 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipantUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipantUnitTest.test_modifyParticipantSuccessfully -- Time elapsed: 0.006 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipant.execute(com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipant$Input)" because "this.modifyParticipant" is null
+	at com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipantUnitTest.test_modifyParticipantSuccessfully(ModifyParticipantUnitTest.java:25)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

@@ -1,0 +1,117 @@
+package com.thitsaworks.dfsp_portal.usecase.participant.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.dfsp_portal.audit.domain.Auditor;
+import com.thitsaworks.dfsp_portal.audit.exception.UserNotFoundException;
+import com.thitsaworks.dfsp_portal.audit.identity.UserId;
+import com.thitsaworks.dfsp_portal.component.security.SecurityContext;
+import com.thitsaworks.dfsp_portal.component.usecase.UseCaseContext;
+import com.thitsaworks.dfsp_portal.datasource.persistence.WriteTransactional;
+import com.thitsaworks.dfsp_portal.iam.domain.command.ModifyPrincipal;
+import com.thitsaworks.dfsp_portal.iam.identity.AccessKey;
+import com.thitsaworks.dfsp_portal.iam.identity.PrincipalId;
+import com.thitsaworks.dfsp_portal.iam.query.cache.PrincipalCache;
+import com.thitsaworks.dfsp_portal.iam.query.data.PrincipalData;
+import com.thitsaworks.dfsp_portal.participant.domain.command.ModifyParticipantUser;
+import com.thitsaworks.dfsp_portal.usecase.participant.ModifyExistingParticipantUser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ModifyExistingParticipantUserBean extends ModifyExistingParticipantUser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantUserBean.class);
+
+    @Autowired
+    private ModifyParticipantUser modifyParticipantUser;
+
+    @Autowired
+    private ModifyPrincipal modifyPrincipal;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    @Qualifier(PrincipalCache.Strategies.DEFAULT)
+    private PrincipalCache principalCache;
+
+    @Override
+    @WriteTransactional
+    public Output onExecute(Input input) throws Exception {
+
+        ModifyParticipantUser.Output output = this.modifyParticipantUser.execute(
+                new ModifyParticipantUser.Input(input.getParticipantUserId(), input.getName(), input.getEmail(),
+                        input.getFirstName(), input.getLastName(), input.getJobTitle(), null));
+
+        ModifyPrincipal.Output principalOutput = this.modifyPrincipal.execute(
+                new ModifyPrincipal.Input(new PrincipalId(output.getParticipantUserId().getId())
+                        ,input.getUserRoleType(), input.getPrincipalStatus()));
+
+        return new Output(output.isModified(), output.getParticipantUserId());
+    }
+
+    @Override
+    protected String getName() {
+
+        return ModifyExistingParticipantUser.class.getCanonicalName();
+    }
+
+    @Override
+    protected String getDescription() {
+
+        return null;
+    }
+
+    @Override
+    protected String getScope() {
+
+        return "uc_participant";
+    }
+
+    @Override
+    protected String getId() {
+
+        return ModifyExistingParticipantUser.class.getName();
+    }
+
+    @Override
+    public boolean isOwned(Object userDetails) {
+
+        return true;
+    }
+
+    @Override
+    public boolean isAuthorized(Object userDetails) {
+
+        SecurityContext securityContext = (SecurityContext) userDetails;
+
+        PrincipalData principalData =
+                this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
+
+        switch (principalData.getUserRoleType()) {
+
+            case ADMIN:
+                return true;
+            case OPERATION:
+            case SUPERUSER:
+            case REPORTING:
+                return false;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void onAudit(ModifyExistingParticipantUser.Input input, ModifyExistingParticipantUser.Output output)
+            throws UserNotFoundException {
+
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        Auditor.audit(this.objectMapper, ModifyExistingParticipantUser.class, input, output,
+                new UserId(Long.valueOf(securityContext.getUserId())));
+    }
+
+}

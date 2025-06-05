@@ -1,0 +1,15 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.repository.ParticipantRepositoryUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.025 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.repository.ParticipantRepositoryUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.repository.ParticipantRepositoryUnitTest.test_createParticipantSuccessfully -- Time elapsed: 0.021 s <<< ERROR!
+java.lang.NullPointerException: The validated character sequence is blank
+	at java.base/java.util.Objects.requireNonNull(Objects.java:360)
+	at org.apache.commons.lang3.Validate.notBlank(Validate.java:780)
+	at org.apache.commons.lang3.Validate.notBlank(Validate.java:758)
+	at com.thitsaworks.dfsp_portal.participant.domain.Participant.<init>(Participant.java:76)
+	at com.thitsaworks.dfsp_portal.participant.domain.repository.ParticipantRepositoryUnitTest.test_createParticipantSuccessfully(ParticipantRepositoryUnitTest.java:26)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

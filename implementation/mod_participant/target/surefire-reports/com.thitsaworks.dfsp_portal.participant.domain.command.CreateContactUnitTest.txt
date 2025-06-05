@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.command.CreateContactUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.984 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.command.CreateContactUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.command.CreateContactUnitTest.test_createContactSuccessfully -- Time elapsed: 0.052 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.thitsaworks.dfsp_portal.participant.domain.command.CreateContact.execute(com.thitsaworks.dfsp_portal.participant.domain.command.CreateContact$Input)" because "this.createContact" is null
+	at com.thitsaworks.dfsp_portal.participant.domain.command.CreateContactUnitTest.test_createContactSuccessfully(CreateContactUnitTest.java:27)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

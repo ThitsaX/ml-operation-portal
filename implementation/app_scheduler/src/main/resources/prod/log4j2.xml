@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+    <Properties>
+        <Property name="basePath">${sys:user.home}/log/re21/user_api</Property>
+        <Property name="fileName">dfsp_portal_scheduler</Property>
+    </Properties>
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <ThresholdFilter level="info" onMatch="ACCEPT"
+                             onMismatch="DENY"/>
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss}{GMT+06:30} %-8level %t:%class{36}:%L:(%M) - %msg%xEx%n"/>
+        </Console>
+        <RollingFile name="coreLogger"
+                     fileName="${basePath}/${fileName}.log"
+                     filePattern="${basePath}/${fileName}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss}{GMT+06:30} %-8level %t:%class{36}:%L:(%M) - %msg%xEx%n">
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="100MB"/>
+            </Policies>
+            <DefaultRolloverStrategy/>
+        </RollingFile>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%d{yyyy-MM-dd HH:mm:ss}{GMT+06:30} %-8level %t:%class{36}:%L:(%M) - %msg%xEx%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info" additivity="false">
+            <appender-ref ref="coreLogger"/>
+        </Root>
+    </Loggers>
+</Configuration>

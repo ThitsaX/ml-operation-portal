@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.query.cache.ParticipantCacheUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.008 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.query.cache.ParticipantCacheUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.query.cache.ParticipantCacheUnitTest.test_getParticipantsSuccessfully -- Time elapsed: 0.004 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.thitsaworks.dfsp_portal.participant.query.cache.ParticipantCache.get(com.thitsaworks.dfsp_portal.participant.identity.ParticipantId)" because "this.participantCache" is null
+	at com.thitsaworks.dfsp_portal.participant.domain.query.cache.ParticipantCacheUnitTest.test_getParticipantsSuccessfully(ParticipantCacheUnitTest.java:28)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

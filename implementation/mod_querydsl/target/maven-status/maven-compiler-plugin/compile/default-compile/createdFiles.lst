@@ -1,0 +1,9 @@
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblPrincipal.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblAction.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblLiquidityProfile.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblParticipant.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblAudit.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblParticipantUser.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblAnnouncement.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblContact.class
+com\thitsaworks\dfsp_portal\querydsl\dbtable\DfspTblHubUser.class

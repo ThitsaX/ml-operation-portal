@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/mod_audit/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_audit/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_audit/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_central_ledger/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_central_ledger/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_central_ledger/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_component/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_component/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_component/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_datasource/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_datasource/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_datasource/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_hubuser/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_hubuser/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_hubuser/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_iam/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_iam/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_iam/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_participant/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_participant/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_participant/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_querydsl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_querydsl/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_querydsl/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report_querydsl/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report_querydsl/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_report_querydsl/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_vault/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_vault/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/mod_vault/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_central_ledger/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_central_ledger/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_central_ledger/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_common/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_common/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_hub_operator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_hub_operator/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_hub_operator/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_participant/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_participant/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/uc_participant/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_api_hub_operator/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/web_api_participant/src/main/java" charset="UTF-8" />
+  </component>
+</project>

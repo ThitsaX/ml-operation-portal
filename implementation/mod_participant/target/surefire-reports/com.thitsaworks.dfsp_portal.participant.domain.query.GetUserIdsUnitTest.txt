@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: com.thitsaworks.dfsp_portal.participant.domain.query.GetUserIdsUnitTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.018 s <<< FAILURE! -- in com.thitsaworks.dfsp_portal.participant.domain.query.GetUserIdsUnitTest
+com.thitsaworks.dfsp_portal.participant.domain.query.GetUserIdsUnitTest.test_getUserIdsSuccessfully -- Time elapsed: 0.005 s <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.thitsaworks.dfsp_portal.participant.query.GetUserIds.execute(com.thitsaworks.dfsp_portal.participant.query.GetUserIds$Input)" because "this.getUserIds" is null
+	at com.thitsaworks.dfsp_portal.participant.domain.query.GetUserIdsUnitTest.test_getUserIdsSuccessfully(GetUserIdsUnitTest.java:27)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+

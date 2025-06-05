@@ -1,0 +1,20 @@
+package com.thitsa.dfsp_portal.report.domain.data.mapper;
+
+import com.thitsa.dfsp_portal.report.domain.data.SettlementIdData;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class SettlementIdDataMapper implements RowMapper<SettlementIdData> {
+
+    @Override
+    public SettlementIdData mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+        return new SettlementIdData(
+                rs.getString("settlementId")
+        );
+
+    }
+
+}

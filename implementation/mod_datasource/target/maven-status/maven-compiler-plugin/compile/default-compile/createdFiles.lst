@@ -1,0 +1,13 @@
+com\thitsaworks\dfsp_portal\datasource\persistence\WriteTransactional.class
+com\thitsaworks\dfsp_portal\datasource\persistence\MySqlWriteDbConfiguration$Settings.class
+com\thitsaworks\dfsp_portal\datasource\persistence\CentralLedgerReadTransactional.class
+com\thitsaworks\dfsp_portal\datasource\cache\AerospikeConfiguration$Settings.class
+com\thitsaworks\dfsp_portal\datasource\persistence\CentralLedgerReadDbConfiguration$Settings.class
+com\thitsaworks\dfsp_portal\datasource\persistence\MySqlReadDbConfiguration.class
+com\thitsaworks\dfsp_portal\datasource\persistence\ReadTransactional.class
+com\thitsaworks\dfsp_portal\datasource\persistence\MySqlWriteDbConfiguration.class
+com\thitsaworks\dfsp_portal\datasource\persistence\MySqlReadDbConfiguration$Settings.class
+com\thitsaworks\dfsp_portal\datasource\cache\AerospikeConfiguration.class
+com\thitsaworks\dfsp_portal\datasource\cache\HazelcastConfiguration.class
+com\thitsaworks\dfsp_portal\datasource\persistence\CentralLedgerReadDbConfiguration.class
+com\thitsaworks\dfsp_portal\datasource\cache\HazelcastConfiguration$Settings.class
