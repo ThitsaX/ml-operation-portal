@@ -14,16 +14,16 @@ public class DfspCryptoUnitTest extends EnvAwareUnitTest {
 
         String method = "POST";
 
-        String uri = "/secured/generate_settlement_report";
+        String uri = "/secured/create_new_participant_user";
         String signatureOfPayload = DigestUtils.sha256Hex(
-                                                       "<BLANK>").toUpperCase();
+                                                       "{\"name\":\"wallet2 admin\",\"email\":\"wallet2admin@gmail.com\",\"password\":\"123456\",\"first_name\":\"Wallet 2\",\"last_name\":\"admin\",\"job_title\":\"PM\",\"participant_id\":\"486552745708363776\",\"user_role_type\":\"ADMIN\",\"is_active\":true}").toUpperCase();
 
         String message = method + "|" + uri + "|" + signatureOfPayload;
 
         System.out.println("signatureOfPayload : " + signatureOfPayload);
         System.out.println("message : " + message);
         System.out.println("header : " + BaseEncoding.base16().encode(DfspCrypto.hmacSha256(
-                "09711c47-b5e6-4a5c-a9c7-23985c4e89f5".getBytes(StandardCharsets.UTF_8),
+                "ea3184c0-0c70-4ab5-af24-adb3ac3b6885".getBytes(StandardCharsets.UTF_8),
                 message.getBytes(StandardCharsets.UTF_8))));
 
     }

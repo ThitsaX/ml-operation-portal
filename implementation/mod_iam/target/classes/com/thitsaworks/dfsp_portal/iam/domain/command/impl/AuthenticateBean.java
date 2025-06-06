@@ -7,14 +7,11 @@ import com.thitsaworks.dfsp_portal.iam.domain.command.Authenticate;
 import com.thitsaworks.dfsp_portal.iam.domain.repository.PrincipalRepository;
 import com.thitsaworks.dfsp_portal.iam.exception.PasswordAuthenticationFailureException;
 import com.thitsaworks.dfsp_portal.iam.exception.PrincipalNotFoundException;
-import com.thitsaworks.dfsp_portal.iam.identity.PrincipalId;
 import com.thitsaworks.dfsp_portal.iam.type.PrincipalStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @WriteTransactional

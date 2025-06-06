@@ -1,6 +1,6 @@
 package com.thitsaworks.dfsp_portal.component.data.jpa;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 import java.net.MalformedURLException;
 import java.net.URL;
 

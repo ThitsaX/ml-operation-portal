@@ -1,6 +1,0 @@
-com\thitsaworks\dfsp_portal\iam\domain\command\ChangePasswordUnitTest.class
-com\thitsaworks\dfsp_portal\iam\domain\command\CreatePrincipalUnitTest.class
-com\thitsaworks\dfsp_portal\iam\domain\command\ModifyPrincipalUnitTest.class
-com\thitsaworks\dfsp_portal\iam\domain\command\ResetPasswordUnitTest.class
-com\thitsaworks\dfsp_portal\iam\domain\command\AuthenticateUnitTest.class
-com\thitsaworks\dfsp_portal\datasource\persistence\MySqlDbSettings.class

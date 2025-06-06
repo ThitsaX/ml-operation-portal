@@ -6,15 +6,14 @@ import com.thitsaworks.dfsp_portal.audit.identity.UserId;
 import com.thitsaworks.dfsp_portal.component.data.jpa.JpaEntity;
 import com.thitsaworks.dfsp_portal.component.util.Snowflake;
 import com.thitsaworks.dfsp_portal.iam.identity.RealmId;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 @Entity
 @Table(name = "tbl_audit")

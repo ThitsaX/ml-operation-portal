@@ -1,5 +1,0 @@
-com\thitsa\dfsp_portal\report\domain\persistence\ReportDbSettings.class
-com\thitsa\dfsp_portal\report\domain\command\DFSPSettlementDetailReportUnitTest.class
-com\thitsa\dfsp_portal\report\domain\command\FeeReportUnitTest.class
-com\thitsa\dfsp_portal\report\domain\command\SettlementStatementReportUnitTest.class
-com\thitsa\dfsp_portal\report\domain\command\SettlementReportUnitTest.class

@@ -10,18 +10,18 @@ import com.thitsaworks.dfsp_portal.iam.identity.RealmId;
 import com.thitsaworks.dfsp_portal.iam.query.cache.hazelcast.HazelcastPrincipalCache;
 import com.thitsaworks.dfsp_portal.iam.type.PrincipalStatus;
 import com.thitsaworks.dfsp_portal.iam.type.RealmType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Table;
 import java.util.UUID;
 
 @Entity

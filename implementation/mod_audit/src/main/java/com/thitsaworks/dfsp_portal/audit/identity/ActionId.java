@@ -1,12 +1,12 @@
 package com.thitsaworks.dfsp_portal.audit.identity;
 
 import com.thitsaworks.dfsp_portal.component.data.jpa.JpaId;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 
 @Getter
 @AllArgsConstructor
