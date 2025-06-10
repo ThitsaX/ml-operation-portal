@@ -16,12 +16,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_datasource</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_hubuser</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>

@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mojaloop-operation-portal</artifactId>
-        <groupId>com.thitsaworks.dfsp_portal</groupId>
+        <groupId>com.thitsaworks.operation_portal</groupId>
         <version>1.0.0</version>
     </parent>
 
@@ -19,19 +19,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_participant</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_audit</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_iam</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>uc_hub_operator</artifactId>
         </dependency>
         <dependency>

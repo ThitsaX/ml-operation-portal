@@ -1,6 +1,6 @@
-package com.thitsaworks.dfsp_portal.datasource.persistence;
+package com.thitsaworks.operation_portal.datasource.persistence;
 
-import com.thitsaworks.dfsp_portal.vault.DfspVault;
+import com.thitsaworks.operation_portal.vault.DfspVault;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 

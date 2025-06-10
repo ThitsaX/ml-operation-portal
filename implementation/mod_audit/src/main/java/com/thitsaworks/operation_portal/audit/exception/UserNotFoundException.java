@@ -1,0 +1,40 @@
+package com.thitsaworks.operation_portal.audit.exception;
+
+import com.thitsaworks.operation_portal.component.exception.DFSPPortalException;
+import lombok.NoArgsConstructor;
+
+import java.text.MessageFormat;
+
+@NoArgsConstructor
+public class UserNotFoundException extends DFSPPortalException {
+
+    public UserNotFoundException(String params) {
+
+        super(params);
+    }
+
+    @Override
+    public String errorCode() {
+
+        return "USER_NOT_FOUND";
+    }
+
+    @Override
+    public String defaultErrorMessage() {
+
+        return MessageFormat.format("The system is not found for the user ({0})", this.params);
+    }
+
+    @Override
+    public boolean requireTranslation() {
+
+        return true;
+    }
+
+    @Override
+    public String paramDescription() {
+
+        return "{0} : User ID";
+    }
+
+}

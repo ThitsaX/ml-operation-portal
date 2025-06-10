@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mojaloop-dfsp-portal</artifactId>
-        <groupId>com.thitsaworks.dfsp_portal</groupId>
+        <groupId>com.thitsaworks.operation_portal</groupId>
         <version>1.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -47,7 +47,7 @@
                     <jdbcUser>cl_querydsl</jdbcUser>
                     <jdbcPassword>password</jdbcPassword>
                     <schemaToPackage>false</schemaToPackage>
-                    <packageName>com.thitsaworks.dfsp_portal.report_querydsl.dbtable</packageName>
+                    <packageName>com.thitsaworks.operation_portal.report_querydsl.dbtable</packageName>
                     <namePrefix>CL</namePrefix>
                     <targetFolder>${project.basedir}/src/main/java</targetFolder>
                     <sourceFolder>${project.basedir}/src/main/java</sourceFolder>

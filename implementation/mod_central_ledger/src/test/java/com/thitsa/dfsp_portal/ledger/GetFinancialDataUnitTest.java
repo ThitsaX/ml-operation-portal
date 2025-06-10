@@ -1,9 +1,9 @@
-package com.thitsa.dfsp_portal.ledger;
+package com.thitsaworks.operation_portal.ledger;
 
-import com.thitsa.dfsp_portal.ledger.persistence.CentralLedgerDBSetting;
-import com.thitsa.dfsp_portal.ledger.query.GetFinancialData;
-import com.thitsaworks.dfsp_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.dfsp_portal.datasource.persistence.CentralLedgerReadDbConfiguration;
+import com.thitsaworks.operation_portal.ledger.persistence.CentralLedgerDBSetting;
+import com.thitsaworks.operation_portal.ledger.query.GetFinancialData;
+import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
+import com.thitsaworks.operation_portal.datasource.persistence.CentralLedgerReadDbConfiguration;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,10 +7,10 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.1</version>
+        <version>3.5.0</version>
     </parent>
 
-    <groupId>com.thitsaworks.dfsp_portal</groupId>
+    <groupId>com.thitsaworks.operation_portal</groupId>
     <artifactId>mojaloop-operation-portal</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
@@ -36,6 +36,7 @@
     </modules>
 
     <properties>
+        <google.protobuf.version>4.28.2</google.protobuf.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.17.2</jackson.version>
         <java.version>21</java.version>
@@ -91,16 +92,6 @@
                 <version>1.4.31</version>
             </dependency>
             <dependency>
-                <groupId>com.github.filosganga</groupId>
-                <artifactId>geogson-core</artifactId>
-                <version>1.4.31</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.3.1-jre</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>32.1.3-jre</version>
@@ -109,11 +100,6 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>${google.protobuf.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>3.25.3</version>
             </dependency>
             <dependency>
                 <groupId>com.google.zxing</groupId>
@@ -131,19 +117,9 @@
                 <version>1.1.1</version>
             </dependency>
             <dependency>
-                <groupId>com.googlecode.json-simple</groupId>
-                <artifactId>json-simple</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
                 <version>8.4.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.nimbusds</groupId>
-                <artifactId>nimbus-jose-jwt</artifactId>
-                <version>9.24.3</version>
             </dependency>
             <dependency>
                 <groupId>com.nimbusds</groupId>
@@ -220,78 +196,78 @@
             </dependency>
             <!-- from project's internal modules -->
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_component</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_vault</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_datasource</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_querydsl</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_report_querydsl</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_participant</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_report</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_iam</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_audit</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_hubuser</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>mod_central_ledger</artifactId>
                 <version>1.0.0</version>
             </dependency>
 
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>uc_common</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>uc_central_ledger</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>uc_hub_operator</artifactId>
                 <version>1.0.0</version>
             </dependency>
             <dependency>
-                <groupId>com.thitsaworks.dfsp_portal</groupId>
+                <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>uc_participant</artifactId>
                 <version>1.0.0</version>
             </dependency>
@@ -334,11 +310,6 @@
                 <version>5.0.1</version>
             </dependency>
             <dependency>
-                <groupId>jakarta.el</groupId>
-                <artifactId>jakarta.el-api</artifactId>
-                <version>5.0.1</version>
-            </dependency>
-            <dependency>
                 <groupId>jakarta.mail</groupId>
                 <artifactId>jakarta.mail-api</artifactId>
                 <version>2.1.3</version>
@@ -348,12 +319,6 @@
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>6.0.0</version>
                 <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>2.1.6</version>
-                <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
@@ -387,24 +352,9 @@
                 <version>2.46.0</version>
             </dependency>
             <dependency>
-                <groupId>net.sourceforge.htmlunit</groupId>
-                <artifactId>htmlunit</artifactId>
-                <version>2.46.0</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-util-json</artifactId>
                 <version>3.7.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-util-json</artifactId>
-                <version>3.7.5</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.velocity</groupId>
-                <artifactId>velocity</artifactId>
-                <version>1.7</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.velocity</groupId>
@@ -443,19 +393,9 @@
                 <version>1.9.3</version>
             </dependency>
             <dependency>
-                <groupId>org.jasypt</groupId>
-                <artifactId>jasypt</artifactId>
-                <version>1.9.3</version>
-            </dependency>
-            <dependency>
                 <groupId>org.redisson</groupId>
                 <artifactId>redisson</artifactId>
                 <version>3.30.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.reflections</groupId>
-                <artifactId>reflections</artifactId>
-                <version>0.10.2</version>
             </dependency>
             <dependency>
                 <groupId>org.reflections</groupId>
@@ -655,30 +595,32 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.1</version>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <annotationProcessorPaths>
-                        <path>
-                            <groupId>com.querydsl</groupId>
-                            <artifactId>querydsl-apt</artifactId>
-                            <version>5.1.0</version>
-                        </path>
-                        <path>
-                            <groupId>jakarta.persistence</groupId>
-                            <artifactId>jakarta.persistence-api</artifactId>
-                            <version>3.1.0</version>
-                        </path>
-                    </annotationProcessorPaths>
-                    <compilerArgs>
-                        <arg>-proc:only</arg>
-                        <arg>-processor</arg>
-                        <arg>com.querydsl.apt.jpa.JPAAnnotationProcessor</arg>
-                    </compilerArgs>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-compiler-plugin</artifactId>-->
+<!--                <version>3.11.0</version>-->
+<!--                <configuration>-->
+<!--                    <source>21</source>-->
+<!--                    <target>21</target>-->
+<!--                    <annotationProcessorPaths>-->
+<!--                        <path>-->
+<!--                            <groupId>com.querydsl</groupId>-->
+<!--                            <artifactId>querydsl-apt</artifactId>-->
+<!--                            <version>5.1.0</version>-->
+<!--                        </path>-->
+<!--                        <path>-->
+<!--                            <groupId>jakarta.persistence</groupId>-->
+<!--                            <artifactId>jakarta.persistence-api</artifactId>-->
+<!--                            <version>3.1.0</version>-->
+<!--                        </path>-->
+<!--                    </annotationProcessorPaths>-->
+<!--                    <compilerArgs>-->
+<!--                        <arg>-proc:only</arg>-->
+<!--                        <arg>-processor</arg>-->
+<!--                        <arg>com.querydsl.apt.jpa.JPAAnnotationProcessor</arg>-->
+<!--                    </compilerArgs>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
         </plugins>
         <extensions>
             <extension>

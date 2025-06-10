@@ -1,6 +1,6 @@
-package com.thitsaworks.dfsp_portal.vault;
+package com.thitsaworks.operation_portal.vault;
 
-import com.thitsaworks.dfsp_portal.component.ComponentConfiguration;
+import com.thitsaworks.operation_portal.component.ComponentConfiguration;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.junit.FixMethodOrder;
