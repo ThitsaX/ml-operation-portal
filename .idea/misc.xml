@@ -18,6 +18,10 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/implementation/app_generate_auth_header/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/mod_datasource/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/mod_vault/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/web_api_hub_operator/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/web_api_participant/pom.xml" />
       </set>
     </option>
   </component>

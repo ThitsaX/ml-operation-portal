@@ -23,11 +23,6 @@
     <dependencies>
         <dependency>
             <groupId>com.thitsaworks.operation_portal</groupId>
-            <artifactId>mod_component</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.operation_portal</groupId>
             <artifactId>mod_vault</artifactId>
             <version>1.0.0</version>
         </dependency>
