@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.api.participant.security.exception;
 
-import com.thitsaworks.operation_portal.component.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;

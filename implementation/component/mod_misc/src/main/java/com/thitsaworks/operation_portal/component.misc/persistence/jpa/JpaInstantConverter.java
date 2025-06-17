@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.persistence.jpa;
+package com.thitsaworks.operation_portal.component.misc.persistence.jpa;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

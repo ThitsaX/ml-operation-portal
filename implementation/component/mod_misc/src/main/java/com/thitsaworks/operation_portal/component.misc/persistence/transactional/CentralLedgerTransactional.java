@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @Transactional(
-    transactionManager = PersistenceQualifiers.Operation.TRANSACTION_MANAGER,
+    transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER,
     rollbackFor = Exception.class,
     noRollbackFor = IgnorableException.class,
     propagation = Propagation.REQUIRED,

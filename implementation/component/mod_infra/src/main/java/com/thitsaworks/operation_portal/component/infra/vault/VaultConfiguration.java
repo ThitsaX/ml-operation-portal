@@ -16,7 +16,7 @@ public class VaultConfiguration {
 
             var address = System.getProperty("VAULT_ADDR");
             var token = System.getProperty("VAULT_TOKEN");
-            var enginePath = System.getProperty("MCIX_ENGINE_PATH");
+            var enginePath = System.getProperty("ENGINE_PATH");
 
             return new Settings(address, token, enginePath);
         }
@@ -25,7 +25,7 @@ public class VaultConfiguration {
 
             var address = System.getenv("VAULT_ADDR");
             var token = System.getenv("VAULT_TOKEN");
-            var enginePath = System.getenv("MCIX_ENGINE_PATH");
+            var enginePath = System.getenv("ENGINE_PATH");
 
             return new Settings(address, token, enginePath);
         }
@@ -34,7 +34,7 @@ public class VaultConfiguration {
 
             var address = System.getenv("VAULT_ADDR") == null ? System.getProperty("VAULT_ADDR") : System.getenv("VAULT_ADDR");
             var token = System.getenv("VAULT_TOKEN") == null ? System.getProperty("VAULT_TOKEN") : System.getenv("VAULT_TOKEN");
-            var enginePath = System.getenv("MCIX_ENGINE_PATH") == null ? System.getProperty("MCIX_ENGINE_PATH") : System.getenv("MCIX_ENGINE_PATH");
+            var enginePath = System.getenv("ENGINE_PATH") == null ? System.getProperty("ENGINE_PATH") : System.getenv("ENGINE_PATH");
 
             return new Settings(address, token, enginePath);
         }

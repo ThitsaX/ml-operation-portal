@@ -1,0 +1,39 @@
+package com.thitsaworks.operation_portal.core.hubuser.exception;
+
+
+import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+
+import java.text.MessageFormat;
+
+public class AlreadyAnnouncedException extends DFSPPortalException {
+
+    public AlreadyAnnouncedException(String params) {
+
+        super(params);
+    }
+
+    @Override
+    public String errorCode() {
+
+        return "ALREADY_ANNOUNCED";
+    }
+
+    @Override
+    public String defaultErrorMessage() {
+
+        return MessageFormat.format("The announcement already existed. ({0})", this.params);
+    }
+
+    @Override
+    public boolean requireTranslation() {
+
+        return true;
+    }
+
+    @Override
+    public String paramDescription() {
+
+        return "{0} : Announcement.";
+    }
+
+}

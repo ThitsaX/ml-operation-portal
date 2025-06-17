@@ -2,36 +2,35 @@ package com.thitsaworks.operation_portal.api.participant.security;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
+import com.thitsaworks.component.common.identifier.AccessKey;
+import com.thitsaworks.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.component.common.type.PrincipalStatus;
+import com.thitsaworks.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.api.participant.security.exception.AccountInactiveException;
 import com.thitsaworks.operation_portal.api.participant.security.exception.AuthenticationFailureException;
 import com.thitsaworks.operation_portal.api.participant.security.exception.InvalidAccessKeyException;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
 import com.thitsaworks.operation_portal.component.security.DfspCrypto;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
-import com.thitsaworks.operation_portal.iam.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.iam.type.RealmType;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantUserId;
+import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.nio.charset.StandardCharsets;
 
+@RequiredArgsConstructor
 public class ApiAuthenticator implements Authenticator {
 
     private final static Logger LOG = LoggerFactory.getLogger(ApiAuthenticator.class);
 
-    @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
-    private PrincipalCache principalCache;
+    private final PrincipalCache principalCache;
 
-    public ApiAuthenticator() {
+    private final ParticipantUserCache participantUserCache;
 
-    }
 
     @Override
     public UserContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
@@ -62,9 +61,14 @@ public class ApiAuthenticator implements Authenticator {
             LOG.error("PrincipalData cannot be found for accessKey : [{}]", accessKey);
 
             throw new InvalidAccessKeyException(accessKey.toString());
+
         }
 
-        if (principalData.getStatus() != PrincipalStatus.ACTIVE) {
+        ParticipantUserData participantUserData =
+                this.participantUserCache.get(new ParticipantUserId(principalData.getPrincipalId()
+                                                                                 .getId()));
+
+        if (participantUserData.status() != PrincipalStatus.ACTIVE) {
 
             LOG.warn("Account is denied for accessKey : [{}]", accessKey);
 

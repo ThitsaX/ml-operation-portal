@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.persistence.jpa;
+package com.thitsaworks.operation_portal.component.misc.persistence.jpa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -14,19 +14,18 @@ import java.time.Instant;
 @MappedSuperclass
 public abstract class JpaEntity<ID extends JpaId<?>> {
 
-    @Column(
-        name = "created_at",
+    @Column(name = "created_date",
         updatable = false)
     @Convert(converter = JpaInstantConverter.class)
     protected Instant createdAt;
 
-    @Column(name = "updated_at")
+    @Column(name = "updated_date")
     @Convert(converter = JpaInstantConverter.class)
     protected Instant updatedAt;
 
-    @Column(name = "version")
-    @Version
-    protected Integer version;
+//    @Column(name = "version")
+//    @Version
+//    protected Integer version;
 
     protected JpaEntity() {
 

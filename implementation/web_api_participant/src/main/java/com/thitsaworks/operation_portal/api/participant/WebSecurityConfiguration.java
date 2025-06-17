@@ -5,7 +5,10 @@ import com.thitsaworks.operation_portal.api.participant.security.ApiAuthenticati
 import com.thitsaworks.operation_portal.api.participant.security.ApiAuthenticator;
 import com.thitsaworks.operation_portal.api.participant.security.AuthFilterExceptionHandler;
 import com.thitsaworks.operation_portal.api.participant.security.Authenticator;
+import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,6 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+@Configuration
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
@@ -38,15 +42,15 @@ public class WebSecurityConfiguration {
     // @@formatter:on
 
     @Bean
-    public ApiAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {
+    public ApiAuthenticationTokenFilter authenticationTokenFilterBean(PrincipalCache principalCache, ParticipantUserCache participantUserCache) throws Exception {
 
-        return new ApiAuthenticationTokenFilter(this.authenticator());
+        return new ApiAuthenticationTokenFilter(this.authenticator(principalCache, participantUserCache));
     }
 
     @Bean
-    public Authenticator authenticator() {
+    public Authenticator authenticator(PrincipalCache principalCache, ParticipantUserCache participantUserCache) {
 
-        return new ApiAuthenticator();
+        return new ApiAuthenticator(principalCache, participantUserCache);
 
     }
 

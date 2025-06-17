@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 
 public class HazelcastConfiguration {
 
-    public static final String REDIS_SETTINGS_PATH = "hazelcast/settings";
+    public static final String HAZELCAST_SETTINGS_PATH = "hazelcast/settings";
 
     @Bean(destroyMethod = "shutdown")
     public HazelcastInstance hazelcastInstance(Settings settings) {

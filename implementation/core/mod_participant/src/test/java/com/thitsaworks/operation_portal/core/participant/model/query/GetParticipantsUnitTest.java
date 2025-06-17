@@ -1,0 +1,49 @@
+package com.thitsaworks.operation_portal.core.participant.model.query;
+
+import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+public class GetParticipantsUnitTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantsUnitTest.class);
+
+    @Autowired
+    private ParticipantQuery participantQuery;
+
+    @Test
+    public void test_getParticipantsSuccessfully() {
+
+        List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+
+        if (participantDataList.isEmpty()) {
+            System.out.println("No record");
+        }
+
+        for (var participant : participantDataList) {
+            System.out.println(participant.dfspCode() + " , " +
+                                       participant.name() + " , " +
+                                       participant.address() + " , " +
+                                       participant.mobile().getValue()
+                                       + " , " + participant.businessContactId()
+                                       + " , " + participant.technicalContactId()
+                              );
+        }
+
+    }
+
+
+}

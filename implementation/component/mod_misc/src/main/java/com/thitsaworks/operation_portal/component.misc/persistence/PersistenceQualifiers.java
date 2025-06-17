@@ -27,49 +27,55 @@ public class PersistenceQualifiers {
 
     }
 
-    public static class Common {
+    public static class Core {
 
-        public static final String DATA_SOURCE = Shared.WRITE_DATA_SOURCE;
+        public static final String WRITE_SETTINGS = "coreWriteSettings";
 
-        public static final String ENTITY_MANAGER_FACTORY = "commonEntityManagerFactory";
+        public static final String WRITE_POOL_SIZES = "coreWritePoolSizes";
 
-        public static final String TRANSACTION_MANAGER = "commonTransactionManager";
+        public static final String WRITE_DATA_SOURCE = "coreWriteDataSource";
 
-        public static final String QUERYDSL_CONFIGURATION = "commonQuerydslConfiguration";
+        public static final String READ_SETTINGS = "coreReadSettings";
 
-        public static final String JPA_QUERY_FACTORY = "commonJpaQueryFactory";
+        public static final String READ_POOL_SIZES = "coreReadPoolSizes";
 
-        public static final String JDBC_TEMPLATE = "commonJdbcTemplate";
+        public static final String READ_DATA_SOURCE = "coreReadDataSource";
 
-    }
+        public static final String READ_JDBC_TEMPLATE = "coreReadJdbcTemplate";
 
-    public static class Operation {
+        public static final String ENTITY_MANAGER_FACTORY = "coreEntityManagerFactory";
 
-        public static final String DATA_SOURCE = Shared.WRITE_DATA_SOURCE;
+        public static final String TRANSACTION_MANAGER = "coreTransactionManager";
 
-        public static final String ENTITY_MANAGER_FACTORY = "operationEntityManagerFactory";
+        public static final String QUERYDSL_CONFIGURATION = "coreQuerydslConfiguration";
 
-        public static final String TRANSACTION_MANAGER = "operationTransactionManager";
-
-        public static final String QUERYDSL_CONFIGURATION = "operationQuerydslConfiguration";
-
-        public static final String JPA_QUERY_FACTORY = "operationJpaQueryFactory";
+        public static final String JPA_QUERY_FACTORY = "coreJpaQueryFactory";
 
     }
 
-    public static class central_ledger {
+    public static class Reporting {
 
-        public static final String WRITE_SETTINGS = "overlapWriteSettings";
+        public static final String WRITE_SETTINGS = "reportingWriteSettings";
 
-        public static final String WRITE_POOL_SIZES = "overlapWritePoolSizes";
+        public static final String WRITE_POOL_SIZES = "reportingWritePoolSizes";
 
-        public static final String WRITE_DATA_SOURCE = Shared.WRITE_DATA_SOURCE;
+        public static final String WRITE_DATA_SOURCE = "reportingWriteDataSource";
 
-        public static final String WRITE_JDBC_TEMPLATE = "centralLedgerWriteJdbcTemplate";
+        public static final String READ_SETTINGS = "reportingReadSettings";
 
-        public static final String DATA_SOURCE = Shared.READ_DATA_SOURCE;
+        public static final String READ_POOL_SIZES = "reportingReadPoolSizes";
 
-        public static final String JDBC_TEMPLATE = "centralLedgerReadJdbcTemplate";
+        public static final String READ_DATA_SOURCE = "reportingReadDataSource";
+
+        public static final String Read_JDBC_TEMPLATE = "reportingReadJdbcTemplate";
+
+        public static final String ENTITY_MANAGER_FACTORY = "reportingEntityManagerFactory";
+
+        public static final String TRANSACTION_MANAGER = "reportingTransactionManager";
+
+        public static final String QUERYDSL_CONFIGURATION = "reportingQuerydslConfiguration";
+
+        public static final String JPA_QUERY_FACTORY = "reportingJpaQueryFactory";
 
     }
 

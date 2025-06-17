@@ -1,0 +1,60 @@
+package com.thitsaworks.operation_portal.core.audit.model;
+
+import com.thitsaworks.component.common.identifier.ActionId;
+import com.thitsaworks.component.common.identifier.AuditId;
+import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
+import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.component.common.identifier.RealmId;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "tbl_audit")
+@Getter
+@NoArgsConstructor
+public class Audit extends JpaEntity<AuditId> {
+
+    @EmbeddedId
+    protected AuditId auditId;
+
+    @Embedded
+    protected ActionId actionId;
+
+    @Embedded
+    protected UserId userId;
+
+    @Embedded
+    @AttributeOverride(name = "id", column = @Column(name = "participant_id"))
+    protected RealmId realmId;
+
+    @Column(name = "input_info")
+    protected String inputInfo;
+
+    @Column(name = "output_info")
+    protected String outputInfo;
+
+    public Audit(ActionId actionId, UserId userId, RealmId realmId, String inputInfo,
+                 String outputInfo) {
+
+        this.auditId = new AuditId(Snowflake.get().nextId());
+        this.actionId = actionId;
+        this.userId = userId;
+        this.realmId = realmId;
+        this.inputInfo = inputInfo;
+        this.outputInfo = outputInfo;
+    }
+
+    @Override
+    public AuditId getId() {
+
+        return this.auditId;
+    }
+
+}

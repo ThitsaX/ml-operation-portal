@@ -6,49 +6,51 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="mod_audit" />
+        <module name="mod_central_ledger" />
         <module name="app_scheduler" />
-        <module name="mod_ledger" />
         <module name="mod_iam" />
         <module name="app_report_downloader" />
+        <module name="mod_hubuser" />
         <module name="mod_misc" />
+        <module name="uc_participant" />
         <module name="mod_report" />
         <module name="mod_participant" />
+        <module name="uc_central_ledger" />
+        <module name="mod_common" />
+        <module name="web_api_participant" />
         <module name="mod_infra" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="mod_audit" target="21" />
-      <module name="mod_central_ledger" target="21" />
+      <module name="dfsp_portal" target="21" />
       <module name="mod_datasource" target="21" />
-      <module name="mod_hubuser" target="21" />
       <module name="mod_querydsl" target="21" />
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop-dfsp-portal" target="11" />
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />
-      <module name="uc_central_ledger" target="21" />
+      <module name="reporting-pom" target="21" />
       <module name="uc_common" target="21" />
       <module name="uc_hub_operator" target="21" />
-      <module name="uc_participant" target="21" />
       <module name="web_api_hub_operator" target="21" />
-      <module name="web_api_participant" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Report" options="-parameters" />
       <module name="app_report_downloader" options="-parameters" />
-      <module name="central_ledger" options="-parameters" />
       <module name="component" options="-parameters" />
+      <module name="core" options="-parameters" />
       <module name="dfsp_portal" options="-parameters" />
       <module name="mod_audit" options="-parameters" />
       <module name="mod_central_ledger" options="-parameters" />
+      <module name="mod_common" options="-parameters" />
       <module name="mod_datasource" options="-parameters" />
       <module name="mod_hubuser" options="-parameters" />
       <module name="mod_iam" options="-parameters" />
       <module name="mod_infra" options="-parameters" />
-      <module name="mod_ledger" options="-parameters" />
       <module name="mod_misc" options="-parameters" />
       <module name="mod_participant" options="-parameters" />
       <module name="mod_querydsl" options="-parameters" />
@@ -57,6 +59,8 @@
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters -proc:only -processor com.querydsl.apt.jpa.JPAAnnotationProcessor" />
       <module name="mojaloop-operation-portal" options="-parameters" />
+      <module name="reporting" options="-parameters" />
+      <module name="reporting-pom" options="-parameters" />
       <module name="uc_central_ledger" options="-parameters" />
       <module name="uc_common" options="-parameters" />
       <module name="uc_hub_operator" options="-parameters" />

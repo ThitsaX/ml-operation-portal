@@ -18,6 +18,7 @@
     <modules>
         <module>mod_misc</module>
         <module>mod_infra</module>
+        <module>mod_common</module>
     </modules>
 
     <properties>
