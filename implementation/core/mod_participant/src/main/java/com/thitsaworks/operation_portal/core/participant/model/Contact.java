@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
-import com.thitsaworks.component.common.identifier.ContactId;
+import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;

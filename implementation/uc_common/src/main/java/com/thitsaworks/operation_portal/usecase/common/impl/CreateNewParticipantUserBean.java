@@ -1,48 +1,41 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.iam.domain.command.CreatePrincipal;
-import com.thitsaworks.operation_portal.iam.exception.PrincipalNotFoundException;
-import com.thitsaworks.operation_portal.iam.exception.UnauthorizedCreationException;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.identity.PrincipalId;
-import com.thitsaworks.operation_portal.iam.identity.RealmId;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
-import com.thitsaworks.operation_portal.participant.domain.command.CreateParticipantUser;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipal;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
+import com.thitsaworks.operation_portal.core.iam.exception.UnauthorizedCreationException;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUser;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewParticipantUser;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CreateNewParticipantUserBean extends CreateNewParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantUserBean.class);
 
-    @Autowired
-    private CreateParticipantUser createParticipantUser;
+    private final CreateParticipantUser createParticipantUser;
 
-    @Autowired
-    private CreatePrincipal createPrincipal;
+    private final CreatePrincipal createPrincipal;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
-    private PrincipalCache principalCache;
+    private final PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
     public Output onExecute(CreateNewParticipantUser.Input input) throws Exception {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
@@ -56,22 +49,26 @@ public class CreateNewParticipantUserBean extends CreateNewParticipantUser {
 
         } else {
 
-            if (principalData.getRealmId() != null &&
-                    !principalData.getRealmId().getId().equals(input.getParticipantId().getId())) {
+            if (principalData.realmId() != null &&
+                    !principalData.realmId().getId().equals(input.participantId().getId())) {
 
                 throw new UnauthorizedCreationException();
             }
         }
 
         CreateParticipantUser.Output output = this.createParticipantUser.execute(
-                new CreateParticipantUser.Input(input.getName(), input.getEmail(), input.getParticipantId(),
-                        input.getFirstName(), input.getLastName(), input.getJobTitle()));
+                new CreateParticipantUser.Input(input.name(), input.email(), input.participantId(),
+                                                input.firstName(), input.lastName(), input.jobTitle()));
 
         CreatePrincipal.Output createPrincipalOutput = this.createPrincipal.execute(
-                new CreatePrincipal.Input(new PrincipalId(output.getParticipantUserId().getId()), input.getRealmType(),
-                        input.getPassword(), new RealmId(input.getParticipantId().getId()), input.getUserRoleType(),input.getActiveStatus()));
+                new CreatePrincipal.Input(new PrincipalId(output.participantUserId().getId()),
+                                          input.realmType(),
+                                          input.password(),
+                                          new RealmId(input.participantId().getId()),
+                                          input.userRoleType(),
+                                          input.activeStatus()));
 
-        return new Output(output.isCreated());
+        return new Output(output.created());
     }
 
     @Override
@@ -112,17 +109,11 @@ public class CreateNewParticipantUserBean extends CreateNewParticipantUser {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
+            case ADMIN -> true;
+            case SUPERUSER, OPERATION, REPORTING -> false;
+        };
 
-            case ADMIN:
-                return true;
-            case SUPERUSER:
-            case OPERATION:
-            case REPORTING:
-                return false;
-        }
-
-        return false;
     }
 
     @Override
@@ -132,7 +123,7 @@ public class CreateNewParticipantUserBean extends CreateNewParticipantUser {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, CreateNewParticipantUser.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(Long.valueOf(securityContext.getUserId())));
     }
 
 }

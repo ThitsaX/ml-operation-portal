@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.usecase;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.reporting.central_ledger.CentralLedgerConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 

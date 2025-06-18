@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.participant.cache.hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import org.springframework.beans.factory.annotation.Autowired;

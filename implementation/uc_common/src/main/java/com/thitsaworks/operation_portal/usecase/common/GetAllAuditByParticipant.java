@@ -1,15 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thitsaworks.operation_portal.component.http.jackson.InstantToLong;
-import com.thitsaworks.operation_portal.component.http.jackson.LongToInstant;
-import com.thitsaworks.operation_portal.component.usecase.AbstractOwnableUseCase;
-import com.thitsaworks.operation_portal.iam.identity.RealmId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -18,37 +10,18 @@ import java.util.List;
 public abstract class GetAllAuditByParticipant
         extends AbstractOwnableUseCase<GetAllAuditByParticipant.Input, GetAllAuditByParticipant.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            RealmId realmId,
+            Instant fromDate,
+            Instant toDate) {
 
-        private RealmId realmId;
-
-        private Instant fromDate;
-
-        private Instant toDate;
 
     }
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
+    public record Output(List<AuditInfo> auditInfoList) {
 
-        private List<AuditInfo> auditInfoList;
+        public record AuditInfo(String userName, String actionName, Instant actionDate) implements Serializable {
 
-        @Value
-        public static class AuditInfo implements Serializable {
-
-
-            private String userName;
-
-            private String actionName;
-
-            @JsonSerialize(using = InstantToLong.class)
-            @JsonDeserialize(using = LongToInstant.class)
-            private Instant actionDate;
 
         }
 

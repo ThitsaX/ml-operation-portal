@@ -1,22 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
-import com.thitsaworks.operation_portal.component.usecase.AbstractOwnableUseCase;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
 
 public abstract class VerifyEmailForLogin extends
-        AbstractOwnableUseCase<VerifyEmailForLogin.Input, VerifyEmailForLogin.Output> {
+                                          AbstractOwnableUseCase<VerifyEmailForLogin.Input, VerifyEmailForLogin.Output> {
 
-    @Getter
-    @NoArgsConstructor
-    public static class Input {
+    public record Input() {}
 
-    }
-
-    @Getter
-    @NoArgsConstructor
-    public static class Output {
-
-    }
+    public record Output() {}
 
 }

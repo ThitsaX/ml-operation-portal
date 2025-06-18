@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.audit.identity.UserId;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.iam.exception.UnauthorizedCreationException;
 import com.thitsaworks.operation_portal.iam.identity.AccessKey;
@@ -52,7 +52,7 @@ public class ModifyExistingParticipantBean extends ModifyExistingParticipant {
     private PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
         PrincipalData principalData = this.principalCache.get(input.getAccessKey());

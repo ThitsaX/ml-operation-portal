@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.repository;
 
-import com.thitsaworks.component.common.identifier.AuditId;
+import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.core.audit.model.Audit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

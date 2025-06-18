@@ -2,23 +2,18 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrencies;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetHubCurrencies;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GetHubCurrenciesHandler extends GetHubCurrencies {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetHubCurrenciesHandler.class);
 
     private final GetCurrencies getCurrencies;
-
-    @Autowired
-    public GetHubCurrenciesHandler(GetCurrencies getCurrencies) {
-
-        this.getCurrencies = getCurrencies;
-    }
 
     @Override
     public Output onExecute(Input input) throws Exception {

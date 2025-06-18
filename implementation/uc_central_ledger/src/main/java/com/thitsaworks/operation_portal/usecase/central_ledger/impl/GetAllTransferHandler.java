@@ -1,14 +1,14 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.component.common.identifier.AccessKey;
-import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
@@ -18,15 +18,16 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUs
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransfers;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransfer;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GetAllTransferHandler extends GetAllTransfer {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferHandler.class);
@@ -41,28 +42,14 @@ public class GetAllTransferHandler extends GetAllTransfer {
 
     private final ObjectMapper objectMapper;
 
-    @Autowired
-    public GetAllTransferHandler(GetTransfers getTransfers,
-                                 ParticipantCache participantCache,
-                                 ParticipantUserCache participantUserCache,
-                                 PrincipalCache principalCache,
-                                 ObjectMapper objectMapper) {
-
-        this.getTransfers = getTransfers;
-        this.participantCache = participantCache;
-        this.participantUserCache = participantUserCache;
-        this.principalCache = principalCache;
-        this.objectMapper = objectMapper;
-    }
-
     @Override
     public Output onExecute(Input input) throws Exception {
 
-        ParticipantUserData participantUserData = this.participantUserCache.get(input.getParticipantUserId());
+        ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 
         if (participantUserData == null) {
 
-            throw new ParticipantUserNotFoundException(input.getParticipantUserId().getId().toString());
+            throw new ParticipantUserNotFoundException(input.participantUserId().getId().toString());
         }
 
         ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
@@ -74,19 +61,19 @@ public class GetAllTransferHandler extends GetAllTransfer {
 
         String fspName = participantData.dfspCode().getValue();
 
-        GetTransfers.Output output = this.getTransfers.execute(new GetTransfers.Input(input.getFromDate(),
-                input.getToDate(),
-                input.getTransferId(),
-                input.getPayerFspId(),
-                input.getPayeeFspId(),
-                input.getPayerIdentifierTypeId(),
-                input.getPayeeIdentifierTypeId(),
-                input.getPayerIdentifierValue(),
-                input.getPayeeIdentifierValue(),
-                input.getCurrencyId(),
-                input.getTransferStateId(),
+        GetTransfers.Output output = this.getTransfers.execute(new GetTransfers.Input(input.fromDate(),
+                                                                                      input.toDate(),
+                                                                                      input.transferId(),
+                                                                                      input.payerFspId(),
+                                                                                      input.payeeFspId(),
+                                                                                      input.payerIdentifierTypeId(),
+                                                                                      input.payeeIdentifierTypeId(),
+                                                                                      input.payerIdentifierValue(),
+                                                                                      input.payeeIdentifierValue(),
+                                                                                      input.currencyId(),
+                                                                                      input.transferStateId(),
                 fspName,
-                input.getTimeZone()));
+                                                                                      input.timeZone()));
 
         List<TransferData> transferDataList = new ArrayList<>();
 
@@ -146,7 +133,7 @@ public class GetAllTransferHandler extends GetAllTransfer {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION -> true;
             case SUPERUSER, ADMIN, REPORTING -> false;
         };

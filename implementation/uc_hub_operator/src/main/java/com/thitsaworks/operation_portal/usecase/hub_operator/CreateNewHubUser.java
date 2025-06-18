@@ -6,47 +6,25 @@ import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
 import com.thitsaworks.operation_portal.iam.domain.UserRoleType;
 import com.thitsaworks.operation_portal.iam.identity.AccessKey;
 import com.thitsaworks.operation_portal.iam.type.PrincipalStatus;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class CreateNewHubUser
         extends AbstractAuditableUseCase<CreateNewHubUser.Input, CreateNewHubUser.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public static record Input(
+        String name,
+        Email email,
+        String password,
+        String firstName,
+        String lastName,
+        String jobTitle,
+        UserRoleType userRoleType,
+        PrincipalStatus activeStatus
+    ) {}
 
-        private String name;
-
-        private Email email;
-
-        private String password;
-
-        private String firstName;
-
-        private String lastName;
-
-        private String jobTitle;
-
-        private UserRoleType userRoleType;
-
-        private PrincipalStatus activeStatus;
-
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
-
-        private HubUserId hubUserId;
-
-        private AccessKey accessKey;
-
-        private String secretKey;
-
-    }
+    public static record Output(
+        HubUserId hubUserId,
+        AccessKey accessKey,
+        String secretKey
+    ) {}
 
 }

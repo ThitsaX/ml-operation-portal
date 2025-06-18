@@ -1,49 +1,31 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 
 import java.io.Serializable;
 import java.util.List;
 
 public abstract class CreateNewLiquidityProfile extends
-        AbstractAuditableUseCase<CreateNewLiquidityProfile.Input, CreateNewLiquidityProfile.Output> {
+                                                AbstractAuditableUseCase<CreateNewLiquidityProfile.Input, CreateNewLiquidityProfile.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            ParticipantId participantId,
+            List<LiquidityProfileInfo> liquidityProfileInfoList) {
 
-        private ParticipantId participantId;
+        public record LiquidityProfileInfo(String accountName,
+                                           String accountNumber,
+                                           String currency,
+                                           Boolean isActive) implements Serializable {
 
-        List<LiquidityProfileInfo> liquidityProfileInfoList;
-
-        @Getter
-        @AllArgsConstructor
-        @NoArgsConstructor
-        public static class LiquidityProfileInfo implements Serializable {
-
-            private String accountName;
-
-            private String accountNumber;
-
-            private String currency;
-
-            private Boolean isActive;
 
         }
 
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
+    public record Output(
+            boolean created) {
 
-        private boolean created;
 
     }
 

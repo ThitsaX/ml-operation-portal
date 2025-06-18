@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model.query.cache;
 
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;

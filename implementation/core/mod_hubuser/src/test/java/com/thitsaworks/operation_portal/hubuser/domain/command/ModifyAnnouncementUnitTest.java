@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.hubuser.domain.command;
 
-import com.thitsaworks.component.common.identifier.AnnouncementId;
+import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncement;
 import com.thitsaworks.operation_portal.core.hubuser.exception.AlreadyAnnouncedException;

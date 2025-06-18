@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.thitsaworks.operation_portal.audit.query.GetAuditByParticipant;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
 import com.thitsaworks.operation_portal.iam.identity.AccessKey;
 import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
@@ -30,7 +30,7 @@ public class GetAllAuditByParticipantBean extends GetAllAuditByParticipant {
     private PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
         GetAuditByParticipant.Output output = this.getAuditByParticipant.execute(new GetAuditByParticipant.Input(input.getRealmId(),

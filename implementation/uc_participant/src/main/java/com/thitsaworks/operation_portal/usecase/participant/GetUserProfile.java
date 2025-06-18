@@ -1,52 +1,27 @@
 package com.thitsaworks.operation_portal.usecase.participant;
 
-import com.thitsaworks.component.common.identifier.ParticipantId;
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class GetUserProfile extends
-                                     AbstractOwnableUseCase<GetUserProfile.Input, GetUserProfile.Output> {
+        AbstractOwnableUseCase<GetUserProfile.Input, GetUserProfile.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(ParticipantUserId participantUserId) {}
 
-        private ParticipantUserId participantUserId;
-
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
-
-        private ParticipantUserId participantUserId;
-
-        private String name;
-
-        private Email email;
-
-        private String firstName;
-
-        private String lastName;
-
-        private String jobTitle;
-
-        private ParticipantId participantId;
-
-        private Long createdDate;
-
-        private String dfspCode;
-
-        private String dfspName;
-
-        private String roleType;
-
-    }
+    public record Output(
+            ParticipantUserId participantUserId,
+            String name,
+            Email email,
+            String firstName,
+            String lastName,
+            String jobTitle,
+            ParticipantId participantId,
+            Long createdDate,
+            String dfspCode,
+            String dfspName,
+            String roleType
+    ) {}
 
 }

@@ -1,22 +1,23 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.component.common.identifier.AccessKey;
-import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateDetailReport;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class GenerateDetailReportHandler extends GenerateDetailReport {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateDetailReportHandler.class);
@@ -27,24 +28,14 @@ public class GenerateDetailReportHandler extends GenerateDetailReport {
 
     private final PrincipalCache principalCache;
 
-    @Autowired
-    public GenerateDetailReportHandler(GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand,
-                                       ObjectMapper objectMapper,
-                                       PrincipalCache principalCache) {
-
-        this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
-        this.objectMapper = objectMapper;
-        this.principalCache = principalCache;
-    }
-
     @Override
     public Output onExecute(Input input) throws Exception {
 
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(
-                new GenerateSettlementDetailReportCommand.Input(input.getSettlementId(),
-                                                                input.getFspId(),
-                                                                input.getFileType(),
-                                                                input.getTimezoneOffset()));
+                new GenerateSettlementDetailReportCommand.Input(input.settlementId(),
+                                                                input.fspId(),
+                                                                input.fileType(),
+                                                                input.timezoneOffset()));
 
         return new Output(output.getDetailReportByte());
 
@@ -88,7 +79,7 @@ public class GenerateDetailReportHandler extends GenerateDetailReport {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION -> true;
             case SUPERUSER, ADMIN, REPORTING -> false;
         };

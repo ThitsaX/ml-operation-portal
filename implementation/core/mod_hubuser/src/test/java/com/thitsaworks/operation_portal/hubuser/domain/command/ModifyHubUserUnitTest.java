@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.hubuser.domain.command;
 
-import com.thitsaworks.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.model.repository;
 
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

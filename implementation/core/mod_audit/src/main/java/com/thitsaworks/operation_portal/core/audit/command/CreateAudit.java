@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.audit.command;
 
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.component.common.identifier.UserId;
-import com.thitsaworks.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

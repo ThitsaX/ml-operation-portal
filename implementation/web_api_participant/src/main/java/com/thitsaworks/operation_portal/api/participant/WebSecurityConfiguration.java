@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.api.participant.security.ApiAuthenticati
 import com.thitsaworks.operation_portal.api.participant.security.ApiAuthenticator;
 import com.thitsaworks.operation_portal.api.participant.security.AuthFilterExceptionHandler;
 import com.thitsaworks.operation_portal.api.participant.security.Authenticator;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity

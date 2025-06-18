@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.audit.model;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;

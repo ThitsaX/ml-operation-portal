@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import lombok.RequiredArgsConstructor;

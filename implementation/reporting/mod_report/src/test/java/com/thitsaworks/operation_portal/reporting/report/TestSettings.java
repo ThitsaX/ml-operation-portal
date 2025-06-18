@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report;
 
+import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -9,27 +10,25 @@ import org.springframework.context.annotation.Configuration;
 public class TestSettings {
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Shared.READ_POOL_SIZES)
-    public SharedDataSourceConfiguration.PoolSizes sharedDataSourceConfigurationReadDbPoolSizes() {
-        return new SharedDataSourceConfiguration.PoolSizes(1, 5);
+    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
+
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting",
+                                                             "root",
+                                                             "password",
+                                                             1,
+                                                             5);
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Shared.READ_SETTINGS)
-    public SharedDataSourceConfiguration.Settings sharedDataSourceConfigurationReadDbSettings() {
-        return new SharedDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting", "root", "password");
-    }
+    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
 
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.WRITE_POOL_SIZES)
-    public SharedDataSourceConfiguration.PoolSizes sharedDataSourceConfigurationWriteDbPoolSizes() {
-        return new SharedDataSourceConfiguration.PoolSizes(1, 5);
-    }
-
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.WRITE_SETTINGS)
-    public SharedDataSourceConfiguration.Settings sharedDataSourceConfigurationWriteDbSettings() {
-        return new SharedDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting", "root", "password");
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting",
+                                                             "root",
+                                                             "password",
+                                                             10,
+                                                             20);
     }
 
 }

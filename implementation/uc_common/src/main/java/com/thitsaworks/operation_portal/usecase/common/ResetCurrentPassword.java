@@ -1,36 +1,19 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class ResetCurrentPassword extends
-        AbstractAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output> {
+                                           AbstractAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(Email email, String password) {
 
-        private Email email;
-
-        private String password;
 
     }
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
+    public record Output(AccessKey accessKey, String secretKey, Boolean updated) {
 
-        private AccessKey accessKey;
-
-        private String secretKey;
-
-        private Boolean updated;
 
     }
 

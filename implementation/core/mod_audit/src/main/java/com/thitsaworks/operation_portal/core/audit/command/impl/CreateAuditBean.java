@@ -5,11 +5,10 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateAction;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAudit;
 import com.thitsaworks.operation_portal.core.audit.model.repository.AuditRepository;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,7 +22,7 @@ public class CreateAuditBean implements CreateAudit {
     private final CreateAction createAction;
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output execute(Input input) throws UserNotFoundException {
 
         CreateAction.Output action = this.createAction.execute(new CreateAction.Input(input.getActionName()));

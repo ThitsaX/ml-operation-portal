@@ -1,31 +1,14 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 public abstract class LoginUserAccount extends
-        AbstractAuditableUseCase<LoginUserAccount.Input, LoginUserAccount.Output> {
+                                       AbstractAuditableUseCase<LoginUserAccount.Input, LoginUserAccount.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    public static class Input {
+    public record Input(Email email, String passwordPlain) {}
 
-        private Email email;
-
-        private String passwordPlain;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class Output {
-
-        private AccessKey accessKey;
-
-        private String secretKey;
-    }
+    public record Output(AccessKey accessKey, String secretKey) {}
 
 }

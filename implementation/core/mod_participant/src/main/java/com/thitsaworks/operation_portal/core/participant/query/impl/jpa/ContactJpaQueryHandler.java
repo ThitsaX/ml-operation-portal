@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.thitsaworks.component.common.identifier.ContactId;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.exception.ContactNotFoundException;

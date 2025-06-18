@@ -1,57 +1,28 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger;
 
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferData;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import java.util.List;
 
 public abstract class GetAllTransfer extends
-                                     AbstractAuditableUseCase<GetAllTransfer.Input, GetAllTransfer.Output> {
+        AbstractAuditableUseCase<GetAllTransfer.Input, GetAllTransfer.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            String fromDate,
+            String toDate,
+            String transferId,
+            String payerFspId,
+            String payeeFspId,
+            String payerIdentifierTypeId,
+            String payeeIdentifierTypeId,
+            String payerIdentifierValue,
+            String payeeIdentifierValue,
+            String currencyId,
+            String transferStateId,
+            ParticipantUserId participantUserId,
+            String timeZone
+    ) {}
 
-        private String fromDate;
-
-        private String toDate;
-
-        private String transferId;
-
-        private String payerFspId;
-
-        private String payeeFspId;
-
-        private String payerIdentifierTypeId;
-
-        private String payeeIdentifierTypeId;
-
-        private String payerIdentifierValue;
-
-        private String payeeIdentifierValue;
-
-        private String currencyId;
-
-        private String transferStateId;
-
-        private ParticipantUserId participantUserId;
-
-        private String timeZone;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private List<TransferData> transferInfoList;
-
-    }
-
+    public record Output(List<TransferData> transferInfoList) {}
 }

@@ -1,16 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.http.jackson.InstantToLong;
-import com.thitsaworks.operation_portal.component.http.jackson.LongToInstant;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.iam.identity.RealmId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -19,44 +11,21 @@ import java.util.List;
 public abstract class GetAllAudit
         extends AbstractAuditableUseCase<GetAllAudit.Input, GetAllAudit.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            RealmId realmId,
+            UserId userId,
+            Instant fromDate,
+            Instant toDate) {}
 
-        private RealmId realmId;
+    public record Output(List<AuditInfo> auditInfoList) {
 
-        private UserId userId;
+        public record AuditInfo(String participantName,
+                         String userName,
+                         String actionName,
+                         String inputInfo,
+                         String outputInfo,
+                         Instant actionDate) implements Serializable {
 
-        private Instant fromDate;
-
-        private Instant toDate;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private List<AuditInfo> auditInfoList;
-
-        @Value
-        public static class AuditInfo implements Serializable {
-
-            private String participantName;
-
-            private String userName;
-
-            private String actionName;
-
-            private String inputInfo;
-
-            private String outputInfo;
-
-            @JsonSerialize(using = InstantToLong.class)
-            @JsonDeserialize(using = LongToInstant.class)
-            private Instant actionDate;
 
         }
 

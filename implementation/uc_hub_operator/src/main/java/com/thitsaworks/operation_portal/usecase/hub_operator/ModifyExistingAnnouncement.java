@@ -2,41 +2,23 @@ package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.hubuser.identity.AnnouncementId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 public abstract class ModifyExistingAnnouncement extends
         AbstractAuditableUseCase<ModifyExistingAnnouncement.Input, ModifyExistingAnnouncement.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            AnnouncementId announcementId,
+            String announcementTitle,
+            String announcementDetail,
+            Instant announcementDate,
+            boolean isDeleted
+    ) {}
 
-        private AnnouncementId announcementId;
-
-        private String announcementTitle;
-
-        private String announcementDetail;
-
-        private Instant announcementDate;
-
-        private boolean isDeleted;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private AnnouncementId announcementId;
-
-        private boolean modified;
-
-    }
+    public record Output(
+            AnnouncementId announcementId,
+            boolean modified
+    ) {}
 
 }

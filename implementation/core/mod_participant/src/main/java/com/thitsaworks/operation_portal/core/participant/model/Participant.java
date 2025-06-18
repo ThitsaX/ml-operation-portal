@@ -1,18 +1,12 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
-import com.thitsaworks.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
-import com.thitsaworks.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.component.common.type.DfspCode;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.Validate;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -24,6 +18,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.Validate;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -109,7 +108,7 @@ public class Participant extends JpaEntity<ParticipantId> {
         Validate.notNull(lastName);
         Validate.notNull(jobTitle);
 
-        ParticipantUser participantUser = new ParticipantUser(name, email, this, firstName, lastName, jobTitle, PrincipalStatus.ACTIVE);
+        ParticipantUser participantUser = new ParticipantUser(name, email, this, firstName, lastName, jobTitle);
         this.participantUsers.add(participantUser);
 
         return participantUser;

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.hubuser.data;
 
-import com.thitsaworks.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 

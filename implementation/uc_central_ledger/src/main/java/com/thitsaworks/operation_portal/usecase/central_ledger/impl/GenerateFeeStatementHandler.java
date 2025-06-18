@@ -1,22 +1,23 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.component.common.identifier.AccessKey;
-import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettlementReportCommand;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateFeeSettlementReport;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GenerateFeeStatementHandler extends GenerateFeeSettlementReport {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateFeeStatementHandler.class);
@@ -27,27 +28,17 @@ public class GenerateFeeStatementHandler extends GenerateFeeSettlementReport {
 
     private final PrincipalCache principalCache;
 
-    @Autowired
-    public GenerateFeeStatementHandler(GenerateFeeSettlementReportCommand generateFeeSettlementReportCommand,
-                                       ObjectMapper objectMapper,
-                                       PrincipalCache principalCache) {
-
-        this.generateFeeSettlementReportCommand = generateFeeSettlementReportCommand;
-        this.objectMapper = objectMapper;
-        this.principalCache = principalCache;
-    }
-
     @Override
     public Output onExecute(Input input) throws Exception {
 
         GenerateFeeSettlementReportCommand.Output output =
-                this.generateFeeSettlementReportCommand.execute(new GenerateFeeSettlementReportCommand.Input(input.getStartDate(),
-                                                                                                             input.getEndDate(),
-                                                                                                             input.getFromFsp(),
-                                                                                                             input.getToFsp(),
-                                                                                                             input.getCurrency(),
-                                                                                                             input.getTimezone(),
-                                                                                                             input.getFileType()));
+                this.generateFeeSettlementReportCommand.execute(new GenerateFeeSettlementReportCommand.Input(input.startDate(),
+                                                                                                             input.endDate(),
+                                                                                                             input.fromFsp(),
+                                                                                                             input.toFsp(),
+                                                                                                             input.currency(),
+                                                                                                             input.timezone(),
+                                                                                                             input.fileType()));
 
         return new Output(output.getRptData());
     }
@@ -92,7 +83,7 @@ public class GenerateFeeStatementHandler extends GenerateFeeSettlementReport {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION -> true;
             case SUPERUSER, ADMIN, REPORTING -> false;
         };

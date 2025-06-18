@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.component.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;

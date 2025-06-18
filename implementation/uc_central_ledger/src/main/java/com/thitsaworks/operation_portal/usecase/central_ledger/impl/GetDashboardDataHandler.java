@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
-import com.thitsaworks.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
@@ -12,45 +12,34 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNo
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUserNotFoundException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetFinancialData;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetDashboardData;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GetDashboardDataHandler extends GetDashboardData {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetDashboardDataHandler.class);
 
-    private GetFinancialData getFinancialData;
+    private final GetFinancialData getFinancialData;
 
-    private ParticipantCache participantCache;
+    private final ParticipantCache participantCache;
 
-    private ParticipantUserCache participantUserCache;
+    private final ParticipantUserCache participantUserCache;
 
-    private PrincipalCache principalCache;
-
-    @Autowired
-    public GetDashboardDataHandler(GetFinancialData getFinancialData,
-                                   ParticipantCache participantCache,
-                                   ParticipantUserCache participantUserCache,
-                                   PrincipalCache principalCache) {
-
-        this.getFinancialData = getFinancialData;
-        this.participantCache = participantCache;
-        this.participantUserCache = participantUserCache;
-        this.principalCache = principalCache;
-    }
+    private final PrincipalCache principalCache;
 
     @Override
     public GetDashboardData.Output onExecute(GetDashboardData.Input input)
             throws ParticipantUserNotFoundException, ParticipantNotFoundException {
 
-        ParticipantUserData participantUserData = this.participantUserCache.get(input.getParticipantUserId());
+        ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 
         if (participantUserData == null) {
 
-            throw new ParticipantUserNotFoundException(input.getParticipantUserId().getId().toString());
+            throw new ParticipantUserNotFoundException(input.participantUserId().getId().toString());
         }
 
         ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
@@ -105,7 +94,7 @@ public class GetDashboardDataHandler extends GetDashboardData {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION, ADMIN -> true;
             case SUPERUSER, REPORTING -> false;
         };

@@ -1,47 +1,38 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.component.common.identifier.AccessKey;
-import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetail;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetTransferDetails;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GetTransferDetailsHandler extends GetTransferDetails {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferDetailsHandler.class);
 
-    private GetTransferDetail getTransferDetail;
+    private final GetTransferDetail getTransferDetail;
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    private PrincipalCache principalCache;
-
-    @Autowired
-    public GetTransferDetailsHandler(GetTransferDetail getTransferDetail,
-                                     ObjectMapper objectMapper,
-                                     PrincipalCache principalCache) {
-
-        this.getTransferDetail = getTransferDetail;
-        this.objectMapper = objectMapper;
-        this.principalCache = principalCache;
-    }
+    private final PrincipalCache principalCache;
 
     @Override
     public Output onExecute(Input input) throws Exception {
 
         GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(
-                input.getTransferId()));
+                input.transferId()));
 
         return new Output(output.getBusinessData());
     }
@@ -84,7 +75,7 @@ public class GetTransferDetailsHandler extends GetTransferDetails {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION -> true;
             case SUPERUSER, ADMIN, REPORTING -> false;
         };

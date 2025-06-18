@@ -1,44 +1,21 @@
 package com.thitsaworks.operation_portal.core.participant.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.exception.LiquidityProfileNotFoundException;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
-import com.thitsaworks.component.common.identifier.LiquidityProfileId;
-import com.thitsaworks.component.common.identifier.ParticipantId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public interface ModifyLiquidityProfile {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    class Input {
+    record Input(ParticipantId participantId,
+                 LiquidityProfileId liquidityProfileId,
+                 String accountName,
+                 String accountNumber,
+                 String currency,
+                 Boolean isActive) {}
 
-        private ParticipantId participantId;
-
-        private LiquidityProfileId liquidityProfileId;
-
-        private String accountName;
-
-        private String accountNumber;
-
-        private String currency;
-
-        private Boolean isActive;
-
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    class Output {
-
-        private LiquidityProfileId liquidityProfileId;
-
-        private boolean modified;
-
-    }
+    record Output(LiquidityProfileId liquidityProfileId,
+                  boolean modified) {}
 
     Output execute(Input input) throws ParticipantNotFoundException,
             LiquidityProfileNotFoundException;

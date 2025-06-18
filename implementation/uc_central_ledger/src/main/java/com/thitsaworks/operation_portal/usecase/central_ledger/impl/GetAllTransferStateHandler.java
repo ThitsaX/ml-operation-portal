@@ -1,21 +1,22 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
-import com.thitsaworks.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.core.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferStateData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferStates;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransferState;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GetAllTransferStateHandler extends GetAllTransferState {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferStateHandler.class);
@@ -23,13 +24,6 @@ public class GetAllTransferStateHandler extends GetAllTransferState {
     private final GetTransferStates getTransferStates;
 
     private final PrincipalCache principalCache;
-
-    @Autowired
-    public GetAllTransferStateHandler(GetTransferStates getTransferStates, PrincipalCache principalCache) {
-
-        this.getTransferStates = getTransferStates;
-        this.principalCache = principalCache;
-    }
 
     @Override
     public GetAllTransferState.Output onExecute(GetAllTransferState.Input input) throws Exception {
@@ -87,7 +81,7 @@ public class GetAllTransferStateHandler extends GetAllTransferState {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        return switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
             case OPERATION -> true;
             case SUPERUSER, ADMIN, REPORTING -> false;
         };

@@ -1,53 +1,28 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.type.RealmType;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.iam.domain.UserRoleType;
-import com.thitsaworks.operation_portal.iam.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.iam.type.RealmType;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class CreateNewParticipantUser extends
-        AbstractAuditableUseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output> {
+                                               AbstractAuditableUseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            String username,
+            String name,
+            Email email,
+            String password,
+            String firstName,
+            String lastName,
+            String jobTitle,
+            ParticipantId participantId,
+            UserRoleType userRoleType,
+            RealmType realmType,
+            PrincipalStatus activeStatus) {}
 
-        private String name;
-
-        private Email email;
-
-        private String password;
-
-        private String firstName;
-
-        private String lastName;
-
-        private String jobTitle;
-
-        private ParticipantId participantId;
-
-        private UserRoleType userRoleType;
-
-        private RealmType realmType;
-
-        private PrincipalStatus activeStatus;
-
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
-
-
-        private boolean created;
-
-    }
+    public record Output(boolean created) {}
 
 }

@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCa
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantUserRepository;
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;

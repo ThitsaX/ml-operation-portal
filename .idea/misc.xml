@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/implementation/app_scheduler/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_datasource/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/reporting/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/uc_common/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -21,7 +22,6 @@
         <option value="$PROJECT_DIR$/implementation/app_generate_auth_header/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_datasource/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_vault/pom.xml" />
-        <option value="$PROJECT_DIR$/implementation/uc_common/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_hub_operator/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/web_api_hub_operator/pom.xml" />
       </set>

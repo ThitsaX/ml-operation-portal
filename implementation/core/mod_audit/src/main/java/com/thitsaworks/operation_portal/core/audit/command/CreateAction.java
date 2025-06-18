@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.command;
 
-import com.thitsaworks.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

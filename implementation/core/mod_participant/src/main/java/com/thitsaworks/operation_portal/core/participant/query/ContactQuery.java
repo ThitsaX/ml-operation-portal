@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.query;
 
-import com.thitsaworks.component.common.identifier.ContactId;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.exception.ContactNotFoundException;
 

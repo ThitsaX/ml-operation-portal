@@ -1,88 +1,83 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
-import com.thitsaworks.operation_portal.participant.exception.ParticipantNotFoundException;
-import com.thitsaworks.operation_portal.participant.query.GetContacts;
-import com.thitsaworks.operation_portal.participant.query.GetLiquidityProfiles;
-import com.thitsaworks.operation_portal.participant.query.GetParticipant;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.data.ContactData;
+import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
+import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.common.GetExistingParticipant;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GetExistingParticipantBean extends GetExistingParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantBean.class);
 
-    @Autowired
-    private GetParticipant getParticipant;
+    private final ParticipantQuery participantQuery;
 
-    @Autowired
-    private GetContacts getContacts;
+    private final ContactQuery contactQuery;
 
-    @Autowired
-    private GetLiquidityProfiles getLiquidityProfiles;
+    private final LiquidityProfileQuery liquidityProfileQuery;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
-    private PrincipalCache principalCache;
+    private final PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
     public GetExistingParticipant.Output onExecute(GetExistingParticipant.Input input) throws
-            ParticipantNotFoundException {
+                                                                                       ParticipantNotFoundException {
 
-        GetParticipant.Output output =
-                this.getParticipant.execute(new GetParticipant.Input(input.getParticipantId()));
+        ParticipantData participantData = this.participantQuery.get(input.participantId());
 
-        GetContacts.Output contact = this.getContacts.execute(new GetContacts.Input(input.getParticipantId()));
+        List<ContactData> contactDataList = this.contactQuery.getContacts(input.participantId());
 
         List<Output.ContactInfo> contactInfoList = new ArrayList<>();
 
-        for (GetContacts.Output.ContactInfo data : contact.getContactInfoList()) {
+        for (ContactData contactData : contactDataList) {
 
             contactInfoList.add(
-                    new Output.ContactInfo(data.getContactId(), data.getName(), data.getTitle(), data.getEmail(),
-                            data.getMobile(), data.getContactType()));
+                    new Output.ContactInfo(contactData.contactId(),
+                                           contactData.name(),
+                                           contactData.title(),
+                                           contactData.email(),
+                                           contactData.mobile(),
+                                           contactData.contactType().name()));
         }
 
-        GetLiquidityProfiles.Output liquidityProfiles =
-                this.getLiquidityProfiles.execute(new GetLiquidityProfiles.Input(input.getParticipantId()));
+        List<LiquidityProfileData> liquidityProfileDataList =
+                this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
 
         List<Output.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
-        for (GetLiquidityProfiles.Output.LiquidityProfileInfo data : liquidityProfiles.getLiquidityProfileInfoList()) {
+        for (LiquidityProfileData liquidityProfileData : liquidityProfileDataList) {
 
             liquidityProfileInfoList.add(
-                    new Output.LiquidityProfileInfo(data.getLiquidityProfileId(), data.getAccountName(),
-                            data.getAccountNumber(), data.getCurrency(), data.getIsActive()));
+                    new Output.LiquidityProfileInfo(liquidityProfileData.liquidityProfileId(),
+                                                    liquidityProfileData.accountName(),
+                                                    liquidityProfileData.accountNumber(),
+                                                    liquidityProfileData.currency(),
+                                                    liquidityProfileData.isActive()));
         }
 
         GetExistingParticipant.Output result =
-                new GetExistingParticipant.Output(output.getParticipantId(),
-                        output.getDfsp_code(),
-                        output.getName(),
-                        output.getAddress(),
-                        output.getMobile(),
-                        output.getCreatedDate(),
+                new GetExistingParticipant.Output(participantData.participantId(),
+                                                  participantData.dfspCode(),
+                                                  participantData.name(),
+                                                  participantData.address(),
+                                                  participantData.mobile(),
+                                                  participantData.createdDate(),
                         contactInfoList,
                         liquidityProfileInfoList);
 

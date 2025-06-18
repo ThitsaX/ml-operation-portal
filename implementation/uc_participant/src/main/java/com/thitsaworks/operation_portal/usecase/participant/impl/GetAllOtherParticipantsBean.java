@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.participant.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.component.common.type.ParticipantInfo;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
 import com.thitsaworks.operation_portal.core.participant.query.GetOtherParticipantsQuery;
 import com.thitsaworks.operation_portal.usecase.participant.GetAllOtherParticipants;
 import org.slf4j.Logger;

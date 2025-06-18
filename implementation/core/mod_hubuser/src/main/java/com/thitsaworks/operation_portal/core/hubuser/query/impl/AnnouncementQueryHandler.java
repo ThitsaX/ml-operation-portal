@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.query.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.thitsaworks.component.common.identifier.AnnouncementId;
+import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
 import com.thitsaworks.operation_portal.core.hubuser.exception.AnnouncementNotFoundException;

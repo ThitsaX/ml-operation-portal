@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
-import com.thitsaworks.component.common.identifier.LiquidityProfileId;
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.Validate;

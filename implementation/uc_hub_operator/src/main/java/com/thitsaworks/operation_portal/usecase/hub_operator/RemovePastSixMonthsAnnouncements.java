@@ -1,26 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.usecase.AbstractOwnableUseCase;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class RemovePastSixMonthsAnnouncements extends
         AbstractOwnableUseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output> {
 
-    @Getter
-    @NoArgsConstructor
-    public static class Input {
+    public record Input() {}
 
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private boolean removed;
-
-    }
+    public record Output(boolean removed) {}
 
 }

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.usecase.common.VerifyEmailForLogin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,7 @@ public class VerifyEmailForLoginBean extends VerifyEmailForLogin {
     private static final Logger LOG = LoggerFactory.getLogger(VerifyEmailForLoginBean.class);
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
         return null;

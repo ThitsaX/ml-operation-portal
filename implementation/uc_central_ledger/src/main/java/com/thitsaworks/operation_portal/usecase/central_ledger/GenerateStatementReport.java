@@ -1,43 +1,19 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger;
 
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
 import java.time.Instant;
 
 public abstract class GenerateStatementReport extends
-                                              AbstractAuditableUseCase<GenerateStatementReport.Input, GenerateStatementReport.Output> {
+        AbstractAuditableUseCase<GenerateStatementReport.Input, GenerateStatementReport.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            Instant startDate,
+            Instant endDate,
+            String fspId,
+            String fileType,
+            String timezoneOffSet,
+            String currencyId
+    ) {}
 
-        private Instant startDate;
-
-        private Instant endDate;
-
-        private String fspId;
-
-        private String fileType;
-
-        private String timezoneOffSet;
-
-        private String currencyId;
-
-
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private byte[] statementData;
-
-    }
-
+    public record Output(byte[] statementData) {}
 }

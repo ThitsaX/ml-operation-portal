@@ -4,9 +4,9 @@ import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfi
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAudit;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
-import com.thitsaworks.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;

@@ -1,35 +1,23 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class CreateNewUser
         extends AbstractAuditableUseCase<CreateNewUser.Input, CreateNewUser.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(String name,
+                 Email email,
+                 ParticipantId participantId) {
 
-        private String name;
-
-        private Email email;
-
-        private ParticipantId participantId;
 
 
     }
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
+    public record Output(
+            boolean created) {
 
-        private boolean created;
 
     }
 

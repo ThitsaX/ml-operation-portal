@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.data;
 
-import com.thitsaworks.component.common.identifier.LiquidityProfileId;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.model.LiquidityProfile;
 
 public record LiquidityProfileData(

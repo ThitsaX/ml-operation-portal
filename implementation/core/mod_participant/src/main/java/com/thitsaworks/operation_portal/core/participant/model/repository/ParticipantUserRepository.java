@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.model.repository;
 
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 

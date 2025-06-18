@@ -1,29 +1,21 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
-import com.thitsaworks.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaInstantConverter;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.Validate;
-
-import java.time.Instant;
 
 @Entity
 @EntityListeners(value = {ParticipantUserCache.Updater.class})
@@ -55,15 +47,11 @@ public class ParticipantUser extends JpaEntity<ParticipantUserId> {
     @Column(name = "job_title")
     protected String jobTitle;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    protected PrincipalStatus status;
-
     @Column(name = "is_deleted")
     protected boolean isDeleted;
 
     public ParticipantUser(String name, Email email, Participant participant, String firstName, String lastName,
-                           String jobTitle, PrincipalStatus status) {
+                           String jobTitle) {
 
         Validate.notNull(participant);
 
@@ -74,7 +62,6 @@ public class ParticipantUser extends JpaEntity<ParticipantUserId> {
         this.firstName = firstName;
         this.lastName = lastName;
         this.jobTitle = jobTitle;
-        this.status = status;
     }
 
     @Override

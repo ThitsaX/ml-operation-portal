@@ -1,47 +1,44 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
-import com.thitsaworks.operation_portal.participant.domain.command.CreateContact;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewContact;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CreateNewContactBean extends CreateNewContact {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewContactBean.class);
 
-    @Autowired
-    private CreateContact createContact;
+    private final CreateContact createContact;
 
-    @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
-    private PrincipalCache principalCache;
+    private final PrincipalCache principalCache;
 
-    @Autowired
     private ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
-    public CreateNewContact.Output onExecute(CreateNewContact.Input input) throws Exception {
+    public Output onExecute(CreateNewContact.Input input) throws Exception {
 
-        for (Input.ContactInfo contactInfo : input.getContactInfoList()) {
+        for (Input.ContactInfo contactInfo : input.contactInfoList()) {
 
-            this.createContact.execute(new CreateContact.Input(contactInfo.getName(), contactInfo.getTitle(),
-                    contactInfo.getEmail(), contactInfo.getMobile(), input.getParticipantId(),
-                    contactInfo.getContactType()));
+            this.createContact.execute(new CreateContact.Input(contactInfo.name(),
+                                                               contactInfo.title(),
+                                                               contactInfo.email(),
+                                                               contactInfo.mobile(),
+                                                               input.participantId(),
+                                                               contactInfo.contactType()));
         }
 
         return new CreateNewContact.Output(true);
@@ -85,17 +82,10 @@ public class CreateNewContactBean extends CreateNewContact {
         PrincipalData principalData =
                 this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
 
-        switch (principalData.getUserRoleType()) {
-            
-            case OPERATION:
-            case ADMIN:
-                return true;
-            case SUPERUSER:
-            case REPORTING:
-                return false;
-        }
-
-        return false;
+        return switch (principalData.userRoleType()) {
+            case OPERATION, ADMIN -> true;
+            case SUPERUSER, REPORTING -> false;
+        };
 
     }
 
@@ -104,8 +94,8 @@ public class CreateNewContactBean extends CreateNewContact {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        Auditor.audit(this.objectMapper, CreateNewContact.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+        Auditor.audit(this.objectMapper, CreateNewContact.class,
+                      input, output, new UserId(Long.valueOf(securityContext.getUserId())));
     }
 
 }

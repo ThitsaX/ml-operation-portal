@@ -1,37 +1,16 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger;
 
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 public abstract class GenerateSettlementReport
         extends AbstractAuditableUseCase<GenerateSettlementReport.Input, GenerateSettlementReport.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(
+            String fspId,
+            String settlementId,
+            String fileType,
+            String timezoneOffset
+    ) {}
 
-        private String fspId;
-
-        private String settlementId;
-
-        private String fileType;
-
-        private String timezoneOffset;
-
-      //  private String destination;
-
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Output {
-
-        private byte[] settlementByte;
-
-    }
-
+    public record Output(byte[] settlementByte) {}
 }

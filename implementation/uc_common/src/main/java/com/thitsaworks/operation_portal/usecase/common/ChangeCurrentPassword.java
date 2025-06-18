@@ -1,37 +1,14 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.identity.PrincipalId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 
 public abstract class ChangeCurrentPassword extends
-        AbstractAuditableUseCase<ChangeCurrentPassword.Input, ChangeCurrentPassword.Output> {
+                                            AbstractAuditableUseCase<ChangeCurrentPassword.Input, ChangeCurrentPassword.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(PrincipalId principalId, String oldPassword, String newPassword) {}
 
-        private PrincipalId principalId;
-
-        private String oldPassword;
-
-        private String newPassword;
-
-    }
-
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
-
-        private AccessKey accessKey;
-
-        private String secretKey;
-
-    }
+    public record Output(AccessKey accessKey, String secretKey) {}
 
 }

@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.participant;
 
-import com.thitsaworks.component.common.identifier.ParticipantId;
-import com.thitsaworks.component.common.type.ParticipantInfo;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.usecase.ParticipantUseCaseConfiguration;
 import com.thitsaworks.operation_portal.usecase.TestSettings;

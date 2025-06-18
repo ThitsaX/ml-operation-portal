@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.command.impl;
 
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAction;
 import com.thitsaworks.operation_portal.core.audit.model.Action;
 import com.thitsaworks.operation_portal.core.audit.model.repository.ActionRepository;
@@ -20,7 +20,7 @@ public class CreateActionBean implements CreateAction {
     private final ActionRepository actionRepository;
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output execute(Input input) {
 
         Optional<Action> optionalAction =

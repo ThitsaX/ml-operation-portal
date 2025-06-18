@@ -1,11 +1,10 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUser;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.audit.identity.UserId;
 import com.thitsaworks.operation_portal.component.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.iam.domain.command.ResetPassword;
 import com.thitsaworks.operation_portal.iam.identity.AccessKey;
 import com.thitsaworks.operation_portal.iam.identity.PrincipalId;
@@ -40,7 +40,7 @@ public class ResetCurrentPasswordBean extends ResetCurrentPassword {
     private PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
+    @CoreWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
         FindUserByEmail.Output findUserByEmailOutput =

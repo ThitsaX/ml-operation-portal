@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.participant.controller.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.thitsaworks.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
 import com.thitsaworks.operation_portal.usecase.participant.GetAllParticipantUser;
 import lombok.AllArgsConstructor;

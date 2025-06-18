@@ -15,7 +15,7 @@ public abstract class AbstractAuditableUseCase<I, O> extends AbstractOwnableUseC
 
         O output = super.execute(input);
 
-//        this.onAudit(input, output);
+        this.onAudit(input, output);
 
         return output;
     }

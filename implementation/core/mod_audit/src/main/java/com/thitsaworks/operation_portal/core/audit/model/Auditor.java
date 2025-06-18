@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.core.audit.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAudit;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.core.audit.query.GetActionBy;
-import com.thitsaworks.operation_portal.component.spring.SpringContext;
-import com.thitsaworks.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.core.audit.query.GetActionByQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ public class Auditor {
 
         CreateAudit createAudit = SpringContext.getBean(CreateAudit.class);
 
-        GetActionBy getActionBy = (GetActionBy) SpringContext.getBean(GetActionBy.class);
+        GetActionByQuery getActionByQuery = (GetActionByQuery) SpringContext.getBean(GetActionByQuery.class);
 
         try {
 
-            GetActionBy.Output optionalUser = getActionBy.execute(new GetActionBy.Input(actionBy));
+            GetActionByQuery.Output optionalUser = getActionByQuery.execute(new GetActionByQuery.Input(actionBy));
 
             if (optionalUser == null) {
 
@@ -43,8 +43,10 @@ public class Auditor {
             String outputInfo = objectMapper.writeValueAsString(output);
 
             createAudit.execute(new CreateAudit.Input(useCase.getSimpleName(), actionBy,
-                    optionalUser.getUserData().getParticipantId() == null ? null :
-                            new RealmId(optionalUser.getUserData().getParticipantId()), inputInfo, outputInfo));
+                                                      optionalUser.userData().getParticipantId() == null ? null :
+                                                              new RealmId(optionalUser.userData().getParticipantId()),
+                                                      inputInfo,
+                                                      outputInfo));
 
         } catch (Exception e) {
 

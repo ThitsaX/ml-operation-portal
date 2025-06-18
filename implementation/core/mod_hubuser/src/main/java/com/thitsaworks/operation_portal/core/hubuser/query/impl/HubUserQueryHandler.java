@@ -1,19 +1,14 @@
 package com.thitsaworks.operation_portal.core.hubuser.query.impl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.thitsaworks.component.common.identifier.AnnouncementId;
-import com.thitsaworks.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
 import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AnnouncementNotFoundException;
 import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserNotFoundException;
-import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 import com.thitsaworks.operation_portal.core.hubuser.model.QAnnouncement;
 import com.thitsaworks.operation_portal.core.hubuser.model.QHubUser;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.HubUserRepository;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

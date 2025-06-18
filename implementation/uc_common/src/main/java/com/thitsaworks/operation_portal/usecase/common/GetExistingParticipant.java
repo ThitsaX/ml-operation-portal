@@ -1,84 +1,43 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.participant.identity.ContactId;
-import com.thitsaworks.operation_portal.participant.identity.LiquidityProfileId;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantId;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Value;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
 public abstract class GetExistingParticipant extends
-        AbstractAuditableUseCase<GetExistingParticipant.Input, GetExistingParticipant.Output> {
+                                             AbstractAuditableUseCase<GetExistingParticipant.Input, GetExistingParticipant.Output> {
 
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Input {
+    public record Input(ParticipantId participantId) {}
 
-        private ParticipantId participantId;
+    public record Output(
+            ParticipantId participantId,
+            String dfsp_code,
+            String name,
+            String address,
+            Mobile mobile,
+            Instant createdDate,
+            List<ContactInfo> contactInfoList,
+            List<LiquidityProfileInfo> liquidityProfileInfoList) {
 
-    }
+        public record ContactInfo(ContactId contactId,
+                                  String name,
+                                  String title,
+                                  Email email,
+                                  Mobile mobile,
+                                  String contactType) implements Serializable {}
 
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Output {
-
-        private ParticipantId participantId;
-
-        private String dfsp_code;
-
-        private String name;
-
-        private String address;
-
-        private Mobile mobile;
-
-        private Instant createdDate;
-
-        private List<ContactInfo> contactInfoList;
-
-        private List<LiquidityProfileInfo> liquidityProfileInfoList;
-
-        @Value
-        public static class ContactInfo implements Serializable {
-
-            private ContactId contactId;
-
-            private String name;
-
-            private String title;
-
-            private Email email;
-
-            private Mobile mobile;
-
-            private String contactType;
-
-        }
-
-        @Value
-        public static class LiquidityProfileInfo implements Serializable {
-
-            private LiquidityProfileId liquidityProfileId;
-
-            private String accountName;
-
-            private String accountNumber;
-
-            private String currency;
-
-            private Boolean isActive;
-
-        }
+        public record LiquidityProfileInfo(LiquidityProfileId liquidityProfileId,
+                                           String accountName,
+                                           String accountNumber,
+                                           String currency,
+                                           Boolean isActive) implements Serializable {}
 
     }
 
