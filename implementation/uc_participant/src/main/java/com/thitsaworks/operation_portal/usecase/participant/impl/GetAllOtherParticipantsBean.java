@@ -26,7 +26,7 @@ public class GetAllOtherParticipantsBean extends GetAllOtherParticipants {
     public Output onExecute(Input input) throws Exception {
 
         List<ParticipantInfo> participantInfoList =
-                this.getOtherParticipantsQuery.getOtherParticipants(input.getParticipantId());
+                this.getOtherParticipantsQuery.getOtherParticipants(input.participantId());
 
 
         return new Output(participantInfoList);

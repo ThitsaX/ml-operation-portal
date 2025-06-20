@@ -27,10 +27,9 @@ public class WebApiParticipantApplication {
     @Bean
     public WebConfiguration.PortalPortSetting portSetting() {
 
-        var portNo = System.getenv("PORTAL_PORT_NO") == null ? "8002" : System.getenv("PORTAL_PORT_NO");
+        var portNo = System.getenv("PARTICIPANT_PORT_NO") == null ? "8002" : System.getenv("PARTICIPANT_PORT_NO");
 
         return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
-
     }
 
     @Bean

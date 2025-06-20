@@ -1,16 +1,16 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
-import com.thitsaworks.operation_portal.iam.domain.UserRoleType;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.type.PrincipalStatus;
 
 public abstract class CreateNewHubUser
         extends AbstractAuditableUseCase<CreateNewHubUser.Input, CreateNewHubUser.Output> {
 
-    public static record Input(
+    public record Input(
         String name,
         Email email,
         String password,
@@ -21,7 +21,7 @@ public abstract class CreateNewHubUser
         PrincipalStatus activeStatus
     ) {}
 
-    public static record Output(
+    public record Output(
         HubUserId hubUserId,
         AccessKey accessKey,
         String secretKey

@@ -5,19 +5,18 @@ import com.google.common.io.BaseEncoding;
 import com.thitsaworks.operation_portal.api.hub_operator.security.exception.AccountInactiveException;
 import com.thitsaworks.operation_portal.api.hub_operator.security.exception.AuthenticationFailureException;
 import com.thitsaworks.operation_portal.api.hub_operator.security.exception.InvalidAccessKeyException;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.security.DfspCrypto;
-import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
-import com.thitsaworks.operation_portal.iam.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.iam.type.RealmType;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.nio.charset.StandardCharsets;
 
@@ -26,7 +25,6 @@ public class ApiAuthenticator implements Authenticator {
     private final static Logger LOG = LoggerFactory.getLogger(ApiAuthenticator.class);
 
     @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
     private PrincipalCache principalCache;
 
     public ApiAuthenticator() {
@@ -34,7 +32,7 @@ public class ApiAuthenticator implements Authenticator {
     }
 
     @Override
-    public UserContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
+    public SecurityContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
             throws InvalidAccessKeyException, AccountInactiveException, AuthenticationFailureException {
 
         // Rules :
@@ -64,7 +62,7 @@ public class ApiAuthenticator implements Authenticator {
             throw new InvalidAccessKeyException(accessKey.toString());
         }
 
-        if (principalData.getStatus() != PrincipalStatus.ACTIVE) {
+        if (principalData.principalStatus() != PrincipalStatus.ACTIVE) {
 
             LOG.warn("Account is denied for accessKey : [{}]", accessKey);
 
@@ -88,7 +86,7 @@ public class ApiAuthenticator implements Authenticator {
         String checking = method + "|" + uri + "|" + signatureOfPayload;
         LOG.info("checking : [{}]", checking);
 
-        String secret = principalData.getSecretKey();
+        String secret = principalData.secretKey();
 
         LOG.info("secret : [{}]", secret);
 
@@ -100,7 +98,7 @@ public class ApiAuthenticator implements Authenticator {
                 BaseEncoding.base16().encode(DfspCrypto.hmacSha256(secret.getBytes(StandardCharsets.UTF_8),
                         checking.getBytes(StandardCharsets.UTF_8)));
 
-        if (calculatedAuthHeader == null) {
+        if (calculatedAuthHeader.isEmpty()) {
 
             throw new AuthenticationFailureException();
 
@@ -112,7 +110,7 @@ public class ApiAuthenticator implements Authenticator {
 
             LOG.info("Auth header validation is successful.");
 
-            return new UserContext(new HubUserId(principalData.getPrincipalId().getId()), new AccessKey(accessKey));
+            return new SecurityContext(principalData.principalId().getId(), null, accessKey);
 
         }
 

@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
 
 public abstract class GetExistingHubUser
         extends AbstractAuditableUseCase<GetExistingHubUser.Input, GetExistingHubUser.Output> {

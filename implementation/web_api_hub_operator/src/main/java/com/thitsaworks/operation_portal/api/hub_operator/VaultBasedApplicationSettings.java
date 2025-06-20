@@ -1,0 +1,52 @@
+package com.thitsaworks.operation_portal.api.hub_operator;
+
+import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.vault.Vault;
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+
+public class VaultBasedApplicationSettings {
+
+    @Bean
+    public HazelcastConfiguration.Settings hazelcastConfigurationSettings(Vault vault) {
+
+        return vault.get(HazelcastConfiguration.HAZELCAST_SETTINGS_PATH, HazelcastConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Core.READ_SETTINGS)
+    public CoreDataSourceConfiguration.Settings coreDataSourceConfigurationReadDbSettings(Vault vault) {
+
+        return vault.get(CoreDataSourceConfiguration.READ_DB_SETTINGS_PATH,
+                         CoreDataSourceConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Core.WRITE_SETTINGS)
+    public CoreDataSourceConfiguration.Settings coreDataSourceConfigurationWriteDbSettings(Vault vault) {
+
+        return vault.get(CoreDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
+                         CoreDataSourceConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings(Vault vault) {
+
+        return vault.get(ReportingDataSourceConfiguration.READ_DB_SETTINGS_PATH,
+                         ReportingDataSourceConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings(Vault vault) {
+
+        return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
+                         ReportingDataSourceConfiguration.Settings.class);
+    }
+
+
+}

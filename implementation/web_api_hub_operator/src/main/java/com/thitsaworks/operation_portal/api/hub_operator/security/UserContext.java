@@ -1,14 +1,7 @@
 package com.thitsaworks.operation_portal.api.hub_operator.security;
 
-import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import lombok.Value;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 
-@Value
-public class UserContext {
-
-    HubUserId hubUserId;
-
-    AccessKey accessKey;
-
+public record UserContext(HubUserId hubUserId, AccessKey accessKey) {
 }

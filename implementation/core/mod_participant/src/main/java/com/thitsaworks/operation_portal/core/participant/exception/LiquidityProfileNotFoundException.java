@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.exception;
 
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
 import java.text.MessageFormat;
 
-public class LiquidityProfileNotFoundException extends DFSPPortalException {
+public class LiquidityProfileNotFoundException extends OperationPortalException {
 
     public LiquidityProfileNotFoundException(String params) {
 

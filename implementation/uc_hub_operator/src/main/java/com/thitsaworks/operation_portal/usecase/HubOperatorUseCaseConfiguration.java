@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase;
 
-import com.thitsaworks.operation_portal.audit.AuditConfiguration;
-import com.thitsaworks.operation_portal.hubuser.HubUserConfiguration;
-import com.thitsaworks.operation_portal.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
+import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
+import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 

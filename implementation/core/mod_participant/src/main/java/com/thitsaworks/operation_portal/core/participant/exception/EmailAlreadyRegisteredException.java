@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.exception;
 
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
 import java.text.MessageFormat;
 
-public class EmailAlreadyRegisteredException extends DFSPPortalException {
+public class EmailAlreadyRegisteredException extends OperationPortalException {
 
     public EmailAlreadyRegisteredException(String params) {
 

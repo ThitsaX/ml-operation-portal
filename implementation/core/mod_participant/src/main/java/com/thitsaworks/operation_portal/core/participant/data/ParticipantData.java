@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public record ParticipantData(ParticipantId participantId,
                               String name,
                               DfspCode dfspCode,
+                              String dfspName,
                               String address,
                               Mobile mobile,
                               ContactId businessContactId,
                               ContactId technicalContactId,
-
                               Long createdDate,
                               Set<ParticipantUserId> participantUserIds) implements Serializable {
 
@@ -30,6 +30,8 @@ public record ParticipantData(ParticipantId participantId,
              participant.getName(),
 
              participant.getDfspCode(),
+
+             participant.getDfspName(),
 
              participant.getAddress(),
 

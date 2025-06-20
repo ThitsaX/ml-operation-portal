@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.hubuser.identity.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 
 public abstract class ModifyExistingHubUser
         extends AbstractAuditableUseCase<ModifyExistingHubUser.Input, ModifyExistingHubUser.Output> {

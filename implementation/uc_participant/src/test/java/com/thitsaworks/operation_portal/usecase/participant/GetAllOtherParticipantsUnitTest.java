@@ -29,7 +29,7 @@ public class GetAllOtherParticipantsUnitTest {
         GetAllOtherParticipants.Output output = this.getAllOtherParticipants.execute(
                 new GetAllOtherParticipants.Input(new ParticipantId(486547382195986432L)));
 
-        for (ParticipantInfo participantInfo : output.getParticipantInfoList()) {
+        for (ParticipantInfo participantInfo : output.participantInfoList()) {
             LOG.info("Participant : [{}]", participantInfo);
         }
 

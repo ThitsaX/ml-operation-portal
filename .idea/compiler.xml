@@ -15,7 +15,9 @@
         <module name="mod_misc" />
         <module name="uc_participant" />
         <module name="mod_report" />
+        <module name="web_api_hub_operator" />
         <module name="uc_common" />
+        <module name="uc_hub_operator" />
         <module name="mod_participant" />
         <module name="uc_central_ledger" />
         <module name="mod_common" />
@@ -33,8 +35,6 @@
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />
       <module name="reporting-pom" target="21" />
-      <module name="uc_hub_operator" target="21" />
-      <module name="web_api_hub_operator" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -59,6 +59,7 @@
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters -proc:only -processor com.querydsl.apt.jpa.JPAAnnotationProcessor" />
       <module name="mojaloop-operation-portal" options="-parameters" />
+      <module name="operation_portal_component" options="-parameters" />
       <module name="reporting" options="-parameters" />
       <module name="reporting-pom" options="-parameters" />
       <module name="uc_central_ledger" options="-parameters" />

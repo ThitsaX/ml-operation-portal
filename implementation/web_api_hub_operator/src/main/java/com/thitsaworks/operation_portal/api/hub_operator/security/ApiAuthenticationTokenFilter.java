@@ -2,9 +2,11 @@ package com.thitsaworks.operation_portal.api.hub_operator.security;
 
 import com.thitsaworks.operation_portal.api.hub_operator.security.exception.AccessDeniedException;
 import com.thitsaworks.operation_portal.api.hub_operator.security.exception.ApiSecurityException;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -62,24 +64,25 @@ public class ApiAuthenticationTokenFilter extends OncePerRequestFilter {
 
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                UserContext uc;
+                SecurityContext securityContext;
 
                 try {
 
-                    uc = this.authenticator.authenticate(cachedBodyHttpServletRequest);
+                    securityContext = this.authenticator.authenticate(cachedBodyHttpServletRequest);
+
+                    UserContext userContext = new UserContext(new HubUserId(securityContext.userId()),
+                                                              new AccessKey(securityContext.accessKey()));
 
                     List<SimpleGrantedAuthority> authorities = new ArrayList<>();
 
                     authorities.add(new SimpleGrantedAuthority("ROLE_HUB_OPERATOR"));
 
                     UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(uc.getHubUserId(), "N.A", authorities);
+                            new UsernamePasswordAuthenticationToken(securityContext.userId(), "N.A", authorities);
 
-                    authenticationToken.setDetails(uc);
+                    authenticationToken.setDetails(userContext);
 
-                    UseCaseContext.set(uc);
-                    UseCaseContext.set(new SecurityContext(uc.getHubUserId().getId().toString(),
-                            uc.getAccessKey().getId().toString()));
+                    UseCaseContext.set(securityContext);
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 

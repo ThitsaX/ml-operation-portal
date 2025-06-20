@@ -1,44 +1,40 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.exception.DFSPPortalException;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.iam.exception.PrincipalNotFoundException;
-import com.thitsaworks.operation_portal.iam.exception.UnauthorizedCreationException;
-import com.thitsaworks.operation_portal.iam.identity.AccessKey;
-import com.thitsaworks.operation_portal.iam.query.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.iam.query.data.PrincipalData;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
+import com.thitsaworks.operation_portal.core.iam.exception.UnauthorizedCreationException;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCompanyShortName;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyParticipantShortName;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ModifyParticipantShortNameBean extends ModifyParticipantShortName {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantShortNameBean.class);
 
-    @Autowired
-    private ModifyParticipantCompanyShortName modifyParticipant;
+    private final ModifyParticipantCompanyShortName modifyParticipant;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    @Qualifier(PrincipalCache.Strategies.DEFAULT)
-    private PrincipalCache principalCache;
+    private final PrincipalCache principalCache;
 
     @Override
-    @DfspWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
-        PrincipalData principalData = this.principalCache.get(input.getAccessKey());
+        PrincipalData principalData = this.principalCache.get(input.accessKey());
 
         if (principalData == null) {
 
@@ -46,18 +42,17 @@ public class ModifyParticipantShortNameBean extends ModifyParticipantShortName {
 
         } else {
 
-            if (principalData.getRealmId() != null &&
-                    !principalData.getRealmId().getId().equals(input.getParticipantId().getId())) {
+            if (principalData.realmId() != null &&
+                    !principalData.realmId().getId().equals(input.participantId().getId())) {
 
                 throw new UnauthorizedCreationException();
             }
         }
 
         ModifyParticipantCompanyShortName.Output output = this.modifyParticipant.execute(
-                new ModifyParticipantCompanyShortName.Input(input.getParticipantId(),input.getCompanyShortName()));
+                new ModifyParticipantCompanyShortName.Input(input.participantId(), input.companyShortName()));
 
-
-        return new Output(output.isModified(), output.getParticipantId());
+        return new Output(output.modified(), output.participantId());
     }
 
     @Override
@@ -96,27 +91,22 @@ public class ModifyParticipantShortNameBean extends ModifyParticipantShortName {
         SecurityContext securityContext = (SecurityContext) userDetails;
 
         PrincipalData principalData =
-                this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
+                this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
+            case OPERATION, ADMIN -> true;
+            case SUPERUSER, REPORTING -> false;
+        };
 
-            case OPERATION:
-            case ADMIN:
-                return true;
-            case SUPERUSER:
-            case REPORTING:
-                return false;
-        }
-
-        return false;
     }
 
 
     @Override
-    public void onAudit(Input input, Output output) throws DFSPPortalException {
+    public void onAudit(Input input, Output output) throws OperationPortalException {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, ModifyParticipantCompanyShortName.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 }

@@ -21,6 +21,31 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>com.thitsaworks.operation_portal.component</groupId>
+			<artifactId>mod_misc</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thitsaworks.operation_portal</groupId>
+			<artifactId>uc_common</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thitsaworks.operation_portal</groupId>
+			<artifactId>uc_hub_operator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thitsaworks.operation_portal</groupId>
+			<artifactId>uc_participant</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thitsaworks.operation_portal</groupId>
+			<artifactId>uc_central_ledger</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.security</groupId>

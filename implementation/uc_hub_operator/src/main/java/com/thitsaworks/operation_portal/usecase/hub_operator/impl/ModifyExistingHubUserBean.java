@@ -1,38 +1,39 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.domain.command.ModifyHubUser;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingHubUser;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class ModifyExistingHubUserBean extends ModifyExistingHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingHubUserBean.class);
 
-    @Autowired
-    private ModifyHubUser modifyHubUser;
+    private final ModifyHubUser modifyHubUser;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
     public ModifyExistingHubUser.Output onExecute(ModifyExistingHubUser.Input input) throws Exception {
 
-        ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.getHubUserId(),
-                input.getName(), input.getFirstName(), input.getLastName(), input.getJobTitle()));
+        ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
+                                                                                         input.name(),
+                                                                                         input.firstName(),
+                                                                                         input.lastName(),
+                                                                                         input.jobTitle()));
 
-        return new Output(output.isModified(), output.getHubUserId());
+        return new Output(output.modified(), output.hubUserId());
     }
 
     @Override
@@ -78,7 +79,8 @@ public class ModifyExistingHubUserBean extends ModifyExistingHubUser {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, ModifyExistingHubUser.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

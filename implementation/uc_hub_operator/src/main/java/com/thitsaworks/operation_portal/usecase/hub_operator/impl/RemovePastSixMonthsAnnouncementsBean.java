@@ -1,30 +1,28 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.domain.command.RemoveAnnouncements;
+import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncements;
 import com.thitsaworks.operation_portal.usecase.hub_operator.RemovePastSixMonthsAnnouncements;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RemovePastSixMonthsAnnouncementsBean extends RemovePastSixMonthsAnnouncements {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsBean.class);
 
-    @Autowired
-    private RemoveAnnouncements removeAnnouncements;
+    private final RemoveAnnouncements removeAnnouncements;
 
     @Override
-    @DfspWriteTransactional
     public RemovePastSixMonthsAnnouncements.Output onExecute(RemovePastSixMonthsAnnouncements.Input input)
             throws Exception {
 
         RemoveAnnouncements.Output output = this.removeAnnouncements.execute(
                 new RemoveAnnouncements.Input());
 
-        return new RemovePastSixMonthsAnnouncements.Output(output.isRemoved());
+        return new RemovePastSixMonthsAnnouncements.Output(output.removed());
     }
 
     @Override

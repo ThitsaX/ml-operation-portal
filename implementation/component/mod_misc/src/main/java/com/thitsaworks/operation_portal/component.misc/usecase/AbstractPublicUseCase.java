@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.component.misc.usecase;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.thitsaworks.operation_portal.component.exception.SystemProblemException;
@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.exception.SystemProblemExcepti
 public abstract class AbstractPublicUseCase<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractPublicUseCase.class);
 
-    public O execute(I input) throws DFSPPortalException {
+    public O execute(I input) throws OperationPortalException {
 
         LOG.info("Invoking UseCase : id : [{}], name :[{}]", this.getId(), this.getName());
 
@@ -18,9 +18,9 @@ public abstract class AbstractPublicUseCase<I, O> {
 
             output = this.onExecute(input);
 
-        } catch (DFSPPortalException e) {
+        } catch (OperationPortalException e) {
 
-            LOG.error("(DFSPPortalException) Error : code: [{}], message :[{}]", e.errorCode(), e.defaultErrorMessage());
+            LOG.error("(OperationPortalException) Error : code: [{}], message :[{}]", e.errorCode(), e.defaultErrorMessage());
             LOG.error("Error details :", e);
 
             throw e;

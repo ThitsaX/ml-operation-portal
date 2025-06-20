@@ -1,12 +1,12 @@
 package com.thitsaworks.operation_portal.core.iam.exception;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;
 
 @NoArgsConstructor
-public class DuplicatePrincipalException extends DFSPPortalException {
+public class DuplicatePrincipalException extends OperationPortalException {
 
     public DuplicatePrincipalException(String params) {
 

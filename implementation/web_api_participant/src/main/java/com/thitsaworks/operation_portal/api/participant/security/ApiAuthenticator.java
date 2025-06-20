@@ -2,19 +2,17 @@ package com.thitsaworks.operation_portal.api.participant.security;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.api.participant.security.exception.AccountInactiveException;
 import com.thitsaworks.operation_portal.api.participant.security.exception.AuthenticationFailureException;
 import com.thitsaworks.operation_portal.api.participant.security.exception.InvalidAccessKeyException;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.security.DfspCrypto;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -29,11 +27,8 @@ public class ApiAuthenticator implements Authenticator {
 
     private final PrincipalCache principalCache;
 
-    private final ParticipantUserCache participantUserCache;
-
-
     @Override
-    public UserContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
+    public SecurityContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
             throws InvalidAccessKeyException, AccountInactiveException, AuthenticationFailureException {
 
         // Rules :
@@ -64,11 +59,7 @@ public class ApiAuthenticator implements Authenticator {
 
         }
 
-        ParticipantUserData participantUserData =
-                this.participantUserCache.get(new ParticipantUserId(principalData.getPrincipalId()
-                                                                                 .getId()));
-
-        if (participantUserData.status() != PrincipalStatus.ACTIVE) {
+        if (principalData.principalStatus() != PrincipalStatus.ACTIVE) {
 
             LOG.warn("Account is denied for accessKey : [{}]", accessKey);
 
@@ -82,7 +73,7 @@ public class ApiAuthenticator implements Authenticator {
         LOG.info("X-AUTH-HEADER : [{}]", submittedAuthHeader);
 
         String payload = new String(cachedBodyRequest.getCachedBody(), StandardCharsets.UTF_8);
-        payload = payload == null || payload.isEmpty() ? "<BLANK>" : payload;
+        payload = payload.isEmpty() ? "<BLANK>" : payload;
         LOG.info("payload : [{}]", payload);
 
         String signatureOfPayload = DigestUtils.sha256Hex(payload).toUpperCase();
@@ -92,7 +83,7 @@ public class ApiAuthenticator implements Authenticator {
         String checking = method + "|" + uri + "|" + signatureOfPayload;
         LOG.info("checking : [{}]", checking);
 
-        String secret = principalData.getSecretKey();
+        String secret = principalData.secretKey();
 
         LOG.info("secret : [{}]", secret);
 
@@ -100,7 +91,7 @@ public class ApiAuthenticator implements Authenticator {
                                                   .encode(DfspCrypto.hmacSha256(secret.getBytes(Charsets.UTF_8),
                                                           checking.getBytes(Charsets.UTF_8)));
 
-        if (calculatedAuthHeader == null) {
+        if (calculatedAuthHeader.isBlank()) {
 
             throw new AuthenticationFailureException();
 
@@ -112,7 +103,9 @@ public class ApiAuthenticator implements Authenticator {
 
             LOG.info("Auth header validation is successful.");
 
-            return new UserContext(new ParticipantUserId(principalData.getPrincipalId().getId()), new AccessKey(accessKey));
+            return new SecurityContext(principalData.principalId().getId(),
+                                       principalData.realmId().getId(),
+                                       accessKey);
 
         }
 

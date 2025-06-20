@@ -4,12 +4,13 @@ import com.thitsaworks.operation_portal.api.participant.security.exception.Accou
 import com.thitsaworks.operation_portal.api.participant.security.exception.AuthenticationFailureException;
 import com.thitsaworks.operation_portal.api.participant.security.exception.InvalidAccessKeyException;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 
 import java.io.IOException;
 
 public interface Authenticator {
 
-    UserContext authenticate(CachedBodyHttpServletRequest cachedBodyHttpServletRequest)
+    SecurityContext authenticate(CachedBodyHttpServletRequest cachedBodyHttpServletRequest)
             throws IOException, InvalidAccessKeyException, AccountInactiveException, AuthenticationFailureException;
 
 }

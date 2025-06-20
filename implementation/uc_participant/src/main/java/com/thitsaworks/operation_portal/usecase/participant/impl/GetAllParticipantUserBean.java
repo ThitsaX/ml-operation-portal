@@ -3,8 +3,13 @@ package com.thitsaworks.operation_portal.usecase.participant.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
@@ -60,8 +65,8 @@ public class GetAllParticipantUserBean extends GetAllParticipantUser {
                                           participantUserData.firstName(),
                                           participantUserData.lastName(),
                                           participantUserData.jobTitle(),
-                                          principalData.getUserRoleType().toString(),
-                                          participantUserData.status().toString(),
+                                          principalData.userRoleType().toString(),
+                                          principalData.principalStatus().toString(),
                                           Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 
@@ -104,28 +109,23 @@ public class GetAllParticipantUserBean extends GetAllParticipantUser {
         SecurityContext securityContext = (SecurityContext) userDetails;
 
         PrincipalData principalData =
-                this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
+                this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        switch (principalData.getUserRoleType()) {
+        return switch (principalData.userRoleType()) {
+            case ADMIN -> true;
+            case OPERATION, SUPERUSER, REPORTING -> false;
+        };
 
-            case ADMIN:
-                return true;
-            case OPERATION:
-            case SUPERUSER:
-            case REPORTING:
-                return false;
-        }
-
-        return false;
     }
 
     @Override
-    public void onAudit(Input input, Output output) {
+    public void onAudit(Input input, Output output) throws UserNotFoundException {
 
-//        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-//
-//        Auditor.audit(this.objectMapper, GetAllParticipantUser.class, input, output,
-//                      new UserId(Long.valueOf(securityContext.getUserId())));
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        Auditor.audit(this.objectMapper, GetAllParticipantUser.class, input, output,
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

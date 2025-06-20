@@ -1,39 +1,40 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.query.GetAnnouncements;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllAnnouncement;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
+@RequiredArgsConstructor
 public class GetAllAnnouncementBean extends GetAllAnnouncement {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllAnnouncementBean.class);
 
-    @Autowired
-    private GetAnnouncements getAnnouncements;
+    private final AnnouncementQuery announcementQuery;
 
     @Override
-    @DfspWriteTransactional
     public GetAllAnnouncement.Output onExecute(GetAllAnnouncement.Input input) throws Exception {
 
-        GetAnnouncements.Output output = this.getAnnouncements.execute(new GetAnnouncements.Input());
+        List<AnnouncementData> announcementDataList = this.announcementQuery.getAnnouncements();
 
         List<GetAllAnnouncement.Output.AnnouncementInfo> announcementInfoList = new ArrayList<>();
 
-        for (GetAnnouncements.Output.AnnouncementInfo data : output.getAnnouncementInfoList()) {
+        for (AnnouncementData announcementData : announcementDataList) {
 
             announcementInfoList.add(
-                    new GetAllAnnouncement.Output.AnnouncementInfo(data.getAnnouncementId(),
-                            data.getAnnouncementTitle(), data.getAnnouncementDetail(),
-                            data.getAnnouncementDate()));
+                    new GetAllAnnouncement.Output.AnnouncementInfo(announcementData.announcementId(),
+                                                                   announcementData.announcementTitle(),
+                                                                   announcementData.announcementDetail(),
+                                                                   announcementData.announcementDate()));
         }
 
         return new GetAllAnnouncement.Output(announcementInfoList);

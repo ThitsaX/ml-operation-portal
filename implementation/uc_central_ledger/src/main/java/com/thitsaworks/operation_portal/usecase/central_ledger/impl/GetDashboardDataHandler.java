@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
@@ -92,7 +92,7 @@ public class GetDashboardDataHandler extends GetDashboardData {
         SecurityContext securityContext = (SecurityContext) userDetails;
 
         PrincipalData principalData =
-                this.principalCache.get(new AccessKey(Long.parseLong(securityContext.getAccessKey())));
+                this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         return switch (principalData.userRoleType()) {
             case OPERATION, ADMIN -> true;

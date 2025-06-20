@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.api.participant.security.ApiAuthenticato
 import com.thitsaworks.operation_portal.api.participant.security.AuthFilterExceptionHandler;
 import com.thitsaworks.operation_portal.api.participant.security.Authenticator;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,15 +40,15 @@ public class WebSecurityConfiguration {
     // @@formatter:on
 
     @Bean
-    public ApiAuthenticationTokenFilter authenticationTokenFilterBean(PrincipalCache principalCache, ParticipantUserCache participantUserCache) throws Exception {
+    public ApiAuthenticationTokenFilter authenticationTokenFilterBean(PrincipalCache principalCache) throws Exception {
 
-        return new ApiAuthenticationTokenFilter(this.authenticator(principalCache, participantUserCache));
+        return new ApiAuthenticationTokenFilter(this.authenticator(principalCache));
     }
 
     @Bean
-    public Authenticator authenticator(PrincipalCache principalCache, ParticipantUserCache participantUserCache) {
+    public Authenticator authenticator(PrincipalCache principalCache) {
 
-        return new ApiAuthenticator(principalCache, participantUserCache);
+        return new ApiAuthenticator(principalCache);
 
     }
 

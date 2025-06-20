@@ -1,47 +1,53 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.participant.query.GetParticipants;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllParticipant;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GetAllParticipantBean extends GetAllParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantBean.class);
 
-    @Autowired
-    private GetParticipants getParticipants;
+    private final ParticipantQuery participantQuery;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
     public GetAllParticipant.Output onExecute(GetAllParticipant.Input input) throws Exception {
 
-        GetParticipants.Output output = this.getParticipants.execute(new GetParticipants.Input());
+        List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
         List<GetAllParticipant.Output.ParticipantInfo> participantInfoList = new ArrayList<>();
 
-        for (GetParticipants.Output.ParticipantInfo data : output.getParticipantInfoList()) {
+        for (ParticipantData participantData : participantDataList) {
 
             participantInfoList.add(
-                    new GetAllParticipant.Output.ParticipantInfo(data.getParticipantId(), data.getDfsp_code(),
-                            data.getName(), data.getDfsp_name(),data.getAddress(), data.getMobile(), data.getBusinessContact(),
-                            data.getTechnicalContact(), data.getCreatedDate()));
+                    new GetAllParticipant.Output.ParticipantInfo(participantData.participantId(),
+                                                                 participantData.dfspCode().getValue(),
+                                                                 participantData.name(),
+                                                                 participantData.dfspName(),
+                                                                 participantData.address(),
+                                                                 participantData.mobile(),
+                                                                 participantData.businessContactId().toString(),
+                                                                 participantData.technicalContactId().toString(),
+                                                                 Instant.ofEpochSecond(participantData.createdDate())));
         }
 
         return new GetAllParticipant.Output(participantInfoList);
@@ -89,7 +95,8 @@ public class GetAllParticipantBean extends GetAllParticipant {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, GetAllParticipant.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

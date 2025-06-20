@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.exception;
 
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
 import java.text.MessageFormat;
 
-public class EmailNotFoundException extends DFSPPortalException {
+public class EmailNotFoundException extends OperationPortalException {
 
     public EmailNotFoundException(String params) {
 

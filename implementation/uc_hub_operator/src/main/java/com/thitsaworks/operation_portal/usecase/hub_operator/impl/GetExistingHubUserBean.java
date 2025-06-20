@@ -1,42 +1,42 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.query.GetHubUser;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
+import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetExistingHubUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GetExistingHubUserBean extends GetExistingHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingHubUserBean.class);
 
-    @Autowired
-    private GetHubUser getHubUser;
+    private final HubUserQuery hubUserQuery;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
     public GetExistingHubUser.Output onExecute(GetExistingHubUser.Input input) throws Exception {
 
-        GetHubUser.Output output = this.getHubUser.execute(new GetHubUser.Input(input.getHubUserId()));
+        HubUserData hubUserData = this.hubUserQuery.get(input.hubUserId());
 
-        GetExistingHubUser.Output result =
-                new GetExistingHubUser.Output(output.getHubUserId(), output.getName(), output.getEmail(),
-                        output.getFirstName(), output.getLastName(), output.getJobTitle(),
-                        output.getCreatedDate().getEpochSecond());
-
-        return result;
+        return new GetExistingHubUser.Output(hubUserData.hubUserId(),
+                                             hubUserData.name(),
+                                             hubUserData.email(),
+                                             hubUserData.firstName(),
+                                             hubUserData.lastName(),
+                                             hubUserData.jobTitle(),
+                                             hubUserData.createdDate().getEpochSecond());
     }
 
     @Override
@@ -81,7 +81,8 @@ public class GetExistingHubUserBean extends GetExistingHubUser {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, GetExistingHubUser.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

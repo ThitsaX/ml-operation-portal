@@ -1,12 +1,12 @@
 package com.thitsaworks.operation_portal.api.hub_operator.security.exception;
 
-import com.thitsaworks.operation_portal.component.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;
 
 @NoArgsConstructor
-public class AccessDeniedException extends DFSPPortalException {
+public class AccessDeniedException extends OperationPortalException {
 
     public AccessDeniedException(String params) {
 

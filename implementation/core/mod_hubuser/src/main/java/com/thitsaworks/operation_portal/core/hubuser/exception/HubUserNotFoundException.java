@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.hubuser.exception;
 
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
 import java.text.MessageFormat;
 
-public class HubUserNotFoundException extends DFSPPortalException {
+public class HubUserNotFoundException extends OperationPortalException {
 
     public HubUserNotFoundException(String params) {
 

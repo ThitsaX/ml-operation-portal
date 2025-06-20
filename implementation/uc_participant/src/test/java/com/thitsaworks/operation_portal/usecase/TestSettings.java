@@ -1,46 +1,32 @@
 package com.thitsaworks.operation_portal.usecase;
 
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.core.CorePersistenceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 public class TestSettings {
     @Bean
-    public CorePersistenceConfiguration.PoolSizes poolSizes() {
+    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
 
-        return new CorePersistenceConfiguration.PoolSizes(5, 10);
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
+                                                             "root",
+                                                             "password",
+                                                             0,
+                                                             5);
     }
 
     @Bean
-    public CorePersistenceConfiguration.Settings settings() {
+    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
+    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
 
-        return new CorePersistenceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal", "root", "password");
-    }
-
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.READ_POOL_SIZES)
-    public SharedDataSourceConfiguration.PoolSizes sharedDataSourceConfigurationReadDbPoolSizes() {
-        return new SharedDataSourceConfiguration.PoolSizes(1, 5);
-    }
-
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.READ_SETTINGS)
-    public SharedDataSourceConfiguration.Settings sharedDataSourceConfigurationReadDbSettings() {
-        return new SharedDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal", "root", "password");
-    }
-
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.WRITE_POOL_SIZES)
-    public SharedDataSourceConfiguration.PoolSizes sharedDataSourceConfigurationWriteDbPoolSizes() {
-        return new SharedDataSourceConfiguration.PoolSizes(1, 5);
-    }
-
-    @Bean
-    @Qualifier(PersistenceQualifiers.Shared.WRITE_SETTINGS)
-    public SharedDataSourceConfiguration.Settings sharedDataSourceConfigurationWriteDbSettings() {
-        return new SharedDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal", "root", "password");
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
+                                                             "root",
+                                                             "password",
+                                                             0,
+                                                             5);
     }
 
     @Bean

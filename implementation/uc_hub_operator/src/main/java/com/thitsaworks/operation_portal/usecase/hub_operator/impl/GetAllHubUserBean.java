@@ -1,46 +1,49 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.query.GetHubUsers;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
+import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllHubUser;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GetAllHubUserBean extends GetAllHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllHubUserBean.class);
 
-    @Autowired
-    private GetHubUsers getHubUsers;
+    private final HubUserQuery hubUserQuery;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
-    public GetAllHubUser.Output onExecute(GetAllHubUser.Input input) throws Exception {
+    public Output onExecute(Input input) throws Exception {
 
-        GetHubUsers.Output output = this.getHubUsers.execute(new GetHubUsers.Input());
+        List<HubUserData> hubUserDataList = this.hubUserQuery.getHubUsers();
 
         List<Output.HubUserInfo> userInfoList = new ArrayList<>();
 
-        for (GetHubUsers.Output.HubUserInfo data : output.getUserInfoList()) {
+        for (HubUserData hubUserData : hubUserDataList) {
 
-            userInfoList.add(
-                    new Output.HubUserInfo(data.getHubUserId(), data.getName(), data.getEmail(), data.getFirstName(),
-                            data.getLastName(), data.getJobTitle(), data.getCreatedDate()));
+            userInfoList.add(new Output.HubUserInfo(hubUserData.hubUserId(),
+                                                    hubUserData.name(),
+                                                    hubUserData.email(),
+                                                    hubUserData.firstName(),
+                                                    hubUserData.lastName(),
+                                                    hubUserData.jobTitle(),
+                                                    hubUserData.createdDate()));
         }
 
         return new GetAllHubUser.Output(userInfoList);
@@ -88,7 +91,8 @@ public class GetAllHubUserBean extends GetAllHubUser {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, GetAllHubUser.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

@@ -1,20 +1,17 @@
 package com.thitsaworks.operation_portal.core.participant.cache.proxy;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
-import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-import java.util.stream.Collectors;
 @Primary
 @Component
 @Qualifier(CacheQualifiers.PROXY)
@@ -49,21 +46,7 @@ public class ProxyParticipantCache implements ParticipantCache {
 
             Participant participant = optionalPrincipal.get();
 
-            participantData = new ParticipantData(participant.getParticipantId(),
-                                                  participant.getName(),
-                                                  participant.getDfspCode(),
-                                                  participant.getAddress(),
-                                                  participant.getMobile(),
-                                                  participant.getBusinessContact()
-                                                             .getContactId(),
-                                                  participant.getTechnicalContact()
-                                                             .getContactId(),
-                                                  participant.getParticipantUsers()
-                                                             .stream()
-                                                             .map((ParticipantUser participantUser) -> new ParticipantUserId(
-                                                                     participantUser.getParticipantUserId()
-                                                                                    .getId()))
-                                                             .collect(Collectors.toSet()));
+            participantData = new ParticipantData(participant);
 
             this.participantCache.save(participantData);
         }

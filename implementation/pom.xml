@@ -20,11 +20,11 @@
         <module>reporting</module>
         <module>core</module>
         <module>uc_central_ledger</module>
-<!--        <module>uc_common</module>-->
+        <module>uc_common</module>
         <module>uc_participant</module>
-<!--        <module>uc_hub_operator</module>-->
+        <module>uc_hub_operator</module>
         <module>web_api_participant</module>
-<!--        <module>web_api_hub_operator</module>-->
+        <module>web_api_hub_operator</module>
     </modules>
 
     <properties>
@@ -268,6 +268,12 @@
             <dependency>
                 <groupId>com.thitsaworks.operation_portal</groupId>
                 <artifactId>web_api_participant</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal</groupId>
+                <artifactId>web_api_hub_operator</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

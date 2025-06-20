@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.component.exception;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
-public class SystemProblemException extends DFSPPortalException {
+public class SystemProblemException extends OperationPortalException {
     public SystemProblemException() {
 
         super();

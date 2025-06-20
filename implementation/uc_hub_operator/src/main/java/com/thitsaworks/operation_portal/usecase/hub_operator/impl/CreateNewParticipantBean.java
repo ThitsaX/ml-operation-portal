@@ -1,70 +1,68 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.participant.domain.command.CreateContact;
-import com.thitsaworks.operation_portal.participant.domain.command.CreateLiquidityProfile;
-import com.thitsaworks.operation_portal.participant.domain.command.CreateParticipant;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
+import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewParticipant;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CreateNewParticipantBean extends CreateNewParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantBean.class);
 
-    @Autowired
-    private CreateParticipant createParticipant;
+    private final CreateParticipant createParticipant;
 
-    @Autowired
-    private CreateContact createContact;
+    private final CreateContact createContact;
 
-    @Autowired
-    private CreateLiquidityProfile createLiquidityProfile;
+    private final CreateLiquidityProfile createLiquidityProfile;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
     public Output onExecute(Input input) throws Exception {
 
         CreateParticipant.Output output = this.createParticipant.execute(
-                new CreateParticipant.Input(input.getName(), input.getDfspCode(), input.getDfspName(),
-                        input.getAddress(), input.getMobile()));
+                new CreateParticipant.Input(input.name(), input.dfspCode(), input.dfspName(),
+                                            input.address(), input.mobile()));
 
-        if (output != null && (input.getContactInfoList() != null || !input.getContactInfoList().isEmpty()) &&
-                input.getContactInfoList().size() > 0) {
+        if (output != null && (input.contactInfoList() != null || !input.contactInfoList().isEmpty()) &&
+                input.contactInfoList().size() > 0) {
 
-            for (var contact : input.getContactInfoList()) {
+            for (var contact : input.contactInfoList()) {
                 this.createContact.execute(
-                        new CreateContact.Input(contact.getName(), contact.getTitle(), contact.getEmail(),
-                                contact.getMobile(), output.getParticipantId(), contact.getContactType()));
+                        new CreateContact.Input(contact.name(), contact.title(), contact.email(),
+                                                contact.mobile(), output.participantId(), contact.contactType()));
             }
         }
 
         //For Liquidity Profile
         if (output != null &&
-                (input.getLiquidityProfileInfoList() != null || !input.getLiquidityProfileInfoList().isEmpty()) &&
-                input.getLiquidityProfileInfoList().size() > 0) {
+                (input.liquidityProfileInfoList() != null || !input.liquidityProfileInfoList().isEmpty()) &&
+                input.liquidityProfileInfoList().size() > 0) {
 
-            for (var liquidityProfile : input.getLiquidityProfileInfoList()) {
+            for (var liquidityProfile : input.liquidityProfileInfoList()) {
 
-                this.createLiquidityProfile.execute(new CreateLiquidityProfile.Input(output.getParticipantId(),
-                        liquidityProfile.getAccountName(), liquidityProfile.getAccountNumber(),
-                        liquidityProfile.getCurrency(), liquidityProfile.getIsActive()));
+                this.createLiquidityProfile.execute(new CreateLiquidityProfile.Input(output.participantId(),
+                                                                                     liquidityProfile.accountName(),
+                                                                                     liquidityProfile.accountNumber(),
+                                                                                     liquidityProfile.currency(),
+                                                                                     liquidityProfile.isActive()));
             }
         }
 
-        return new CreateNewParticipant.Output(output.isCreated(), output.getParticipantId());
+        return new CreateNewParticipant.Output(output.created(), output.participantId());
     }
 
     @Override
@@ -108,7 +106,12 @@ public class CreateNewParticipantBean extends CreateNewParticipant {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        Auditor.audit(this.objectMapper, CreateNewParticipant.class, input, output, new UserId(Long.valueOf(securityContext.getUserId())));
+        Auditor.audit(this.objectMapper,
+                      CreateNewParticipant.class,
+                      input,
+                      output,
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

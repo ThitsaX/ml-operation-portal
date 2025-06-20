@@ -1,12 +1,12 @@
 package com.thitsaworks.operation_portal.core.audit.exception;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import lombok.NoArgsConstructor;
 
 import java.text.MessageFormat;
 
 @NoArgsConstructor
-public class UserNotFoundException extends DFSPPortalException {
+public class UserNotFoundException extends OperationPortalException {
 
     public UserNotFoundException(String params) {
 

@@ -13,7 +13,9 @@ public record AnnouncementData(AnnouncementId announcementId,
 
                                Instant announcementDate,
 
-                               boolean isDeleted) {
+                               boolean isDeleted,
+
+                               Instant createdDate) {
 
     public AnnouncementData(Announcement announcement) {
 
@@ -25,7 +27,9 @@ public record AnnouncementData(AnnouncementId announcementId,
 
              announcement.getAnnouncementDate(),
 
-             announcement.isDeleted());
+             announcement.isDeleted(),
+
+             announcement.getCreatedAt());
     }
 
 }

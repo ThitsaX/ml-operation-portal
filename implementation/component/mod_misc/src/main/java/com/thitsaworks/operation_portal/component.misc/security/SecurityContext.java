@@ -1,12 +1,4 @@
-package com.thitsaworks.operation_portal.component.security;
+package com.thitsaworks.operation_portal.component.misc.security;
 
-import lombok.Value;
-
-@Value
-public class SecurityContext {
-
-    private String userId;
-
-    private String accessKey;
-
+public record SecurityContext(Long userId, Long realmId, Long accessKey) {
 }

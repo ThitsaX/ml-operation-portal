@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.component.misc.usecase;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public abstract class AbstractPrivateUseCase<I, O> extends AbstractPublicUseCase
     private static final Logger LOG = LoggerFactory.getLogger(AbstractPrivateUseCase.class);
 
     @Override
-    public O execute(I input) throws DFSPPortalException {
+    public O execute(I input) throws OperationPortalException {
 
         LOG.info("Check authorization for : id :[{}], name :[{}]", this.getId(), this.getName());
 
@@ -27,7 +27,7 @@ public abstract class AbstractPrivateUseCase<I, O> extends AbstractPublicUseCase
 
     public abstract boolean isAuthorized(Object userDetails);
 
-    public static class UnauthorizedActionException extends DFSPPortalException {
+    public static class UnauthorizedActionException extends OperationPortalException {
 
         protected UnauthorizedActionException(String params) {
 

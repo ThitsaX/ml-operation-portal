@@ -1,17 +1,18 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.component.usecase.AbstractAuditableUseCase;
-import com.thitsaworks.operation_portal.participant.identity.ParticipantId;
-import com.thitsaworks.operation_portal.participant.type.DfspCode;
+
 import java.io.Serializable;
 import java.util.List;
 
 public abstract class CreateNewParticipant
         extends AbstractAuditableUseCase<CreateNewParticipant.Input, CreateNewParticipant.Output> {
 
-    public static record Input(
+    public record Input(
         String name,
         DfspCode dfspCode,
         String dfspName,
@@ -20,7 +21,8 @@ public abstract class CreateNewParticipant
         List<ContactInfo> contactInfoList,
         List<LiquidityProfileInfo> liquidityProfileInfoList
     ) implements Serializable {
-        public static record ContactInfo(
+
+        public record ContactInfo(
             String name,
             String title,
             Email email,
@@ -28,7 +30,7 @@ public abstract class CreateNewParticipant
             String contactType
         ) implements Serializable {}
 
-        public static record LiquidityProfileInfo(
+        public record LiquidityProfileInfo(
             String accountName,
             String accountNumber,
             String currency,

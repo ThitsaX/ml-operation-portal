@@ -1,43 +1,42 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.audit.domain.Auditor;
-import com.thitsaworks.operation_portal.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.audit.identity.UserId;
-import com.thitsaworks.operation_portal.component.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.persistence.transactional.DfspWriteTransactional;
-import com.thitsaworks.operation_portal.hubuser.query.GetAnnouncement;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetExistingAnnouncement;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class GetExistingAnnouncementBean extends GetExistingAnnouncement {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingAnnouncementBean.class);
 
-    @Autowired
-    private GetAnnouncement getAnnouncement;
+    private final AnnouncementQuery announcementQuery;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
-    @DfspWriteTransactional
     public GetExistingAnnouncement.Output onExecute(GetExistingAnnouncement.Input input) throws Exception {
 
-        GetAnnouncement.Output output =
-                this.getAnnouncement.execute(new GetAnnouncement.Input(input.getAnnouncementId()));
+        AnnouncementData announcementData = this.announcementQuery.get(input.announcementId());
 
-        GetExistingAnnouncement.Output result =
-                new GetExistingAnnouncement.Output(output.getAnnouncementId(), output.getAnnouncementTitle(),
-                        output.getAnnouncementDetail(), output.getAnnouncementDate(), output.isDeleted(),
-                        output.getCreatedDate());
+        return new GetExistingAnnouncement.Output(announcementData.announcementId(),
+                                                  announcementData.announcementTitle(),
+                                                  announcementData.announcementDetail(),
+                                                  announcementData.announcementDate(),
+                                                  announcementData.isDeleted(),
+                                                  announcementData.createdDate());
 
-        return result;
     }
 
     @Override
@@ -83,7 +82,8 @@ public class GetExistingAnnouncementBean extends GetExistingAnnouncement {
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         Auditor.audit(this.objectMapper, GetExistingAnnouncement.class, input, output,
-                new UserId(Long.valueOf(securityContext.getUserId())));
+                      new UserId(securityContext.userId()),
+                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

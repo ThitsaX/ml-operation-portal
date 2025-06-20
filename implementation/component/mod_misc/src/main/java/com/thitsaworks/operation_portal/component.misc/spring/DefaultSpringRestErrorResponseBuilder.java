@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.component.misc.spring;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.google.common.base.CaseFormat;
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -58,14 +58,15 @@ public class DefaultSpringRestErrorResponseBuilder
             return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse("INVALID_FORMAT",
                                                                                                                                    exception.getMessage(), i18nErrorMessages);
 
-        } else if (exception instanceof DFSPPortalException) {
+        } else if (exception instanceof OperationPortalException) {
 
-            DFSPPortalException DFSPPortalException = (DFSPPortalException) exception;
+            OperationPortalException OperationPortalException = (OperationPortalException) exception;
 
-            i18nErrorMessages.put("en", DFSPPortalException.getMessage());
+            i18nErrorMessages.put("en", OperationPortalException.getMessage());
 
-            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse(DFSPPortalException.errorCode(),
-                                                                                                                                   DFSPPortalException.defaultErrorMessage(), i18nErrorMessages);
+            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse(
+                    OperationPortalException.errorCode(),
+                    OperationPortalException.defaultErrorMessage(), i18nErrorMessages);
         } else {
 
             i18nErrorMessages.put("en", exception.getCause().getMessage());

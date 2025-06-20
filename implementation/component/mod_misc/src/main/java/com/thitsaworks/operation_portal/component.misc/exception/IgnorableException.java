@@ -1,8 +1,6 @@
 package com.thitsaworks.operation_portal.component.misc.exception;
 
-import lombok.NoArgsConstructor;
-
-public abstract class IgnorableException extends DFSPPortalException {
+public abstract class IgnorableException extends OperationPortalException {
 
     public IgnorableException() {
 

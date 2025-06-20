@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.iam.exception;
 
-import com.thitsaworks.operation_portal.component.misc.exception.DFSPPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
-public class PrincipalNotFoundException extends DFSPPortalException {
+public class PrincipalNotFoundException extends OperationPortalException {
 
     public PrincipalNotFoundException() {
 
