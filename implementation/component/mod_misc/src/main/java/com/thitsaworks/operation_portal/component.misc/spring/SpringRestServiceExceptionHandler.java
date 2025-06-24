@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.spring;
+package com.thitsaworks.operation_portal.component.misc.spring;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

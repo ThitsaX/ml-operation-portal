@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.participant.controller.reporting;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetParticipantCurrencies;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -25,27 +25,35 @@ public class GetParticipantCurrenciesController {
 
     private final GetParticipantCurrencies getParticipantCurrencies;
 
-    @GetMapping(value = "/secured/get_participant_currency")
-    public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId) throws OperationPortalException {
+    private final ObjectMapper objectMapper;
 
-        GetParticipantCurrencies.Output output =
-                this.getParticipantCurrencies.execute(new GetParticipantCurrencies.Input(dfspId));
+    @GetMapping("/secured/get_participant_currency")
+    public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId)
+            throws OperationPortalException, JsonProcessingException {
 
-        List<Response.CurrencyInfo> currencyInfoList = new ArrayList<>();
+        LOG.info("Get participant currency request : dfspId = {}", dfspId);
 
-        for (var idType : output.currencyDataList()) {
-            currencyInfoList.add(new Response.CurrencyInfo(idType.getCurrency()));
-        }
+        var output = this.getParticipantCurrencies.execute(new GetParticipantCurrencies.Input(dfspId));
 
-        return new ResponseEntity<>(new Response(currencyInfoList), HttpStatus.OK);
+        List<CurrencyInfo> currencyInfoList = output.currencyDataList().stream()
+                                                    .map(idType -> new CurrencyInfo(idType.getCurrency()))
+                                                    .toList();
+
+        var response = new Response(currencyInfoList);
+
+        LOG.info("Get participant currency response : {}", this.objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("hub_currency_list") List<CurrencyInfo> currencyInfoList)
-            implements Serializable {
+    public record Response(
+            @JsonProperty("hub_currency_list") List<CurrencyInfo> currencyInfoList
+    ) {}
 
-        record CurrencyInfo(@JsonProperty("currency") String currency) implements Serializable {}
-
-    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record CurrencyInfo(
+            @JsonProperty("currency") String currency
+    ) {}
 
 }

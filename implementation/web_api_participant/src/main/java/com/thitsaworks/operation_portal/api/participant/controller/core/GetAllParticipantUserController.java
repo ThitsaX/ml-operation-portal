@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.participant.controller.core;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.usecase.participant.GetAllParticipantUser;
@@ -26,9 +28,13 @@ public class GetAllParticipantUserController {
 
     private final GetAllParticipantUser getAllParticipantUser;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/get_all_participant_users")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
-            throws OperationPortalException {
+            throws OperationPortalException, JsonProcessingException {
+
+        LOG.info("Get all participant user request : participantId = {}", participantId);
 
         GetAllParticipantUser.Output output = this.getAllParticipantUser.execute(
                 new GetAllParticipantUser.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -42,7 +48,11 @@ public class GetAllParticipantUserController {
                     participantUser.createdDate().getEpochSecond()));
         }
 
-        return new ResponseEntity<>(new Response(userInfoList), HttpStatus.OK);
+        var response = new GetAllParticipantUserController.Response(userInfoList);
+
+        LOG.info("Get all participant user response : {}", this.objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

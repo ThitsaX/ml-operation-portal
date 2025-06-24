@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.thitsaworks.re21</groupId>
+    <groupId>com.thitsaworks.operation_portal</groupId>
     <artifactId>app_scheduler</artifactId>
     <version>1.0.0</version>
 
@@ -16,12 +16,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.thitsaworks.operation_portal</groupId>
-            <artifactId>mod_datasource</artifactId>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_infra</artifactId>
             <version>1.0.0</version>
         </dependency>
         <dependency>
-            <groupId>com.thitsaworks.operation_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_hubuser</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>

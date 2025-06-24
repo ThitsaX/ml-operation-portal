@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.component.misc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.thitsaworks.operation_portal.component.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.WebDataBinder;

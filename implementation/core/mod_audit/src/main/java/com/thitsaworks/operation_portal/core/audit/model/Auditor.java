@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAudit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

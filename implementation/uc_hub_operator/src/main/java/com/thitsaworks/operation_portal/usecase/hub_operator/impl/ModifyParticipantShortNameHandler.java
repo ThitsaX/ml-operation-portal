@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ModifyParticipantShortNameBean extends ModifyParticipantShortName {
+public class ModifyParticipantShortNameHandler extends ModifyParticipantShortName {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantShortNameBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantShortNameHandler.class);
 
     private final ModifyParticipantCompanyShortName modifyParticipant;
 

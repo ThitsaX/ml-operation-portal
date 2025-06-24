@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.cache;
 
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.operation_portal.component.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;

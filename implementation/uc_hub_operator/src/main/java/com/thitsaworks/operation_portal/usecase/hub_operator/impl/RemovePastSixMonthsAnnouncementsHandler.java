@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class RemovePastSixMonthsAnnouncementsBean extends RemovePastSixMonthsAnnouncements {
+public class RemovePastSixMonthsAnnouncementsHandler extends RemovePastSixMonthsAnnouncements {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsHandler.class);
 
     private final RemoveAnnouncements removeAnnouncements;
 

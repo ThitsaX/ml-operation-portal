@@ -19,9 +19,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateNewHubUserBean extends CreateNewHubUser {
+public class CreateNewHubUserHandler extends CreateNewHubUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewHubUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateNewHubUserHandler.class);
 
     private final CreateHubUser createHubUser;
 

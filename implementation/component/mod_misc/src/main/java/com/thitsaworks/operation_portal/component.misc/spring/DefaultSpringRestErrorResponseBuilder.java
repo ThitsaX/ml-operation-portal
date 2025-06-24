@@ -17,12 +17,12 @@ import java.util.StringJoiner;
 
 @Component
 public class DefaultSpringRestErrorResponseBuilder
-        implements com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder {
+        implements SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultSpringRestErrorResponseBuilder.class);
 
     @Override
-    public com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse build(Exception exception) {
+    public SpringRestServiceExceptionHandler.SpringRestErrorResponse build(Exception exception) {
 
         LOG.error("Error : ", exception);
 
@@ -46,7 +46,7 @@ public class DefaultSpringRestErrorResponseBuilder
 
             i18nErrorMessages.put("en", errorMessage);
 
-            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse("INPUT_EXCEPTION", errorMessage,
+            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INPUT_EXCEPTION", errorMessage,
                                                                                                                                    i18nErrorMessages);
 
         } else if (exception instanceof HttpMessageNotReadableException) {
@@ -55,7 +55,7 @@ public class DefaultSpringRestErrorResponseBuilder
 
             i18nErrorMessages.put("en", invalidFormatException.getMessage());
 
-            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse("INVALID_FORMAT",
+            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INVALID_FORMAT",
                                                                                                                                    exception.getMessage(), i18nErrorMessages);
 
         } else if (exception instanceof OperationPortalException) {
@@ -64,14 +64,14 @@ public class DefaultSpringRestErrorResponseBuilder
 
             i18nErrorMessages.put("en", OperationPortalException.getMessage());
 
-            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse(
+            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse(
                     OperationPortalException.errorCode(),
                     OperationPortalException.defaultErrorMessage(), i18nErrorMessages);
         } else {
 
             i18nErrorMessages.put("en", exception.getCause().getMessage());
 
-            return new com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler.SpringRestErrorResponse("INTERNAL_SERVER_ERROR",
+            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INTERNAL_SERVER_ERROR",
                                                                                                                                    exception.getCause().getMessage(), i18nErrorMessages);
         }
     }

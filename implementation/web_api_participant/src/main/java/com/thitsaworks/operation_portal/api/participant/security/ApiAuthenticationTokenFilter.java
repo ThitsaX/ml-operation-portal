@@ -79,8 +79,11 @@ public class ApiAuthenticationTokenFilter extends OncePerRequestFilter {
                                                                     "N.A",
                                                                     authorities);
 
-                    authenticationToken.setDetails(new UserContext(new ParticipantUserId(securityContext.userId()),
-                                                                   new AccessKey(securityContext.accessKey())));
+                    UserContext userContext = new UserContext(new ParticipantUserId(securityContext.userId()), new AccessKey(securityContext.accessKey()));
+
+                    authenticationToken.setDetails(userContext);
+
+                    UseCaseContext.set(userContext);
 
                     UseCaseContext.set(securityContext);
 

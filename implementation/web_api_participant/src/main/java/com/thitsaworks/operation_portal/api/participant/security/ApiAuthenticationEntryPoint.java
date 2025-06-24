@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.api.participant.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.participant.security.exception.AuthenticationFailureException;
-import com.thitsaworks.operation_portal.component.spring.SpringContext;
-import com.thitsaworks.operation_portal.component.spring.SpringRestServiceExceptionHandler;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringRestServiceExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;

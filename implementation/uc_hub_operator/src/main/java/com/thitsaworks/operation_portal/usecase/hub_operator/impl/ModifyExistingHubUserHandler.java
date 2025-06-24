@@ -7,9 +7,8 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
-import com.thitsaworks.operation_portal.usecase.hub_operator.GetExistingAnnouncement;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
+import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingHubUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,32 +16,30 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class GetExistingAnnouncementBean extends GetExistingAnnouncement {
+public class ModifyExistingHubUserHandler extends ModifyExistingHubUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetExistingAnnouncementBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingHubUserHandler.class);
 
-    private final AnnouncementQuery announcementQuery;
+    private final ModifyHubUser modifyHubUser;
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public GetExistingAnnouncement.Output onExecute(GetExistingAnnouncement.Input input) throws Exception {
+    public ModifyExistingHubUser.Output onExecute(ModifyExistingHubUser.Input input) throws Exception {
 
-        AnnouncementData announcementData = this.announcementQuery.get(input.announcementId());
+        ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
+                                                                                         input.name(),
+                                                                                         input.firstName(),
+                                                                                         input.lastName(),
+                                                                                         input.jobTitle()));
 
-        return new GetExistingAnnouncement.Output(announcementData.announcementId(),
-                                                  announcementData.announcementTitle(),
-                                                  announcementData.announcementDetail(),
-                                                  announcementData.announcementDate(),
-                                                  announcementData.isDeleted(),
-                                                  announcementData.createdDate());
-
+        return new Output(output.modified(), output.hubUserId());
     }
 
     @Override
     protected String getName() {
 
-        return GetExistingAnnouncement.class.getCanonicalName();
+        return ModifyExistingHubUser.class.getCanonicalName();
     }
 
     @Override
@@ -60,7 +57,7 @@ public class GetExistingAnnouncementBean extends GetExistingAnnouncement {
     @Override
     protected String getId() {
 
-        return GetExistingAnnouncement.class.getName();
+        return ModifyExistingHubUser.class.getName();
     }
 
     @Override
@@ -76,12 +73,12 @@ public class GetExistingAnnouncementBean extends GetExistingAnnouncement {
     }
 
     @Override
-    public void onAudit(GetExistingAnnouncement.Input input, GetExistingAnnouncement.Output output)
+    public void onAudit(ModifyExistingHubUser.Input input, ModifyExistingHubUser.Output output)
             throws UserNotFoundException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        Auditor.audit(this.objectMapper, GetExistingAnnouncement.class, input, output,
+        Auditor.audit(this.objectMapper, ModifyExistingHubUser.class, input, output,
                       new UserId(securityContext.userId()),
                       securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }

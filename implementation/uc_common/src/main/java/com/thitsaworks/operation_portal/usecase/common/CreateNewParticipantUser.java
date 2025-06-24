@@ -11,7 +11,6 @@ public abstract class CreateNewParticipantUser extends
                                                AbstractAuditableUseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output> {
 
     public record Input(
-            String username,
             String name,
             Email email,
             String password,

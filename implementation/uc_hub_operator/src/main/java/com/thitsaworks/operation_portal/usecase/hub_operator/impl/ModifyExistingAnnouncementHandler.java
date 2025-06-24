@@ -7,39 +7,38 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
-import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingHubUser;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncement;
+import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingAnnouncement;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
-public class ModifyExistingHubUserBean extends ModifyExistingHubUser {
+public class ModifyExistingAnnouncementHandler extends ModifyExistingAnnouncement {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingHubUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingAnnouncementHandler.class);
 
-    private final ModifyHubUser modifyHubUser;
+    private final ModifyAnnouncement modifyAnnouncement;
 
     private final ObjectMapper objectMapper;
 
     @Override
-    public ModifyExistingHubUser.Output onExecute(ModifyExistingHubUser.Input input) throws Exception {
+    public ModifyExistingAnnouncement.Output onExecute(ModifyExistingAnnouncement.Input input) throws Exception {
 
-        ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
-                                                                                         input.name(),
-                                                                                         input.firstName(),
-                                                                                         input.lastName(),
-                                                                                         input.jobTitle()));
+        ModifyAnnouncement.Output output = this.modifyAnnouncement.execute(
+                new ModifyAnnouncement.Input(input.announcementId(), input.announcementTitle(),
+                                             input.announcementDetail(), input.announcementDate(), input.isDeleted()));
 
-        return new Output(output.modified(), output.hubUserId());
+        return new ModifyExistingAnnouncement.Output(output.announcementId(), output.modified());
     }
 
     @Override
     protected String getName() {
 
-        return ModifyExistingHubUser.class.getCanonicalName();
+        return ModifyExistingAnnouncement.class.getCanonicalName();
     }
 
     @Override
@@ -57,7 +56,7 @@ public class ModifyExistingHubUserBean extends ModifyExistingHubUser {
     @Override
     protected String getId() {
 
-        return ModifyExistingHubUser.class.getName();
+        return ModifyExistingAnnouncement.class.getName();
     }
 
     @Override
@@ -73,12 +72,12 @@ public class ModifyExistingHubUserBean extends ModifyExistingHubUser {
     }
 
     @Override
-    public void onAudit(ModifyExistingHubUser.Input input, ModifyExistingHubUser.Output output)
+    public void onAudit(ModifyExistingAnnouncement.Input input, ModifyExistingAnnouncement.Output output)
             throws UserNotFoundException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        Auditor.audit(this.objectMapper, ModifyExistingHubUser.class, input, output,
+        Auditor.audit(this.objectMapper, ModifyExistingAnnouncement.class, input, output,
                       new UserId(securityContext.userId()),
                       securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }

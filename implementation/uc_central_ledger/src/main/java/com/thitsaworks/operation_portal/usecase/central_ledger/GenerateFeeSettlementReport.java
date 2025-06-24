@@ -18,7 +18,7 @@ public abstract class GenerateFeeSettlementReport extends
     ) {}
 
     public record Output(
-            byte[] RptData
+            byte[] rptData
     ) {}
 
 }

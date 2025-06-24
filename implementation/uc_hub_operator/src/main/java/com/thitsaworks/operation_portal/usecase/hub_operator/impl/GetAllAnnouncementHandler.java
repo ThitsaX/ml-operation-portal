@@ -15,9 +15,9 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GetAllAnnouncementBean extends GetAllAnnouncement {
+public class GetAllAnnouncementHandler extends GetAllAnnouncement {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllAnnouncementBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllAnnouncementHandler.class);
 
     private final AnnouncementQuery announcementQuery;
 

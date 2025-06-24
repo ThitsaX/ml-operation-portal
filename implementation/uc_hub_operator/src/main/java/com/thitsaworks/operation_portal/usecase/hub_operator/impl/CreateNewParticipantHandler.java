@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateNewParticipantBean extends CreateNewParticipant {
+public class CreateNewParticipantHandler extends CreateNewParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantHandler.class);
 
     private final CreateParticipant createParticipant;
 

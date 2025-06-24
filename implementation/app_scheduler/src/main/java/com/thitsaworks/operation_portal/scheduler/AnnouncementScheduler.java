@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.scheduler;
 
-import com.thitsaworks.operation_portal.hubuser.domain.command.RemoveAnnouncements;
+import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

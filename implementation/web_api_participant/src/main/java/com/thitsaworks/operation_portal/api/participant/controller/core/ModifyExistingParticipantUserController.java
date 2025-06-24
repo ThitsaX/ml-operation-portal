@@ -1,0 +1,78 @@
+package com.thitsaworks.operation_portal.api.participant.controller.core;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.usecase.participant.ModifyExistingParticipantUser;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+@RestController
+@RequiredArgsConstructor
+public class ModifyExistingParticipantUserController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantUserController.class);
+
+    private final ModifyExistingParticipantUser modifyExistingParticipantUser;
+
+    private final ObjectMapper objectMapper;
+
+    @PostMapping("/secured/modify_participant_user")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+            throws OperationPortalException, JsonProcessingException {
+
+        LOG.info("Modify participant user request : {}", this.objectMapper.writeValueAsString(request));
+
+        ModifyExistingParticipantUser.Output output = this.modifyExistingParticipantUser.execute(
+                new ModifyExistingParticipantUser.Input(
+                        new ParticipantUserId(Long.parseLong(request.participantUserId())), request.name(),
+                        new Email(request.email()), request.firstName(), request.lastName(), request.jobTitle(),
+                        request.userRoleType(),
+                        request.isActive().equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
+                                PrincipalStatus.INACTIVE));
+
+        var response = new Response(output.participantUserId().getId().toString(), output.modified());
+
+        LOG.info("Modify existing participant user response : {}", this.objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Request(
+            @NotNull @JsonProperty("participant_user_id") String participantUserId,
+            @NotNull @JsonProperty("name") String name,
+            @NotNull @JsonProperty("email") String email,
+            @NotNull @JsonProperty("first_name") String firstName,
+            @NotNull @JsonProperty("last_name") String lastName,
+            @NotNull @JsonProperty("job_title") String jobTitle,
+            @NotNull @JsonProperty("user_role_type") UserRoleType userRoleType,
+            @NotNull @JsonProperty("status") String isActive
+    ) {
+
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Response(
+            @JsonProperty("participant_user_id") String participantUserId,
+            @JsonProperty("modified") boolean modified
+    ) {
+
+    }
+
+}
