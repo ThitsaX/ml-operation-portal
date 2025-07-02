@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.thitsaworks.operation_portal.component</groupId>
-        <artifactId>operation_portal_component</artifactId>
+        <artifactId>component</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>

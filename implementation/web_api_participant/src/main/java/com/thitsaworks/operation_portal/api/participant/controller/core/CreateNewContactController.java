@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -20,7 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +44,9 @@ public class CreateNewContactController {
         List<CreateNewContact.Input.ContactInfo> contactInfoList = new ArrayList<>();
 
         for (Request.ContactInfo contactInfo : request.contactInfoList) {
-            contactInfoList.add(new CreateNewContact.Input.ContactInfo(contactInfo.name(),
-                                                                       contactInfo.title(),
-                                                                       new Email(contactInfo.email()),
-                                                                       new Mobile(contactInfo.mobile()),
-                                                                       contactInfo.contactType()));
-
+            contactInfoList.add(new CreateNewContact.Input.ContactInfo(contactInfo.name(), contactInfo.title(),
+                    new Email(contactInfo.email()), new Mobile(contactInfo.mobile()),
+                    ContactType.valueOf(contactInfo.contactType())));
         }
 
         CreateNewContact.Output output = this.createNewContact.execute(

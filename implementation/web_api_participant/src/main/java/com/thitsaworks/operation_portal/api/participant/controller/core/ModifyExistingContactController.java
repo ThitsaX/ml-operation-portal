@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -47,7 +48,8 @@ public class ModifyExistingContactController {
             contactInfoList.add(
                     new ModifyExistingContact.Input.ContactInfo(new ContactId(Long.parseLong(contactInfo.contactId)),
                             contactInfo.name(), contactInfo.title(), new Email(contactInfo.email()),
-                            new Mobile(contactInfo.mobile())));
+                                                                new Mobile(contactInfo.mobile()),
+                                                                ContactType.valueOf(contactInfo.contactType)));
 
         }
 

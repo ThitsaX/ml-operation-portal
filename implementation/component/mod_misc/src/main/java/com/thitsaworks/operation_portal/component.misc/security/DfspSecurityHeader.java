@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.security;
+package com.thitsaworks.operation_portal.component.misc.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

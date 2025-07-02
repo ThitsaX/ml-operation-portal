@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettlementReportCommand;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -10,6 +11,7 @@ import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,24 +24,29 @@ import java.util.Map;
 @Service
 public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSettlementReportCommand {
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate centralLedgerJdbcTemplate;
+    public GenerateFeeSettlementReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Output execute(Input input) throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("startdate", input.getStartDate());
-        params.put("enddate", input.getEndDate());
-        params.put("fromfspid", input.getFromFsp());
-        params.put("tofspid", input.getToFsp());
-        params.put("currency", input.getCurrency());
-        params.put("timezoneoffset", input.getTimezone());
+        params.put("startdate", input.startDate());
+        params.put("enddate", input.endDate());
+        params.put("fromfspid", input.fromFsp());
+        params.put("tofspid", input.toFsp());
+        params.put("currency", input.currency());
+        params.put("timezoneoffset", input.timezone());
 
         InputStream settlementReport = this.getClass().getResourceAsStream(
-                "/com/thitsa/dfsp_portal/report/report/feeSettlementReport.jasper");
-        Connection conn = this.centralLedgerJdbcTemplate.getDataSource().getConnection();
+                "/com/thitsaworks/operation_portal/reporting/report/report/feeSettlementReport.jasper");
+        Connection conn = this.jdbcTemplate.getDataSource().getConnection();
 
         try {
             byte[] rptBytes = new byte[0];
@@ -53,7 +60,7 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
             csvExporter.exportReport();
             rptBytes = csvReport.toByteArray();
 
-            if (input.getFileType().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+            if (input.fileType().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jp));

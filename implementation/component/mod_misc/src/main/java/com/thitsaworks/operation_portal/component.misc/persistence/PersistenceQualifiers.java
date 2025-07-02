@@ -67,7 +67,9 @@ public class PersistenceQualifiers {
 
         public static final String READ_DATA_SOURCE = "reportingReadDataSource";
 
-        public static final String Read_JDBC_TEMPLATE = "reportingReadJdbcTemplate";
+        public static final String READ_JDBC_TEMPLATE = "reportingReadJdbcTemplate";
+
+        public static final String WRITE_JDBC_TEMPLATE = "reportingWriteJdbcTemplate";
 
         public static final String ENTITY_MANAGER_FACTORY = "reportingEntityManagerFactory";
 

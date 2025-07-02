@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -18,7 +19,7 @@ public abstract class CreateNewContact extends
                                   String title,
                                   Email email,
                                   Mobile mobile,
-                                  String contactType) implements Serializable {
+                                  ContactType contactType) implements Serializable {
 
         }
 

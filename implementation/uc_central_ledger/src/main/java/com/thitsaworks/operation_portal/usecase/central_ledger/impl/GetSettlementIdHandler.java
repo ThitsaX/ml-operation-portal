@@ -28,7 +28,7 @@ public class GetSettlementIdHandler extends GetSettlementId {
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
 
-        for (SettlementIdData data : output.getSettlementId()) {
+        for (SettlementIdData data : output.settlementId()) {
 
             settlementIdData.add(new SettlementIdData(data.getSettlementId()));
         }

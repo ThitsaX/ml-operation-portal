@@ -1,28 +1,17 @@
 package com.thitsaworks.operation_portal.reporting.report.domain;
 
-import lombok.Value;
-
 public interface GenerateSettlementDetailReportCommand {
 
-    @Value
-    class Input {
+    record Input(
+            String settlementId,
+            String fspId,
+            String fileType,
+            String timezoneOffset
+    ) {}
 
-        private String settlementId;
-
-        private String fspId;
-
-        private String fileType;
-
-        private String timezoneOffset;
-
-    }
-
-    @Value
-    class Output {
-
-    private byte[] detailReportByte;
-
-    }
+    record Output(
+            byte[] detailReportByte
+    ) {}
 
     Output execute(Input input) throws Exception;
 

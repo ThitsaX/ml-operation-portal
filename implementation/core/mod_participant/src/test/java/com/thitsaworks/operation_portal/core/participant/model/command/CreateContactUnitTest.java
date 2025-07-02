@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -22,11 +23,10 @@ public class CreateContactUnitTest extends EnvAwareUnitTest {
 
         this.createContact.execute(
                 new CreateContact.Input("Sandi",
-                        "Manager",
-                        new Email("info@thitsaworks.com"),
-                        new Mobile("+959400547258"),
-                        new ParticipantId(390906682871414784L),
-                        "Business"));
+                                        "Manager",
+                                        new Email("info@thitsaworks.com"),
+                                        new Mobile("+959400547258"),
+                                        new ParticipantId(390906682871414784L), ContactType.BUSINESS));
     }
 
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn">
     <Properties>
-        <Property name="basePath">${sys:user.home}/log/dfsp_portal/operator_api</Property>
+        <Property name="basePath">${sys:user.home}/log/operation_portal/operator_api</Property>
         <Property name="fileName">operator_api</Property>
     </Properties>
     <Appenders>

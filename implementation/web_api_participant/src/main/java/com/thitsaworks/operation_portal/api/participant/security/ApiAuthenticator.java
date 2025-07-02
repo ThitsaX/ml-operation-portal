@@ -9,8 +9,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.security.DfspCrypto;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import lombok.RequiredArgsConstructor;
@@ -88,8 +88,8 @@ public class ApiAuthenticator implements Authenticator {
         LOG.info("secret : [{}]", secret);
 
         String calculatedAuthHeader = BaseEncoding.base16()
-                                                  .encode(DfspCrypto.hmacSha256(secret.getBytes(Charsets.UTF_8),
-                                                          checking.getBytes(Charsets.UTF_8)));
+                                                  .encode(OperationPortalCrypto.hmacSha256(secret.getBytes(Charsets.UTF_8),
+                                                                                           checking.getBytes(Charsets.UTF_8)));
 
         if (calculatedAuthHeader.isBlank()) {
 

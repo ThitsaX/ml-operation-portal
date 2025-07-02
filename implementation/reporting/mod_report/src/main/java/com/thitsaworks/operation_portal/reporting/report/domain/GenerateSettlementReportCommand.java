@@ -4,25 +4,16 @@ import lombok.Value;
 
 public interface GenerateSettlementReportCommand {
 
-    @Value
-    class Input {
+    record Input(
+            String fspId,
+            String settlementId,
+            String filetype,
+            String timezoneOffset
+    ) {}
 
-        private String fspId;
-
-        private String settlementId;
-
-        private String filetype;
-
-        private String timezoneOffset;
-
-    }
-
-    @Value
-    class Output {
-
-        private byte[] settlementByte;
-
-    }
+    record Output(
+            byte[] settlementByte
+    ) {}
 
     GenerateSettlementReportCommand.Output execute(GenerateSettlementReportCommand.Input input) throws Exception;
 

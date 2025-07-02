@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @Import(value = {ReportingJdbcPersistenceConfiguration.class})
-@ComponentScan("com.thitsaworks.operation_portal.Reporting.central_ledger")
+@ComponentScan("com.thitsaworks.operation_portal.reporting.central_ledger")
 public class CentralLedgerConfiguration {
 
 }

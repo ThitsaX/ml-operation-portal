@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -41,7 +41,7 @@ public class GenerateFeeStatementHandler extends GenerateFeeSettlementReport {
                                                                                                              input.timezone(),
                                                                                                              input.fileType()));
 
-        return new Output(output.getRptData());
+        return new Output(output.rptData());
     }
 
     @Override

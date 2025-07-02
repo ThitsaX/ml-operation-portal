@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.core.participant.data;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
@@ -18,8 +17,6 @@ public record ParticipantData(ParticipantId participantId,
                               String dfspName,
                               String address,
                               Mobile mobile,
-                              ContactId businessContactId,
-                              ContactId technicalContactId,
                               Long createdDate,
                               Set<ParticipantUserId> participantUserIds) implements Serializable {
 
@@ -36,10 +33,6 @@ public record ParticipantData(ParticipantId participantId,
              participant.getAddress(),
 
              participant.getMobile(),
-
-             participant.getBusinessContact() != null ? participant.getBusinessContact().getContactId() : null,
-
-             participant.getTechnicalContact() != null ? participant.getTechnicalContact().getContactId() : null,
 
              participant.getCreatedAt().getEpochSecond(),
 

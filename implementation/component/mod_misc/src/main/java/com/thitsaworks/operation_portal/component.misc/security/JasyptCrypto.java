@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.security;
+package com.thitsaworks.operation_portal.component.misc.security;
 
 import lombok.Getter;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;

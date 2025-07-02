@@ -6,31 +6,19 @@ import java.time.Instant;
 
 public interface GenerateStatementReportCommand {
 
-    @Value
-    class Input {
+    record Input(
+            Instant startDate,
+            Instant endDate,
+            String fspId,
+            String accountNumber,
+            String filetype,
+            String timeZoneOffset,
+            String currencyId
+    ) {}
 
-        private Instant startDate;
-
-        private Instant endDate;
-
-        private String fspId;
-
-        private String accountNumber;
-
-        private String filetype;
-
-        private String timeZoneOffset;
-
-        private String currencyId;
-
-    }
-
-    @Value
-    class Output {
-
-      private   byte[] statementRptData;
-
-    }
+    record Output(
+            byte[] statementRptData
+    ) {}
 
     Output execute(Input input) throws Exception;
 

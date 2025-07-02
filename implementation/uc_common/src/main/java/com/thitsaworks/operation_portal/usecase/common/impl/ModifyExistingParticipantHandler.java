@@ -17,6 +17,7 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidity
 import com.thitsaworks.operation_portal.core.participant.command.ModifyContact;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyLiquidityProfile;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipant;
+import com.thitsaworks.operation_portal.core.participant.model.Contact;
 import com.thitsaworks.operation_portal.usecase.common.ModifyExistingParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -80,7 +81,8 @@ public class ModifyExistingParticipantHandler extends ModifyExistingParticipant 
                                                     contact.name(),
                                                     contact.title(),
                                                     contact.email(),
-                                                    contact.mobile()));
+                                                    contact.mobile(),
+                                                    contact.contactType()));
                 } else {
 
                     this.createContact.execute(

@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Arrays;
+
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {ReportConfiguration.class, TestSettings.class})
 public class DFSPGenerateSettlementDetailReportCommandHandlerUnitTest {
@@ -22,10 +24,12 @@ public class DFSPGenerateSettlementDetailReportCommandHandlerUnitTest {
 //        FileOutputStream fout = new FileOutputStream(new File(
 //                "C:\\Workspace\\Development\\settlement_detail_report.xlsx"));
 
-        this.generateSettlementDetailReportCommand.execute(new GenerateSettlementDetailReportCommand.Input("1",
-                                                                                                           "mmdokdollar",
+        GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(new GenerateSettlementDetailReportCommand.Input("1",
+                                                                                                           "all",
                                                                                                            ".xlsx",
                                                                                                            "0630"));
+
+        System.out.println(Arrays.toString(output.detailReportByte()));
     }
 
 }

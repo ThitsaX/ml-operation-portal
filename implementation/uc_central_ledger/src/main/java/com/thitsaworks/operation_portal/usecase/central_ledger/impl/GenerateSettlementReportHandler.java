@@ -38,7 +38,7 @@ public class GenerateSettlementReportHandler extends GenerateSettlementReport {
                                                           input.fileType(),
                                                           input.timezoneOffset()));
 
-        return new Output(output.getSettlementByte());
+        return new Output(output.settlementByte());
     }
 
     @Override

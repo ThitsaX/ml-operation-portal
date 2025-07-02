@@ -21,8 +21,6 @@ public abstract class GetAllParticipant
                 String dfsp_name,
                 String address,
                 Mobile mobile,
-                String businessContact,
-                String technicalContact,
                 Instant createdDate
         ) implements Serializable {}
     }

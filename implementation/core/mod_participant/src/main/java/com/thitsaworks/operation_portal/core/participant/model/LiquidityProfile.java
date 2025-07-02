@@ -1,31 +1,34 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
-import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.commons.lang3.Validate;
-
+import com.thitsaworks.operation_portal.core.participant.cache.LiquidityProfileCache;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.Validate;
 
 @Entity
+@EntityListeners(value = {LiquidityProfileCache.Updater.class})
 @Table(name = "tbl_liquidity_profile")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class LiquidityProfile extends JpaEntity<LiquidityProfileId> {
 
     @EmbeddedId
     protected LiquidityProfileId liquidityProfileId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne()
     @JoinColumn(name = "participant_id")
     protected Participant participant;
 

@@ -12,5 +12,7 @@ public interface ParticipantQuery {
 
     ParticipantData get(ParticipantId participantId) throws ParticipantNotFoundException;
 
+    List<ParticipantData> getOtherParticipants(ParticipantId participantId) throws ParticipantNotFoundException;
+
 }
 

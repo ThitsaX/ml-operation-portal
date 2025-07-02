@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 public class VaultBasedApplicationSettings {
 
@@ -15,6 +16,7 @@ public class VaultBasedApplicationSettings {
 
         return vault.get(HazelcastConfiguration.HAZELCAST_SETTINGS_PATH, HazelcastConfiguration.Settings.class);
     }
+
 
     @Bean
     @Qualifier(PersistenceQualifiers.Core.READ_SETTINGS)

@@ -7,10 +7,10 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.security.DfspCrypto;
+import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
-import com.thitsaworks.operation_portal.core.iam.exception.PasswordAuthenticationFailureException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.exception.PasswordAuthenticationFailureException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -74,7 +74,7 @@ public class Principal extends JpaEntity<AccessKey> {
         this.secretKey = UUID.randomUUID().toString();
         this.realmType = realmType;
         this.realmId = realmId;
-        this.sha256PasswordHex = DfspCrypto.sha256Hex(sha256PasswordHex);
+        this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(sha256PasswordHex);
         this.userRoleType = userRoleType;
         this.principalStatus = principalStatus;
 
@@ -84,7 +84,7 @@ public class Principal extends JpaEntity<AccessKey> {
 
         try {
 
-            if (!DfspCrypto.sha256Hex(sha256PasswordHex).equals(this.sha256PasswordHex)) {
+            if (!OperationPortalCrypto.sha256Hex(sha256PasswordHex).equals(this.sha256PasswordHex)) {
 
                 throw new PasswordAuthenticationFailureException();
             }
@@ -100,19 +100,19 @@ public class Principal extends JpaEntity<AccessKey> {
     public SecurityToken change(String newPasswordSha256Hex, String oldPasswordSha256Hex)
             throws PasswordAuthenticationFailureException {
 
-        if (!DfspCrypto.sha256Hex(oldPasswordSha256Hex).equals(this.sha256PasswordHex)) {
+        if (!OperationPortalCrypto.sha256Hex(oldPasswordSha256Hex).equals(this.sha256PasswordHex)) {
 
             throw new PasswordAuthenticationFailureException();
         }
 
-        this.sha256PasswordHex = DfspCrypto.sha256Hex(newPasswordSha256Hex);
+        this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(newPasswordSha256Hex);
 
         return this.generate();
     }
 
     public SecurityToken reset(String passwordSha256Hex) {
 
-        this.sha256PasswordHex = DfspCrypto.sha256Hex(passwordSha256Hex);
+        this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(passwordSha256Hex);
         return this.generate();
     }
 

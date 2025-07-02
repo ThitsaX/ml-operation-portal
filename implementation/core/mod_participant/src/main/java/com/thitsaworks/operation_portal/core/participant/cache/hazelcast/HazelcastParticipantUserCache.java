@@ -38,8 +38,8 @@ public class HazelcastParticipantUserCache implements ParticipantUserCache {
     @Override
     public void delete(ParticipantUserId participantUserId) {
 
-        IMap<Long, ParticipantUserData> principalUserDataIMap = this.hazelcastInstance.getMap(HZ_PARTICIPANT_USER);
-        principalUserDataIMap.delete(participantUserId.getId());
+        IMap<Long, ParticipantUserData> participantUserDataIMap = this.hazelcastInstance.getMap(HZ_PARTICIPANT_USER);
+        participantUserDataIMap.delete(participantUserId.getId());
 
     }
 

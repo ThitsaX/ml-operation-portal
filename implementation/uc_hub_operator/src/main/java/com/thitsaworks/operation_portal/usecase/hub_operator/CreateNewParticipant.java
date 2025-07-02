@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
@@ -27,7 +28,7 @@ public abstract class CreateNewParticipant
             String title,
             Email email,
             Mobile mobile,
-            String contactType
+            ContactType contactType
         ) implements Serializable {}
 
         public record LiquidityProfileInfo(

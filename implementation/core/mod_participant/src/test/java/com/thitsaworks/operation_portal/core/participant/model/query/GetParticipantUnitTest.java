@@ -36,8 +36,6 @@ public class GetParticipantUnitTest extends EnvAwareUnitTest {
                              participantData.name() + " , " +
                              participantData.address() + " , " +
                              participantData.mobile().getValue()
-                             + " , " + participantData.businessContactId().getId().toString()
-                             + " , " + participantData.technicalContactId().getId().toString()
             );
 
         } else {

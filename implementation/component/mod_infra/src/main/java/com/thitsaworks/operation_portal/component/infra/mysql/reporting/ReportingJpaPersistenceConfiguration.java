@@ -41,7 +41,7 @@ public class ReportingJpaPersistenceConfiguration {
         entityManagerFactoryBean.setDataSource(dataSource);
         entityManagerFactoryBean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
-        entityManagerFactoryBean.setPackagesToScan("com.thitsaworks.operation_portal.Reporting.report.**");
+        entityManagerFactoryBean.setPackagesToScan("com.thitsaworks.operation_portal.reporting.**");
 
         Properties jpaProperties = new Properties();
 

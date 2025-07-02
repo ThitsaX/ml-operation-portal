@@ -39,6 +39,7 @@ public class ModifyContactHandler implements ModifyContact {
                        .title(input.title())
                        .email(input.email())
                        .mobile(input.mobile())
+                        .contactType(input.contactType())
         );
 
         return new ModifyContact.Output(true, contact.getContactId());

@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @Import(value = {ReportingJdbcPersistenceConfiguration.class, ReportingJpaPersistenceConfiguration.class})
-@ComponentScan("com.thitsaworks.operation_portal.Reporting.report")
+@ComponentScan("com.thitsaworks.operation_portal.reporting.report")
 public class ReportConfiguration {
 
 }

@@ -2,7 +2,7 @@
 <Configuration status="warn">
     <Properties>
         <Property name="basePath">${sys:user.home}/log/re21/user_api</Property>
-        <Property name="fileName">dfsp_portal_scheduler</Property>
+        <Property name="fileName">operation_portal_scheduler</Property>
     </Properties>
     <Appenders>
         <Console name="CONSOLE" target="SYSTEM_OUT">

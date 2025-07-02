@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.type.Email;
@@ -14,9 +15,7 @@ import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -53,13 +52,8 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Convert(converter = Mobile.JpaConverter.class)
     protected Mobile mobile;
 
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "business_contact_id")
-    protected Contact businessContact;
-
-    @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "technical_contact_id")
-    protected Contact technicalContact;
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participant", orphanRemoval = true, fetch = FetchType.LAZY)
+    protected Set<Contact> contacts = new HashSet<>();
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participant", orphanRemoval = true, fetch = FetchType.LAZY)
     protected Set<ParticipantUser> participantUsers = new HashSet<>();
@@ -84,14 +78,12 @@ public class Participant extends JpaEntity<ParticipantId> {
         this.mobile = mobile;
     }
 
-    public void businessContact(String name, String title, Email email, Mobile mobile) {
+    public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType) {
 
-        this.businessContact = new Contact(name, title, email, mobile, this);
-    }
+        Contact contact = new Contact(name, title, email, mobile, contactType, this);
+        this.contacts.add(contact);
 
-    public void technicalContact(String name, String title, Email email, Mobile mobile) {
-
-        this.technicalContact = new Contact(name, title, email, mobile, this);
+        return contact;
     }
 
     @Override

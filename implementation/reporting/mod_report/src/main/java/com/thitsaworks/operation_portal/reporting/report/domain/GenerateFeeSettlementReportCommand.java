@@ -6,29 +6,17 @@ import java.time.Instant;
 
 public interface GenerateFeeSettlementReportCommand {
 
-    @Value
-    class Input {
-
-        private Instant startDate;
-
-        private Instant endDate;
-
-        private String fromFsp;
-
-        private String toFsp;
-
-        private String currency;
-
-        private String timezone;
-
-        private String fileType;
+    record Input(
+            Instant startDate,
+            Instant endDate,
+            String fromFsp,
+            String toFsp,
+            String currency,
+            String timezone,
+            String fileType) {
     }
 
-    @Value
-    class Output {
-
-    private byte[] rptData;
-
+    record Output(byte[] rptData) {
     }
 
     Output execute(Input input) throws Exception;

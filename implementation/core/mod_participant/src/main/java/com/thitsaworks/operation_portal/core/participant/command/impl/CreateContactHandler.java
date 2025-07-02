@@ -34,11 +34,7 @@ public class CreateContactHandler implements CreateContact {
 
         Participant participant = optionalParticipant.get();
 
-        if (input.contactType().equals("Business")) {
-            participant.businessContact(input.name(), input.title(), input.email(), input.mobile());
-        } else {
-            participant.technicalContact(input.name(), input.title(), input.email(), input.mobile());
-        }
+        participant.addContact(input.name(), input.title(), input.email(), input.mobile(), input.contactType());
 
         this.participantRepository.save(participant);
 

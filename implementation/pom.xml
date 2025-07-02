@@ -14,7 +14,7 @@
     <artifactId>mojaloop-operation-portal</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>Mojaloop-Operation - Parent</name>
+    <name>Mojaloop-Operation-Portal - Parent</name>
     <modules>
         <module>component</module>
         <module>reporting</module>

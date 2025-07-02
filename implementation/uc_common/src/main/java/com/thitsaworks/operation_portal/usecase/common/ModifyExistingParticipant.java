@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -28,7 +29,7 @@ public abstract class ModifyExistingParticipant extends
                                   String title,
                                   Email email,
                                   Mobile mobile,
-                                  String contactType) implements Serializable {
+                                  ContactType contactType) implements Serializable {
 
 
         }

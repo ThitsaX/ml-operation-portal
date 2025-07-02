@@ -9,6 +9,7 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,11 @@ import java.util.Map;
 @Service
 public class GenerateSettlementDetailReportCommandHandler implements GenerateSettlementDetailReportCommand {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    public GenerateSettlementDetailReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.Read_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    @Autowired
+    public GenerateSettlementDetailReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
-        assert jdbcTemplate != null;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -35,9 +36,9 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("settlementId", input.getSettlementId());
-        params.put("fspId", input.getFspId());
-        params.put("timezoneoffset", input.getTimezoneOffset());
+        params.put("settlementId", input.settlementId());
+        params.put("fspId", input.fspId());
+        params.put("timezoneoffset", input.timezoneOffset());
 
         InputStream detailReport = this.getClass().getResourceAsStream(
                 "/com/thitsaworks/operation_portal/reporting/report/report/dfspSettlementDetailReport.jasper");
@@ -58,7 +59,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
             csvExporter.exportReport();
             rptBytes = csvReport.toByteArray();
 
-            if (input.getFileType().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+            if (input.fileType().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();

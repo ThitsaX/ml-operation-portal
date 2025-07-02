@@ -25,10 +25,10 @@ import java.util.Map;
 @Service
 public class DfspDailyTransactionTrendSummary {
 
-    private JdbcTemplate centralLedgerJdbcTemplate;
+    private final JdbcTemplate centralLedgerJdbcTemplate;
 
     public DfspDailyTransactionTrendSummary(
-            @Qualifier(PersistenceQualifiers.Reporting.Read_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+            @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         assert jdbcTemplate != null;
 
@@ -47,7 +47,7 @@ public class DfspDailyTransactionTrendSummary {
         params.put("endDate", enddate);
 
         InputStream settlementReport = this.getClass().getResourceAsStream(
-                "/com/thitsa/dfsp_portal/report/report/settlementStatement.jasper");
+                "/com/thitsaworks/operation_portal/reporting/report/report/settlementStatement.jasper");
 
         Connection conn = this.centralLedgerJdbcTemplate.getDataSource().getConnection();
 

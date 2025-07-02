@@ -1,10 +1,12 @@
 package com.thitsaworks.operation_portal.reporting.report.query.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.mapper.SettlementIdDataMapper;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,15 +17,21 @@ public class GetSettlementIdsBean implements GetSettlementIds {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementIdsBean.class);
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate centralLedgerJdbcTemplate;
+    public GetSettlementIdsBean(
+            @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Output execute(Input input) {
 
-        String timezone=input.getTimezoneOffset();
+        String timezone = input.timezoneOffset();
 
-        var results = centralLedgerJdbcTemplate.query(
+        var results = jdbcTemplate.query(
                 "SELECT settlementId FROM settlement WHERE createdDate BETWEEN \n" +
                         " (CASE WHEN SUBSTRING(?,1,1) = '-' THEN \n" +
                         " CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE \n" +
@@ -34,11 +42,11 @@ public class GetSettlementIdsBean implements GetSettlementIds {
                         " CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END) ;",
                 new SettlementIdDataMapper(),
                 timezone,
-                input.getStartDate(),timezone,timezone,
-                input.getStartDate(),timezone,timezone,
+                input.startDate(), timezone, timezone,
+                input.startDate(), timezone, timezone,
                 timezone,
-                input.getEndDate(),timezone,timezone,
-                input.getEndDate(),timezone,timezone);
+                input.endDate(), timezone, timezone,
+                input.endDate(), timezone, timezone);
 
         if (results == null || results.isEmpty()) {
 

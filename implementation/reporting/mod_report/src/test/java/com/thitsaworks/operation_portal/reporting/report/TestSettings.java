@@ -13,7 +13,7 @@ public class TestSettings {
     @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
     public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting",
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
                                                              "root",
                                                              "password",
                                                              1,
@@ -24,7 +24,7 @@ public class TestSettings {
     @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
     public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/Reporting",
+        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
                                                              "root",
                                                              "password",
                                                              10,

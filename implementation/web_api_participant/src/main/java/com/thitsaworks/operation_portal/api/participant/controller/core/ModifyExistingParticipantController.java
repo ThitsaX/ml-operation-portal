@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.api.participant.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -55,7 +56,7 @@ public class ModifyExistingParticipantController {
                         contactInfo.contactId() == null || contactInfo.contactId().isEmpty() ? null :
                                 new ContactId(Long.parseLong(contactInfo.contactId())), contactInfo.name(),
                         contactInfo.title(), new Email(contactInfo.email()), new Mobile(contactInfo.mobile()),
-                        contactInfo.contactType()));
+                        ContactType.valueOf(contactInfo.contactType())));
             }
         }
 

@@ -49,7 +49,7 @@ public class GenerateStatementReportHandler extends GenerateStatementReport {
                                                                                                      input.timezoneOffSet(),
                                                                                                      input.currencyId()));
 
-        return new Output(output.getStatementRptData());
+        return new Output(output.statementRptData());
     }
 
     @Override

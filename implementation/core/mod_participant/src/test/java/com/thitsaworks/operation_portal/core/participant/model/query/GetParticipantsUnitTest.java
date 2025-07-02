@@ -37,10 +37,7 @@ public class GetParticipantsUnitTest {
             System.out.println(participant.dfspCode() + " , " +
                                        participant.name() + " , " +
                                        participant.address() + " , " +
-                                       participant.mobile().getValue()
-                                       + " , " + participant.businessContactId()
-                                       + " , " + participant.technicalContactId()
-                              );
+                                       participant.mobile().getValue());
         }
 
     }

@@ -5,9 +5,10 @@ import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
-import com.thitsaworks.operation_portal.core.participant.query.GetOtherParticipantsQuery;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -25,13 +26,13 @@ public class GetOtherParticipantsUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetOtherParticipantsUnitTest.class);
 
     @Autowired
-    private GetOtherParticipantsQuery getOtherParticipantsQuery;
+    private ParticipantQuery participantQuery;
 
     @Test
     public void test_getParticipantSuccessfully() throws ParticipantNotFoundException {
 
-        List<ParticipantInfo> participantData =
-                this.getOtherParticipantsQuery.getOtherParticipants(new ParticipantId(486547382195986432L));
+        List<ParticipantData> participantData =
+                this.participantQuery.getOtherParticipants(new ParticipantId(486547382195986432L));
 
         if (participantData != null) {LOG.info("Participant Users  : [{}]", participantData);
 

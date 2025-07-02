@@ -45,10 +45,6 @@ public class GetAllParticipantHandler extends GetAllParticipant {
                             participantData.dfspName(),
                             participantData.address(),
                             participantData.mobile(),
-                            participantData.businessContactId() == null ? null :
-                                    participantData.businessContactId().toString(),
-                            participantData.technicalContactId() == null ? null :
-                                    participantData.technicalContactId().toString(),
                             Instant.ofEpochSecond(participantData.createdDate())));
         }
 

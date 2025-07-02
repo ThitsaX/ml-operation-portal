@@ -37,16 +37,14 @@ public class ProxyParticipantCache implements ParticipantCache {
 
         if (participantData == null) {
 
-            Optional<Participant> optionalPrincipal = this.participantRepository.findById(participantId);
+            Optional<Participant> optionalParticipant = this.participantRepository.findById(participantId);
 
-            if (optionalPrincipal.isEmpty()) {
+            if (optionalParticipant.isEmpty()) {
 
                 return null;
             }
 
-            Participant participant = optionalPrincipal.get();
-
-            participantData = new ParticipantData(participant);
+            participantData = new ParticipantData(optionalParticipant.get());
 
             this.participantCache.save(participantData);
         }

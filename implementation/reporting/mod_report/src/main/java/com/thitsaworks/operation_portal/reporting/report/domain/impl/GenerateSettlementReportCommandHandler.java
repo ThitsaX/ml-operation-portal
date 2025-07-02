@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -9,6 +10,7 @@ import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -21,22 +23,27 @@ import java.util.Map;
 @Service
 public class GenerateSettlementReportCommandHandler implements GenerateSettlementReportCommand {
 
+    private final JdbcTemplate jdbcTemplate;
+
     @Autowired
-    private JdbcTemplate centralLedgerJdbcTemplate;
+    public GenerateSettlementReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public Output execute(Input input) throws Exception {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("dfspId", input.getFspId());
-        params.put("settlementId", input.getSettlementId());
-        params.put("timezoneoffset", input.getTimezoneOffset());
+        params.put("dfspId", input.fspId());
+        params.put("settlementId", input.settlementId());
+        params.put("timezoneoffset", input.timezoneOffset());
 
         InputStream settlementReport =
-                this.getClass().getResourceAsStream("/com/thitsa/dfsp_portal/report/report/settlementReport.jasper");
+                this.getClass().getResourceAsStream("/com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jasper");
 
-        Connection conn = this.centralLedgerJdbcTemplate.getDataSource().getConnection();
+        Connection conn = this.jdbcTemplate.getDataSource().getConnection();
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
                                                                conn);
@@ -52,7 +59,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
             csvExporter.exportReport();
             rptBytes = csvReport.toByteArray();
 
-            if (input.getFiletype().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+            if (input.filetype().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();

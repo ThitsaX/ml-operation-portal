@@ -125,7 +125,7 @@
     </profiles>
 
     <build>
-        <finalName>dfsp_scheduler</finalName>
+        <finalName>operation_portal_scheduler</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

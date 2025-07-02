@@ -38,7 +38,7 @@ public class GenerateDetailReportHandler extends GenerateDetailReport {
                                                                 input.fileType(),
                                                                 input.timezoneOffset()));
 
-        return new Output(output.getDetailReportByte());
+        return new Output(output.detailReportByte());
 
     }
 

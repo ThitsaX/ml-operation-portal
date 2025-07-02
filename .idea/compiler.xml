@@ -32,6 +32,7 @@
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop_operation_portal" target="11" />
+      <module name="operation_portal_component" target="21" />
       <module name="Report" target="21" />
       <module name="reporting-pom" target="21" />
     </bytecodeTargetLevel>

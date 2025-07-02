@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.cache.proxy;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantUserRepository;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -38,14 +38,14 @@ public class ProxyParticipantUserCache implements ParticipantUserCache {
 
         if (participantUserData == null) {
 
-            Optional<ParticipantUser> optionalPrincipal = this.participantUserRepository.findById(participantUserId);
+            Optional<ParticipantUser> optionalParticipantUser = this.participantUserRepository.findById(participantUserId);
 
-            if (optionalPrincipal.isEmpty()) {
+            if (optionalParticipantUser.isEmpty()) {
 
                 return null;
             }
 
-            participantUserData = new ParticipantUserData(optionalPrincipal.get());
+            participantUserData = new ParticipantUserData(optionalParticipantUser.get());
 
             this.participantUserCache.save(participantUserData);
         }

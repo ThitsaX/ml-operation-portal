@@ -8,23 +8,15 @@ import java.util.List;
 
 public interface GetSettlementIds {
 
-    @Value
-    class Input {
+    record Input(
+            Timestamp startDate,
+            Timestamp endDate,
+            String timezoneOffset
+    ) {}
 
-        private Timestamp startDate;
-
-        private Timestamp endDate;
-
-        private String timezoneOffset ;
-
-    }
-
-    @Value
-    class Output {
-
-        private List<SettlementIdData> settlementId;
-
-    }
+    record Output(
+            List<SettlementIdData> settlementId
+    ) {}
 
     Output execute(Input input) throws Exception;
 

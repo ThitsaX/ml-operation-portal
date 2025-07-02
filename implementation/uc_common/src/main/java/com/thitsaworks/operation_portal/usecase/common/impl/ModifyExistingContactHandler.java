@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -43,12 +43,10 @@ public class ModifyExistingContactHandler extends ModifyExistingContact {
 
         for (Input.ContactInfo contactInfo : input.contactInfoList()) {
 
-            this.modifyContact.execute(new ModifyContact.Input(input.participantId(),
-                                                               contactInfo.contactId(),
-                                                               contactInfo.name(),
-                                                               contactInfo.title(),
-                                                               contactInfo.email(),
-                                                               contactInfo.mobile()));
+            this.modifyContact.execute(
+                    new ModifyContact.Input(input.participantId(), contactInfo.contactId(), contactInfo.name(),
+                            contactInfo.title(), contactInfo.email(),
+                            contactInfo.mobile(), contactInfo.contactType()));
         }
 
         return new ModifyExistingContact.Output(true);

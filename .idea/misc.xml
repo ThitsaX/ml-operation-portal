@@ -16,6 +16,7 @@
         <option value="$PROJECT_DIR$/implementation/reporting/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_common/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_hub_operator/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/component/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
