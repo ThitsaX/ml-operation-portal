@@ -1,19 +1,23 @@
 package com.thitsaworks.operation_portal.api.hub_operator;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 public class VaultBasedApplicationSettings {
 
-    @Bean
-    public HazelcastConfiguration.Settings hazelcastConfigurationSettings(Vault vault) {
+    private static final Logger LOGGER = LoggerFactory.getLogger(VaultBasedApplicationSettings.class);
 
-        return vault.get(HazelcastConfiguration.HAZELCAST_SETTINGS_PATH, HazelcastConfiguration.Settings.class);
+    @Bean
+    public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {
+
+        return vault.get(RedisConfiguration.REDIS_SETTINGS_PATH, RedisConfiguration.Settings.class);
     }
 
     @Bean
@@ -47,6 +51,5 @@ public class VaultBasedApplicationSettings {
         return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
                          ReportingDataSourceConfiguration.Settings.class);
     }
-
 
 }

@@ -25,7 +25,7 @@ public class ProxyLiquidityProfileCache implements LiquidityProfileCache {
     private LiquidityProfileRepository liquidityProfileRepository;
 
     @Autowired
-    @Qualifier(CacheQualifiers.HAZELCAST)
+    @Qualifier(CacheQualifiers.REDIS)
     private LiquidityProfileCache liquidityProfileCache;
 
     @Override

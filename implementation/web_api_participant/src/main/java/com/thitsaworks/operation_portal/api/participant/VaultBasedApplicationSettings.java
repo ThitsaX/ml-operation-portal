@@ -1,22 +1,20 @@
 package com.thitsaworks.operation_portal.api.participant;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 
 public class VaultBasedApplicationSettings {
 
     @Bean
-    public HazelcastConfiguration.Settings hazelcastConfigurationSettings(Vault vault) {
+    public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {
 
-        return vault.get(HazelcastConfiguration.HAZELCAST_SETTINGS_PATH, HazelcastConfiguration.Settings.class);
+        return vault.get(RedisConfiguration.REDIS_SETTINGS_PATH, RedisConfiguration.Settings.class);
     }
-
 
     @Bean
     @Qualifier(PersistenceQualifiers.Core.READ_SETTINGS)
@@ -49,6 +47,5 @@ public class VaultBasedApplicationSettings {
         return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
                          ReportingDataSourceConfiguration.Settings.class);
     }
-
 
 }

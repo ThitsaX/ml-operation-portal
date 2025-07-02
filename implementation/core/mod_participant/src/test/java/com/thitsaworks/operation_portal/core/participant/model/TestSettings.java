@@ -1,8 +1,10 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CorePersistenceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,9 @@ public class TestSettings {
     }
 
     @Bean
-    public HazelcastConfiguration.Settings hazelcastConfigurationSettings(){
-        return new HazelcastConfiguration.Settings("Re21", "localhost");
+    public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {
+
+        return new RedisConfiguration.Settings("redis://localhost:6379");
     }
 
 }

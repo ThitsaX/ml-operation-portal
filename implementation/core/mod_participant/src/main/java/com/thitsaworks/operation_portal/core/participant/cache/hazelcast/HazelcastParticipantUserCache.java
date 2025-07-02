@@ -2,16 +2,13 @@ package com.thitsaworks.operation_portal.core.participant.cache.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
-import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
+import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-
-@Component
 @Qualifier(CacheQualifiers.HAZELCAST)
 public class HazelcastParticipantUserCache implements ParticipantUserCache {
 
@@ -24,7 +21,8 @@ public class HazelcastParticipantUserCache implements ParticipantUserCache {
     public void save(ParticipantUserData participantUserData) {
 
         IMap<Long, ParticipantUserData> participantUserDataIMap = this.hazelcastInstance.getMap(HZ_PARTICIPANT_USER);
-        participantUserDataIMap.put(participantUserData.participantUserId().getId(), participantUserData);
+        participantUserDataIMap.put(participantUserData.participantUserId()
+                                                       .getId(), participantUserData);
     }
 
     @Override
@@ -33,7 +31,6 @@ public class HazelcastParticipantUserCache implements ParticipantUserCache {
         IMap<Long, ParticipantUserData> participantUserDataIMap = this.hazelcastInstance.getMap(HZ_PARTICIPANT_USER);
         return participantUserDataIMap.get(participantUserId.getId());
     }
-
 
     @Override
     public void delete(ParticipantUserId participantUserId) {

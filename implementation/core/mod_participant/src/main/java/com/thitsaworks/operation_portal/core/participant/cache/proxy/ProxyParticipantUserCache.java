@@ -22,7 +22,7 @@ public class ProxyParticipantUserCache implements ParticipantUserCache {
     private ParticipantUserRepository participantUserRepository;
 
     @Autowired
-    @Qualifier(CacheQualifiers.HAZELCAST)
+    @Qualifier(CacheQualifiers.REDIS)
     private ParticipantUserCache participantUserCache;
 
     @Override
@@ -38,7 +38,8 @@ public class ProxyParticipantUserCache implements ParticipantUserCache {
 
         if (participantUserData == null) {
 
-            Optional<ParticipantUser> optionalParticipantUser = this.participantUserRepository.findById(participantUserId);
+            Optional<ParticipantUser> optionalParticipantUser = this.participantUserRepository.findById(
+                participantUserId);
 
             if (optionalParticipantUser.isEmpty()) {
 

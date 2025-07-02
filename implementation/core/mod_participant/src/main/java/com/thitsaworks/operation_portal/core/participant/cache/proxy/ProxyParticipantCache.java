@@ -21,7 +21,7 @@ public class ProxyParticipantCache implements ParticipantCache {
     private ParticipantRepository participantRepository;
 
     @Autowired
-    @Qualifier(CacheQualifiers.HAZELCAST)
+    @Qualifier(CacheQualifiers.REDIS)
     private ParticipantCache participantCache;
 
     @Override

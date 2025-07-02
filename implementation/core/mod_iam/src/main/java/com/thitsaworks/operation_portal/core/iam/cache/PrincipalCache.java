@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;

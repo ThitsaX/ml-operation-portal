@@ -4,10 +4,10 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.operation_portal.core.iam.model.Principal;
-import com.thitsaworks.operation_portal.core.iam.model.repository.PrincipalRepository;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.model.Principal;
+import com.thitsaworks.operation_portal.core.iam.model.repository.PrincipalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
@@ -24,7 +24,7 @@ public class ProxyPrincipalCache implements PrincipalCache {
     private PrincipalRepository principalRepository;
 
     @Autowired
-    @Qualifier(CacheQualifiers.HAZELCAST)
+    @Qualifier(CacheQualifiers.REDIS)
     private PrincipalCache principalCache;
 
     @Override
@@ -41,10 +41,9 @@ public class ProxyPrincipalCache implements PrincipalCache {
         if (principalData == null) {
 
             Optional<Principal> optionalPrincipal =
-                    this.principalRepository.findOne(PrincipalRepository.Filters.withAccessKey(accessKey));
+                this.principalRepository.findOne(PrincipalRepository.Filters.withAccessKey(accessKey));
 
             if (optionalPrincipal.isEmpty()) {
-
                 return null;
             }
 
@@ -64,7 +63,7 @@ public class ProxyPrincipalCache implements PrincipalCache {
         if (principalData == null) {
 
             Optional<Principal> optionalPrincipal =
-                    this.principalRepository.findOne(PrincipalRepository.Filters.withPrincipalId(principalId));
+                this.principalRepository.findOne(PrincipalRepository.Filters.withPrincipalId(principalId));
 
             if (optionalPrincipal.isEmpty()) {
 
@@ -87,8 +86,8 @@ public class ProxyPrincipalCache implements PrincipalCache {
         if (principalData == null) {
 
             Optional<Principal> optionalPrincipal = this.principalRepository.findOne(
-                    PrincipalRepository.Filters.withAccessKey(accessKey)
-                                               .and(PrincipalRepository.Filters.withRealm(realmType)));
+                PrincipalRepository.Filters.withAccessKey(accessKey)
+                                           .and(PrincipalRepository.Filters.withRealm(realmType)));
 
             if (optionalPrincipal.isEmpty()) {
 
@@ -106,6 +105,7 @@ public class ProxyPrincipalCache implements PrincipalCache {
     @Override
     public void delete(AccessKey accessKey) {
 
+        this.principalCache.delete(accessKey);
     }
 
 }
