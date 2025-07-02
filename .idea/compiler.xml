@@ -31,7 +31,6 @@
       <module name="mod_querydsl" target="21" />
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
-      <module name="mojaloop-dfsp-portal" target="11" />
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />
       <module name="reporting-pom" target="21" />
@@ -57,7 +56,7 @@
       <module name="mod_report" options="-parameters" />
       <module name="mod_report_querydsl" options="-parameters" />
       <module name="mod_vault" options="-parameters" />
-      <module name="mojaloop-dfsp-portal" options="-parameters -proc:only -processor com.querydsl.apt.jpa.JPAAnnotationProcessor" />
+      <module name="mojaloop-dfsp-portal" options="-parameters" />
       <module name="mojaloop-operation-portal" options="-parameters" />
       <module name="operation_portal_component" options="-parameters" />
       <module name="reporting" options="-parameters" />

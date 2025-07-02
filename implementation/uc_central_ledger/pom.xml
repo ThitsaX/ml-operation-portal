@@ -34,12 +34,6 @@
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_audit</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.dfsp_portal</groupId>
-            <artifactId>mod_iam</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
 </project>

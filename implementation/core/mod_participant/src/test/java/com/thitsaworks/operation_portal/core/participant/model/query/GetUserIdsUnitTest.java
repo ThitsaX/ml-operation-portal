@@ -1,21 +1,25 @@
-//package com.thitsaworks.operation_portal.dfsp_portal.participant.domain.query;
-//
-//import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-//import com.thitsaworks.component.common.identifier.ParticipantId;
-//import com.thitsaworks.component.common.identifier.ParticipantUserId;
-//import com.thitsaworks.operation_portal.dfsp_portal.participant.query.GetUserIds;
-//import org.junit.jupiter.api.Test;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.test.context.ContextConfiguration;
-//
-//public class GetUserIdsUnitTest extends EnvAwareUnitTest {
-//
-//    private static final Logger LOG = LoggerFactory.getLogger(GetUserIdsUnitTest.class);
-//
+package com.thitsaworks.operation_portal.core.participant.model.query;
+
+import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+public class GetUserIdsUnitTest extends EnvAwareUnitTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserIdsUnitTest.class);
+
 //    @Autowired
-//    private GetUserIds getUserIds;
+//    private GetUser getUserIds;
 //
 //    @Test
 //    public void test_getUserIdsSuccessfully() {
@@ -30,5 +34,5 @@
 //        }
 //
 //    }
-//
-//}
+
+}
