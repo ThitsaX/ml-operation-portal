@@ -3,12 +3,9 @@ package com.thitsaworks.operation_portal.core.participant.cache.hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.map.IMap;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.LiquidityProfileCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -26,7 +23,7 @@ public class HazelcastLiquidityProfileCache implements LiquidityProfileCache{
     public void save(LiquidityProfileData liquidityProfileData) {
 
         IMap<Long, LiquidityProfileData> liquidityProfileDataIMap = this.hazelcastInstance.getMap(HZ_LIQUIDITY_PROFILE);
-        liquidityProfileDataIMap.put(liquidityProfileData.participantId().getId(), liquidityProfileData);
+        liquidityProfileDataIMap.put(liquidityProfileData.liquidityProfileId().getId(), liquidityProfileData);
 
     }
 

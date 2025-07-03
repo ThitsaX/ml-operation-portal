@@ -1,10 +1,10 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
+import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +30,7 @@ public class CreateParticipantUnitTest {
                 new CreateParticipant.Input("Vision Fund",
                                             new DfspCode("abcdefg"), "abc",
                                             "Yankin Township, Yangon.",
-                                            new Mobile("+959250661838")));
+                                            new Mobile("+959250661838"), null, null));
     }
 
 }

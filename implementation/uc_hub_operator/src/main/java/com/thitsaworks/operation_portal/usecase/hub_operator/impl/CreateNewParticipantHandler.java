@@ -7,14 +7,14 @@ import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
-import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
-import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,10 +24,6 @@ public class CreateNewParticipantHandler extends CreateNewParticipant {
 
     private final CreateParticipant createParticipant;
 
-    private final CreateContact createContact;
-
-    private final CreateLiquidityProfile createLiquidityProfile;
-
     private final ObjectMapper objectMapper;
 
     @Override
@@ -35,32 +31,23 @@ public class CreateNewParticipantHandler extends CreateNewParticipant {
 
         CreateParticipant.Output output = this.createParticipant.execute(
                 new CreateParticipant.Input(input.name(), input.dfspCode(), input.dfspName(),
-                                            input.address(), input.mobile()));
-
-        if (output != null && (input.contactInfoList() != null || !input.contactInfoList().isEmpty()) &&
-                input.contactInfoList().size() > 0) {
-
-            for (var contact : input.contactInfoList()) {
-                this.createContact.execute(
-                        new CreateContact.Input(contact.name(), contact.title(), contact.email(),
-                                                contact.mobile(), output.participantId(), contact.contactType()));
-            }
-        }
-
-        //For Liquidity Profile
-        if (output != null &&
-                (input.liquidityProfileInfoList() != null || !input.liquidityProfileInfoList().isEmpty()) &&
-                input.liquidityProfileInfoList().size() > 0) {
-
-            for (var liquidityProfile : input.liquidityProfileInfoList()) {
-
-                this.createLiquidityProfile.execute(new CreateLiquidityProfile.Input(output.participantId(),
-                                                                                     liquidityProfile.accountName(),
-                                                                                     liquidityProfile.accountNumber(),
-                                                                                     liquidityProfile.currency(),
-                                                                                     liquidityProfile.isActive()));
-            }
-        }
+                                            input.address(),
+                                            input.mobile(),
+                                            input.contactInfoList()
+                                                 .stream()
+                                                 .map(info -> new CreateParticipant.Input.ContactInfo(info.name(),
+                                                                                                      info.title(),
+                                                                                                      info.email(),
+                                                                                                      info.mobile(),
+                                                                                                      info.contactType()))
+                                                 .collect(Collectors.toList()),
+                                            input.liquidityProfileInfoList()
+                                                 .stream()
+                                                 .map(info -> new CreateParticipant.Input.LiquidityProfileInfo(info.accountName(),
+                                                                                                               info.accountNumber(),
+                                                                                                               info.currency(),
+                                                                                                               info.isActive()))
+                                                 .collect(Collectors.toList())));
 
         return new CreateNewParticipant.Output(output.created(), output.participantId());
     }

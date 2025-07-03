@@ -19,7 +19,7 @@ public class Main {
         String fileName = new SimpleDateFormat("yyyyMMddHHmm").format(new Date());
 
         // Generate SettlementReport
-        GenerateSettlementReportCommandHandler settlementReport = new GenerateSettlementReportCommandHandler();
+        GenerateSettlementReportCommandHandler settlementReport = new GenerateSettlementReportCommandHandler(null);
         FileOutputStream fout = new FileOutputStream(new File("D:\\Project\\Report download\\Detail" + fileName + fileType));
         settlementReport.execute(new GenerateSettlementReportCommand.Input("okdollar", "1", null, null));
 
