@@ -23,11 +23,12 @@ public interface LiquidityProfileCache {
         @PostUpdate
         public void persistOrUpdate(LiquidityProfile liquidityProfile) {
 
-            LiquidityProfileCache participantCache = SpringContext.getBean(LiquidityProfileCache.class, CacheQualifiers.DEFAULT);
+            LiquidityProfileCache liquidityProfileCache = SpringContext.getBean(LiquidityProfileCache.class,
+                                                                                CacheQualifiers.DEFAULT);
 
             LiquidityProfileData liquidityProfileData = new LiquidityProfileData(liquidityProfile);
 
-            participantCache.save(liquidityProfileData);
+            liquidityProfileCache.save(liquidityProfileData);
         }
 
         @PostRemove

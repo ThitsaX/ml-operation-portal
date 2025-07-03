@@ -26,11 +26,11 @@ public class CreateParticipantUnitTest {
     @Test
     public void test_createParticipantSuccessfully() throws Exception {
 
-        this.createParticipant.execute(
-            new CreateParticipant.Input("Vision Fund",
-                                        new DfspCode("abcdefg"), "abc",
-                                        "Yankin Township, Yangon.",
-                                        new Mobile("+959250661838")));
+        this.createParticipant.execute(new CreateParticipant.Input("Vision Fund",
+                                                                   new DfspCode("abcdefg"), "abc",
+                                                                   "Yankin Township, Yangon.",
+                                                                   new Mobile("+959250661838"), null, null));
+
     }
 
 }

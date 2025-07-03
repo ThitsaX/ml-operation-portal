@@ -4,6 +4,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.LiquidityPro
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.model.LiquidityProfile;
 
+import java.io.Serializable;
+
 public record LiquidityProfileData(
         LiquidityProfileId liquidityProfileId,
 
@@ -15,7 +17,7 @@ public record LiquidityProfileData(
 
         String currency,
 
-        Boolean isActive) {
+        Boolean isActive) implements Serializable {
 
     public LiquidityProfileData(LiquidityProfile liquidityProfile) {
 

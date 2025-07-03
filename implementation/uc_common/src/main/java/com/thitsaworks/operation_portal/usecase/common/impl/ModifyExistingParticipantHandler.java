@@ -4,25 +4,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.core.iam.exception.UnauthorizedCreationException;
-import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
-import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyContact;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyLiquidityProfile;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipant;
-import com.thitsaworks.operation_portal.core.participant.model.Contact;
 import com.thitsaworks.operation_portal.usecase.common.ModifyExistingParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +28,6 @@ public class ModifyExistingParticipantHandler extends ModifyExistingParticipant 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantHandler.class);
 
     private final ModifyParticipant modifyParticipant;
-
-    private final ModifyContact modifyContact;
-
-    private final CreateContact createContact;
-
-    private final CreateLiquidityProfile createLiquidityProfile;
-
-    private final ModifyLiquidityProfile modifyLiquidityProfile;
 
     private final ObjectMapper objectMapper;
 
@@ -66,60 +55,24 @@ public class ModifyExistingParticipantHandler extends ModifyExistingParticipant 
                 new ModifyParticipant.Input(input.participantId(),
                                             input.companyName(),
                                             input.address(),
-                                            input.mobile()));
-
-        //For Contact Info
-        if (output != null && input.contactInfoList() != null && !input.contactInfoList().isEmpty()) {
-
-            for (var contact : input.contactInfoList()) {
-
-                if (contact.contactId() != null) {
-
-                    this.modifyContact.execute(
-                            new ModifyContact.Input(output.participantId(),
-                                                    contact.contactId(),
-                                                    contact.name(),
-                                                    contact.title(),
-                                                    contact.email(),
-                                                    contact.mobile(),
-                                                    contact.contactType()));
-                } else {
-
-                    this.createContact.execute(
-                            new CreateContact.Input(contact.name(),
-                                                    contact.title(),
-                                                    contact.email(),
-                                                    contact.mobile(),
-                                                    output.participantId(),
-                                                    contact.contactType()));
-                }
-            }
-        }
-
-        //For Liquidity Profile
-        if (output != null && !input.liquidityProfileInfoList().isEmpty()) {
-
-            for (var liquidityProfile : input.liquidityProfileInfoList()) {
-
-                if (liquidityProfile.liquidityProfileId() != null) {
-
-                    this.modifyLiquidityProfile.execute(new ModifyLiquidityProfile.Input(output.participantId(),
-                                                                                         liquidityProfile.liquidityProfileId(),
-                                                                                         liquidityProfile.accountName(),
-                                                                                         liquidityProfile.accountNumber(),
-                                                                                         liquidityProfile.currency(),
-                                                                                         liquidityProfile.isActive()));
-                } else {
-
-                    this.createLiquidityProfile.execute(new CreateLiquidityProfile.Input(output.participantId(),
-                                                                                         liquidityProfile.accountName(),
-                                                                                         liquidityProfile.accountNumber(),
-                                                                                         liquidityProfile.currency(),
-                                                                                         liquidityProfile.isActive()));
-
-                }
-            }
-        }
+                                            input.mobile(),
+                                            input.contactInfoList()
+                                                 .stream()
+                                                 .map(info -> new ModifyParticipant.Input.ContactInfo(info.contactId(),
+                                                                                                      info.name(),
+                                                                                                      info.title(),
+                                                                                                      info.email(),
+                                                                                                      info.mobile(),
+                                                                                                      info.contactType()))
+                                                 .collect(Collectors.toList()),
+                                            input.liquidityProfileInfoList()
+                                                 .stream()
+                                                 .map(info -> new ModifyParticipant.Input.LiquidityProfileInfo(info.liquidityProfileId(),
+                                                                                                               info.accountName(),
+                                                                                                               info.accountNumber(),
+                                                                                                               info.currency(),
+                                                                                                               info.isActive()))
+                                                 .collect(Collectors.toList())));
 
         return new ModifyExistingParticipant.Output(output.modified(), output.participantId());
     }
