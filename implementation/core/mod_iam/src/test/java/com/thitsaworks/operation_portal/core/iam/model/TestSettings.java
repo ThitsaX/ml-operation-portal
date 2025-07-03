@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.iam.model;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;

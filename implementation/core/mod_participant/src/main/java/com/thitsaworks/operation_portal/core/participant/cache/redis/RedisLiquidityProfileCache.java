@@ -4,9 +4,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.LiquidityPro
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.LiquidityProfileCache;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
-import com.thitsaworks.operation_portal.core.participant.model.LiquidityProfile;
-import com.thitsaworks.operation_portal.core.participant.model.repository.LiquidityProfileRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
@@ -23,8 +20,6 @@ public class RedisLiquidityProfileCache implements LiquidityProfileCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisLiquidityProfileCache.class);
 
     private static final String WITH_ID = "rd_liquidity_profile_with_id";
-
-    private final LiquidityProfileRepository liquidityProfileRepository;
 
     private final RedissonClient redissonClient;
 

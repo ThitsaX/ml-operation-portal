@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.command;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.command.CreateAction;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AuditConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {AuditConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class CreateActionUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateActionUnitTest.class);
@@ -24,7 +24,8 @@ public class CreateActionUnitTest {
     @Test
     public void test_createActionSuccessfully() {
 
-        CreateAction.Output output = this.createAction.execute(new CreateAction.Input(this.getClass().getSimpleName()));
+        CreateAction.Output output = this.createAction.execute(new CreateAction.Input(this.getClass()
+                                                                                          .getSimpleName()));
 
         LOG.info("Action Id : " + output.getActionId() + " , Created : " + output.isCreated());
     }

@@ -1,8 +1,6 @@
 package com.thitsaworks.operation_portal.scheduler;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +23,5 @@ public class VaultBasedApplicationSettings {
         return vault.get(CoreDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
                          CoreDataSourceConfiguration.Settings.class);
     }
-
 
 }

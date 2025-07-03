@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.infra.hazelcast;
+package com.thitsaworks.operation_portal.component.infra.redis;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

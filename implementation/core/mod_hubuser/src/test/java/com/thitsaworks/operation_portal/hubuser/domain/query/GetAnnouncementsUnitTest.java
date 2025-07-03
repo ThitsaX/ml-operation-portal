@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.hubuser.domain.query;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
 import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
 import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HubUserConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {HubUserConfiguration.class, TestSettings.class, RedisConfiguration.class})
 
 public class GetAnnouncementsUnitTest {
 

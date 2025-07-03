@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
-import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CorePersistenceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.MiscConfiguration;
 import org.springframework.context.annotation.ComponentScan;

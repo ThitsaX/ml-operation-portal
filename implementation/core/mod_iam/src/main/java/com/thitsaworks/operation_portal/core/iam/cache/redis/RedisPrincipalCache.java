@@ -78,6 +78,10 @@ public class RedisPrincipalCache implements PrincipalCache {
 
         var data = withAccessKey.get(accessKey.getId());
 
+        if (data == null) {
+            return null;
+        }
+
         return data.realmType()
                    .equals(realmType) ? data : null;
 

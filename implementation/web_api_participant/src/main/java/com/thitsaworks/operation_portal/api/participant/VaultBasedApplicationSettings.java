@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.api.participant;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;

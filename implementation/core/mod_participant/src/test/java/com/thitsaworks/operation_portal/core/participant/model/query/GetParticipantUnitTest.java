@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.participant.model.query;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class GetParticipantUnitTest extends EnvAwareUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUnitTest.class);
@@ -29,14 +29,15 @@ public class GetParticipantUnitTest extends EnvAwareUnitTest {
     public void test_getParticipantSuccessfully() throws ParticipantNotFoundException {
 
         ParticipantData participantData =
-                this.participantQuery.get(new ParticipantId(486547382195986432L));
+            this.participantQuery.get(new ParticipantId(486547382195986432L));
 
         if (participantData != null) {
             LOG.info(participantData.dfspCode() + " , " +
-                             participantData.name() + " , " +
-                             participantData.address() + " , " +
-                             participantData.mobile().getValue()
-            );
+                         participantData.name() + " , " +
+                         participantData.address() + " , " +
+                         participantData.mobile()
+                                        .getValue()
+                    );
 
         } else {
             LOG.info("No record");

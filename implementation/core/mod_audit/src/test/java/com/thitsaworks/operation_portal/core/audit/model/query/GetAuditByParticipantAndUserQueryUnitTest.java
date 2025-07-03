@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.query;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
@@ -15,7 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AuditConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {AuditConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class GetAuditByParticipantAndUserQueryUnitTest extends EnvAwareUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAuditByParticipantAndUserQueryUnitTest.class);

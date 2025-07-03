@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model.query;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class GetParticipantsUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantsUnitTest.class);
@@ -35,12 +35,12 @@ public class GetParticipantsUnitTest {
 
         for (var participant : participantDataList) {
             System.out.println(participant.dfspCode() + " , " +
-                                       participant.name() + " , " +
-                                       participant.address() + " , " +
-                                       participant.mobile().getValue());
+                                   participant.name() + " , " +
+                                   participant.address() + " , " +
+                                   participant.mobile()
+                                              .getValue());
         }
 
     }
-
 
 }

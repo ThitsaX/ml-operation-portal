@@ -1,12 +1,14 @@
 package com.thitsaworks.operation_portal.usecase;
 
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 
 public class TestSettings {
+
     @Bean
     @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
     public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
@@ -30,8 +32,9 @@ public class TestSettings {
     }
 
     @Bean
-    public HazelcastConfiguration.Settings hazelcastConfigurationSettings(){
-        return new HazelcastConfiguration.Settings("Re21", "localhost");
+    public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {
+
+        return new RedisConfiguration.Settings("redis://localhost:6379");
     }
 
 }

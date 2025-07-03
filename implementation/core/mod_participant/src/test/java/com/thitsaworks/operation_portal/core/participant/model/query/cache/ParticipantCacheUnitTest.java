@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model.query.cache;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
@@ -17,7 +17,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class ParticipantCacheUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ParticipantCacheUnitTest.class);
@@ -33,7 +33,6 @@ public class ParticipantCacheUnitTest {
 
         LOG.info("Participant data: " + participantData);
         LOG.info("Participant data: " + participantData.participantId());
-
 
 //        for (ParticipantUserId id : participantData.getParticipantUserIds()) {
 //

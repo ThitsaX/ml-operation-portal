@@ -4,9 +4,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantU
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
-import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantUserRepository;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RMapCache;
 import org.redisson.api.RedissonClient;
@@ -23,8 +20,6 @@ public class RedisParticipantUserCache implements ParticipantUserCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisParticipantUserCache.class);
 
     private static final String WITH_ID = "rd_participant_user_with_id";
-
-    private final ParticipantUserRepository participantUserRepository;
 
     private final RedissonClient redissonClient;
 

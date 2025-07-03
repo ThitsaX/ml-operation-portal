@@ -1,8 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
@@ -20,7 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class GetOtherParticipantsUnitTest extends EnvAwareUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetOtherParticipantsUnitTest.class);
@@ -32,9 +31,10 @@ public class GetOtherParticipantsUnitTest extends EnvAwareUnitTest {
     public void test_getParticipantSuccessfully() throws ParticipantNotFoundException {
 
         List<ParticipantData> participantData =
-                this.participantQuery.getOtherParticipants(new ParticipantId(486547382195986432L));
+            this.participantQuery.getOtherParticipants(new ParticipantId(486547382195986432L));
 
-        if (participantData != null) {LOG.info("Participant Users  : [{}]", participantData);
+        if (participantData != null) {
+            LOG.info("Participant Users  : [{}]", participantData);
 
         } else {
             LOG.info("No record");

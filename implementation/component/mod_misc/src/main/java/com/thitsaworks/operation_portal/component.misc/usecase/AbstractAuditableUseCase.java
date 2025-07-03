@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractAuditableUseCase<I, O> extends AbstractOwnableUseCase<I, O>{
 
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractPrivateUseCase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractAuditableUseCase.class);
 
     @Override
     public O execute(I input) throws OperationPortalException {

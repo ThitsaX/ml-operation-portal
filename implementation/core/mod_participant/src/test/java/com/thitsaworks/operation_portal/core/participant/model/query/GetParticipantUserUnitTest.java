@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.model.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.infra.hazelcast.HazelcastConfiguration;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
@@ -21,7 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, HazelcastConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 public class GetParticipantUserUnitTest extends EnvAwareUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserUnitTest.class);
@@ -31,10 +31,10 @@ public class GetParticipantUserUnitTest extends EnvAwareUnitTest {
 
     @Test
     public void test_getParticipantUsersSuccessfully() throws ParticipantNotFoundException,
-                                                         ParticipantUserNotFoundException {
+                                                              ParticipantUserNotFoundException {
 
         List<ParticipantUserData> participantUserDataList =
-                this.participantUserQuery.getParticipantUsers(new ParticipantId(486547382195986432L));
+            this.participantUserQuery.getParticipantUsers(new ParticipantId(486547382195986432L));
 
         if (participantUserDataList != null) {
 
@@ -47,10 +47,10 @@ public class GetParticipantUserUnitTest extends EnvAwareUnitTest {
 
     @Test
     public void test_getParticipantUserSuccessfully() throws ParticipantNotFoundException,
-                                                         ParticipantUserNotFoundException {
+                                                             ParticipantUserNotFoundException {
 
         ParticipantUserData participantUserData =
-                this.participantUserQuery.get(new ParticipantUserId(486549751625580544L));
+            this.participantUserQuery.get(new ParticipantUserId(486549751625580544L));
 
         if (participantUserData != null) {
 
