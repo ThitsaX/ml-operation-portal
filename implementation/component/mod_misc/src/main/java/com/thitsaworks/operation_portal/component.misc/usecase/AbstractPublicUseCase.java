@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.component.misc.usecase;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.thitsaworks.operation_portal.component.exception.SystemProblemException;
+import com.thitsaworks.operation_portal.component.misc.exception.SystemProblemException;
 
 public abstract class AbstractPublicUseCase<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractPublicUseCase.class);

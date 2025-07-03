@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.exception;
+package com.thitsaworks.operation_portal.component.misc.exception;
 
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 
