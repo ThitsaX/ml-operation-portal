@@ -35,6 +35,33 @@ public class CreateParticipantHandler implements CreateParticipant {
                     input.address(),
                     input.mobile());
 
+            //For ContactInfo
+            if ((input.contactInfoList() != null || !input.contactInfoList().isEmpty()) &&
+                    input.contactInfoList().size() > 0) {
+
+                for (var contact : input.contactInfoList()) {
+
+                    participant.addContact(contact.name(),
+                                           contact.title(),
+                                           contact.email(),
+                                           contact.mobile(),
+                                           contact.contactType());
+                }
+            }
+
+            //For Liquidity Profile
+            if ((input.liquidityProfileInfoList() != null || !input.liquidityProfileInfoList().isEmpty()) &&
+                    input.liquidityProfileInfoList().size() > 0) {
+
+                for (var liquidityProfile : input.liquidityProfileInfoList()) {
+
+                    participant.addLiquidityProfile(liquidityProfile.accountName(),
+                                                    liquidityProfile.accountNumber(),
+                                                    liquidityProfile.currency(),
+                                                    liquidityProfile.isActive());
+                }
+            }
+
             this.participantRepository.save(participant);
 
             return new CreateParticipant.Output(true, participant.getParticipantId());
