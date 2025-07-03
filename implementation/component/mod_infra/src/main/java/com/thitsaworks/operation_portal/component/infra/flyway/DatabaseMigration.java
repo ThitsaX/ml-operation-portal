@@ -14,8 +14,8 @@ public class DatabaseMigration {
 
         LOGGER.info("vaultSettings : <{}>", vaultSettings);
         var vault = new Vault(vaultSettings.address(), vaultSettings.token(), vaultSettings.enginePath());
-        LOGGER.info("Done loading Vault with vaultSettings : <{}>", vaultSettings);
 
+        LOGGER.info("Done loading Vault with vaultSettings : <{}>", vaultSettings);
         DatabaseMigration.migrate(vault.get(vaultPath, FlywayMigration.Settings.class));
 
     }
