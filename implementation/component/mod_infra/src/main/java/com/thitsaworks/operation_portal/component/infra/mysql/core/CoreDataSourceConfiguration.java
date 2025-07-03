@@ -10,6 +10,8 @@ import javax.sql.DataSource;
 
 public class CoreDataSourceConfiguration {
 
+    public  static final String FLYWAY_MIGRATION ="mysql/core//flyway/settings";
+
     public static final String WRITE_DB_SETTINGS_PATH = "mysql/core//write_db/settings";
 
     public static final String WRITE_DB_POOL_SIZE_PATH = "mysql/core//write_db/pool_sizes";

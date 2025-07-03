@@ -1,5 +1,8 @@
 package com.thitsaworks.operation_portal.api.participant;
 
+import com.thitsaworks.operation_portal.component.infra.flyway.DatabaseMigration;
+import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -20,6 +23,9 @@ public class WebApiParticipantApplication {
     public static void main(String[] args) {
 
         VaultConfiguration.Settings vaultSettings = VaultConfiguration.Settings.withPropertyOrEnv();
+
+        DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
+        DatabaseMigration.migrate(ReportingDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
 
         SpringApplication.run(WebApiParticipantApplication.class, args);
     }

@@ -51,6 +51,8 @@ public class PersistenceQualifiers {
 
         public static final String JPA_QUERY_FACTORY = "coreJpaQueryFactory";
 
+        public static final String DATA_SOURCE = "coreDataSource";
+
     }
 
     public static class Reporting {
@@ -79,6 +81,7 @@ public class PersistenceQualifiers {
 
         public static final String JPA_QUERY_FACTORY = "reportingJpaQueryFactory";
 
+        public static final String DATA_SOURCE = "reportingDataSource";
     }
 
 }
