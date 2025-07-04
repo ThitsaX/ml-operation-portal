@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public abstract class RemovePastSixMonthsAnnouncements extends
-                                                       AbstractOwnableUseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output> {
+public interface RemovePastSixMonthsAnnouncements extends
+                                                  UseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output> {
 
     public record Input() {}
 
