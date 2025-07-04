@@ -16,10 +16,10 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Write credentials to a file
-CREATE USER IF NOT EXISTS 'operation_portal_jdbc'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'operation_portal_jdbc'@'%';
-CREATE USER IF NOT EXISTS 'operation_portal_ro'@'%' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON *.* TO 'operation_portal_ro'@'%';
+CREATE USER IF NOT EXISTS 'dfsp_portal_jdbc'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'dfsp_portal_jdbc'@'%';
+CREATE USER IF NOT EXISTS 'dfsp_portal_ro'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'dfsp_portal_ro'@'%';
 
 -- Dumping database structure for central_ledger
 CREATE DATABASE IF NOT EXISTS `operation_portal` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `tbl_audit` (
 `audit_id` bigint NOT NULL,
 `action_id` bigint NOT NULL,
 `user_id` bigint NOT NULL,
-`participant_id` bigint NOT NULL,
+`participant_id` bigint,
 `input_info` text,
 `output_info` text,
 `created_date` bigint DEFAULT NULL,
