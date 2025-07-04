@@ -2,10 +2,10 @@ package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public abstract class ModifyParticipantShortName extends
-                                                 AbstractAuditableUseCase<ModifyParticipantShortName.Input, ModifyParticipantShortName.Output> {
+public interface ModifyParticipantShortName extends
+                                            UseCase<ModifyParticipantShortName.Input, ModifyParticipantShortName.Output> {
 
     public record Input(
             ParticipantId participantId,

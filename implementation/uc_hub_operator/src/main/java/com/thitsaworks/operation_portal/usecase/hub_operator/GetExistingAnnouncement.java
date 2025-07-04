@@ -1,12 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.time.Instant;
 
-public abstract class GetExistingAnnouncement extends
-                                              AbstractAuditableUseCase<GetExistingAnnouncement.Input, GetExistingAnnouncement.Output> {
+public interface GetExistingAnnouncement extends
+                                         UseCase<GetExistingAnnouncement.Input, GetExistingAnnouncement.Output> {
 
     public record Input(
             AnnouncementId announcementId

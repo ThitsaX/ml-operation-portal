@@ -3,29 +3,63 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingHubUser;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@RequiredArgsConstructor
-public class ModifyExistingHubUserHandler extends ModifyExistingHubUser {
+public class ModifyExistingHubUserHandler
+        extends HubOperatorAuditableUseCase<ModifyExistingHubUser.Input, ModifyExistingHubUser.Output>
+        implements ModifyExistingHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingHubUserHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
+                                                                    UserRoleType.OPERATION,
+                                                                    UserRoleType.REPORTING,
+                                                                    UserRoleType.SUPERUSER);
 
     private final ModifyHubUser modifyHubUser;
 
     private final ObjectMapper objectMapper;
 
+    @Autowired
+    public ModifyExistingHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                        CreateOutputAuditCommand createOutputAuditCommand,
+                                        CreateExceptionAuditCommand createExceptionAuditCommand,
+                                        ModifyHubUser modifyHubUser,
+                                        ObjectMapper objectMapper,
+                                        PrincipalCache principalCache) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.modifyHubUser = modifyHubUser;
+        this.objectMapper = objectMapper;
+    }
+
     @Override
-    public ModifyExistingHubUser.Output onExecute(ModifyExistingHubUser.Input input) throws Exception {
+    public Output onExecute(Input input) throws OperationPortalException {
 
         ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
                                                                                          input.name(),
@@ -36,51 +70,51 @@ public class ModifyExistingHubUserHandler extends ModifyExistingHubUser {
         return new Output(output.modified(), output.hubUserId());
     }
 
-    @Override
-    protected String getName() {
-
-        return ModifyExistingHubUser.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_hub_operator";
-    }
-
-    @Override
-    protected String getId() {
-
-        return ModifyExistingHubUser.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public void onAudit(ModifyExistingHubUser.Input input, ModifyExistingHubUser.Output output)
-            throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, ModifyExistingHubUser.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
-    }
+//    @Override
+//    protected String getName() {
+//
+//        return ModifyExistingHubUser.class.getCanonicalName();
+//    }
+//
+//    @Override
+//    protected String getDescription() {
+//
+//        return null;
+//    }
+//
+//    @Override
+//    protected String getScope() {
+//
+//        return "uc_hub_operator";
+//    }
+//
+//    @Override
+//    protected String getId() {
+//
+//        return ModifyExistingHubUser.class.getName();
+//    }
+//
+//    @Override
+//    public boolean isOwned(Object userDetails) {
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public boolean isAuthorized(Object userDetails) {
+//
+//        return true;
+//    }
+//
+//    @Override
+//    public void onAudit(ModifyExistingHubUser.Input input, ModifyExistingHubUser.Output output)
+//            throws UserNotFoundException {
+//
+//        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+//
+//        Auditor.audit(this.objectMapper, ModifyExistingHubUser.class, input, output,
+//                      new UserId(securityContext.userId()),
+//                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
+//    }
 
 }
