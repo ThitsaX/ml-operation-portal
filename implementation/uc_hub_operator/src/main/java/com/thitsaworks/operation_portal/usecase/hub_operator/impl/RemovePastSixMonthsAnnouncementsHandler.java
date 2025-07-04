@@ -47,41 +47,4 @@ public class RemovePastSixMonthsAnnouncementsHandler
         return new Output(output.removed());
     }
 
-//
-//    @Override
-//    protected String getName() {
-//
-//        return RemovePastSixMonthsAnnouncements.class.getCanonicalName();
-//    }
-//
-//    @Override
-//    protected String getDescription() {
-//
-//        return null;
-//    }
-//
-//    @Override
-//    protected String getScope() {
-//
-//        return "uc_hub_operator";
-//    }
-//
-//    @Override
-//    protected String getId() {
-//
-//        return RemovePastSixMonthsAnnouncements.class.getName();
-//    }
-//
-//    @Override
-//    public boolean isOwned(Object userDetails) {
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAuthorized(Object userDetails) {
-//
-//        return true;
-//    }
-
 }
