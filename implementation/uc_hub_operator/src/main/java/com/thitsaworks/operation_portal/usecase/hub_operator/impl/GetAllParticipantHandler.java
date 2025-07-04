@@ -1,16 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
+import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllParticipant;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,19 +17,41 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetAllParticipantHandler extends GetAllParticipant {
+public class GetAllParticipantHandler
+    extends HubOperatorAuditableUseCase<GetAllParticipant.Input, GetAllParticipant.Output>
+    implements GetAllParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
+                                                                    UserRoleType.ADMIN,
+                                                                    UserRoleType.REPORTING,
+                                                                    UserRoleType.OPERATION);
+
     private final ParticipantQuery participantQuery;
 
-    private final ObjectMapper objectMapper;
+    public GetAllParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
+                                    CreateOutputAuditCommand createOutputAuditCommand,
+                                    CreateExceptionAuditCommand createExceptionAuditCommand,
+                                    ObjectMapper objectMapper,
+                                    PrincipalCache principalCache,
+                                    ParticipantQuery participantQuery) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.participantQuery = participantQuery;
+    }
 
     @Override
-    public GetAllParticipant.Output onExecute(GetAllParticipant.Input input) throws Exception {
+    public GetAllParticipant.Output onExecute(GetAllParticipant.Input input) {
 
         List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
@@ -39,62 +60,16 @@ public class GetAllParticipantHandler extends GetAllParticipant {
         for (ParticipantData participantData : participantDataList) {
 
             participantInfoList.add(
-                    new GetAllParticipant.Output.ParticipantInfo(participantData.participantId(),
-                            participantData.dfspCode().getValue(),
-                            participantData.name(),
-                            participantData.dfspName(),
-                            participantData.address(),
-                            participantData.mobile(),
-                            Instant.ofEpochSecond(participantData.createdDate())));
+                new GetAllParticipant.Output.ParticipantInfo(participantData.participantId(),
+                                                             participantData.dfspCode().getValue(),
+                                                             participantData.name(),
+                                                             participantData.dfspName(),
+                                                             participantData.address(),
+                                                             participantData.mobile(),
+                                                             Instant.ofEpochSecond(participantData.createdDate())));
         }
 
         return new GetAllParticipant.Output(participantInfoList);
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetAllParticipant.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_hub_operator";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllParticipant.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public void onAudit(GetAllParticipant.Input input, GetAllParticipant.Output output) throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GetAllParticipant.class, input, output,
-                new UserId(securityContext.userId()),
-                securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }
