@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.api.participant.security.exception.Inval
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
-import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.http.CachedBodyHttpServletRequest;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;

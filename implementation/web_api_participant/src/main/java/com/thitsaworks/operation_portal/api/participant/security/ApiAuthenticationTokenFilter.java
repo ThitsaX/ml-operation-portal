@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.api.participant.security.exception.Acces
 import com.thitsaworks.operation_portal.api.participant.security.exception.ApiSecurityException;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.http.CachedBodyHttpServletRequest;
+import com.thitsaworks.operation_portal.component.misc.http.CachedBodyHttpServletRequest;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import jakarta.servlet.FilterChain;
