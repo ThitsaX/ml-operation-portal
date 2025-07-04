@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantAlreadyRegisteredException;
 
 import java.io.Serializable;
 import java.util.List;
@@ -40,6 +41,6 @@ public interface CreateParticipant {
 
     record Output(boolean created, ParticipantId participantId) {}
 
-    Output execute(Input input) throws Exception;
+    Output execute(Input input) throws ParticipantAlreadyRegisteredException;
 
 }
