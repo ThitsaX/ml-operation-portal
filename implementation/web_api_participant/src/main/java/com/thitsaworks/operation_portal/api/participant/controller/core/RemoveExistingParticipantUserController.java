@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.participant.RemoveExistingParticipantUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class RemoveExistingParticipantUserController {
 
     @PostMapping("/secured/remove_participant_user")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws OperationPortalException, JsonProcessingException {
+            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
         LOG.info("Remove participant user request : {}", this.objectMapper.writeValueAsString(request));
 

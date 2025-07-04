@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.component.misc.usecase.DomainUseCase;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +48,14 @@ public abstract class CommonUseCase<I, O> extends DomainUseCase<I, O> {
     }
 
     @Override
-    protected void afterExecute(O output) throws OperationPortalException {
+    protected void afterExecute(O output) throws DomainException {
 
         // PLease Do Something
 
     }
 
     @Override
-    protected void beforeExecute(I input) throws OperationPortalException {
+    protected void beforeExecute(I input) throws DomainException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
@@ -71,16 +72,16 @@ public abstract class CommonUseCase<I, O> extends DomainUseCase<I, O> {
         if (!PERMITTED_ROLES.contains(userRole)) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(this.getName());
+            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
         }
 
     }
 
     @Override
-    protected OperationPortalException onException(Exception exception) {
+    protected DomainException onException(Exception exception) {
 
-        if (exception instanceof OperationPortalException) {
-            return (OperationPortalException) exception;
+        if (exception instanceof DomainException) {
+            return (DomainException) exception;
         }
 
         throw new RuntimeException(exception);

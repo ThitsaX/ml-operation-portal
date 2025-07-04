@@ -3,7 +3,8 @@ package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.BusinessData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.BusinessDataMapper;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerErrors;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class GetTransferDetailHandler implements GetTransferDetail {
     }
 
     @Override
-    public Output execute(Input input) throws CentralLedgerFailureException {
+    public Output execute(Input input) throws CentralLedgerException {
 
         List<BusinessData> result;
 
@@ -69,7 +70,7 @@ public class GetTransferDetailHandler implements GetTransferDetail {
         //@@Formatter:on
 
         } catch (Exception e) {
-            throw new CentralLedgerFailureException(e.getMessage());
+            throw new CentralLedgerException(CentralLedgerErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
         }
 
         if (result == null || result.isEmpty()) {

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.common.ModifyExistingLiquidityProfile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +36,7 @@ public class ModifyExistingLiquidityProfileController {
 
     @PostMapping(value = "/secured/modify_liquidity_profile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException, OperationPortalException {
+            throws DomainException, JsonProcessingException, DomainException {
 
         LOG.info("Modify liquidity profile request: {}", objectMapper.writeValueAsString(request));
 

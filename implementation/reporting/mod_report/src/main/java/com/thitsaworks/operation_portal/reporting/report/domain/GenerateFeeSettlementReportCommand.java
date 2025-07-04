@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain;
 
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
 import java.time.Instant;
 
@@ -19,6 +19,6 @@ public interface GenerateFeeSettlementReportCommand {
     record Output(byte[] rptData) {
     }
 
-    Output execute(Input input) throws ReportFailureException;
+    Output execute(Input input) throws ReportException;
 
 }

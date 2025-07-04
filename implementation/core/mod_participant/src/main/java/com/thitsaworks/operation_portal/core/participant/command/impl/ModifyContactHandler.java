@@ -2,16 +2,14 @@ package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyContact;
-import com.thitsaworks.operation_portal.core.participant.exception.ContactNotFoundException;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Contact;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,16 +21,12 @@ public class ModifyContactHandler implements ModifyContact {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws ParticipantNotFoundException, ContactNotFoundException {
+    public Output execute(Input input) throws ParticipantException {
 
-        Optional<Contact> optionalContact = this.contactRepository.findById(input.contactId());
+        Contact contact =
+                this.contactRepository.findById(input.contactId()).orElseThrow(() -> new ParticipantException(
+                        ParticipantErrors.CONTACT_NOT_FOUND));
 
-        if (optionalContact.isEmpty()) {
-
-            throw new ContactNotFoundException(input.contactId().getId().toString());
-        }
-
-        Contact contact = optionalContact.get();
 
         this.contactRepository.save(
                 contact.name(input.name())

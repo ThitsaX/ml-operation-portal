@@ -4,9 +4,9 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
-import com.thitsaworks.operation_portal.core.hubuser.model.QAnnouncement;
 import com.thitsaworks.operation_portal.core.hubuser.model.QHubUser;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.HubUserRepository;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
@@ -36,7 +36,7 @@ public class HubUserQueryHandler implements HubUserQuery {
     }
 
     @Override
-    public HubUserData get(HubUserId hubUserId) throws HubUserNotFoundException {
+    public HubUserData get(HubUserId hubUserId) throws HubUserException {
 
         BooleanExpression predicate = this.hubUser.userId.eq(hubUserId);
 
@@ -44,7 +44,7 @@ public class HubUserQueryHandler implements HubUserQuery {
 
         if (optionalHubUser.isEmpty()) {
 
-            throw new HubUserNotFoundException(hubUserId.getId().toString());
+            throw new HubUserException(HubUserErrors.USER_NOT_FOUND);
         }
 
         return new HubUserData(optionalHubUser.get());

@@ -4,7 +4,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
@@ -41,7 +42,7 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     }
 
     @Override
-    public ParticipantData get(ParticipantId participantId) throws ParticipantNotFoundException {
+    public ParticipantData get(ParticipantId participantId) throws ParticipantException {
 
         BooleanExpression predicate = this.participant.participantId.eq(participantId);
 
@@ -49,7 +50,7 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         if (optionalParticipant.isEmpty()) {
 
-            throw new ParticipantNotFoundException(participantId.getId().toString());
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
         }
 
         return new ParticipantData(optionalParticipant.get());

@@ -2,9 +2,10 @@ package com.thitsaworks.operation_portal.core.hubuser.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.command.CreateHubUser;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.HubUserRepository;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailAlreadyRegisteredException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +23,13 @@ public class CreateHubUserHandler implements CreateHubUser {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws EmailAlreadyRegisteredException {
+    public Output execute(Input input) throws HubUserException {
 
         Optional<HubUser> optionalHubUserUser = this.hubUserRepository.findByEmail(input.email());
 
         if (optionalHubUserUser.isPresent()) {
-            throw new EmailAlreadyRegisteredException(input.email().getValue());
+
+            throw new HubUserException(HubUserErrors.EMAIL_ALREADY_REGISTERED);
         }
 
         HubUser hubUser = new HubUser(

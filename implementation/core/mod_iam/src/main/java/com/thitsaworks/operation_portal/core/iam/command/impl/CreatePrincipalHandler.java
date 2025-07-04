@@ -2,7 +2,8 @@ package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipal;
-import com.thitsaworks.operation_portal.core.iam.exception.DuplicatePrincipalException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import com.thitsaworks.operation_portal.core.iam.model.repository.PrincipalRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class CreatePrincipalHandler implements CreatePrincipal {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws DuplicatePrincipalException {
+    public Output execute(Input input) throws IAMException {
 
         Optional<Principal> optionalPrincipal = this.principalRepository.findOne(
                 PrincipalRepository.Filters.withPrincipalId(input.principalId())
@@ -30,7 +31,7 @@ public class CreatePrincipalHandler implements CreatePrincipal {
 
         if (optionalPrincipal.isPresent()) {
 
-            throw new DuplicatePrincipalException(input.principalId().getId().toString());
+            throw new IAMException(IAMErrors.DUPLICATE_PRINCIPAL);
         }
 
         Principal newPrincipal = new Principal(input.principalId(), input.realmType(), input.passwordPlain(),

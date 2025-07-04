@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.It;
 
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCaseConfiguration;
 import com.thitsaworks.operation_portal.usecase.hub_operator.BaseVaultSetUpTest;
@@ -28,7 +28,7 @@ public class CreateNewHubUserIT extends BaseVaultSetUpTest {
     private CreateNewHubUser createNewHubUser;
 
     @Test
-    public void success() throws OperationPortalException {
+    public void success() throws DomainException {
         var input = new CreateNewHubUser.Input(
                 "John Doe",
                 new Email("njjaa@gmail.com"),

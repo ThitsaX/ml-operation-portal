@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.usecase.participant.ModifyExistingParticipantUser;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class ModifyExistingParticipantUserController {
 
     @PostMapping("/secured/modify_participant_user")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Modify participant user request : {}", this.objectMapper.writeValueAsString(request));
 

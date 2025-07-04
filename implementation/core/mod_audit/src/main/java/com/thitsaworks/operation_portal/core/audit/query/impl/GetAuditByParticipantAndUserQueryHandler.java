@@ -4,7 +4,6 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.QAction;
 import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditByParticipantAndUserQuery;
@@ -24,7 +23,7 @@ public class GetAuditByParticipantAndUserQueryHandler implements GetAuditByParti
     private final JPAQueryFactory readQueryFactory;
 
     @Override
-    public Output execute(Input input) throws UserNotFoundException {
+    public Output execute(Input input) {
 
         QParticipantUser participantUser = QParticipantUser.participantUser;
         QParticipant participant = QParticipant.participant;

@@ -2,7 +2,8 @@ package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantAlreadyRegisteredException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class CreateParticipantHandler implements CreateParticipant {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws ParticipantAlreadyRegisteredException {
+    public Output execute(Input input) throws ParticipantException {
 
         Optional<Participant> participantByDfspCode = this.participantRepository.findByDfspCode(input.dfspCode());
 
@@ -68,7 +69,7 @@ public class CreateParticipantHandler implements CreateParticipant {
         }
         else
         {
-            throw new ParticipantAlreadyRegisteredException(input.dfspCode().toString());
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTER);
         }
     }
 

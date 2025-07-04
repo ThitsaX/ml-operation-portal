@@ -2,9 +2,8 @@ package com.thitsaworks.operation_portal.api.participant.security;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
-import com.thitsaworks.operation_portal.api.participant.security.exception.AccountInactiveException;
-import com.thitsaworks.operation_portal.api.participant.security.exception.AuthenticationFailureException;
-import com.thitsaworks.operation_portal.api.participant.security.exception.InvalidAccessKeyException;
+import com.thitsaworks.operation_portal.api.participant.security.exception.SecurityErrors;
+import com.thitsaworks.operation_portal.api.participant.security.exception.AccessDeniedException;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
@@ -29,7 +28,7 @@ public class ApiAuthenticator implements Authenticator {
 
     @Override
     public SecurityContext authenticate(CachedBodyHttpServletRequest cachedBodyRequest)
-            throws InvalidAccessKeyException, AccountInactiveException, AuthenticationFailureException {
+            throws AccessDeniedException {
 
         // Rules :
 
@@ -46,7 +45,7 @@ public class ApiAuthenticator implements Authenticator {
 
         } catch (Exception e) {
 
-            throw new InvalidAccessKeyException(accessKey.toString());
+            throw new AccessDeniedException (SecurityErrors.INVALID_KEY_NO);
         }
 
         PrincipalData principalData = this.principalCache.get(new AccessKey(accessKey), RealmType.PARTICIPANT);
@@ -55,7 +54,7 @@ public class ApiAuthenticator implements Authenticator {
 
             LOG.error("PrincipalData cannot be found for accessKey : [{}]", accessKey);
 
-            throw new InvalidAccessKeyException(accessKey.toString());
+            throw new AccessDeniedException (SecurityErrors.INVALID_KEY_NO);
 
         }
 
@@ -63,7 +62,7 @@ public class ApiAuthenticator implements Authenticator {
 
             LOG.warn("Account is denied for accessKey : [{}]", accessKey);
 
-            throw new AccountInactiveException(accessKey.toString());
+            throw new AccessDeniedException(SecurityErrors.ACCOUNT_INACTIVE);
         }
 
         // Calculate first part
@@ -93,7 +92,7 @@ public class ApiAuthenticator implements Authenticator {
 
         if (calculatedAuthHeader.isBlank()) {
 
-            throw new AuthenticationFailureException();
+            throw new AccessDeniedException (SecurityErrors.AUTHENTICATION_FAILED);
 
         }
 
@@ -109,7 +108,7 @@ public class ApiAuthenticator implements Authenticator {
 
         }
 
-        throw new AuthenticationFailureException();
+        throw new AccessDeniedException (SecurityErrors.AUTHENTICATION_FAILED);
 
     }
 

@@ -2,14 +2,14 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
-import com.thitsaworks.operation_portal.core.iam.exception.UnauthorizedCreationException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCompanyShortName;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyParticipantShortName;
@@ -55,20 +55,20 @@ public class ModifyParticipantShortNameHandler
     }
 
     @Override
-    public Output onExecute(Input input) throws OperationPortalException {
+    public Output onExecute(Input input) throws DomainException {
 
         PrincipalData principalData = this.principalCache.get(input.accessKey());
 
         if (principalData == null) {
 
-            throw new PrincipalNotFoundException();
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         } else {
 
             if (principalData.realmId() != null &&
                     !principalData.realmId().getId().equals(input.participantId().getId())) {
 
-                throw new UnauthorizedCreationException();
+                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
         }
 

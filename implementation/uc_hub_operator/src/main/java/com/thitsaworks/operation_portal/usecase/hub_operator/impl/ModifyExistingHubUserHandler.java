@@ -1,17 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
@@ -59,7 +53,7 @@ public class ModifyExistingHubUserHandler
     }
 
     @Override
-    public Output onExecute(Input input) throws OperationPortalException {
+    public Output onExecute(Input input) throws DomainException {
 
         ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
                                                                                          input.name(),

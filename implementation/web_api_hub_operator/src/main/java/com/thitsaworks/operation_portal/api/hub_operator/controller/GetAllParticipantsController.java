@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class GetAllParticipantsController {
 
     @GetMapping(value = "/secured/get_all_participants")
     public ResponseEntity<Response> execute()
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Get all participants request : {}", "");
 

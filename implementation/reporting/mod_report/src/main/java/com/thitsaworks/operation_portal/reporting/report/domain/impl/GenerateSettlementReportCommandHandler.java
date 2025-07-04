@@ -2,7 +2,8 @@ package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
@@ -34,7 +35,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
     }
 
     @Override
-    public Output execute(Input input) throws ReportFailureException {
+    public Output execute(Input input) throws ReportException {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -77,7 +78,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
         } catch (Exception e) {
 
-            throw new ReportFailureException(e.getMessage());
+            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
         }
     }
 

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.hubuser.command;
 
-import com.thitsaworks.operation_portal.core.hubuser.exception.AlreadyAnnouncedException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 import java.time.Instant;
 
@@ -12,6 +12,6 @@ public interface CreateAnnouncement {
 
     record Output(boolean created) {}
 
-    Output execute(Input input) throws AlreadyAnnouncedException;
+    Output execute(Input input) throws HubUserException;
 
 }

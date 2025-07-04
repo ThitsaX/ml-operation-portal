@@ -28,8 +28,8 @@ public class FindAccountNumberByDfspCodeHandler implements FindAccountNumberByDf
     @Override
     public Output execute(Input input) {
 
-        DfspCode dfspCode = new DfspCode(input.getDfspCode());
-        String currencyId = input.getCurrencyId();
+        DfspCode dfspCode = new DfspCode(input.dfspCode());
+        String currencyId = input.currencyId();
 
         JPAQuery<String> tupleSQLQuery =
                 this.jpaQueryFactory.select(liquidityProfile.accountNumber)

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.participant.security.UserContext;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.FinancialData;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetDashboardData;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class GetDashboardDataController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/get_dashboard_data")
-    public ResponseEntity<Response> execute() throws OperationPortalException, JsonProcessingException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         LOG.info("Get dashboard data request : {}", "");
 

@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.component.misc.exception;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+@Getter
 public abstract class DomainException extends Exception {
 
     @Getter(AccessLevel.PUBLIC)
@@ -10,7 +11,7 @@ public abstract class DomainException extends Exception {
 
     public DomainException(ErrorMessage errorMessage) {
 
-        super(errorMessage.code() + "-" + errorMessage.description());
+        super();
         this.errorMessage = errorMessage;
     }
 

@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.api.participant.controller.reporting;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateDetailReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class GenerateSettlementDetailReportController {
                                             @RequestParam("fspid") String fspId,
                                             @RequestParam("file_type") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info(
                 "Settlement details report filters : settlementId = {}, fspId = {}, fileType ={}, timezoneOffset = {}",

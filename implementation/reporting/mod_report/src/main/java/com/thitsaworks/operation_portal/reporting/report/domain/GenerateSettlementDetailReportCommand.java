@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain;
 
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
 public interface GenerateSettlementDetailReportCommand {
 
@@ -15,6 +15,6 @@ public interface GenerateSettlementDetailReportCommand {
         byte[] detailReportByte
     ) { }
 
-    Output execute(Input input) throws ReportFailureException;
+    Output execute(Input input) throws ReportException;
 
 }

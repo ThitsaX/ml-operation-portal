@@ -2,8 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.core.participant.exception.LiquidityProfileNotFoundException;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
 public interface ModifyLiquidityProfile {
 
@@ -17,7 +16,6 @@ public interface ModifyLiquidityProfile {
     record Output(LiquidityProfileId liquidityProfileId,
                   boolean modified) {}
 
-    Output execute(Input input) throws ParticipantNotFoundException,
-            LiquidityProfileNotFoundException;
+    Output execute(Input input) throws ParticipantException;
 
 }

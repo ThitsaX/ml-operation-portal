@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantAlreadyRegisteredException;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewParticipant;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public class CreateNewParticipantHandler
     }
 
     @Override
-    public Output onExecute(Input input) throws ParticipantAlreadyRegisteredException {
+    public Output onExecute(Input input) throws DomainException {
 
         CreateParticipant.Output output = this.createParticipant.execute(
             new CreateParticipant.Input(input.name(), input.dfspCode(), input.dfspName(),

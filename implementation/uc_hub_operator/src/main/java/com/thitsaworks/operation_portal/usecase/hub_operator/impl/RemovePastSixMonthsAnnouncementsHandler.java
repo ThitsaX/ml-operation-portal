@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncements;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCase;
@@ -39,7 +39,7 @@ public class RemovePastSixMonthsAnnouncementsHandler
     }
 
     @Override
-    public Output onExecute(Input input) throws OperationPortalException {
+    public Output onExecute(Input input) throws DomainException {
 
         RemoveAnnouncements.Output output = this.removeAnnouncements.execute(
                 new RemoveAnnouncements.Input());

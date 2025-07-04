@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -12,8 +11,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.Authenticate;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.LoginUserAccount;
@@ -59,14 +61,13 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws ParticipantException, IAMException, IAMIgnorableException {
 
         ParticipantUserData participantUserData = this.participantUserQuery.get(input.email());
 
         if (participantUserData.participantUserId() == null) {
 
-            throw new EmailNotFoundException(input.email()
-                                                  .getValue());
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
         Authenticate.Output securityToken = this.authenticate.execute(
@@ -81,7 +82,7 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
     }
 
     @Override
-    protected void beforeExecute(Input input) throws OperationPortalException {
+    protected void beforeExecute(Input input)  {
 
         /*
          * Audit Logging:
@@ -107,7 +108,7 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
     }
 
     @Override
-    protected void afterExecute(Output output) throws OperationPortalException {
+    protected void afterExecute(Output output) {
 
     }
 

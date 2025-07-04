@@ -3,7 +3,8 @@ package com.thitsaworks.operation_portal.reporting.report.query.impl;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.mapper.SettlementIdDataMapper;
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class GetSettlementIdsBean implements GetSettlementIds {
     }
 
     @Override
-    public Output execute(Input input) throws ReportFailureException {
+    public Output execute(Input input) throws ReportException {
 
         String timezone = input.timezoneOffset();
 
@@ -55,7 +56,7 @@ public class GetSettlementIdsBean implements GetSettlementIds {
                 input.endDate(), timezone, timezone);
 
         } catch (Exception e) {
-            throw new ReportFailureException(e.getMessage());
+            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
         }
 
         if (results == null || results.isEmpty()) {

@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUser;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailAlreadyRegisteredException;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
@@ -27,22 +27,17 @@ public class CreateParticipantUserHandler implements CreateParticipantUser {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws ParticipantNotFoundException, EmailAlreadyRegisteredException {
+    public Output execute(Input input) throws ParticipantException {
 
-        Optional<Participant> optionalParticipant = this.participantRepository.findById(input.participantId());
-
-        if (optionalParticipant.isEmpty()) {
-
-            throw new ParticipantNotFoundException(input.participantId().getId().toString());
-        }
-
-        Participant participant = optionalParticipant.get();
+        Participant participant = this.participantRepository.findById(input.participantId())
+                                                            .orElseThrow(() -> new ParticipantException(
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
         Optional<ParticipantUser> optionalParticipantUser =
                 this.participantUserRepository.findByEmailAndIsDeleted(input.email(), false);
 
         if (optionalParticipantUser.isPresent()) {
-            throw new EmailAlreadyRegisteredException(input.email().getValue());
+            throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED);
 
         }
 

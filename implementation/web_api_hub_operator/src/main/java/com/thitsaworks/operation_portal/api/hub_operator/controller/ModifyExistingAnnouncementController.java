@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingAnnouncement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +33,7 @@ public class ModifyExistingAnnouncementController {
 
     @PostMapping(value = "/secured/modify_announcement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Modify announcement request: {}", objectMapper.writeValueAsString(request));
 

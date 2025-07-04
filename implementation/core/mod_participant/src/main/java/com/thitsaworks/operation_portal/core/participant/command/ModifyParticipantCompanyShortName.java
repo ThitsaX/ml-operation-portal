@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
 public interface ModifyParticipantCompanyShortName {
 
@@ -13,6 +13,6 @@ public interface ModifyParticipantCompanyShortName {
             boolean modified,
             ParticipantId participantId) {}
 
-    Output execute(Input input) throws ParticipantNotFoundException;
+    Output execute(Input input) throws ParticipantException;
 
 }

@@ -4,7 +4,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AnnouncementNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
 import com.thitsaworks.operation_portal.core.hubuser.model.QAnnouncement;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.AnnouncementRepository;
@@ -35,7 +36,7 @@ public class AnnouncementQueryHandler implements AnnouncementQuery {
     }
 
     @Override
-    public AnnouncementData get(AnnouncementId announcementId) throws AnnouncementNotFoundException {
+    public AnnouncementData get(AnnouncementId announcementId) throws HubUserException {
 
         BooleanExpression predicate = this.announcement.announcementId.eq(announcementId);
 
@@ -43,7 +44,7 @@ public class AnnouncementQueryHandler implements AnnouncementQuery {
 
         if (optionalAnnouncement.isEmpty()) {
 
-            throw new AnnouncementNotFoundException(announcementId.getId().toString());
+            throw new HubUserException(HubUserErrors.ANNOUNCEMENT_NOT_FOUND);
         }
 
         return new AnnouncementData(optionalAnnouncement.get());

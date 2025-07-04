@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.It;
 
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCaseConfiguration;
 import com.thitsaworks.operation_portal.usecase.hub_operator.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewAnnouncement;
@@ -26,7 +26,7 @@ public class CreateNewAnnouncementIT extends BaseVaultSetUpTest {
     private CreateNewAnnouncement createNewAnnouncement;
 
     @Test
-    public void success() throws OperationPortalException {
+    public void success() throws DomainException {
 
         var input = new CreateNewAnnouncement.Input("Announcement am",
                 "Announcement i", Instant.now());

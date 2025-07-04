@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.CommonUseCase;
@@ -35,7 +34,7 @@ public class GetAllAuditByParticipantHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) {
 
         GetAllAuditByParticipantQuery.Output output =
             this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(

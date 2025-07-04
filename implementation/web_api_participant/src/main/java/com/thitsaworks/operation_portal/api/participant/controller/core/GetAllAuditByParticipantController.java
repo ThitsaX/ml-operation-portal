@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.participant.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.common.GetAllAuditByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class GetAllAuditByParticipantController {
     public ResponseEntity<Response> execute(
             @RequestParam("from_date") Long fromDate,
             @RequestParam("to_date") Long toDate,
-            @RequestParam("participantId") String participantId) throws OperationPortalException, JsonProcessingException {
+            @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
         LOG.info("Get all audit by participant request : fromDate = {}, toDate = {}, participantId = {}",
                  fromDate,

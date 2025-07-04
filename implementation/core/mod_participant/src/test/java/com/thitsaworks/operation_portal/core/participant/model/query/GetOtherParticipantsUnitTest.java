@@ -2,10 +2,10 @@ package com.thitsaworks.operation_portal.core.participant.model.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class GetOtherParticipantsUnitTest extends EnvAwareUnitTest {
     private ParticipantQuery participantQuery;
 
     @Test
-    public void test_getParticipantSuccessfully() throws ParticipantNotFoundException {
+    public void test_getParticipantSuccessfully() throws DomainException {
 
         List<ParticipantData> participantData =
             this.participantQuery.getOtherParticipants(new ParticipantId(486547382195986432L));

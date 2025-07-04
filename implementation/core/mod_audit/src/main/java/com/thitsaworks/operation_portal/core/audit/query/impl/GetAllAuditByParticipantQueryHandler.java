@@ -5,7 +5,6 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.QAction;
 import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
@@ -25,7 +24,7 @@ public class GetAllAuditByParticipantQueryHandler implements GetAllAuditByPartic
 
     @Override
     @CoreReadTransactional
-    public Output execute(Input input) throws UserNotFoundException {
+    public Output execute(Input input) {
 
         QParticipantUser participantUser = QParticipantUser.participantUser;
         QParticipant participant = QParticipant.participant;

@@ -2,15 +2,14 @@ package com.thitsaworks.operation_portal.core.hubuser.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.HubUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,15 +21,9 @@ public class ModifyHubUserHandler implements ModifyHubUser {
 
     @Override
     @CoreWriteTransactional
-    public ModifyHubUser.Output execute(ModifyHubUser.Input input) throws HubUserNotFoundException {
+    public ModifyHubUser.Output execute(ModifyHubUser.Input input) throws HubUserException {
 
-        Optional<HubUser> optionalHubUserUser = this.hubUserRepository.findById(input.hubUserId());
-
-        if (optionalHubUserUser.isEmpty()) {
-            throw new HubUserNotFoundException(input.hubUserId().getId().toString());
-        }
-
-        HubUser hubUser = optionalHubUserUser.get();
+        HubUser hubUser = this.hubUserRepository.findById(input.hubUserId()).orElseThrow(()->new HubUserException(HubUserErrors.USER_NOT_FOUND));
 
         this.hubUserRepository.save(
                 hubUser.name(input.name())

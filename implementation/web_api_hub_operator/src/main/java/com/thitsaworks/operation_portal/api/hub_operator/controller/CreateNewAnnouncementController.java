@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewAnnouncement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,7 @@ public class CreateNewAnnouncementController {
     @PostMapping(value = "/secured/create_new_announcement")
     public ResponseEntity<Response> execute(
             @Valid @RequestBody CreateNewAnnouncementController.Request request)
-            throws OperationPortalException, ParseException, JsonProcessingException {
+            throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info("Create new announcement request: {}", objectMapper.writeValueAsString(request));
 

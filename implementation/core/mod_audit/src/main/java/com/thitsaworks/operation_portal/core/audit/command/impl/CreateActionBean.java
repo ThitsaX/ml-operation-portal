@@ -24,11 +24,11 @@ public class CreateActionBean implements CreateAction {
     public Output execute(Input input) {
 
         Optional<Action> optionalAction =
-                this.actionRepository.findOne(ActionRepository.Filters.withActionName(input.getName()));
+                this.actionRepository.findOne(ActionRepository.Filters.withActionName(input.name()));
 
         if (optionalAction.isEmpty()) {
 
-            Action action = new Action(input.getName());
+            Action action = new Action(input.name());
 
             this.actionRepository.save(action);
 

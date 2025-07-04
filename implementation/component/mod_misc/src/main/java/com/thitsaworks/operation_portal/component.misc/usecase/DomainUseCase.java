@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.component.misc.usecase;
 
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 
 public abstract class DomainUseCase<I, O> implements UseCase<I, O> {
 
-    public O execute(I input) throws OperationPortalException {
+    public O execute(I input) throws DomainException {
 
         O output;
 
@@ -33,12 +33,12 @@ public abstract class DomainUseCase<I, O> implements UseCase<I, O> {
 
     public abstract void onConstruct() throws SystemException;
 
-    protected abstract void afterExecute(O output) throws OperationPortalException;
+    protected abstract void afterExecute(O output) throws DomainException;
 
-    protected abstract void beforeExecute(I input) throws OperationPortalException;
+    protected abstract void beforeExecute(I input) throws DomainException;
 
-    protected abstract OperationPortalException onException(Exception exception);
+    protected abstract DomainException onException(Exception exception);
 
-    protected abstract O onExecute(I input) throws OperationPortalException;
+    protected abstract O onExecute(I input) throws DomainException;
 
 }

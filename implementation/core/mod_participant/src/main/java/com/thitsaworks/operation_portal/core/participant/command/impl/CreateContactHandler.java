@@ -2,15 +2,14 @@ package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +21,12 @@ public class CreateContactHandler implements CreateContact {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws ParticipantNotFoundException {
+    public Output execute(Input input) throws ParticipantException {
 
-        Optional<Participant> optionalParticipant =
-                this.participantRepository.findById(input.participantId());
+        Participant participant = this.participantRepository.findById(input.participantId())
+                                                            .orElseThrow(() -> new ParticipantException(
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
-        if (optionalParticipant.isEmpty()) {
-
-            throw new ParticipantNotFoundException(input.participantId().getId().toString());
-        }
-
-        Participant participant = optionalParticipant.get();
 
         participant.addContact(input.name(), input.title(), input.email(), input.mobile(), input.contactType());
 

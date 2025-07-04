@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
 public interface CreateContact {
 
@@ -13,5 +13,5 @@ public interface CreateContact {
 
     record Output(boolean created) {}
 
-    Output execute(Input input) throws ParticipantNotFoundException;
+    Output execute(Input input) throws ParticipantException;
 }

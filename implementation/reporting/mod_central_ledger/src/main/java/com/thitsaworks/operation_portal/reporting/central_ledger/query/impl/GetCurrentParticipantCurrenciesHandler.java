@@ -3,7 +3,8 @@ package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.CurrencyData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.CurrencyDataMapper;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerErrors;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrentParticipantCurrencies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,7 @@ public class GetCurrentParticipantCurrenciesHandler implements GetCurrentPartici
     }
 
     @Override
-    public Output execute(Input input) throws CentralLedgerFailureException {
+    public Output execute(Input input) throws CentralLedgerException {
 
         List<CurrencyData> results;
         try {
@@ -43,7 +44,7 @@ public class GetCurrentParticipantCurrenciesHandler implements GetCurrentPartici
                 new CurrencyDataMapper(), input.getDfspId());
 
         } catch (Exception e) {
-            throw new CentralLedgerFailureException(e.getMessage());
+            throw new CentralLedgerException(CentralLedgerErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
         }
 
         if (results == null || results.isEmpty()) {

@@ -2,13 +2,13 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.query.FindAccountNumberByDfspCode;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateStatementReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateStatementReport;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class GenerateStatementReportHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws ReportException {
 
         FindAccountNumberByDfspCode.Output accountNumberOutput =
             this.findAccountNumberByDfspCode.execute(new FindAccountNumberByDfspCode.Input(input.fspId(),
@@ -60,7 +60,7 @@ public class GenerateStatementReportHandler
             this.generateStatementReportCommand.execute(new GenerateStatementReportCommand.Input(input.startDate(),
                                                                                                  input.endDate(),
                                                                                                  input.fspId(),
-                                                                                                 accountNumberOutput.getAccountNumber(),
+                                                                                                 accountNumberOutput.accountNumber(),
                                                                                                  input.fileType(),
                                                                                                  input.timezoneOffSet(),
                                                                                                  input.currencyId()));

@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.core.iam.exception.DuplicatePrincipalException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 public interface CreatePrincipal {
 
@@ -26,6 +26,6 @@ public interface CreatePrincipal {
 
     }
 
-    CreatePrincipal.Output execute(CreatePrincipal.Input input) throws DuplicatePrincipalException;
+    CreatePrincipal.Output execute(CreatePrincipal.Input input) throws IAMException;
 
 }

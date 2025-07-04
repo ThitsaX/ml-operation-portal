@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.participant.command;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUserNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
 public interface ModifyParticipantUser {
 
@@ -18,5 +18,6 @@ public interface ModifyParticipantUser {
 
     record Output(ParticipantUserId participantUserId, boolean modified) {}
 
-    ModifyParticipantUser.Output execute(ModifyParticipantUser.Input input) throws ParticipantUserNotFoundException;
+    ModifyParticipantUser.Output execute(ModifyParticipantUser.Input input)
+            throws ParticipantException;
 }

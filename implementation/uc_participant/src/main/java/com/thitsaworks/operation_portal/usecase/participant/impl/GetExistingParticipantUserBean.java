@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.participant.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -44,7 +44,7 @@ public class GetExistingParticipantUserBean extends ParticipantAuditableUseCase<
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws DomainException {
 
         ParticipantUserData participantUserData = this.participantUserQuery.get(input.participantUserId());
 

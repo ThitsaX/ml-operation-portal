@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -31,6 +30,6 @@ public interface GetAllAuditByParticipantQuery {
 
     }
 
-    Output execute(Input input) throws UserNotFoundException;
+    Output execute(Input input);
 
 }

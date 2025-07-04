@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.api.hub_operator.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.api.hub_operator.security.exception.AuthenticationFailureException;
+import com.thitsaworks.operation_portal.api.hub_operator.error.ErrorResponse;
+import com.thitsaworks.operation_portal.api.hub_operator.security.exception.SecurityErrors;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
-import com.thitsaworks.operation_portal.component.misc.spring.SpringRestServiceExceptionHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -12,6 +12,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
@@ -29,12 +31,15 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
-        SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder errorResponseBuilder =
-                SpringContext.getBean(SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder.class);
         ObjectMapper objectMapper = SpringContext.getBean(ObjectMapper.class);
 
+        Map<String, String> i18nErrorMessages = new HashMap<>();
+
+        i18nErrorMessages.put("en", SecurityErrors.AUTHENTICATION_FAILED.description());
+
         response.getWriter().write(objectMapper.writeValueAsString(
-                errorResponseBuilder.build(new AuthenticationFailureException())));
+                new ErrorResponse(SecurityErrors.AUTHENTICATION_FAILED.code(),
+                                  SecurityErrors.AUTHENTICATION_FAILED.description(), i18nErrorMessages)));
 
     }
 

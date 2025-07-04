@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.participant.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -35,7 +35,7 @@ public class GetAllOtherParticipantsBean extends ParticipantUseCase<GetAllOtherP
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws DomainException {
 
         List<ParticipantData> participantDataList =
             this.participantQuery.getOtherParticipants(input.participantId());

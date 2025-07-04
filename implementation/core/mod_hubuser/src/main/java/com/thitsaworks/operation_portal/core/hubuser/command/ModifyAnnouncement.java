@@ -1,8 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AlreadyAnnouncedException;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AnnouncementNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 import java.time.Instant;
 
@@ -20,6 +19,6 @@ public interface ModifyAnnouncement {
             boolean modified) {}
 
     ModifyAnnouncement.Output execute(ModifyAnnouncement.Input input)
-            throws AnnouncementNotFoundException, AlreadyAnnouncedException;
+            throws HubUserException;
 
 }

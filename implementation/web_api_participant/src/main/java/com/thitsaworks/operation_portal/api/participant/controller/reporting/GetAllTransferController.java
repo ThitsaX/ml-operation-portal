@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.participant.security.UserContext;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransfer;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class GetAllTransferController {
             String payeeIdentifierValue,
             String currencyId,
             String transferStateId,
-            String timezone) throws OperationPortalException, ParseException, JsonProcessingException {
+            String timezone) throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info(
                 "Get all transfer filters : fromDate = {}, toDate = {}, transferId ={}, payerFspId = {}, payeeFspId = {}, payerIdentifierTypeId = {}, payeeIdentifierTypeId = {}, payerIdentifierValue = {}, payeeIdentifierValue = {}, currencyId = {}, transferStateId = {}, timezone = {}",

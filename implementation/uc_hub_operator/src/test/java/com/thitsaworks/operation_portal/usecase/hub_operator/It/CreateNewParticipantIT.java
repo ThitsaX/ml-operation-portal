@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.It;
 
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCaseConfiguration;
@@ -31,7 +31,7 @@ public class CreateNewParticipantIT extends BaseVaultSetUpTest {
     private CreateNewParticipant createNewParticipant;
 
     @Test
-    public void success() throws OperationPortalException {
+    public void success() throws DomainException {
         var input = new CreateNewParticipant.Input(
                 "John Doe",
                 new DfspCode("jeew"),

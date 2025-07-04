@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.core.iam.command;
 
-import com.thitsaworks.operation_portal.core.iam.exception.PasswordAuthenticationFailureException;
-import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException;
 
 public interface ChangePassword {
 
@@ -14,6 +14,6 @@ public interface ChangePassword {
 
     }
 
-    Output execute(Input input) throws PasswordAuthenticationFailureException, PrincipalNotFoundException;
+    Output execute(Input input) throws IAMException, IAMIgnorableException;
 
 }

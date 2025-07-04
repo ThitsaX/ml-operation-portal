@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.common.GetAllAudit;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class GetAllAuditController {
 
     @PostMapping("/secured/get_all_audit")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Get all audit request : {}", this.objectMapper.writeValueAsString(request));
 

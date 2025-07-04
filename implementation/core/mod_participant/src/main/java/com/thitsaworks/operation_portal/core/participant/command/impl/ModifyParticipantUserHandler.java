@@ -2,15 +2,14 @@ package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUser;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUserNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,17 +21,11 @@ public class ModifyParticipantUserHandler implements ModifyParticipantUser {
 
     @Override
     @CoreWriteTransactional
-    public ModifyParticipantUser.Output execute(Input input) throws ParticipantUserNotFoundException {
+    public ModifyParticipantUser.Output execute(Input input) throws ParticipantException {
 
-        Optional<ParticipantUser> optionalUser = this.participantUserRepository.findById(input.participantUserId());
-
-        if (optionalUser.isEmpty()) {
-
-            throw new ParticipantUserNotFoundException(input.participantUserId().getId().toString());
-
-        }
-
-        ParticipantUser participantUser = optionalUser.get();
+        ParticipantUser participantUser = this.participantUserRepository.findById(input.participantUserId())
+                                                            .orElseThrow(() -> new ParticipantException(
+                                                                    ParticipantErrors.USER_NOT_FOUND));
 
         this.participantUserRepository.save(
                 participantUser.name(input.name())

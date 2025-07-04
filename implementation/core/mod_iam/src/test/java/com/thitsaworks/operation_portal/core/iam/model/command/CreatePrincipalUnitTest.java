@@ -6,9 +6,9 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipal;
-import com.thitsaworks.operation_portal.core.iam.exception.DuplicatePrincipalException;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ public class CreatePrincipalUnitTest {
     private CreatePrincipal createPrincipal;
 
     @Test
-    public void test_createPrincipalSuccessfully() throws DuplicatePrincipalException {
+    public void test_createPrincipalSuccessfully() throws DomainException {
 
         this.createPrincipal.execute(
                 new CreatePrincipal.Input(new PrincipalId(1L),

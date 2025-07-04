@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.core.hubuser.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncement;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AlreadyAnnouncedException;
-import com.thitsaworks.operation_portal.core.hubuser.exception.AnnouncementNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
 import com.thitsaworks.operation_portal.core.hubuser.model.repository.AnnouncementRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,22 +24,18 @@ public class ModifyAnnouncementHandler implements ModifyAnnouncement {
     @Override
     @CoreWriteTransactional
     public ModifyAnnouncement.Output execute(ModifyAnnouncement.Input input)
-            throws AnnouncementNotFoundException, AlreadyAnnouncedException {
+            throws HubUserException {
 
-        Optional<Announcement> optionalAnnouncement = this.announcementRepository.findById(input.announcementId());
-
-        if (optionalAnnouncement.isEmpty()) {
-            throw new AnnouncementNotFoundException(input.announcementId().getId().toString());
-        }
+        Announcement announcement =
+                this.announcementRepository.findById(input.announcementId()).orElseThrow(() -> new HubUserException(
+                        HubUserErrors.ANNOUNCEMENT_NOT_FOUND));
 
         Optional<Announcement> optionalAnnouncementTitle = this.announcementRepository.findOne(
                 AnnouncementRepository.Filters.findByAnnouncementTitle(input.announcementTitle()));
 
-        Announcement announcement = optionalAnnouncement.get();
-
         if (optionalAnnouncementTitle.isPresent() &&
                 !optionalAnnouncementTitle.get().getAnnouncementId().equals(announcement.getAnnouncementId())) {
-            throw new AlreadyAnnouncedException(input.announcementTitle());
+            throw new HubUserException(HubUserErrors.ALREADY_ANNOUNCED);
         }
 
         this.announcementRepository.save(announcement.announcementTitle(input.announcementTitle())

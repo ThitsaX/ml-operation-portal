@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewParticipantUser;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class CreateNewParticipantUserController {
 
     @PostMapping("/secured/create_new_participant_user")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws JsonProcessingException, OperationPortalException {
+            throws JsonProcessingException, DomainException {
 
         LOG.info("Create new participant user request : {}", this.objectMapper.writeValueAsString(request));
 

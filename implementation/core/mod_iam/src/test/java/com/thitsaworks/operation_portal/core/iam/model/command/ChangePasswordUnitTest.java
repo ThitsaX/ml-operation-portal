@@ -1,9 +1,8 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.iam.command.ChangePassword;
-import com.thitsaworks.operation_portal.core.iam.exception.PasswordAuthenticationFailureException;
-import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import org.junit.jupiter.api.Test;
@@ -21,8 +20,7 @@ public class ChangePasswordUnitTest extends EnvAwareUnitTest {
     private ChangePassword changePassword;
 
     @Test
-    public void test_ChangePasswordSuccessfully() throws PasswordAuthenticationFailureException,
-                                                         PrincipalNotFoundException {
+    public void test_ChangePasswordSuccessfully() throws DomainException {
 
         this.changePassword.execute(
                 new ChangePassword.Input(new PrincipalId(Long.parseLong("392628367895068672")), "testpassword",
@@ -31,7 +29,7 @@ public class ChangePasswordUnitTest extends EnvAwareUnitTest {
 
     @Test //expected = PasswordAuthenticationFailureException.class
     public void test_PasswordAuthenticationFailureException()
-            throws PasswordAuthenticationFailureException, PrincipalNotFoundException {
+            throws DomainException {
 
         this.changePassword.execute(
                 new ChangePassword.Input(new PrincipalId(Long.parseLong("343028466997653504")), "testpassword",

@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -55,7 +55,7 @@ public class GetExistingAnnouncementHandler
 
     @Override
     public GetExistingAnnouncement.Output onExecute(GetExistingAnnouncement.Input input) throws
-                                                                                         OperationPortalException {
+                                                                                         DomainException {
 
         AnnouncementData announcementData = this.announcementQuery.get(input.announcementId());
 

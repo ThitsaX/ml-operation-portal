@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.hub_operator.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyParticipantShortName;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -34,7 +34,7 @@ public class ModifyParticipantShortNameController {
 
     @PostMapping(value = "/secured/modify_participant_shortName")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Modify participant shortName request: {}", objectMapper.writeValueAsString(request));
 

@@ -5,8 +5,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
@@ -16,9 +16,10 @@ import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.exception.AuditNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +75,7 @@ public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<
     }
 
     @Override
-    protected void afterExecute(O output) throws OperationPortalException {
+    protected void afterExecute(O output) throws DomainException {
 
         var auditId = CentralLedgerAuditableUseCase.auditId.get();
 
@@ -104,7 +105,7 @@ public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<
     }
 
     @Override
-    protected void beforeExecute(I input) throws OperationPortalException {
+    protected void beforeExecute(I input) throws DomainException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
@@ -120,7 +121,7 @@ public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<
         if (!PERMITTED_ROLES.contains(userRole)) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(this.getName());
+            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
         }
 
         /*
@@ -149,10 +150,10 @@ public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<
     }
 
     @Override
-    protected OperationPortalException onException(Exception exception) {
+    protected DomainException onException(Exception exception) {
 
-        String exceptionMessage = (exception instanceof OperationPortalException e)
-                                      ? e.errorCode() + " - " + e.defaultErrorMessage()
+        String exceptionMessage = (exception instanceof DomainException e)
+                                      ? e.getErrorMessage().code() + " - " + e.getErrorMessage().description()
                                       : exception.getMessage();
 
         var auditId = CentralLedgerAuditableUseCase.auditId.get();
@@ -163,13 +164,13 @@ public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<
                 var input = new CreateExceptionAuditCommand.Input(auditId, exceptionMessage);
                 this.createExceptionAuditCommand.execute(input);
 
-            } catch (AuditNotFoundException e) {
-                LOGGER.info("Audit Exception: [{}]", e.defaultErrorMessage());
+            } catch (AuditException e) {
+                LOGGER.info("Audit Exception: [{}]", e.getErrorMessage().description());
             }
         }
 
-        if (exception instanceof OperationPortalException) {
-            return (OperationPortalException) exception;
+        if (exception instanceof DomainException) {
+            return (DomainException) exception;
         }
 
         throw new RuntimeException(exception);

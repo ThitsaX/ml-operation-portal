@@ -3,14 +3,15 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ResetPassword;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.ResetCurrentPassword;
@@ -54,15 +55,14 @@ public class ResetCurrentPasswordHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws DomainException {
 
         ParticipantUserData participantUserData =
             this.participantUserQuery.get(input.email());
 
         if (participantUserData.participantUserId() == null) {
 
-            throw new EmailNotFoundException(input.email()
-                                                  .getValue());
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
         ResetPassword.Output resetPasswordOutput = this.resetPassword.execute(

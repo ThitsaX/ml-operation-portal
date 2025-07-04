@@ -5,7 +5,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.LiquidityPro
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
-import com.thitsaworks.operation_portal.core.participant.exception.LiquidityProfileNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.LiquidityProfile;
 import com.thitsaworks.operation_portal.core.participant.model.QLiquidityProfile;
 import com.thitsaworks.operation_portal.core.participant.model.repository.LiquidityProfileRepository;
@@ -42,7 +43,7 @@ public class LiquidityProfileJpaQueryHandler implements LiquidityProfileQuery {
     }
 
     @Override
-    public LiquidityProfileData get(LiquidityProfileId liquidityProfileId) throws LiquidityProfileNotFoundException {
+    public LiquidityProfileData get(LiquidityProfileId liquidityProfileId) throws ParticipantException {
 
         BooleanExpression predicate = this.liquidityProfile.liquidityProfileId.eq(liquidityProfileId);
 
@@ -50,7 +51,7 @@ public class LiquidityProfileJpaQueryHandler implements LiquidityProfileQuery {
 
         if (optionalLiquidityProfile.isEmpty()) {
 
-            throw new LiquidityProfileNotFoundException(liquidityProfileId.getId().toString());
+            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND);
         }
 
         return new LiquidityProfileData(optionalLiquidityProfile.get());

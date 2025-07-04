@@ -1,34 +1,15 @@
 package com.thitsaworks.operation_portal.api.hub_operator.security.exception;
 
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import lombok.NoArgsConstructor;
 
-import java.text.MessageFormat;
-
 @NoArgsConstructor
-public class AccessDeniedException extends OperationPortalException {
+public class AccessDeniedException extends DomainException {
 
-    public AccessDeniedException(String params) {
+    public AccessDeniedException(ErrorMessage errorMessage) {
 
-        super(params);
-    }
-
-    @Override
-    public String errorCode() {
-
-        return "ACCESS_DENIED";
-    }
-
-    @Override
-    public String defaultErrorMessage() {
-
-        return MessageFormat.format("Account is denied for accessKey : ({0})", this.params);
-    }
-
-    @Override
-    public boolean requireTranslation() {
-
-        return true;
+        super(errorMessage);
     }
 
 }

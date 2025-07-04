@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -10,6 +9,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -62,7 +62,7 @@ public class GetExistingParticipantHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws ParticipantException {
 
         ParticipantData participantData = this.participantQuery.get(input.participantId());
 

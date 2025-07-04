@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -14,8 +14,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipal;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
-import com.thitsaworks.operation_portal.core.iam.exception.UnauthorizedCreationException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUser;
 import com.thitsaworks.operation_portal.usecase.ParticipantAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.participant.RemoveExistingParticipantUser;
@@ -58,7 +58,7 @@ public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCa
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws DomainException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
@@ -67,14 +67,14 @@ public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCa
 
         if (principalData == null) {
 
-            throw new PrincipalNotFoundException();
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         } else {
 
             if (principalData.realmId() != null &&
                     !principalData.realmId().getId().equals(input.participantId().getId())) {
 
-                throw new UnauthorizedCreationException();
+                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
         }
 

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.io.Serializable;
 import java.util.Map;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class SpringRestServiceExceptionHandler {
 
     @Autowired

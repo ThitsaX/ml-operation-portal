@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetTransferDetails;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class GetTransferDetailsController {
 
     @GetMapping("/secured/get_transfer_detail")
     public ResponseEntity<Response> execute(@Valid @RequestParam String transferId, String timezone)
-            throws OperationPortalException, ParseException, JsonProcessingException {
+            throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info("Get transfer detail filters : transferId = {}, timezone = {}", transferId, timezone);
 

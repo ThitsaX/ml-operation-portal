@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.hubuser.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailAlreadyRegisteredException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 public interface CreateHubUser {
 
@@ -14,5 +14,5 @@ public interface CreateHubUser {
 
     record Output(boolean created, HubUserId hubUserId) {}
 
-    Output execute(Input input) throws EmailAlreadyRegisteredException;
+    Output execute(Input input) throws HubUserException;
 }

@@ -1,7 +1,8 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
@@ -36,7 +37,7 @@ public class DfspDailyTransactionTrendSummary {
 
     public void generate(String fspId, String startdate, String enddate, String fileType,
                          OutputStream destination)
-        throws ReportFailureException {
+            throws ReportException {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -99,7 +100,7 @@ public class DfspDailyTransactionTrendSummary {
             }
         } catch (Exception e) {
 
-            throw new ReportFailureException(e.getMessage());
+            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
         } finally {
         }
 

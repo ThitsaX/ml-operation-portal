@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.participant.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.common.ChangeCurrentPassword;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +35,7 @@ public class ChangeCurrentPasswordController {
 
     @PostMapping(value = "/secured/change_password")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Change password request : {}", objectMapper.writeValueAsString(request));
 

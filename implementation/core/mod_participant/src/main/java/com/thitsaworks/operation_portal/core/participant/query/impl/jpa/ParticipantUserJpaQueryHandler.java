@@ -6,8 +6,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantU
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.exception.EmailNotFoundException;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUserNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipantUser;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantUserRepository;
@@ -44,7 +44,7 @@ public class ParticipantUserJpaQueryHandler implements ParticipantUserQuery {
     }
 
     @Override
-    public ParticipantUserData get(ParticipantUserId participantUserId) throws ParticipantUserNotFoundException {
+    public ParticipantUserData get(ParticipantUserId participantUserId) throws ParticipantException {
 
         BooleanExpression predicate = this.participantUser.participantUserId.eq(participantUserId);
 
@@ -52,14 +52,14 @@ public class ParticipantUserJpaQueryHandler implements ParticipantUserQuery {
 
         if (optionalParticipantUser.isEmpty()) {
 
-            throw new ParticipantUserNotFoundException(participantUserId.getId().toString());
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
         }
 
         return new ParticipantUserData(optionalParticipantUser.get());
     }
 
     @Override
-    public ParticipantUserData get(Email email) throws EmailNotFoundException {
+    public ParticipantUserData get(Email email) throws ParticipantException {
 
         BooleanExpression predicate = this.participantUser.email.eq(email);
 
@@ -67,7 +67,7 @@ public class ParticipantUserJpaQueryHandler implements ParticipantUserQuery {
 
         if (optionalParticipantUser.isEmpty()) {
 
-            throw new EmailNotFoundException(email.toString());
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
         return new ParticipantUserData(optionalParticipantUser.get());

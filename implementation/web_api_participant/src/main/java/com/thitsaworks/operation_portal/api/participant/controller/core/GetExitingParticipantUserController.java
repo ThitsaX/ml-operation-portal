@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.participant.GetExistingParticipantUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -30,7 +30,7 @@ public class GetExitingParticipantUserController {
 
     @GetMapping("/secured/get_exiting_participant_user")
     public ResponseEntity<Response> execute(@Valid @RequestParam String participantUserId)
-            throws OperationPortalException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info("Get participant user request : participantUserId = {}", participantUserId);
 

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.participant.GetAllOtherParticipants;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public class GetAllOtherParticipantsController {
 
     @GetMapping("/secured/get_all_other_participants")
     public ResponseEntity<Response> execute(
-            @RequestParam("participant_id") String participantId) throws OperationPortalException, JsonProcessingException {
+            @RequestParam("participant_id") String participantId) throws DomainException, JsonProcessingException {
 
         LOG.info("Get all participants request : participantId = {}", participantId);
 

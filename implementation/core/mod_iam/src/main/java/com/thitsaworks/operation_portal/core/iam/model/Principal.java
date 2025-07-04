@@ -10,7 +10,8 @@ import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.util.Snowflake;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.exception.PasswordAuthenticationFailureException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -80,13 +81,13 @@ public class Principal extends JpaEntity<AccessKey> {
 
     }
 
-    public SecurityToken authenticate(String sha256PasswordHex) throws PasswordAuthenticationFailureException {
+    public SecurityToken authenticate(String sha256PasswordHex) throws IAMIgnorableException {
 
         try {
 
             if (!OperationPortalCrypto.sha256Hex(sha256PasswordHex).equals(this.sha256PasswordHex)) {
 
-                throw new PasswordAuthenticationFailureException();
+                throw new IAMIgnorableException(IAMErrors.PASSWORD_AUTHENTICATION_FAILURE);
             }
 
             return this.generate();
@@ -98,11 +99,11 @@ public class Principal extends JpaEntity<AccessKey> {
     }
 
     public SecurityToken change(String newPasswordSha256Hex, String oldPasswordSha256Hex)
-            throws PasswordAuthenticationFailureException {
+            throws IAMIgnorableException {
 
         if (!OperationPortalCrypto.sha256Hex(oldPasswordSha256Hex).equals(this.sha256PasswordHex)) {
 
-            throw new PasswordAuthenticationFailureException();
+            throw new IAMIgnorableException(IAMErrors.PASSWORD_AUTHENTICATION_FAILURE);
         }
 
         this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(newPasswordSha256Hex);

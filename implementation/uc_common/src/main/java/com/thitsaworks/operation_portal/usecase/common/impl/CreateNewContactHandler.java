@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewContact;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class CreateNewContactHandler extends CommonAuditableUseCase<CreateNewCon
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws ParticipantException {
 
         for (Input.ContactInfo contactInfo : input.contactInfoList()) {
 

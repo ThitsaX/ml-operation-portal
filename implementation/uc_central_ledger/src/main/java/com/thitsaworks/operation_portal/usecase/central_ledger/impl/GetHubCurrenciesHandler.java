@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrencies;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetHubCurrencies;
@@ -32,7 +32,7 @@ public class GetHubCurrenciesHandler extends CentralLedgerUseCase<GetHubCurrenci
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws CentralLedgerException {
 
         GetCurrencies.Output output = this.getCurrencies.execute(new GetCurrencies.Input());
 

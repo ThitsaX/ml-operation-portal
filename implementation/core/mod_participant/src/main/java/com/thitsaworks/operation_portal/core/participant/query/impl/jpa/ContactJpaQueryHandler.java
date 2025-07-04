@@ -5,7 +5,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
-import com.thitsaworks.operation_portal.core.participant.exception.ContactNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.Contact;
 import com.thitsaworks.operation_portal.core.participant.model.QContact;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ContactRepository;
@@ -41,7 +42,7 @@ public class ContactJpaQueryHandler implements ContactQuery {
     }
 
     @Override
-    public ContactData get(ContactId contactId) throws ContactNotFoundException {
+    public ContactData get(ContactId contactId) throws ParticipantException {
 
         BooleanExpression predicate = this.contact.contactId.eq(contactId);
 
@@ -49,7 +50,7 @@ public class ContactJpaQueryHandler implements ContactQuery {
 
         if (optionalContact.isEmpty()) {
 
-            throw new ContactNotFoundException(contactId.getId().toString());
+            throw new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND);
         }
 
         return new ContactData(optionalContact.get());

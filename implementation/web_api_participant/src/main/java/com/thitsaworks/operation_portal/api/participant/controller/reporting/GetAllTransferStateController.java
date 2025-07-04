@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransferState;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class GetAllTransferStateController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/get_all_transfer_state")
-    public ResponseEntity<Response> execute() throws OperationPortalException,
+    public ResponseEntity<Response> execute() throws DomainException,
                                                      JsonProcessingException {
 
         LOG.info("Get all transfer state request : {}", "");

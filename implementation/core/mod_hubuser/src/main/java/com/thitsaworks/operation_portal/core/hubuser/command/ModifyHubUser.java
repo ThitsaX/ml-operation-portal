@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserNotFoundException;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 public interface ModifyHubUser {
 
@@ -14,6 +14,6 @@ public interface ModifyHubUser {
 
     record Output(HubUserId hubUserId, boolean modified) {}
 
-    Output execute(Input input) throws HubUserNotFoundException;
+    Output execute(Input input) throws HubUserException;
 
 }

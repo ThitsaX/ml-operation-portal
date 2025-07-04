@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.iam.command;
 
-import com.thitsaworks.operation_portal.core.iam.exception.PrincipalNotFoundException;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 public interface ResetPassword {
 
@@ -20,6 +20,6 @@ public interface ResetPassword {
 
     }
 
-    Output execute(Input input) throws PrincipalNotFoundException;
+    Output execute(Input input) throws IAMException;
 
 }

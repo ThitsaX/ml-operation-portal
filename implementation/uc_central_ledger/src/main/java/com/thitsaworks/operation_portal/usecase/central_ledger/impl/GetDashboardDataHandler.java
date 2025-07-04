@@ -1,14 +1,13 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantUserNotFoundException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetFinancialData;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetDashboardData;
@@ -47,24 +46,20 @@ public class GetDashboardDataHandler extends CentralLedgerUseCase<GetDashboardDa
     }
 
     @Override
-    protected Output onExecute(Input input) throws OperationPortalException {
+    protected Output onExecute(Input input) throws ParticipantException {
 
         ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 
         if (participantUserData == null) {
 
-            throw new ParticipantUserNotFoundException(input.participantUserId()
-                                                            .getId()
-                                                            .toString());
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
         }
 
         ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantNotFoundException(participantUserData.participantUserId()
-                                                                      .getId()
-                                                                      .toString());
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
         }
 
         String

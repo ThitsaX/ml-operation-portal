@@ -3,7 +3,8 @@ package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.IDTypeData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.IDTypeDataMapper;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerErrors;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetIDTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,7 @@ public class GetIDTypesHandler implements GetIDTypes {
     }
 
     @Override
-    public Output execute(Input input) throws CentralLedgerFailureException {
+    public Output execute(Input input) throws CentralLedgerException {
 
         List<IDTypeData> results;
         try {
@@ -39,7 +40,7 @@ public class GetIDTypesHandler implements GetIDTypes {
                 new IDTypeDataMapper());
 
         } catch (Exception e) {
-            throw new CentralLedgerFailureException(e.getMessage());
+            throw new CentralLedgerException(CentralLedgerErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
         }
 
         if (results == null || results.isEmpty()) {

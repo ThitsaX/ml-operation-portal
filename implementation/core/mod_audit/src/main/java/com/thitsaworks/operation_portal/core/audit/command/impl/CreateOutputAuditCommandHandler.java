@@ -2,7 +2,8 @@ package com.thitsaworks.operation_portal.core.audit.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.exception.AuditNotFoundException;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditErrors;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditException;
 import com.thitsaworks.operation_portal.core.audit.model.repository.AuditRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,14 +20,12 @@ public class CreateOutputAuditCommandHandler implements CreateOutputAuditCommand
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws AuditNotFoundException {
+    public Output execute(Input input) throws AuditException {
 
         var
             audit =
             this.auditRepository.findById(input.auditId())
-                                .orElseThrow(() -> new AuditNotFoundException(input.auditId()
-                                                                                   .getEntityId()
-                                                                                   .toString()));
+                                .orElseThrow(() -> new AuditException(AuditErrors.AUDIT_NOT_FOUND));
 
         audit.outputInfo(input.outputInfo());
 

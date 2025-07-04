@@ -27,7 +27,7 @@ public class CreateActionUnitTest {
         CreateAction.Output output = this.createAction.execute(new CreateAction.Input(this.getClass()
                                                                                           .getSimpleName()));
 
-        LOG.info("Action Id : " + output.getActionId() + " , Created : " + output.isCreated());
+        LOG.info("Action Id : " + output.actionId() + " , Created : " + output.created());
     }
 
 }

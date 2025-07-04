@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 public interface ModifyExistingHubUser

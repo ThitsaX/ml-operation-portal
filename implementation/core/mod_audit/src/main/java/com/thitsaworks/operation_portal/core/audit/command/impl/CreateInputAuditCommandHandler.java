@@ -26,6 +26,7 @@ public class CreateInputAuditCommandHandler implements CreateInputAuditCommand {
     public Output execute(Input input) {
 
         var action = new Action(input.actionName());
+
         this.actionRepository.save(action);
 
         Audit audit = new Audit(action.getActionId(), input.actionBy(),

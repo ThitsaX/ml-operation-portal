@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.core.audit.model.query;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditByParticipantAndUserQuery;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ public class GetAuditByParticipantAndUserQueryUnitTest extends EnvAwareUnitTest 
     private GetAuditByParticipantAndUserQuery getAuditByParticipantAndUserQuery;
 
     @Test
-    public void test_getAuditsSuccessfully() throws UserNotFoundException {
+    public void test_getAuditsSuccessfully(){
 
         GetAuditByParticipantAndUserQuery.Output output = this.getAuditByParticipantAndUserQuery.execute(new GetAuditByParticipantAndUserQuery.Input(null, null, null, null));
 
