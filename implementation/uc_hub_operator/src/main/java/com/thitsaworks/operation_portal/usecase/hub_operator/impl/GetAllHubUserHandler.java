@@ -1,35 +1,55 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllHubUser;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetAllHubUserHandler extends GetAllHubUser {
+public class GetAllHubUserHandler extends HubOperatorAuditableUseCase<GetAllHubUser.Input, GetAllHubUser.Output>
+    implements GetAllHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllHubUserHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
+                                                                    UserRoleType.ADMIN,
+                                                                    UserRoleType.REPORTING,
+                                                                    UserRoleType.OPERATION);
+
     private final HubUserQuery hubUserQuery;
 
-    private final ObjectMapper objectMapper;
+    public GetAllHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                CreateOutputAuditCommand createOutputAuditCommand,
+                                CreateExceptionAuditCommand createExceptionAuditCommand,
+                                ObjectMapper objectMapper,
+                                PrincipalCache principalCache,
+                                HubUserQuery hubUserQuery) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.hubUserQuery = hubUserQuery;
+    }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    public Output onExecute(Input input) {
 
         List<HubUserData> hubUserDataList = this.hubUserQuery.getHubUsers();
 
@@ -47,52 +67,6 @@ public class GetAllHubUserHandler extends GetAllHubUser {
         }
 
         return new GetAllHubUser.Output(userInfoList);
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetAllHubUser.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_hub_operator";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllHubUser.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public void onAudit(Input input, Output output) throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GetAllHubUser.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

@@ -4,10 +4,13 @@ import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourc
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
+import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
+@Import({VaultSetting.class, VaultConfiguration.class})
 public class TestSettings {
     @Bean
     public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {

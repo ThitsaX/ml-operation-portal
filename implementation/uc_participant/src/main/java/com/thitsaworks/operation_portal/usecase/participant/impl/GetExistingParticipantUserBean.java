@@ -1,36 +1,50 @@
 package com.thitsaworks.operation_portal.usecase.participant.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.usecase.ParticipantAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.participant.GetExistingParticipantUser;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@RequiredArgsConstructor
-public class GetExistingParticipantUserBean extends GetExistingParticipantUser {
+public class GetExistingParticipantUserBean extends ParticipantAuditableUseCase<GetExistingParticipantUser.Input,GetExistingParticipantUser.Output> implements GetExistingParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantUserBean.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
+
     private final ParticipantUserQuery participantUserQuery;
 
-    private final ObjectMapper objectMapper;
+    public GetExistingParticipantUserBean(CreateInputAuditCommand createInputAuditCommand,
+                                          CreateOutputAuditCommand createOutputAuditCommand,
+                                          CreateExceptionAuditCommand createExceptionAuditCommand,
+                                          ObjectMapper objectMapper,
+                                          PrincipalCache principalCache,
+                                          ParticipantUserQuery participantUserQuery) {
 
-    private final PrincipalCache principalCache;
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+        this.participantUserQuery = participantUserQuery;
+
+    }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         ParticipantUserData participantUserData = this.participantUserQuery.get(input.participantUserId());
 
@@ -43,61 +57,6 @@ public class GetExistingParticipantUserBean extends GetExistingParticipantUser {
                           participantUserData.participantId(),
                           participantUserData.createdDate(),
                           participantUserData.dfspCode().getValue());
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetExistingParticipantUser.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_participant";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetExistingParticipantUser.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case ADMIN -> true;
-            case OPERATION, SUPERUSER, REPORTING -> false;
-        };
 
     }
-
-    @Override
-    public void onAudit(Input input, Output output) {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GetExistingParticipantUser.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
-    }
-
 }

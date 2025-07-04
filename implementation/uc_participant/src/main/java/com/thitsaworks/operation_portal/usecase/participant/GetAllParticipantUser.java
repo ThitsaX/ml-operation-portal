@@ -2,21 +2,21 @@ package com.thitsaworks.operation_portal.usecase.participant;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public abstract class GetAllParticipantUser extends
-        AbstractAuditableUseCase<GetAllParticipantUser.Input, GetAllParticipantUser.Output> {
+public interface GetAllParticipantUser extends
+                                       UseCase<GetAllParticipantUser.Input, GetAllParticipantUser.Output> {
 
-    public record Input(ParticipantId participantId) {}
+     record Input(ParticipantId participantId) {}
 
-    public record Output(List<UserInfo> userInfoList) {}
+     record Output(List<UserInfo> userInfoList) {}
 
-    public record UserInfo(
+     record UserInfo(
             ParticipantUserId participantUserId,
             String name,
             Email email,

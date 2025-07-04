@@ -2,15 +2,15 @@ package com.thitsaworks.operation_portal.usecase.participant;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 
-public abstract class GetUserProfile extends
-        AbstractOwnableUseCase<GetUserProfile.Input, GetUserProfile.Output> {
+public interface GetUserProfile extends
+                                UseCase<GetUserProfile.Input, GetUserProfile.Output> {
 
-    public record Input(ParticipantUserId participantUserId) {}
+    record Input(ParticipantUserId participantUserId) {}
 
-    public record Output(
+    record Output(
             ParticipantUserId participantUserId,
             String name,
             Email email,

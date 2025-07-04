@@ -22,7 +22,7 @@ public class CreateParticipantHandler implements CreateParticipant {
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws ParticipantAlreadyRegisteredException {
 
         Optional<Participant> participantByDfspCode = this.participantRepository.findByDfspCode(input.dfspCode());
 

@@ -33,6 +33,7 @@ public class GetExitingParticipantUserController {
             throws OperationPortalException, JsonProcessingException {
 
         LOG.info("Get participant user request : participantUserId = {}", participantUserId);
+
         var output = this.getExistingParticipantUser.execute(
                 new GetExistingParticipantUser.Input(new ParticipantUserId(Long.parseLong(participantUserId))));
         var response = new Response(output.participantUserId().getId().toString(),

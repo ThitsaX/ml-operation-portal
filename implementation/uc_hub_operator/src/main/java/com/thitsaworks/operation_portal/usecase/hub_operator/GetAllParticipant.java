@@ -2,18 +2,19 @@ package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public abstract class GetAllParticipant
-        extends AbstractAuditableUseCase<GetAllParticipant.Input, GetAllParticipant.Output> {
+public interface GetAllParticipant
+    extends UseCase<GetAllParticipant.Input, GetAllParticipant.Output> {
 
-    public record Input() {}
+    record Input() {}
 
-    public record Output(List<ParticipantInfo> participantInfoList) {
+    record Output(List<ParticipantInfo> participantInfoList) {
         public record ParticipantInfo(
                 ParticipantId participantId,
                 String dfsp_code,

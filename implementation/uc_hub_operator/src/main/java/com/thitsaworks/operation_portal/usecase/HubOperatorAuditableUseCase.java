@@ -1,0 +1,173 @@
+package com.thitsaworks.operation_portal.usecase;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
+import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.DomainUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditNotFoundException;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
+
+public abstract class HubOperatorAuditableUseCase<I, O> extends DomainUseCase<I, O> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HubOperatorAuditableUseCase.class);
+
+    private static final ThreadLocal<AuditId> auditId = new InheritableThreadLocal<>();
+
+    private final Set<UserRoleType> PERMITTED_ROLES;
+
+    private final ObjectMapper objectMapper;
+
+    private final CreateInputAuditCommand createInputAuditCommand;
+
+    private final CreateOutputAuditCommand createOutputAuditCommand;
+
+    private final CreateExceptionAuditCommand createExceptionAuditCommand;
+
+    private final PrincipalCache principalCache;
+
+    public HubOperatorAuditableUseCase(CreateInputAuditCommand createInputAuditCommand,
+                                       CreateOutputAuditCommand createOutputAuditCommand,
+                                       CreateExceptionAuditCommand createExceptionAuditCommand,
+                                       Set<UserRoleType> permittedRoles,
+                                       ObjectMapper objectMapper,
+                                       PrincipalCache principalCache) {
+
+        this.createInputAuditCommand = createInputAuditCommand;
+        this.createOutputAuditCommand = createOutputAuditCommand;
+        this.createExceptionAuditCommand = createExceptionAuditCommand;
+        this.PERMITTED_ROLES = permittedRoles;
+        this.objectMapper = objectMapper;
+        this.principalCache = principalCache;
+    }
+
+    @Override
+    public String getName() {
+
+        return this.getClass()
+                   .getSimpleName()
+                   .replaceFirst("Handler", "");
+    }
+
+    @PostConstruct
+    @Override
+    public void onConstruct() throws SystemException {
+
+        // Do nothing...
+    }
+
+    @Override
+    protected void afterExecute(O output) throws OperationPortalException {
+
+        var auditId = HubOperatorAuditableUseCase.auditId.get();
+
+        // Logging
+        String outputJson, outputInfo;
+
+        try {
+
+            outputJson = this.objectMapper.writeValueAsString(output);
+            outputInfo = MaskPassword.maskPassword(this.objectMapper, outputJson);
+
+        } catch (Exception e) {
+
+            throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
+        }
+
+        if (auditId != null) {
+
+            this.createOutputAuditCommand.execute(new CreateOutputAuditCommand.Input(auditId,
+                                                                                     outputInfo));
+
+        }
+
+    }
+
+    @Override
+    protected void beforeExecute(I input) throws OperationPortalException {
+
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        PrincipalData principalData =
+            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+
+        /*
+         * Authorization Check:
+         * Ensures the current user has the required role(s) (e.g., ADMIN, OPERATION)
+         * to access or perform this operation. Denies access if insufficient privileges.
+         */
+        var userRole = principalData.userRoleType();
+        if (!PERMITTED_ROLES.contains(userRole)) {
+
+            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
+            throw new UnauthorizedActionException(this.getName());
+        }
+
+        /*
+         * Audit Logging:
+         * Logs input parameters and output results for auditing and traceability.
+         */
+        String inputJson, inputInfo;
+        try {
+
+            inputJson = this.objectMapper.writeValueAsString(input);
+            inputInfo = MaskPassword.maskPassword(this.objectMapper, inputJson);
+
+        } catch (Exception e) {
+
+            throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
+        }
+
+        var principalId = principalData.principalId();
+
+        HubOperatorAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(this.getName(),
+                                                                                                                       new UserId(
+                                                                                                                      principalId.getId()),
+                                                                                                                       principalData.realmId(),
+                                                                                                                       inputInfo))
+                                                                            .auditId());
+    }
+
+    @Override
+    protected OperationPortalException onException(Exception exception) {
+
+        String exceptionMessage = (exception instanceof OperationPortalException e)
+                                      ? e.errorCode() + " - " + e.defaultErrorMessage()
+                                      : exception.getMessage();
+
+        var auditId = HubOperatorAuditableUseCase.auditId.get();
+
+        if (auditId != null) {
+            try {
+                var input = new CreateExceptionAuditCommand.Input(auditId, exceptionMessage);
+                this.createExceptionAuditCommand.execute(input);
+            } catch (AuditNotFoundException e) {
+                LOGGER.info("Audit Exception: [{}]", e.defaultErrorMessage());
+            }
+        }
+
+        if (exception instanceof OperationPortalException) {
+            return (OperationPortalException) exception;
+        }
+
+        throw new RuntimeException(exception);
+    }
+
+}

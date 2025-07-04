@@ -15,7 +15,8 @@ public abstract class BaseVaultSetUpTest {
         System.setProperty("ENGINE_PATH", "operation_portal");
 
         DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION,
-                new VaultConfiguration.Settings(System.getProperty("VAULT_ADDR"), System.getProperty("VAULT_TOKEN"), System.getProperty("ENGINE_PATH")));
+                new VaultConfiguration.Settings(System.getProperty("VAULT_ADDR"),
+                        System.getProperty("VAULT_TOKEN"),
+                        System.getProperty("ENGINE_PATH")));
     }
-
 }
