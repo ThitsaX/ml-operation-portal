@@ -2,15 +2,15 @@ package com.thitsaworks.operation_portal.usecase.participant;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantInfo;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractOwnableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public abstract class GetAllOtherParticipants
-        extends AbstractOwnableUseCase<GetAllOtherParticipants.Input, GetAllOtherParticipants.Output> {
+public interface GetAllOtherParticipants
+    extends UseCase<GetAllOtherParticipants.Input, GetAllOtherParticipants.Output> {
 
-    public record Input(ParticipantId participantId) {}
+     record Input(ParticipantId participantId) {}
 
-    public record Output(List<ParticipantInfo> participantInfoList) {}
+     record Output(List<ParticipantInfo> participantInfoList) {}
 
 }

@@ -1,56 +1,60 @@
 package com.thitsaworks.operation_portal.usecase.participant.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.usecase.ParticipantAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.participant.GetAllParticipantUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-public class GetAllParticipantUserBean extends GetAllParticipantUser {
+public class GetAllParticipantUserBean extends ParticipantAuditableUseCase<GetAllParticipantUser.Input,GetAllParticipantUser.Output> implements GetAllParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantUserBean.class);
 
-    private final ParticipantUserQuery participantUserQuery;
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final ObjectMapper objectMapper;
+    private final ParticipantUserQuery participantUserQuery;
 
     private final PrincipalCache principalCache;
 
-    @Autowired
-    public GetAllParticipantUserBean(ParticipantUserQuery participantUserQuery,
+    public GetAllParticipantUserBean(CreateInputAuditCommand createInputAuditCommand,
+                                     CreateOutputAuditCommand createOutputAuditCommand,
+                                     CreateExceptionAuditCommand createExceptionAuditCommand,
                                      ObjectMapper objectMapper,
-                                     @Qualifier(CacheQualifiers.DEFAULT) PrincipalCache principalCache) {
+                                     PrincipalCache principalCache,
+                                     ParticipantUserQuery participantUserQuery) {
 
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
         this.participantUserQuery = participantUserQuery;
-        this.objectMapper = objectMapper;
         this.principalCache = principalCache;
     }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         List<ParticipantUserData> participantUserDataList =
-                this.participantUserQuery.getParticipantUsers(input.participantId());
+            this.participantUserQuery.getParticipantUsers(input.participantId());
 
         List<UserInfo> userInfoList = new ArrayList<>();
 
@@ -71,61 +75,6 @@ public class GetAllParticipantUserBean extends GetAllParticipantUser {
         }
 
         return new GetAllParticipantUser.Output(userInfoList);
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetAllParticipantUser.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_participant";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllParticipantUser.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case ADMIN -> true;
-            case OPERATION, SUPERUSER, REPORTING -> false;
-        };
-
-    }
-
-    @Override
-    public void onAudit(Input input, Output output) throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GetAllParticipantUser.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

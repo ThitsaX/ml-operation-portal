@@ -27,6 +27,7 @@ public class GetAllOtherParticipantsController {
     private static final Logger LOG = LoggerFactory.getLogger(GetAllOtherParticipantsController.class);
 
     private final GetAllOtherParticipants getAllOtherParticipants;
+
     private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/get_all_other_participants")
