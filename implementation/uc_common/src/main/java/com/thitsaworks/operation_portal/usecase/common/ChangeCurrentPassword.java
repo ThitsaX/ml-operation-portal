@@ -2,13 +2,13 @@ package com.thitsaworks.operation_portal.usecase.common;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public abstract class ChangeCurrentPassword extends
-                                            AbstractAuditableUseCase<ChangeCurrentPassword.Input, ChangeCurrentPassword.Output> {
+public interface ChangeCurrentPassword extends
+                                       UseCase<ChangeCurrentPassword.Input, ChangeCurrentPassword.Output> {
 
-    public record Input(PrincipalId principalId, String oldPassword, String newPassword) {}
+    record Input(PrincipalId principalId, String oldPassword, String newPassword) { }
 
-    public record Output(AccessKey accessKey, String secretKey) {}
+    record Output(AccessKey accessKey, String secretKey) { }
 
 }

@@ -10,15 +10,11 @@ import javax.sql.DataSource;
 
 public class CoreDataSourceConfiguration {
 
-    public  static final String FLYWAY_MIGRATION ="mysql/core//flyway/settings";
+    public  static final String FLYWAY_MIGRATION ="mysql/core/flyway/settings";
 
-    public static final String WRITE_DB_SETTINGS_PATH = "mysql/core//write_db/settings";
+    public static final String WRITE_DB_SETTINGS_PATH = "mysql/core/write_db/settings";
 
-    public static final String WRITE_DB_POOL_SIZE_PATH = "mysql/core//write_db/pool_sizes";
-
-    public static final String READ_DB_SETTINGS_PATH = "mysql/core//read_db/settings";
-
-    public static final String READ_DB_POOL_SIZE_PATH = "mysql/core//read_db/pool_sizes";
+    public static final String READ_DB_SETTINGS_PATH = "mysql/core/read_db/settings";
 
     @Bean(name = PersistenceQualifiers.Core.READ_DATA_SOURCE)
     @Qualifier(PersistenceQualifiers.Core.READ_DATA_SOURCE)

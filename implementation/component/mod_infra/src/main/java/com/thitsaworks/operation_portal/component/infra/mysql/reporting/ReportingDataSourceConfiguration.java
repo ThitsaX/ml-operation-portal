@@ -10,15 +10,11 @@ import javax.sql.DataSource;
 
 public class ReportingDataSourceConfiguration {
 
-    public static final String FLYWAY_MIGRATION = "mysql/reporting//flyway/settings";
+    public static final String FLYWAY_MIGRATION = "mysql/reporting/flyway/settings";
 
-    public static final String WRITE_DB_SETTINGS_PATH = "mysql/reporting//write_db/settings";
+    public static final String WRITE_DB_SETTINGS_PATH = "mysql/reporting/write_db/settings";
 
-    public static final String WRITE_DB_POOL_SIZE_PATH = "mysql/reporting//write_db/pool_sizes";
-
-    public static final String READ_DB_SETTINGS_PATH = "mysql/reporting//read_db/settings";
-
-    public static final String READ_DB_POOL_SIZE_PATH = "mysql/reporting//read_db/pool_sizes";
+    public static final String READ_DB_SETTINGS_PATH = "mysql/reporting/read_db/settings";
 
     @Bean(name = PersistenceQualifiers.Reporting.READ_DATA_SOURCE)
     @Qualifier(PersistenceQualifiers.Reporting.READ_DATA_SOURCE)

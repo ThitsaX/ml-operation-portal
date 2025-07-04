@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.http;
+package com.thitsaworks.operation_portal.component.misc.http;
 
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;

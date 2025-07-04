@@ -17,7 +17,7 @@ import java.util.StringJoiner;
 
 @Component
 public class DefaultSpringRestErrorResponseBuilder
-        implements SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder {
+    implements SpringRestServiceExceptionHandler.SpringRestErrorResponseBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultSpringRestErrorResponseBuilder.class);
 
@@ -31,23 +31,24 @@ public class DefaultSpringRestErrorResponseBuilder
         if ((exception instanceof MethodArgumentNotValidException)) {
 
             MethodArgumentNotValidException methodArgumentNotValidException =
-                    (MethodArgumentNotValidException) exception;
+                (MethodArgumentNotValidException) exception;
             StringJoiner stringJoiner = new StringJoiner(",");
 
             List<FieldError> fieldErrors = methodArgumentNotValidException.getFieldErrors();
 
             for (FieldError fieldError : fieldErrors) {
                 stringJoiner.add(
-                        "[ (" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldError.getField()) + ") : " +
-                                fieldError.getDefaultMessage() + " ]");
+                    "[ (" + CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, fieldError.getField()) + ") : " +
+                        fieldError.getDefaultMessage() + " ]");
             }
 
             String errorMessage = "Input error : " + stringJoiner.toString();
 
             i18nErrorMessages.put("en", errorMessage);
 
-            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INPUT_EXCEPTION", errorMessage,
-                                                                                                                                   i18nErrorMessages);
+            return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INPUT_EXCEPTION",
+                                                                                 errorMessage,
+                                                                                 i18nErrorMessages);
 
         } else if (exception instanceof HttpMessageNotReadableException) {
 
@@ -56,7 +57,8 @@ public class DefaultSpringRestErrorResponseBuilder
             i18nErrorMessages.put("en", invalidFormatException.getMessage());
 
             return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INVALID_FORMAT",
-                                                                                                                                   exception.getMessage(), i18nErrorMessages);
+                                                                                 exception.getMessage(),
+                                                                                 i18nErrorMessages);
 
         } else if (exception instanceof OperationPortalException) {
 
@@ -65,14 +67,19 @@ public class DefaultSpringRestErrorResponseBuilder
             i18nErrorMessages.put("en", OperationPortalException.getMessage());
 
             return new SpringRestServiceExceptionHandler.SpringRestErrorResponse(
-                    OperationPortalException.errorCode(),
-                    OperationPortalException.defaultErrorMessage(), i18nErrorMessages);
+                OperationPortalException.errorCode(),
+                OperationPortalException.defaultErrorMessage(), i18nErrorMessages);
+
         } else {
 
-            i18nErrorMessages.put("en", exception.getCause().getMessage());
+            i18nErrorMessages.put("en",
+                                  exception.getCause()
+                                           .getMessage());
 
             return new SpringRestServiceExceptionHandler.SpringRestErrorResponse("INTERNAL_SERVER_ERROR",
-                                                                                                                                   exception.getCause().getMessage(), i18nErrorMessages);
+                                                                                 exception.getCause()
+                                                                                          .getMessage(),
+                                                                                 i18nErrorMessages);
         }
     }
 

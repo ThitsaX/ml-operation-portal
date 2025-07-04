@@ -46,7 +46,8 @@ public class CreateNewContactController {
         for (Request.ContactInfo contactInfo : request.contactInfoList) {
             contactInfoList.add(new CreateNewContact.Input.ContactInfo(contactInfo.name(), contactInfo.title(),
                     new Email(contactInfo.email()), new Mobile(contactInfo.mobile()),
-                    ContactType.valueOf(contactInfo.contactType())));
+                                                                       ContactType.valueOf(contactInfo.contactType()
+                                                                                                      .toUpperCase())));
         }
 
         CreateNewContact.Output output = this.createNewContact.execute(

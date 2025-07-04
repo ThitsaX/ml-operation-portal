@@ -49,7 +49,7 @@ public class ModifyExistingContactController {
                     new ModifyExistingContact.Input.ContactInfo(new ContactId(Long.parseLong(contactInfo.contactId)),
                             contactInfo.name(), contactInfo.title(), new Email(contactInfo.email()),
                                                                 new Mobile(contactInfo.mobile()),
-                                                                ContactType.valueOf(contactInfo.contactType)));
+                                                                ContactType.valueOf(contactInfo.contactType.toUpperCase())));
 
         }
 
