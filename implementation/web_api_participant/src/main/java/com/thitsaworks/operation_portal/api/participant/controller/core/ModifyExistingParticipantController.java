@@ -56,7 +56,7 @@ public class ModifyExistingParticipantController {
                         contactInfo.contactId() == null || contactInfo.contactId().isEmpty() ? null :
                                 new ContactId(Long.parseLong(contactInfo.contactId())), contactInfo.name(),
                         contactInfo.title(), new Email(contactInfo.email()), new Mobile(contactInfo.mobile()),
-                        ContactType.valueOf(contactInfo.contactType())));
+                        ContactType.valueOf(contactInfo.contactType().toUpperCase())));
             }
         }
 
@@ -88,11 +88,11 @@ public class ModifyExistingParticipantController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
             @NotNull @JsonProperty("participant_id") String participantId,
-            @NotNull @JsonProperty("company_name") String companyName,
+            @NotNull @JsonProperty("name") String companyName,
             @NotNull @JsonProperty("address") String address,
             @NotNull @JsonProperty("mobile") String mobile,
             @JsonProperty("contact_info_list") List<ContactInfo> contactInfoList,
-            @JsonProperty("liquidity_profile_info_list") List<LiquidityProfileInfo> liquidityProfileInfoList
+            @JsonProperty("liquidity_profile_list") List<LiquidityProfileInfo> liquidityProfileInfoList
     ) {
 
     }
