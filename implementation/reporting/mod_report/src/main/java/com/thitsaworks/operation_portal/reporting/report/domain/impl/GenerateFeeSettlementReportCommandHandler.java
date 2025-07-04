@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettlementReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
@@ -27,13 +28,14 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenerateFeeSettlementReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GenerateFeeSettlementReportCommandHandler(
+        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws ReportFailureException {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -44,11 +46,15 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
         params.put("currency", input.currency());
         params.put("timezoneoffset", input.timezone());
 
-        InputStream settlementReport = this.getClass().getResourceAsStream(
-                "/com/thitsaworks/operation_portal/reporting/report/report/feeSettlementReport.jasper");
-        Connection conn = this.jdbcTemplate.getDataSource().getConnection();
+        InputStream
+            settlementReport =
+            this.getClass()
+                .getResourceAsStream(
+                    "/com/thitsaworks/operation_portal/reporting/report/report/feeSettlementReport.jasper");
 
-        try {
+        try (Connection conn = this.jdbcTemplate.getDataSource()
+                                                .getConnection()) {
+
             byte[] rptBytes = new byte[0];
 
             JRCsvExporter csvExporter = new JRCsvExporter();
@@ -60,7 +66,8 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
             csvExporter.exportReport();
             rptBytes = csvReport.toByteArray();
 
-            if (input.fileType().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+            if (input.fileType()
+                     .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jp));
@@ -77,8 +84,8 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
 
             return new Output(rptBytes);
 
-        } finally {
-            conn.close();
+        } catch (Exception e) {
+            throw new ReportFailureException(e.getMessage());
         }
     }
 

@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.SystemException
 
 public abstract class DomainUseCase<I, O> implements UseCase<I, O> {
 
-    public O execute(I input) throws OperationPortalException{
+    public O execute(I input) throws OperationPortalException {
 
         O output;
 

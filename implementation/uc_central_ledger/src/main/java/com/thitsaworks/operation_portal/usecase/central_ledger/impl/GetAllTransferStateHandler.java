@@ -1,32 +1,41 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferStateData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferStates;
+import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransferState;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetAllTransferStateHandler extends GetAllTransferState {
+public class GetAllTransferStateHandler
+    extends CentralLedgerUseCase<GetAllTransferState.Input, GetAllTransferState.Output> implements GetAllTransferState {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferStateHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
+
     private final GetTransferStates getTransferStates;
 
-    private final PrincipalCache principalCache;
+    public GetAllTransferStateHandler(PrincipalCache principalCache,
+                                      GetTransferStates getTransferStates) {
+
+        super(PERMITTED_ROLES, principalCache);
+
+        this.getTransferStates = getTransferStates;
+
+    }
 
     @Override
-    public GetAllTransferState.Output onExecute(GetAllTransferState.Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         GetTransferStates.Output output = this.getTransferStates.execute(new GetTransferStates.Input());
 
@@ -35,57 +44,12 @@ public class GetAllTransferStateHandler extends GetAllTransferState {
         for (TransferStateData data : output.getTransferStateDataList()) {
 
             transferStateDataList.add(
-                    new TransferStateData(
-                            data.getTransferStateId(),
-                            data.getTransferState()));
+                new TransferStateData(
+                    data.getTransferStateId(),
+                    data.getTransferState()));
         }
 
         return new GetAllTransferState.Output(transferStateDataList);
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetAllTransferState.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_central_ledger";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllTransferState.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case OPERATION -> true;
-            case SUPERUSER, ADMIN, REPORTING -> false;
-        };
-
     }
 
 }

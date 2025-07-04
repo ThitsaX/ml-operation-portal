@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.reporting.central_ledger.query;
 
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.IDTypeData;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
 import lombok.Value;
 
 import java.util.List;
@@ -8,9 +9,7 @@ import java.util.List;
 public interface GetIDTypes {
 
     @Value
-    class Input {
-
-    }
+    class Input { }
 
     @Value
     class Output {
@@ -19,6 +18,6 @@ public interface GetIDTypes {
 
     }
 
-    Output execute(Input input) throws Exception;
+    Output execute(Input input) throws CentralLedgerFailureException;
 
 }

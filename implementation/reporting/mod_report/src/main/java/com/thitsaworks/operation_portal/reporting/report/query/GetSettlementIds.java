@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.reporting.report.query;
 
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
 import lombok.Value;
 
 import java.sql.Timestamp;
@@ -18,6 +19,6 @@ public interface GetSettlementIds {
             List<SettlementIdData> settlementId
     ) {}
 
-    Output execute(Input input) throws Exception;
+    Output execute(Input input) throws ReportFailureException;
 
 }

@@ -1,30 +1,47 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIds;
+import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetSettlementId;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetSettlementIdHandler extends GetSettlementId {
+public class GetSettlementIdHandler extends CentralLedgerUseCase<GetSettlementId.Input, GetSettlementId.Output>
+    implements GetSettlementId {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementIdHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
+
     private final GetSettlementIds getSettlementIds;
 
+    public GetSettlementIdHandler(PrincipalCache principalCache,
+                                  GetSettlementIds getSettlementIds) {
+
+        super(PERMITTED_ROLES, principalCache);
+
+        this.getSettlementIds = getSettlementIds;
+    }
+
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         GetSettlementIds.Output output = this.getSettlementIds.execute(
-                new GetSettlementIds.Input(Timestamp.from(input.startDate()), Timestamp.from(input.endDate()),input.timezoneOffset()));
+            new GetSettlementIds.Input(Timestamp.from(input.startDate()),
+                                       Timestamp.from(input.endDate()),
+                                       input.timezoneOffset()));
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
 
@@ -34,42 +51,6 @@ public class GetSettlementIdHandler extends GetSettlementId {
         }
 
         return new GetSettlementId.Output(settlementIdData);
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetSettlementId.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_central_ledger";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetSettlementId.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        return true;
     }
 
 }

@@ -1,106 +1,66 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
+import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewLiquidityProfile;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@RequiredArgsConstructor
-public class CreateNewLiquidityProfileHandler extends CreateNewLiquidityProfile {
+public class CreateNewLiquidityProfileHandler
+    extends CommonAuditableUseCase<CreateNewLiquidityProfile.Input, CreateNewLiquidityProfile.Output>
+    implements CreateNewLiquidityProfile {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewLiquidityProfileHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
+                                                                    UserRoleType.ADMIN);
+
     private final CreateLiquidityProfile createLiquidityProfile;
 
-    private final PrincipalCache principalCache;
+    public CreateNewLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
+                                            CreateOutputAuditCommand createOutputAuditCommand,
+                                            CreateExceptionAuditCommand createExceptionAuditCommand,
+                                            ObjectMapper objectMapper,
+                                            PrincipalCache principalCache,
+                                            CreateLiquidityProfile createLiquidityProfile) {
 
-    private final ObjectMapper objectMapper;
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.createLiquidityProfile = createLiquidityProfile;
+
+    }
 
     @Override
-    public Output onExecute(Input input) throws ParticipantNotFoundException {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         for (CreateNewLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
 
             this.createLiquidityProfile.execute(
-                    new CreateLiquidityProfile.Input(input.participantId(),
-                                                     profileInfo.accountName(),
-                                                     profileInfo.accountNumber(),
-                                                     profileInfo.currency(),
-                                                     profileInfo.isActive()));
+                new CreateLiquidityProfile.Input(input.participantId(),
+                                                 profileInfo.accountName(),
+                                                 profileInfo.accountNumber(),
+                                                 profileInfo.currency(),
+                                                 profileInfo.isActive()));
 
         }
 
         return new Output(true);
-    }
-
-    @Override
-    protected String getName() {
-
-        return CreateNewLiquidityProfile.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_common";
-    }
-
-    @Override
-    protected String getId() {
-
-        return CreateNewLiquidityProfile.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case OPERATION, ADMIN -> true;
-            case SUPERUSER, REPORTING -> false;
-        };
-
-    }
-
-    @Override
-    public void onAudit(CreateNewLiquidityProfile.Input input, CreateNewLiquidityProfile.Output output)
-            throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, CreateNewLiquidityProfile.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

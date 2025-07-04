@@ -1,20 +1,16 @@
 package com.thitsaworks.operation_portal.reporting.report.domain;
 
-import lombok.Value;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
 
 public interface GenerateSettlementReportCommand {
 
-    record Input(
-            String fspId,
-            String settlementId,
-            String filetype,
-            String timezoneOffset
-    ) {}
+    record Input(String fspId,
+                 String settlementId,
+                 String filetype,
+                 String timezoneOffset) { }
 
-    record Output(
-            byte[] settlementByte
-    ) {}
+    record Output(byte[] settlementByte) { }
 
-    GenerateSettlementReportCommand.Output execute(GenerateSettlementReportCommand.Input input) throws Exception;
+    Output execute(Input input) throws ReportFailureException;
 
 }

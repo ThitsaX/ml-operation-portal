@@ -1,117 +1,71 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.query.FindAccountNumberByDfspCode;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateStatementReportCommand;
+import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateStatementReport;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@RequiredArgsConstructor
-public class GenerateStatementReportHandler extends GenerateStatementReport {
+public class GenerateStatementReportHandler
+    extends CentralLedgerAuditableUseCase<GenerateStatementReport.Input, GenerateStatementReport.Output>
+    implements GenerateStatementReport {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateStatementReportHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
 
     private final GenerateStatementReportCommand generateStatementReportCommand;
 
     private final FindAccountNumberByDfspCode findAccountNumberByDfspCode;
 
-    private final ObjectMapper objectMapper;
+    public GenerateStatementReportHandler(CreateInputAuditCommand createInputAuditCommand,
+                                          CreateOutputAuditCommand createOutputAuditCommand,
+                                          CreateExceptionAuditCommand createExceptionAuditCommand,
+                                          ObjectMapper objectMapper,
+                                          PrincipalCache principalCache,
+                                          GenerateStatementReportCommand generateStatementReportCommand,
+                                          FindAccountNumberByDfspCode findAccountNumberByDfspCode) {
 
-    private final PrincipalCache principalCache;
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.generateStatementReportCommand = generateStatementReportCommand;
+        this.findAccountNumberByDfspCode = findAccountNumberByDfspCode;
+    }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         FindAccountNumberByDfspCode.Output accountNumberOutput =
-                this.findAccountNumberByDfspCode.execute(new FindAccountNumberByDfspCode.Input(input.fspId(),
-                                                                                               input.currencyId()));
+            this.findAccountNumberByDfspCode.execute(new FindAccountNumberByDfspCode.Input(input.fspId(),
+                                                                                           input.currencyId()));
 
         GenerateStatementReportCommand.Output output =
-                this.generateStatementReportCommand.execute(new GenerateStatementReportCommand.Input(input.startDate(),
-                                                                                                     input.endDate(),
-                                                                                                     input.fspId(),
-                                                                                                     accountNumberOutput.getAccountNumber(),
-                                                                                                     input.fileType(),
-                                                                                                     input.timezoneOffSet(),
-                                                                                                     input.currencyId()));
+            this.generateStatementReportCommand.execute(new GenerateStatementReportCommand.Input(input.startDate(),
+                                                                                                 input.endDate(),
+                                                                                                 input.fspId(),
+                                                                                                 accountNumberOutput.getAccountNumber(),
+                                                                                                 input.fileType(),
+                                                                                                 input.timezoneOffSet(),
+                                                                                                 input.currencyId()));
 
         return new Output(output.statementRptData());
-    }
-
-    @Override
-    protected String getName() {
-
-        return GenerateStatementReportCommand.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_central_ledger";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GenerateStatementReportCommand.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        switch (principalData.userRoleType()) {
-
-            case OPERATION:
-                return true;
-            case SUPERUSER:
-            case ADMIN:
-            case REPORTING:
-                return false;
-        }
-
-        return false;
-    }
-
-    @Override
-    public void onAudit(GenerateStatementReport.Input input, GenerateStatementReport.Output output)
-            throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GenerateStatementReport.class, input, null,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

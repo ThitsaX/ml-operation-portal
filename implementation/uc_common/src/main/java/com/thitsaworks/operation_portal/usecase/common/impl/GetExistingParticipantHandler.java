@@ -1,24 +1,20 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNotFoundException;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
+import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.GetExistingParticipant;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,12 +22,17 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetExistingParticipantHandler extends GetExistingParticipant {
+public class GetExistingParticipantHandler
+    extends CommonAuditableUseCase<GetExistingParticipant.Input, GetExistingParticipant.Output>
+    implements GetExistingParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
+                                                                    UserRoleType.ADMIN);
 
     private final ParticipantQuery participantQuery;
 
@@ -39,13 +40,29 @@ public class GetExistingParticipantHandler extends GetExistingParticipant {
 
     private final LiquidityProfileQuery liquidityProfileQuery;
 
-    private final ObjectMapper objectMapper;
+    public GetExistingParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
+                                         CreateOutputAuditCommand createOutputAuditCommand,
+                                         CreateExceptionAuditCommand createExceptionAuditCommand,
+                                         ObjectMapper objectMapper,
+                                         PrincipalCache principalCache,
+                                         ParticipantQuery participantQuery,
+                                         ContactQuery contactQuery,
+                                         LiquidityProfileQuery liquidityProfileQuery) {
 
-    private final PrincipalCache principalCache;
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.participantQuery = participantQuery;
+        this.contactQuery = contactQuery;
+        this.liquidityProfileQuery = liquidityProfileQuery;
+    }
 
     @Override
-    public GetExistingParticipant.Output onExecute(GetExistingParticipant.Input input) throws
-                                                                                       ParticipantNotFoundException {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         ParticipantData participantData = this.participantQuery.get(input.participantId());
 
@@ -56,96 +73,42 @@ public class GetExistingParticipantHandler extends GetExistingParticipant {
         for (ContactData contactData : contactDataList) {
 
             contactInfoList.add(
-                    new Output.ContactInfo(contactData.contactId(),
-                                           contactData.name(),
-                                           contactData.title(),
-                                           contactData.email(),
-                                           contactData.mobile(),
-                                           contactData.contactType().name()));
+                new Output.ContactInfo(contactData.contactId(),
+                                       contactData.name(),
+                                       contactData.title(),
+                                       contactData.email(),
+                                       contactData.mobile(),
+                                       contactData.contactType()
+                                                  .name()));
         }
 
         List<LiquidityProfileData> liquidityProfileDataList =
-                this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
+            this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
 
         List<Output.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
         for (LiquidityProfileData liquidityProfileData : liquidityProfileDataList) {
 
             liquidityProfileInfoList.add(
-                    new Output.LiquidityProfileInfo(liquidityProfileData.liquidityProfileId(),
-                                                    liquidityProfileData.accountName(),
-                                                    liquidityProfileData.accountNumber(),
-                                                    liquidityProfileData.currency(),
-                                                    liquidityProfileData.isActive()));
+                new Output.LiquidityProfileInfo(liquidityProfileData.liquidityProfileId(),
+                                                liquidityProfileData.accountName(),
+                                                liquidityProfileData.accountNumber(),
+                                                liquidityProfileData.currency(),
+                                                liquidityProfileData.isActive()));
         }
 
         GetExistingParticipant.Output result =
-                new GetExistingParticipant.Output(participantData.participantId(),
-                                                  participantData.dfspCode().getValue(),
-                                                  participantData.name(),
-                                                  participantData.address(),
-                                                  participantData.mobile(),
-                                                  Instant.ofEpochSecond(participantData.createdDate()),
-                                                  contactInfoList,
-                                                  liquidityProfileInfoList);
+            new GetExistingParticipant.Output(participantData.participantId(),
+                                              participantData.dfspCode()
+                                                             .getValue(),
+                                              participantData.name(),
+                                              participantData.address(),
+                                              participantData.mobile(),
+                                              Instant.ofEpochSecond(participantData.createdDate()),
+                                              contactInfoList,
+                                              liquidityProfileInfoList);
 
         return result;
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetExistingParticipant.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_common";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetExistingParticipant.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case OPERATION, ADMIN -> true;
-            case SUPERUSER, REPORTING -> false;
-        };
-
-    }
-
-    @Override
-    public void onAudit(GetExistingParticipant.Input input, GetExistingParticipant.Output output)
-            throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GetExistingParticipant.class, input, output,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

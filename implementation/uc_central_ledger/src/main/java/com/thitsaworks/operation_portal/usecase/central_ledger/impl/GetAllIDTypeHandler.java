@@ -1,62 +1,43 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetIDTypes;
+import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllIDType;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 @Service
-@RequiredArgsConstructor
-public class GetAllIDTypeHandler extends GetAllIDType {
+public class GetAllIDTypeHandler extends CentralLedgerUseCase<GetAllIDType.Input, GetAllIDType.Output>
+    implements GetAllIDType {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllIDTypeHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
+
     private final GetIDTypes getIDTypes;
 
+    public GetAllIDTypeHandler(PrincipalCache principalCache,
+                               GetIDTypes getIDTypes) {
+
+        super(PERMITTED_ROLES, principalCache);
+
+        this.getIDTypes = getIDTypes;
+
+    }
+
     @Override
-    public GetAllIDType.Output onExecute(GetAllIDType.Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         GetIDTypes.Output output = this.getIDTypes.execute(new GetIDTypes.Input());
 
         return new GetAllIDType.Output(output.getIdTypeDataList());
-    }
-
-    @Override
-    protected String getName() {
-
-        return GetAllIDType.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_central_ledger";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllIDType.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        return true;
     }
 
 }

@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.reporting.central_ledger.data.BusinessData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.BusinessDataMapper;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GetTransferDetailHandler implements GetTransferDetail {
@@ -18,15 +22,20 @@ public class GetTransferDetailHandler implements GetTransferDetail {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GetTransferDetailHandler(@Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GetTransferDetailHandler(
+        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws CentralLedgerFailureException {
 
-        var result = this.jdbcTemplate.query(
+        List<BusinessData> result;
+
+        try {
+            //@@Formatter:off
+                result = this.jdbcTemplate.query(
                 "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.name,'') AS type, \n" +
                         " IFNULL(t.currencyId,'') AS currency,ROUND( t.amount,2 )AS amount, \n" +
                         " CONCAT(IFNULL(ppayer.firstName,'') , ' ' , IFNULL(ppayer.middleName,'') , ' ', IFNULL(ppayer.lastName,'')) AS payer,\n" +
@@ -57,8 +66,13 @@ public class GetTransferDetailHandler implements GetTransferDetail {
                         "WHERE  t.transferId = IFNULL(?,t.transferId);", new BusinessDataMapper(),
                 input.getTransferId());
 
-        if (result == null || result.isEmpty()) {
+        //@@Formatter:on
 
+        } catch (Exception e) {
+            throw new CentralLedgerFailureException(e.getMessage());
+        }
+
+        if (result == null || result.isEmpty()) {
             return null;
         }
 

@@ -1,96 +1,59 @@
 package com.thitsaworks.operation_portal.usecase.common.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.usecase.common.GetAllAudit;
+import com.thitsaworks.operation_portal.usecase.CommonUseCase;
 import com.thitsaworks.operation_portal.usecase.common.GetAllAuditByParticipant;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
-public class GetAllAuditByParticipantHandler extends GetAllAuditByParticipant {
+public class GetAllAuditByParticipantHandler
+    extends CommonUseCase<GetAllAuditByParticipant.Input, GetAllAuditByParticipant.Output>
+    implements GetAllAuditByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllAudit.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllAuditByParticipantHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
+                                                                    UserRoleType.ADMIN);
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
-    private final PrincipalCache principalCache;
+    public GetAllAuditByParticipantHandler(PrincipalCache principalCache,
+                                           GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
+
+        super(PERMITTED_ROLES, principalCache);
+
+        this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
+    }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         GetAllAuditByParticipantQuery.Output output =
-                this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
-                        input.realmId(),
-                        input.fromDate(),
-                        input.toDate()));
+            this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
+                input.realmId(),
+                input.fromDate(),
+                input.toDate()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
         for (GetAllAuditByParticipantQuery.Output.AuditInfo data : output.getAuditInfoList()) {
 
             auditInfoList.add(new Output.AuditInfo(
-                            data.getUserName(),
-                            data.getActionName(),
-                            data.getActionDate()));
+                data.getUserName(),
+                data.getActionName(),
+                data.getActionDate()));
         }
 
         return new Output(auditInfoList);
     }
-
-    @Override
-    protected String getName() {
-
-        return GetAllAuditByParticipant.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_common";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GetAllAuditByParticipant.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case OPERATION, ADMIN -> true;
-            case SUPERUSER, REPORTING -> false;
-        };
-
-    }
-
 
 }

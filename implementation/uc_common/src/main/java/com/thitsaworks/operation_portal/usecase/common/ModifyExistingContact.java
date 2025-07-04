@@ -3,23 +3,28 @@ package com.thitsaworks.operation_portal.usecase.common;
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.misc.usecase.AbstractAuditableUseCase;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 
 import java.io.Serializable;
 import java.util.List;
 
-public abstract class ModifyExistingContact extends
-                                            AbstractAuditableUseCase<ModifyExistingContact.Input, ModifyExistingContact.Output> {
+public interface ModifyExistingContact extends
+                                       UseCase<ModifyExistingContact.Input, ModifyExistingContact.Output> {
 
-    public record Input(ParticipantId participantId, List<Input.ContactInfo> contactInfoList) {
+    record Input(ParticipantId participantId,
+                 List<Input.ContactInfo> contactInfoList) {
 
-        public record ContactInfo(ContactId contactId, String name, String title, Email email, Mobile mobile, ContactType contactType)
-                implements Serializable {}
+        public record ContactInfo(ContactId contactId,
+                                  String name,
+                                  String title,
+                                  Email email,
+                                  Mobile mobile,
+                                  ContactType contactType) implements Serializable { }
 
     }
 
-    public record Output(boolean modified) {}
+    record Output(boolean modified) { }
 
 }

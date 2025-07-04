@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import net.sf.jasperreports.engine.JRException;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
@@ -14,11 +14,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,7 +26,7 @@ public class DfspDailyTransactionTrendSummary {
     private final JdbcTemplate centralLedgerJdbcTemplate;
 
     public DfspDailyTransactionTrendSummary(
-            @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         assert jdbcTemplate != null;
 
@@ -38,7 +36,7 @@ public class DfspDailyTransactionTrendSummary {
 
     public void generate(String fspId, String startdate, String enddate, String fileType,
                          OutputStream destination)
-            throws JRException, IOException, SQLException {
+        throws ReportFailureException {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -46,54 +44,63 @@ public class DfspDailyTransactionTrendSummary {
         params.put("startDate", startdate);
         params.put("endDate", enddate);
 
-        InputStream settlementReport = this.getClass().getResourceAsStream(
-                "/com/thitsaworks/operation_portal/reporting/report/report/settlementStatement.jasper");
+        InputStream
+            settlementReport =
+            this.getClass()
+                .getResourceAsStream(
+                    "/com/thitsaworks/operation_portal/reporting/report/report/settlementStatement.jasper");
 
-        Connection conn = this.centralLedgerJdbcTemplate.getDataSource().getConnection();
+        try (Connection conn = this.centralLedgerJdbcTemplate.getDataSource()
+                                                             .getConnection()) {
 
-        if (fileType.toLowerCase() == ".pdf") {
+            if (fileType.equalsIgnoreCase(".pdf")) {
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
-                                                                   conn);
-            JRPdfExporter exporter = new JRPdfExporter();
+                JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
+                                                                       conn);
+                JRPdfExporter exporter = new JRPdfExporter();
 
-            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(destination));
+                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(destination));
 
-            SimplePdfReportConfiguration reportConfig = new SimplePdfReportConfiguration();
+                SimplePdfReportConfiguration reportConfig = new SimplePdfReportConfiguration();
 
-            reportConfig.setSizePageToContent(true);
-            reportConfig.setForceLineBreakPolicy(false);
+                reportConfig.setSizePageToContent(true);
+                reportConfig.setForceLineBreakPolicy(false);
 
-            SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
+                SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
 
-            exportConfig.setMetadataAuthor("ThitsaWorks");
-            exportConfig.setEncrypted(true);
-            exportConfig.setAllowedPermissionsHint("PRINTING");
+                exportConfig.setMetadataAuthor("ThitsaWorks");
+                exportConfig.setEncrypted(true);
+                exportConfig.setAllowedPermissionsHint("PRINTING");
 
-            exporter.setConfiguration(reportConfig);
-            exporter.setConfiguration(exportConfig);
+                exporter.setConfiguration(reportConfig);
+                exporter.setConfiguration(exportConfig);
 
-            exporter.exportReport();
+                exporter.exportReport();
 
-            settlementReport.close();
-        }
-        if (fileType.toLowerCase() == ".xlsx") {
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
-                                                                   conn);
-            JRXlsxExporter exporter = new JRXlsxExporter();
+                settlementReport.close();
+            }
+            if (fileType.equalsIgnoreCase(".xlsx")) {
+                JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
+                                                                       conn);
+                JRXlsxExporter exporter = new JRXlsxExporter();
 
-            exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(destination));
-            SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
-            exportConfig.setMetadataAuthor("ThitsaWorks");
-            exportConfig.setEncrypted(true);
-            exportConfig.setAllowedPermissionsHint("PRINTING");
+                exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(destination));
+                SimplePdfExporterConfiguration exportConfig = new SimplePdfExporterConfiguration();
+                exportConfig.setMetadataAuthor("ThitsaWorks");
+                exportConfig.setEncrypted(true);
+                exportConfig.setAllowedPermissionsHint("PRINTING");
 
-            exporter.exportReport();
+                exporter.exportReport();
 
-            settlementReport.close();
+                settlementReport.close();
 
+            }
+        } catch (Exception e) {
+
+            throw new ReportFailureException(e.getMessage());
+        } finally {
         }
 
     }

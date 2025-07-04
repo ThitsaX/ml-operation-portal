@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportFailureException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
@@ -26,13 +27,14 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenerateSettlementReportCommandHandler(@Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GenerateSettlementReportCommandHandler(
+        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws ReportFailureException {
 
         Map<String, Object> params = new HashMap<String, Object>();
 
@@ -41,16 +43,16 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         params.put("timezoneoffset", input.timezoneOffset());
 
         InputStream settlementReport =
-                this.getClass().getResourceAsStream("/com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jasper");
+            this.getClass()
+                .getResourceAsStream("/com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jasper");
 
-        Connection conn = this.jdbcTemplate.getDataSource().getConnection();
+        try (Connection conn = this.jdbcTemplate.getDataSource()
+                                                .getConnection()) {
 
-        JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
-                                                               conn);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
+                                                                   conn);
 
-        byte[] rptBytes = new byte[0];
-
-        try {
+            byte[] rptBytes = new byte[0];
 
             JRCsvExporter csvExporter = new JRCsvExporter();
             ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
@@ -59,7 +61,8 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
             csvExporter.exportReport();
             rptBytes = csvReport.toByteArray();
 
-            if (input.filetype().equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+            if (input.filetype()
+                     .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -72,10 +75,9 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
             return new Output(rptBytes);
 
-        } finally {
+        } catch (Exception e) {
 
-            conn.close();
-
+            throw new ReportFailureException(e.getMessage());
         }
     }
 

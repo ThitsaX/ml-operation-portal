@@ -21,6 +21,6 @@ public interface GetFinancialData {
 
     }
 
-    GetFinancialData.Output execute(GetFinancialData.Input input);
+    Output execute(Input input);
 
 }

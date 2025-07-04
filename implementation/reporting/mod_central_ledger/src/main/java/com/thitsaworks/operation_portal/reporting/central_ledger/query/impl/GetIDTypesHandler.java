@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.reporting.central_ledger.data.IDTypeData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.IDTypeDataMapper;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetIDTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GetIDTypesHandler implements GetIDTypes {
@@ -26,11 +29,18 @@ public class GetIDTypesHandler implements GetIDTypes {
     }
 
     @Override
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws CentralLedgerFailureException {
 
-        var results = this.jdbcTemplate.query(
+        List<IDTypeData> results;
+        try {
+
+            results = this.jdbcTemplate.query(
                 "SELECT name as partyIdentifierTypeId, name FROM partyIdentifierType ORDER BY partyIdentifierTypeId;",
                 new IDTypeDataMapper());
+
+        } catch (Exception e) {
+            throw new CentralLedgerFailureException(e.getMessage());
+        }
 
         if (results == null || results.isEmpty()) {
 

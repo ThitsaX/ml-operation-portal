@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.reporting.central_ledger.query.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferData;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.mapper.TransferDataMapper;
+import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerFailureException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransfers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +13,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GetTransfersHandler implements GetTransfers {
@@ -20,15 +23,21 @@ public class GetTransfersHandler implements GetTransfers {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GetTransfersHandler(@Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GetTransfersHandler(
+        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Output execute(Input input) throws Exception {
+    public Output execute(Input input) throws CentralLedgerFailureException {
 
-        var results = this.jdbcTemplate.query(
+        List<TransferData> results;
+
+        try {
+
+            //@@Formatter:off
+            results = this.jdbcTemplate.query(
                 "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.name,'') AS type,\n" +
                         "    IFNULL(t.currencyId,'') AS currency, ROUND(t.amount,2) AS amount, IFNULL(payer.name,'') AS payer_dfsp,\n" +
                         "    IFNULL(payee.name,'') AS payee_dfsp, IFNULL(swc.settlementId,'') AS settlement_batch," +
@@ -68,6 +77,12 @@ public class GetTransfersHandler implements GetTransfers {
                 input.getPayerFspId(), input.getPayeeFspId(), input.getPayerIdentifierTypeId(), input.getPayeeIdentifierTypeId(),
                 input.getPayerIdentifierValue(), input.getPayeeIdentifierValue(),
                 input.getCurrencyId(), input.getTransferStateId(), input.getFspName(), input.getFspName());
+
+        //@@Formatter:on
+        } catch (Exception e) {
+
+            throw new CentralLedgerFailureException(e.getMessage());
+        }
 
         if (results == null || results.isEmpty()) {
 

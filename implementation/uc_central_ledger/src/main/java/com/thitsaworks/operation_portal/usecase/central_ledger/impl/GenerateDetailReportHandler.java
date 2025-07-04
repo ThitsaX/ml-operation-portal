@@ -1,101 +1,60 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
+import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateDetailReport;
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
-@AllArgsConstructor
-public class GenerateDetailReportHandler extends GenerateDetailReport {
+public class GenerateDetailReportHandler
+    extends CentralLedgerAuditableUseCase<GenerateDetailReport.Input, GenerateDetailReport.Output>
+    implements GenerateDetailReport {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateDetailReportHandler.class);
 
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
+
     private final GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand;
 
-    private final ObjectMapper objectMapper;
+    public GenerateDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
+                                       CreateOutputAuditCommand createOutputAuditCommand,
+                                       CreateExceptionAuditCommand createExceptionAuditCommand,
+                                       ObjectMapper objectMapper,
+                                       PrincipalCache principalCache,
+                                       GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand) {
 
-    private final PrincipalCache principalCache;
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
+
+    }
 
     @Override
-    public Output onExecute(Input input) throws Exception {
+    protected Output onExecute(Input input) throws OperationPortalException {
 
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(
-                new GenerateSettlementDetailReportCommand.Input(input.settlementId(),
-                                                                input.fspId(),
-                                                                input.fileType(),
-                                                                input.timezoneOffset()));
+            new GenerateSettlementDetailReportCommand.Input(input.settlementId(),
+                                                            input.fspId(),
+                                                            input.fileType(),
+                                                            input.timezoneOffset()));
 
         return new Output(output.detailReportByte());
-
-    }
-
-    @Override
-    protected String getName() {
-
-        return GenerateDetailReport.class.getCanonicalName();
-    }
-
-    @Override
-    protected String getDescription() {
-
-        return null;
-    }
-
-    @Override
-    protected String getScope() {
-
-        return "uc_central_ledger";
-    }
-
-    @Override
-    protected String getId() {
-
-        return GenerateDetailReport.class.getName();
-    }
-
-    @Override
-    public boolean isOwned(Object userDetails) {
-
-        return true;
-    }
-
-    @Override
-    public boolean isAuthorized(Object userDetails) {
-
-        SecurityContext securityContext = (SecurityContext) userDetails;
-
-        PrincipalData principalData =
-                this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        return switch (principalData.userRoleType()) {
-            case OPERATION -> true;
-            case SUPERUSER, ADMIN, REPORTING -> false;
-        };
-
-    }
-
-    @Override
-    public void onAudit(GenerateDetailReport.Input input, GenerateDetailReport.Output output)
-            throws UserNotFoundException {
-
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        Auditor.audit(this.objectMapper, GenerateDetailReport.class, input, null,
-                      new UserId(securityContext.userId()),
-                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
     }
 
 }

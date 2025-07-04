@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
-public abstract class CommonAuditableUseCase<I, O> extends DomainUseCase<I, O> {
+public abstract class CentralLedgerAuditableUseCase<I, O> extends DomainUseCase<I, O> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CommonAuditableUseCase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CentralLedgerAuditableUseCase.class);
 
     private static final ThreadLocal<AuditId> auditId = new InheritableThreadLocal<>();
 
@@ -43,12 +43,12 @@ public abstract class CommonAuditableUseCase<I, O> extends DomainUseCase<I, O> {
 
     private final PrincipalCache principalCache;
 
-    public CommonAuditableUseCase(CreateInputAuditCommand createInputAuditCommand,
-                                  CreateOutputAuditCommand createOutputAuditCommand,
-                                  CreateExceptionAuditCommand createExceptionAuditCommand,
-                                  Set<UserRoleType> permittedRoles,
-                                  ObjectMapper objectMapper,
-                                  PrincipalCache principalCache) {
+    public CentralLedgerAuditableUseCase(CreateInputAuditCommand createInputAuditCommand,
+                                         CreateOutputAuditCommand createOutputAuditCommand,
+                                         CreateExceptionAuditCommand createExceptionAuditCommand,
+                                         Set<UserRoleType> permittedRoles,
+                                         ObjectMapper objectMapper,
+                                         PrincipalCache principalCache) {
 
         this.createInputAuditCommand = createInputAuditCommand;
         this.createOutputAuditCommand = createOutputAuditCommand;
@@ -76,7 +76,7 @@ public abstract class CommonAuditableUseCase<I, O> extends DomainUseCase<I, O> {
     @Override
     protected void afterExecute(O output) throws OperationPortalException {
 
-        var auditId = CommonAuditableUseCase.auditId.get();
+        var auditId = CentralLedgerAuditableUseCase.auditId.get();
 
         /*
          * Audit Logging:
@@ -139,12 +139,13 @@ public abstract class CommonAuditableUseCase<I, O> extends DomainUseCase<I, O> {
 
         var principalId = principalData.principalId();
 
-        CommonAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(this.getName(),
-                                                                                                                  new UserId(
-                                                                                                                      principalId.getId()),
-                                                                                                                  principalData.realmId(),
-                                                                                                                  inputInfo))
-                                                                       .auditId());
+        CentralLedgerAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
+                                                          this.getName(),
+                                                          new UserId(
+                                                              principalId.getId()),
+                                                          principalData.realmId(),
+                                                          inputInfo))
+                                                                              .auditId());
     }
 
     @Override
@@ -154,7 +155,7 @@ public abstract class CommonAuditableUseCase<I, O> extends DomainUseCase<I, O> {
                                       ? e.errorCode() + " - " + e.defaultErrorMessage()
                                       : exception.getMessage();
 
-        var auditId = CommonAuditableUseCase.auditId.get();
+        var auditId = CentralLedgerAuditableUseCase.auditId.get();
 
         if (auditId != null) {
             try {
