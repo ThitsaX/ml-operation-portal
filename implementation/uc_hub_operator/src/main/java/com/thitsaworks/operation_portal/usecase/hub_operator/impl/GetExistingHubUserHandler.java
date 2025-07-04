@@ -1,17 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.exception.UserNotFoundException;
-import com.thitsaworks.operation_portal.core.audit.model.Auditor;
 import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -72,51 +66,5 @@ public class GetExistingHubUserHandler
                                              hubUserData.jobTitle(),
                                              hubUserData.createdDate().getEpochSecond());
     }
-
-//    @Override
-//    protected String getName() {
-//
-//        return GetExistingHubUser.class.getCanonicalName();
-//    }
-//
-//    @Override
-//    protected String getDescription() {
-//
-//        return null;
-//    }
-//
-//    @Override
-//    protected String getScope() {
-//
-//        return "uc_hub_operator";
-//    }
-//
-//    @Override
-//    protected String getId() {
-//
-//        return GetExistingHubUser.class.getName();
-//    }
-//
-//    @Override
-//    public boolean isOwned(Object userDetails) {
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean isAuthorized(Object userDetails) {
-//
-//        return true;
-//    }
-//
-//    @Override
-//    public void onAudit(Input input, Output output) throws UserNotFoundException {
-//
-//        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-//
-//        Auditor.audit(this.objectMapper, GetExistingHubUser.class, input, output,
-//                      new UserId(securityContext.userId()),
-//                      securityContext.realmId() == null ? null : new RealmId(securityContext.realmId()));
-//    }
 
 }
