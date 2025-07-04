@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.http;
+package com.thitsaworks.operation_portal.component.misc.http;
 
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
