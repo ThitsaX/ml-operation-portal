@@ -1,14 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.hub_operator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetAllAnnouncement extends
-                                    UseCase<GetAllAnnouncement.Input, GetAllAnnouncement.Output> {
+public interface GetAllAnnouncement {
 
     record Input() { }
 
@@ -22,5 +20,7 @@ public interface GetAllAnnouncement extends
         ) implements Serializable { }
 
     }
+
+    Output execute(Input input);
 
 }

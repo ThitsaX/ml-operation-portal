@@ -3,7 +3,10 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.OperationPortalException;
+import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -33,6 +36,8 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
 
     private final Authenticate authenticate;
 
+    private final ObjectMapper objectMapper;
+
     public LoginUserAccountHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -50,6 +55,7 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
 
         this.participantUserQuery = participantUserQuery;
         this.authenticate = authenticate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -72,6 +78,37 @@ public class LoginUserAccountHandler extends CommonAuditableUseCase<LoginUserAcc
                                        .getAccessKey(),
                           securityToken.securityToken()
                                        .getSecretKey());
+    }
+
+    @Override
+    protected void beforeExecute(Input input) throws OperationPortalException {
+
+        /*
+         * Audit Logging:
+         * Logs input parameters and output results for auditing and traceability.
+         */
+        String inputJson, inputInfo;
+        try {
+
+            inputJson = this.objectMapper.writeValueAsString(input);
+            inputInfo = MaskPassword.maskPassword(this.objectMapper, inputJson);
+
+        } catch (Exception e) {
+            throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
+        }
+
+        // var principalId = principalData.principalId();
+
+//        CommonAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(this.getName(),
+//                                                                                                                  new UserId(1L),
+//                                                                                                                   new RealmId(1L),
+//                                                                                                                  inputInfo))
+//                                                                       .auditId());
+    }
+
+    @Override
+    protected void afterExecute(Output output) throws OperationPortalException {
+
     }
 
 }
