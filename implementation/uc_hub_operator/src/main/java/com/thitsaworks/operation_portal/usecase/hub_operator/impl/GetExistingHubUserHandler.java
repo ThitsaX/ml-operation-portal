@@ -20,8 +20,8 @@ import java.util.Set;
 
 @Service
 public class GetExistingHubUserHandler
-        extends HubOperatorAuditableUseCase<GetExistingHubUser.Input, GetExistingHubUser.Output>
-        implements GetExistingHubUser {
+    extends HubOperatorAuditableUseCase<GetExistingHubUser.Input, GetExistingHubUser.Output>
+    implements GetExistingHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingHubUserHandler.class);
 
@@ -31,8 +31,6 @@ public class GetExistingHubUserHandler
                                                                     UserRoleType.SUPERUSER);
 
     private final HubUserQuery hubUserQuery;
-
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public GetExistingHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -50,7 +48,6 @@ public class GetExistingHubUserHandler
               principalCache);
 
         this.hubUserQuery = hubUserQuery;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -64,7 +61,8 @@ public class GetExistingHubUserHandler
                                              hubUserData.firstName(),
                                              hubUserData.lastName(),
                                              hubUserData.jobTitle(),
-                                             hubUserData.createdDate().getEpochSecond());
+                                             hubUserData.createdDate()
+                                                        .getEpochSecond());
     }
 
 }

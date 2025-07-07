@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIds;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetSettlementId;
@@ -36,7 +36,7 @@ public class GetSettlementIdHandler extends CentralLedgerUseCase<GetSettlementId
     }
 
     @Override
-    protected Output onExecute(Input input) throws ReportException {
+    protected Output onExecute(Input input) throws DomainException {
 
         GetSettlementIds.Output output = this.getSettlementIds.execute(
             new GetSettlementIds.Input(Timestamp.from(input.startDate()),

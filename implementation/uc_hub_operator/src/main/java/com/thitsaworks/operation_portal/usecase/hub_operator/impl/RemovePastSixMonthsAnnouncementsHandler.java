@@ -15,8 +15,8 @@ import java.util.Set;
 
 @Service
 public class RemovePastSixMonthsAnnouncementsHandler
-        extends HubOperatorUseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output>
-        implements RemovePastSixMonthsAnnouncements {
+    extends HubOperatorUseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output>
+    implements RemovePastSixMonthsAnnouncements {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsHandler.class);
 
@@ -24,16 +24,14 @@ public class RemovePastSixMonthsAnnouncementsHandler
                                                                     UserRoleType.OPERATION,
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.SUPERUSER);
+
     private final RemoveAnnouncements removeAnnouncements;
 
     @Autowired
-    public RemovePastSixMonthsAnnouncementsHandler(
-            PrincipalCache principalCache,
-            RemoveAnnouncements removeAnnouncements) {
+    public RemovePastSixMonthsAnnouncementsHandler(PrincipalCache principalCache,
+                                                   RemoveAnnouncements removeAnnouncements) {
 
-        super(
-                PERMITTED_ROLES,
-                principalCache);
+        super(PERMITTED_ROLES, principalCache);
 
         this.removeAnnouncements = removeAnnouncements;
     }
@@ -42,7 +40,7 @@ public class RemovePastSixMonthsAnnouncementsHandler
     public Output onExecute(Input input) throws DomainException {
 
         RemoveAnnouncements.Output output = this.removeAnnouncements.execute(
-                new RemoveAnnouncements.Input());
+            new RemoveAnnouncements.Input());
 
         return new Output(output.removed());
     }

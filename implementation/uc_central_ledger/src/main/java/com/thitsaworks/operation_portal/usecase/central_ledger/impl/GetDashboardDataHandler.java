@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
@@ -46,7 +47,7 @@ public class GetDashboardDataHandler extends CentralLedgerUseCase<GetDashboardDa
     }
 
     @Override
-    protected Output onExecute(Input input) throws ParticipantException {
+    protected Output onExecute(Input input) throws DomainException {
 
         ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 

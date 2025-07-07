@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -53,7 +54,7 @@ public class ModifyExistingContactHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws ParticipantException {
+    protected Output onExecute(Input input) throws DomainException {
 
         if (this.participantCache.get(input.participantId()) == null) {
 

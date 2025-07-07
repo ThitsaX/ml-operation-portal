@@ -7,14 +7,10 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 public interface RemoveExistingParticipantUser extends
                                                UseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output> {
 
-    record Input(
-            ParticipantId participantId,
-            ParticipantUserId participantUserId
-    ) {}
+    record Input(ParticipantId participantId,
+                 ParticipantUserId participantUserId) { }
 
-    record Output(
-            boolean removed,
-            ParticipantUserId participantUserId
-    ) {}
+    record Output(boolean removed,
+                  ParticipantUserId participantUserId) { }
 
 }

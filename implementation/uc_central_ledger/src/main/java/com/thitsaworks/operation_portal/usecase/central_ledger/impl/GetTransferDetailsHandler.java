@@ -2,11 +2,11 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetail;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetTransferDetails;
@@ -45,12 +45,12 @@ public class GetTransferDetailsHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws CentralLedgerException {
+    protected Output onExecute(Input input) throws DomainException {
 
         GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(
             input.transferId()));
 
         return new Output(output.getBusinessData());
     }
-    
+
 }

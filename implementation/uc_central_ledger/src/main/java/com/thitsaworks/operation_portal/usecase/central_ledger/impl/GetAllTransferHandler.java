@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -13,7 +14,6 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserDat
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferData;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransfers;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransfer;
@@ -62,7 +62,7 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
     }
 
     @Override
-    protected Output onExecute(Input input) throws ParticipantException, CentralLedgerException {
+    protected Output onExecute(Input input) throws DomainException {
 
         ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 

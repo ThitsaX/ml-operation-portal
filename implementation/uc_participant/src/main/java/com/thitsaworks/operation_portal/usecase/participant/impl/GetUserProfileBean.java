@@ -20,11 +20,12 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class GetUserProfileBean extends ParticipantUseCase<GetUserProfile.Input,GetUserProfile.Output> implements GetUserProfile {
+public class GetUserProfileBean extends ParticipantUseCase<GetUserProfile.Input, GetUserProfile.Output>
+    implements GetUserProfile {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserProfileBean.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
 
     private final ParticipantCache participantCache;
 
@@ -33,10 +34,11 @@ public class GetUserProfileBean extends ParticipantUseCase<GetUserProfile.Input,
     private final PrincipalCache principalCache;
 
     public GetUserProfileBean(PrincipalCache principalCache,
-                                 ParticipantCache participantCache,
-                                 ParticipantUserCache participantUserCache) {
+                              ParticipantCache participantCache,
+                              ParticipantUserCache participantUserCache) {
 
         super(PERMITTED_ROLES, principalCache);
+
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;
         this.principalCache = principalCache;
@@ -44,16 +46,18 @@ public class GetUserProfileBean extends ParticipantUseCase<GetUserProfile.Input,
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
+
         ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
 
-        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.participantUserId().getId()));
+        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.participantUserId()
+                                                                                   .getId()));
 
         if (participantUserData == null || principalData == null) {
 
             throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
         }
 
-        ParticipantData participantData = participantCache.get(participantUserData.participantId());
+        ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
 
         if (participantData == null) {
 
@@ -68,9 +72,11 @@ public class GetUserProfileBean extends ParticipantUseCase<GetUserProfile.Input,
                           participantUserData.jobTitle(),
                           participantUserData.participantId(),
                           participantUserData.createdDate(),
-                          participantData.dfspCode().getValue(),
+                          participantData.dfspCode()
+                                         .getValue(),
                           participantData.dfspName(),
-                          principalData.userRoleType().toString());
+                          principalData.userRoleType()
+                                       .toString());
 
     }
 

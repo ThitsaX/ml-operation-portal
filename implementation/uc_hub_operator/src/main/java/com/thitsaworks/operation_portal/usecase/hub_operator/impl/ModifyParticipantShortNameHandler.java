@@ -22,15 +22,14 @@ import java.util.Set;
 
 @Service
 public class ModifyParticipantShortNameHandler
-        extends HubOperatorAuditableUseCase<ModifyParticipantShortName.Input, ModifyParticipantShortName.Output>
-        implements ModifyParticipantShortName {
+    extends HubOperatorAuditableUseCase<ModifyParticipantShortName.Input, ModifyParticipantShortName.Output>
+    implements ModifyParticipantShortName {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantShortNameHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
-    private final ModifyParticipantCompanyShortName modifyParticipant;
 
-    private final ObjectMapper objectMapper;
+    private final ModifyParticipantCompanyShortName modifyParticipant;
 
     private final PrincipalCache principalCache;
 
@@ -50,7 +49,6 @@ public class ModifyParticipantShortNameHandler
               principalCache);
 
         this.modifyParticipant = modifyParticipant;
-        this.objectMapper = objectMapper;
         this.principalCache = principalCache;
     }
 
@@ -66,14 +64,17 @@ public class ModifyParticipantShortNameHandler
         } else {
 
             if (principalData.realmId() != null &&
-                    !principalData.realmId().getId().equals(input.participantId().getId())) {
+                    !principalData.realmId()
+                                  .getId()
+                                  .equals(input.participantId()
+                                               .getId())) {
 
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
         }
 
         ModifyParticipantCompanyShortName.Output output = this.modifyParticipant.execute(
-                new ModifyParticipantCompanyShortName.Input(input.participantId(), input.companyShortName()));
+            new ModifyParticipantCompanyShortName.Input(input.participantId(), input.companyShortName()));
 
         return new Output(output.modified(), output.participantId());
     }

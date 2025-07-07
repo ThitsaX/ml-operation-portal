@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class GetExistingParticipantUserBean extends ParticipantAuditableUseCase<GetExistingParticipantUser.Input,GetExistingParticipantUser.Output> implements GetExistingParticipantUser {
+public class GetExistingParticipantUserBean
+    extends ParticipantAuditableUseCase<GetExistingParticipantUser.Input, GetExistingParticipantUser.Output>
+    implements GetExistingParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantUserBean.class);
 
@@ -39,6 +41,7 @@ public class GetExistingParticipantUserBean extends ParticipantAuditableUseCase<
               PERMITTED_ROLES,
               objectMapper,
               principalCache);
+
         this.participantUserQuery = participantUserQuery;
 
     }
@@ -56,7 +59,9 @@ public class GetExistingParticipantUserBean extends ParticipantAuditableUseCase<
                           participantUserData.jobTitle(),
                           participantUserData.participantId(),
                           participantUserData.createdDate(),
-                          participantUserData.dfspCode().getValue());
+                          participantUserData.dfspCode()
+                                             .getValue());
 
     }
+
 }

@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrentParticipantCurrencies;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetParticipantCurrencies;
@@ -33,7 +33,7 @@ public class GetParticipantCurrenciesHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws CentralLedgerException {
+    protected Output onExecute(Input input) throws DomainException {
 
         GetCurrentParticipantCurrencies.Output output =
             this.getCurrentParticipantCurrencies.execute(new GetCurrentParticipantCurrencies.Input(input.dfspId()));

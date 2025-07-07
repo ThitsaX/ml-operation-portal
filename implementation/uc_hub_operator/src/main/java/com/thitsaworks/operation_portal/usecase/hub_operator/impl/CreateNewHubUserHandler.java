@@ -62,7 +62,8 @@ public class CreateNewHubUserHandler
                                         input.firstName(), input.lastName(), input.jobTitle()));
 
         CreatePrincipal.Output createAccessOutput = this.createPrincipal.execute(
-            new CreatePrincipal.Input(new PrincipalId(output.hubUserId().getId()), RealmType.HUB_OPERATOR,
+            new CreatePrincipal.Input(new PrincipalId(output.hubUserId()
+                                                            .getId()), RealmType.HUB_OPERATOR,
                                       input.password(), null, input.userRoleType(), input.activeStatus()));
 
         return new CreateNewHubUser.Output(output.hubUserId(), createAccessOutput.accessKey(),

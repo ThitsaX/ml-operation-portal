@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -46,7 +47,7 @@ public class GetAllAuditHandler extends CommonAuditableUseCase<GetAllAudit.Input
     }
 
     @Override
-    protected Output onExecute(Input input) {
+    protected Output onExecute(Input input) throws DomainException {
 
         GetAuditByParticipantAndUserQuery.Output output =
             this.getAuditQuery.execute(new GetAuditByParticipantAndUserQuery.Input(input.realmId(),

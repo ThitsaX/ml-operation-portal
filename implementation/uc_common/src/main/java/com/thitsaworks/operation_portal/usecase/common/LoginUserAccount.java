@@ -1,11 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.common;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
-public interface LoginUserAccount extends
-                                  UseCase<LoginUserAccount.Input, LoginUserAccount.Output> {
+public interface LoginUserAccount {
+
+    Output execute(Input input) throws DomainException;
 
     record Input(Email email, String passwordPlain) { }
 
