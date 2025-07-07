@@ -20,7 +20,7 @@
         <module>mod_participant</module>
         <module>mod_hubuser</module>
         <module>mod_audit</module>
-        <module>mod_pending_approval</module>
+        <module>mod_approval</module>
     </modules>
 
     <properties>

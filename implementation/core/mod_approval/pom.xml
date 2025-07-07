@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>mod_pending_approval</artifactId>
+    <artifactId>mod_approval</artifactId>
 
     <dependencies>
         <dependency>
