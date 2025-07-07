@@ -26,7 +26,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCase<RemoveExistingParticipantUser.Input,RemoveExistingParticipantUser.Output> implements RemoveExistingParticipantUser {
+public class RemoveExistingParticipantUserBean
+    extends ParticipantAuditableUseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output>
+    implements RemoveExistingParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserBean.class);
 
@@ -52,6 +54,7 @@ public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCa
               PERMITTED_ROLES,
               objectMapper,
               principalCache);
+
         this.removeParticipantUser = removeParticipantUser;
         this.modifyPrincipal = modifyPrincipal;
         this.principalCache = principalCache;
@@ -72,7 +75,10 @@ public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCa
         } else {
 
             if (principalData.realmId() != null &&
-                    !principalData.realmId().getId().equals(input.participantId().getId())) {
+                    !principalData.realmId()
+                                  .getId()
+                                  .equals(input.participantId()
+                                               .getId())) {
 
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
@@ -82,7 +88,8 @@ public class RemoveExistingParticipantUserBean extends ParticipantAuditableUseCa
             new RemoveParticipantUser.Input(input.participantId(), input.participantUserId()));
 
         this.modifyPrincipal.execute(
-            new ModifyPrincipal.Input(new PrincipalId(output.participantUserId().getId()),
+            new ModifyPrincipal.Input(new PrincipalId(output.participantUserId()
+                                                            .getId()),
                                       PrincipalStatus.INACTIVE));
 
         return new RemoveExistingParticipantUser.Output(output.removed(), output.participantUserId());

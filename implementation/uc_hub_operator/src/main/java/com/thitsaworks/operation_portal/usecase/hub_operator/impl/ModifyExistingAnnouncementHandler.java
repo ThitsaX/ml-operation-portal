@@ -19,8 +19,8 @@ import java.util.Set;
 
 @Service
 public class ModifyExistingAnnouncementHandler
-        extends HubOperatorAuditableUseCase<ModifyExistingAnnouncement.Input, ModifyExistingAnnouncement.Output>
-        implements ModifyExistingAnnouncement {
+    extends HubOperatorAuditableUseCase<ModifyExistingAnnouncement.Input, ModifyExistingAnnouncement.Output>
+    implements ModifyExistingAnnouncement {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingAnnouncementHandler.class);
 
@@ -30,8 +30,6 @@ public class ModifyExistingAnnouncementHandler
                                                                     UserRoleType.SUPERUSER);
 
     private final ModifyAnnouncement modifyAnnouncement;
-
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public ModifyExistingAnnouncementHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -49,7 +47,6 @@ public class ModifyExistingAnnouncementHandler
               principalCache);
 
         this.modifyAnnouncement = modifyAnnouncement;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -57,8 +54,8 @@ public class ModifyExistingAnnouncementHandler
                                                                                                DomainException {
 
         ModifyAnnouncement.Output output = this.modifyAnnouncement.execute(
-                new ModifyAnnouncement.Input(input.announcementId(), input.announcementTitle(),
-                                             input.announcementDetail(), input.announcementDate(), input.isDeleted()));
+            new ModifyAnnouncement.Input(input.announcementId(), input.announcementTitle(),
+                                         input.announcementDetail(), input.announcementDate(), input.isDeleted()));
 
         return new ModifyExistingAnnouncement.Output(output.announcementId(), output.modified());
     }

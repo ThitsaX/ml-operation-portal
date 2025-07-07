@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -49,7 +50,7 @@ public class GetAllHubUserHandler extends HubOperatorAuditableUseCase<GetAllHubU
     }
 
     @Override
-    public Output onExecute(Input input) {
+    public Output onExecute(Input input) throws DomainException {
 
         List<HubUserData> hubUserDataList = this.hubUserQuery.getHubUsers();
 

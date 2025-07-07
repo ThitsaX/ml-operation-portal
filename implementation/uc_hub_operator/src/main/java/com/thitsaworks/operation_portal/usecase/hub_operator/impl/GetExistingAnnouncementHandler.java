@@ -20,8 +20,8 @@ import java.util.Set;
 
 @Service
 public class GetExistingAnnouncementHandler
-        extends HubOperatorAuditableUseCase<GetExistingAnnouncement.Input, GetExistingAnnouncement.Output>
-        implements GetExistingAnnouncement {
+    extends HubOperatorAuditableUseCase<GetExistingAnnouncement.Input, GetExistingAnnouncement.Output>
+    implements GetExistingAnnouncement {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetExistingAnnouncementHandler.class);
 
@@ -31,8 +31,6 @@ public class GetExistingAnnouncementHandler
                                                                     UserRoleType.SUPERUSER);
 
     private final AnnouncementQuery announcementQuery;
-
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public GetExistingAnnouncementHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -50,7 +48,6 @@ public class GetExistingAnnouncementHandler
               principalCache);
 
         this.announcementQuery = announcementQuery;
-        this.objectMapper = objectMapper;
     }
 
     @Override

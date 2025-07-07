@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettlementReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GenerateFeeSettlementReport;
 import org.slf4j.Logger;
@@ -45,7 +45,7 @@ public class GenerateFeeSettlementReportHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws ReportException {
+    protected Output onExecute(Input input) throws DomainException {
 
         GenerateFeeSettlementReportCommand.Output output =
             this.generateFeeSettlementReportCommand.execute(new GenerateFeeSettlementReportCommand.Input(input.startDate(),

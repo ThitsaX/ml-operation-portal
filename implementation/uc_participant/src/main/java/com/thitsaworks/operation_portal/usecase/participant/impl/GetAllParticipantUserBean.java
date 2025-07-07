@@ -23,7 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetAllParticipantUserBean extends ParticipantAuditableUseCase<GetAllParticipantUser.Input,GetAllParticipantUser.Output> implements GetAllParticipantUser {
+public class GetAllParticipantUserBean
+    extends ParticipantAuditableUseCase<GetAllParticipantUser.Input, GetAllParticipantUser.Output>
+    implements GetAllParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantUserBean.class);
 
@@ -46,6 +48,7 @@ public class GetAllParticipantUserBean extends ParticipantAuditableUseCase<GetAl
               PERMITTED_ROLES,
               objectMapper,
               principalCache);
+
         this.participantUserQuery = participantUserQuery;
         this.principalCache = principalCache;
     }
@@ -60,8 +63,10 @@ public class GetAllParticipantUserBean extends ParticipantAuditableUseCase<GetAl
 
         for (ParticipantUserData participantUserData : participantUserDataList) {
 
-            PrincipalData principalData = principalCache.get(new PrincipalId(participantUserData.participantUserId()
-                                                                                                .getId()));
+            PrincipalData
+                principalData =
+                this.principalCache.get(new PrincipalId(participantUserData.participantUserId()
+                                                                           .getId()));
 
             userInfoList.add(new UserInfo(participantUserData.participantUserId(),
                                           participantUserData.name(),
@@ -69,8 +74,10 @@ public class GetAllParticipantUserBean extends ParticipantAuditableUseCase<GetAl
                                           participantUserData.firstName(),
                                           participantUserData.lastName(),
                                           participantUserData.jobTitle(),
-                                          principalData.userRoleType().toString(),
-                                          principalData.principalStatus().toString(),
+                                          principalData.userRoleType()
+                                                       .toString(),
+                                          principalData.principalStatus()
+                                                       .toString(),
                                           Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 

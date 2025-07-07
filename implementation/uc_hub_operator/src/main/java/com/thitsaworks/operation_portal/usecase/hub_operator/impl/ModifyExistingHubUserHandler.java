@@ -19,8 +19,8 @@ import java.util.Set;
 
 @Service
 public class ModifyExistingHubUserHandler
-        extends HubOperatorAuditableUseCase<ModifyExistingHubUser.Input, ModifyExistingHubUser.Output>
-        implements ModifyExistingHubUser {
+    extends HubOperatorAuditableUseCase<ModifyExistingHubUser.Input, ModifyExistingHubUser.Output>
+    implements ModifyExistingHubUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingHubUserHandler.class);
 
@@ -30,8 +30,6 @@ public class ModifyExistingHubUserHandler
                                                                     UserRoleType.SUPERUSER);
 
     private final ModifyHubUser modifyHubUser;
-
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public ModifyExistingHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -49,7 +47,6 @@ public class ModifyExistingHubUserHandler
               principalCache);
 
         this.modifyHubUser = modifyHubUser;
-        this.objectMapper = objectMapper;
     }
 
     @Override

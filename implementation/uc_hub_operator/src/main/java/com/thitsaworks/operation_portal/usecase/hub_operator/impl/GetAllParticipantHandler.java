@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -51,7 +52,7 @@ public class GetAllParticipantHandler
     }
 
     @Override
-    public GetAllParticipant.Output onExecute(GetAllParticipant.Input input) {
+    public GetAllParticipant.Output onExecute(GetAllParticipant.Input input) throws DomainException {
 
         List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
@@ -61,7 +62,8 @@ public class GetAllParticipantHandler
 
             participantInfoList.add(
                 new GetAllParticipant.Output.ParticipantInfo(participantData.participantId(),
-                                                             participantData.dfspCode().getValue(),
+                                                             participantData.dfspCode()
+                                                                            .getValue(),
                                                              participantData.name(),
                                                              participantData.dfspName(),
                                                              participantData.address(),

@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class ModifyExistingParticipantUserBean extends ParticipantAuditableUseCase<ModifyExistingParticipantUser.Input,ModifyExistingParticipantUser.Output> implements ModifyExistingParticipantUser {
+public class ModifyExistingParticipantUserBean
+    extends ParticipantAuditableUseCase<ModifyExistingParticipantUser.Input, ModifyExistingParticipantUser.Output>
+    implements ModifyExistingParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantUserBean.class);
 
@@ -43,6 +45,7 @@ public class ModifyExistingParticipantUserBean extends ParticipantAuditableUseCa
               PERMITTED_ROLES,
               objectMapper,
               principalCache);
+
         this.modifyParticipantUser = modifyParticipantUser;
         this.modifyPrincipal = modifyPrincipal;
     }

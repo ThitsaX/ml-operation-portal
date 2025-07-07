@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewLiquidityProfile;
 import org.slf4j.Logger;
@@ -47,7 +47,7 @@ public class CreateNewLiquidityProfileHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws ParticipantException {
+    protected Output onExecute(Input input) throws DomainException {
 
         for (CreateNewLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
 

@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetAllOtherParticipantsBean extends ParticipantUseCase<GetAllOtherParticipants.Input, GetAllOtherParticipants.Output> implements GetAllOtherParticipants {
+public class GetAllOtherParticipantsBean
+    extends ParticipantUseCase<GetAllOtherParticipants.Input, GetAllOtherParticipants.Output>
+    implements GetAllOtherParticipants {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllOtherParticipantsBean.class);
 

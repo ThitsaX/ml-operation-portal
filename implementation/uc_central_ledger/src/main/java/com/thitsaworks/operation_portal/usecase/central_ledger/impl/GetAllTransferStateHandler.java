@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferStateData;
-import com.thitsaworks.operation_portal.reporting.central_ledger.exception.CentralLedgerException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferStates;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransferState;
@@ -35,7 +35,7 @@ public class GetAllTransferStateHandler
     }
 
     @Override
-    protected Output onExecute(Input input) throws CentralLedgerException {
+    protected Output onExecute(Input input) throws DomainException {
 
         GetTransferStates.Output output = this.getTransferStates.execute(new GetTransferStates.Input());
 
