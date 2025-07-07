@@ -21,6 +21,7 @@
         <module name="mod_participant" />
         <module name="uc_central_ledger" />
         <module name="mod_common" />
+        <module name="web_api_participant" />
         <module name="mod_infra" />
       </profile>
     </annotationProcessing>
@@ -31,10 +32,9 @@
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop_operation_portal" target="11" />
-      <module name="operation_portal_component" target="21" />
       <module name="Report" target="21" />
       <module name="reporting-pom" target="21" />
-      <module name="web_api_participant" target="21" />
+      <module name="web_api_hub_operator" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">

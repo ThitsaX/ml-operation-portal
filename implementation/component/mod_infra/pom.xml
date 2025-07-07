@@ -37,10 +37,6 @@
             <artifactId>querydsl-sql-spring</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.aerospike</groupId>
             <artifactId>aerospike-client</artifactId>
         </dependency>
