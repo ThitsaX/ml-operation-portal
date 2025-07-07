@@ -26,9 +26,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class ModifyExistingLiquidityProfileController {
+public class ModifyLiquidityProfileController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingLiquidityProfileController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyLiquidityProfileController.class);
 
     private final ModifyExistingLiquidityProfile modifyExistingLiquidityProfile;
 
