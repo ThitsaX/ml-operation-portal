@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="mod_audit" />
+        <module name="web_api_operation" />
         <module name="mod_central_ledger" />
         <module name="app_scheduler" />
         <module name="mod_iam" />
@@ -15,13 +16,11 @@
         <module name="mod_misc" />
         <module name="uc_participant" />
         <module name="mod_report" />
-        <module name="web_api_hub_operator" />
         <module name="uc_common" />
         <module name="uc_hub_operator" />
         <module name="mod_participant" />
         <module name="uc_central_ledger" />
         <module name="mod_common" />
-        <module name="web_api_participant" />
         <module name="mod_infra" />
       </profile>
     </annotationProcessing>
@@ -35,6 +34,7 @@
       <module name="operation_portal_component" target="21" />
       <module name="Report" target="21" />
       <module name="reporting-pom" target="21" />
+      <module name="web_api_participant" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -66,7 +66,7 @@
       <module name="uc_common" options="-parameters" />
       <module name="uc_hub_operator" options="-parameters" />
       <module name="uc_participant" options="-parameters" />
-      <module name="web_api_hub_operator" options="-parameters" />
+      <module name="web_api_operation" options="-parameters" />
       <module name="web_api_participant" options="-parameters" />
     </option>
   </component>

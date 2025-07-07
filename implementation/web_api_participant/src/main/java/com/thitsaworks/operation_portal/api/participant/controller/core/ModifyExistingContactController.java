@@ -67,24 +67,24 @@ public class ModifyExistingContactController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("participant_id") String participantId,
-            @NotNull @JsonProperty("contact_info_list") List<ContactInfo> contactInfoList) {
+            @NotNull @JsonProperty("participantId") String participantId,
+            @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList) {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record ContactInfo(
-                @JsonProperty("contact_id") String contactId,
+                @JsonProperty("contactId") String contactId,
                 @NotNull @JsonProperty("name") String name,
                 @NotNull @JsonProperty("title") String title,
                 @NotNull @JsonProperty("email") String email,
                 @NotNull @JsonProperty("mobile") String mobile,
-                @NotNull @JsonProperty("contact_type") String contactType) {
+                @NotNull @JsonProperty("contactType") String contactType) {
 
         }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participant_id") String participantId,
+            @JsonProperty("participantId") String participantId,
             @JsonProperty("modified") boolean modified) {
 
     }

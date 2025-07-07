@@ -1,10 +1,10 @@
-package com.thitsaworks.operation_portal.api.participant.controller.core;
+package com.thitsaworks.operation_portal.api.operation.portal.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.api.participant.security.UserContext;
+import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.common.ChangeCurrentPassword;
@@ -19,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import java.io.Serializable;
 
@@ -43,7 +42,7 @@ public class ChangeCurrentPasswordController {
                 (UserContext) SecurityContextHolder.getContext().getAuthentication().getDetails();
 
         ChangeCurrentPassword.Output output = this.changeCurrentPassword.execute(
-                new ChangeCurrentPassword.Input(new PrincipalId(userContext.participantUserId().getId()),
+                new ChangeCurrentPassword.Input(new PrincipalId(userContext.userId().getId()),
                                                 request.oldPassword(), request.newPassword()));
 
         var response = new Response(output.accessKey().getId().toString(),

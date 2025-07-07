@@ -56,35 +56,18 @@ public class GetAllParticipantUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("userinfo_list") List<UserInfo> userInfoList) implements Serializable {
+    public record Response(@JsonProperty("userInfoList") List<UserInfo> userInfoList) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public record UserInfo(@JsonProperty("participant_user_id")
-                               String participantUserId,
-
-                               @JsonProperty("name")
-                               String name,
-
-                               @JsonProperty("email")
-                               String email,
-
-                               @JsonProperty("first_name")
-                               String firstName,
-
-                               @JsonProperty("last_name")
-                               String lastName,
-
-                               @JsonProperty("job_title")
-                               String jobTitle,
-
-                               @JsonProperty("user_role_type")
-                               String roleType,
-
-                               @JsonProperty("status")
-                               String status,
-
-                               @JsonProperty("created_date")
-                               Long createdDate) implements Serializable {}
+        public record UserInfo(@JsonProperty("participantUserId") String participantUserId,
+                               @JsonProperty("name") String name,
+                               @JsonProperty("email") String email,
+                               @JsonProperty("firstName") String firstName,
+                               @JsonProperty("lastName") String lastName,
+                               @JsonProperty("jobTitle") String jobTitle,
+                               @JsonProperty("userRoleType") String roleType,
+                               @JsonProperty("status") String status,
+                               @JsonProperty("createdDate") Long createdDate) implements Serializable {}
 
     }
 

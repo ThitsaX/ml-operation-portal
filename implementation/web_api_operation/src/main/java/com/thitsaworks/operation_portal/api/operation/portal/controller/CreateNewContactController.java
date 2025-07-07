@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.api.participant.controller.core;
+package com.thitsaworks.operation_portal.api.operation.portal.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -64,11 +64,11 @@ public class CreateNewContactController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
             @NotNull
-            @JsonProperty("participant_id")
+            @JsonProperty("participantId")
             String participantId,
 
             @NotNull
-            @JsonProperty("contact_info_list")
+            @JsonProperty("contactInfoList")
             List<ContactInfo> contactInfoList) {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -99,11 +99,11 @@ public class CreateNewContactController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participant_id")
+            @JsonProperty("participantId")
             String participantId,
 
-            @JsonProperty("created")
-            boolean created) {
+            @JsonProperty("isCreated")
+            boolean isCreated) {
     }
 
 }

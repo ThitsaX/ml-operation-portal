@@ -49,8 +49,8 @@ public class RemoveExistingParticipantUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("participant_id") String participantId,
-            @NotNull @JsonProperty("participant_user_id") String participantUserId
+            @NotNull @JsonProperty("participantId") String participantId,
+            @NotNull @JsonProperty("participantUserId") String participantUserId
     ) implements Serializable {
 
     }

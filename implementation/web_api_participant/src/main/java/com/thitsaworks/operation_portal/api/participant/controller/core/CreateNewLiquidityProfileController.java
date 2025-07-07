@@ -37,7 +37,7 @@ public class CreateNewLiquidityProfileController {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @RequestMapping(value = "/secured/create_liquidity_profile", method = RequestMethod.POST)
+    @RequestMapping(value = "/secured/createLiquidityProfile", method = RequestMethod.POST)
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException,
                                                                                         JsonProcessingException {
 

@@ -48,7 +48,7 @@ public class ResetCurrentPasswordController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
             @NotNull @JsonProperty("email") String email,
-            @NotNull @JsonProperty("new_password") String password
+            @NotNull @JsonProperty("newPassword") String password
     ) implements Serializable {
 
     }

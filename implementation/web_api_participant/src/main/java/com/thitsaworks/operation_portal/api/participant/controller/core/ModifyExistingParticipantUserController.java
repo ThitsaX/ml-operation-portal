@@ -55,13 +55,13 @@ public class ModifyExistingParticipantUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("participant_user_id") String participantUserId,
+            @NotNull @JsonProperty("participantUserId") String participantUserId,
             @NotNull @JsonProperty("name") String name,
             @NotNull @JsonProperty("email") String email,
-            @NotNull @JsonProperty("first_name") String firstName,
-            @NotNull @JsonProperty("last_name") String lastName,
-            @NotNull @JsonProperty("job_title") String jobTitle,
-            @NotNull @JsonProperty("user_role_type") UserRoleType userRoleType,
+            @NotNull @JsonProperty("firstName") String firstName,
+            @NotNull @JsonProperty("lastName") String lastName,
+            @NotNull @JsonProperty("jobTitle") String jobTitle,
+            @NotNull @JsonProperty("userRoleType") UserRoleType userRoleType,
             @NotNull @JsonProperty("status") String isActive
     ) {
 
@@ -69,7 +69,7 @@ public class ModifyExistingParticipantUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participant_user_id") String participantUserId,
+            @JsonProperty("participantUserId") String participantUserId,
             @JsonProperty("modified") boolean modified
     ) {
 
