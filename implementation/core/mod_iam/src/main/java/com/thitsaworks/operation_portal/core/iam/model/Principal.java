@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
-import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException;

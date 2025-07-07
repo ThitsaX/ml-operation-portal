@@ -2,9 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal;
 
 import com.thitsaworks.operation_portal.component.infra.flyway.DatabaseMigration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
-
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,33 +15,34 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 @Import(value = {OperationPortalApiConfiguration.class})
-@SpringBootApplication(exclude = {
-		HibernateJpaAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class, SecurityAutoConfiguration.class,
-		DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
+@SpringBootApplication(
+    exclude = {
+        HibernateJpaAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class, SecurityAutoConfiguration.class,
+        DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
 public class WebApiOperationPortalApplication {
 
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		VaultConfiguration.Settings vaultSettings = VaultConfiguration.Settings.withPropertyOrEnv();
-		DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
-		DatabaseMigration.migrate(ReportingDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
+        VaultConfiguration.Settings vaultSettings = VaultConfiguration.Settings.withPropertyOrEnv();
+        DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
+        DatabaseMigration.migrate(ReportingDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
 
-		SpringApplication.run(WebApiOperationPortalApplication.class, args);
-	}
+        SpringApplication.run(WebApiOperationPortalApplication.class, args);
+    }
 
-	@Bean
-	public WebConfiguration.PortalPortSetting portSetting() {
+    @Bean
+    public WebConfiguration.PortalPortSetting portSetting() {
 
-		var portNo = System.getenv("HUB_OPERATOR_PORT_NO") == null ? "8003" : System.getenv("HUB_OPERATOR_PORT_NO");
+        var portNo = System.getenv("HUB_OPERATOR_PORT_NO") == null ? "8003" : System.getenv("HUB_OPERATOR_PORT_NO");
 
-		return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
+        return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
 
-	}
+    }
 
-	@Bean
-	public VaultConfiguration.Settings vaultSettings() {
+    @Bean
+    public VaultConfiguration.Settings vaultSettings() {
 
-		return VaultConfiguration.Settings.withPropertyOrEnv();
-	}
+        return VaultConfiguration.Settings.withPropertyOrEnv();
+    }
 
 }

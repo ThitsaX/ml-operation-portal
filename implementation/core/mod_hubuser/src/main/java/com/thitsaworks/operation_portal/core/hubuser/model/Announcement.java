@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.hubuser.model;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaInstantConverter;
-import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

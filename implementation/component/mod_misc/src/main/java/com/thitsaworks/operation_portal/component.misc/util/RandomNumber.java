@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.util;
+package com.thitsaworks.operation_portal.component.misc.util;
 
 import java.util.Random;
 
