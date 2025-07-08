@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncement;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncementCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingAnnouncement;
@@ -29,13 +29,13 @@ public class ModifyExistingAnnouncementHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.SUPERUSER);
 
-    private final ModifyAnnouncement modifyAnnouncement;
+    private final ModifyAnnouncementCommand modifyAnnouncementCommand;
 
     @Autowired
     public ModifyExistingAnnouncementHandler(CreateInputAuditCommand createInputAuditCommand,
                                              CreateOutputAuditCommand createOutputAuditCommand,
                                              CreateExceptionAuditCommand createExceptionAuditCommand,
-                                             ModifyAnnouncement modifyAnnouncement,
+                                             ModifyAnnouncementCommand modifyAnnouncementCommand,
                                              ObjectMapper objectMapper,
                                              PrincipalCache principalCache) {
 
@@ -46,16 +46,16 @@ public class ModifyExistingAnnouncementHandler
               objectMapper,
               principalCache);
 
-        this.modifyAnnouncement = modifyAnnouncement;
+        this.modifyAnnouncementCommand = modifyAnnouncementCommand;
     }
 
     @Override
     public ModifyExistingAnnouncement.Output onExecute(ModifyExistingAnnouncement.Input input) throws
                                                                                                DomainException {
 
-        ModifyAnnouncement.Output output = this.modifyAnnouncement.execute(
-            new ModifyAnnouncement.Input(input.announcementId(), input.announcementTitle(),
-                                         input.announcementDetail(), input.announcementDate(), input.isDeleted()));
+        ModifyAnnouncementCommand.Output output = this.modifyAnnouncementCommand.execute(
+            new ModifyAnnouncementCommand.Input(input.announcementId(), input.announcementTitle(),
+                                                input.announcementDetail(), input.announcementDate(), input.isDeleted()));
 
         return new ModifyExistingAnnouncement.Output(output.announcementId(), output.modified());
     }

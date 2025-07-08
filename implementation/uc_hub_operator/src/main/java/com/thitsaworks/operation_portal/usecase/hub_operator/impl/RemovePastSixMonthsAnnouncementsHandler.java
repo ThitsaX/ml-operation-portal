@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncements;
+import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.RemovePastSixMonthsAnnouncements;
@@ -25,22 +25,22 @@ public class RemovePastSixMonthsAnnouncementsHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.SUPERUSER);
 
-    private final RemoveAnnouncements removeAnnouncements;
+    private final RemoveAnnouncementsCommand removeAnnouncementsCommand;
 
     @Autowired
     public RemovePastSixMonthsAnnouncementsHandler(PrincipalCache principalCache,
-                                                   RemoveAnnouncements removeAnnouncements) {
+                                                   RemoveAnnouncementsCommand removeAnnouncementsCommand) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.removeAnnouncements = removeAnnouncements;
+        this.removeAnnouncementsCommand = removeAnnouncementsCommand;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        RemoveAnnouncements.Output output = this.removeAnnouncements.execute(
-            new RemoveAnnouncements.Input());
+        RemoveAnnouncementsCommand.Output output = this.removeAnnouncementsCommand.execute(
+            new RemoveAnnouncementsCommand.Input());
 
         return new Output(output.removed());
     }

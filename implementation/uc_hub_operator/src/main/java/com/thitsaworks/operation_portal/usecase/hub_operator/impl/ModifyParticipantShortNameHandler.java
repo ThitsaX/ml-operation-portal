@@ -10,7 +10,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCompanyShortName;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCompanyShortNameCommand;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyParticipantShortName;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class ModifyParticipantShortNameHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
 
-    private final ModifyParticipantCompanyShortName modifyParticipant;
+    private final ModifyParticipantCompanyShortNameCommand modifyParticipant;
 
     private final PrincipalCache principalCache;
 
@@ -37,7 +37,7 @@ public class ModifyParticipantShortNameHandler
     public ModifyParticipantShortNameHandler(CreateInputAuditCommand createInputAuditCommand,
                                              CreateOutputAuditCommand createOutputAuditCommand,
                                              CreateExceptionAuditCommand createExceptionAuditCommand,
-                                             ModifyParticipantCompanyShortName modifyParticipant,
+                                             ModifyParticipantCompanyShortNameCommand modifyParticipant,
                                              ObjectMapper objectMapper,
                                              PrincipalCache principalCache) {
 
@@ -73,8 +73,8 @@ public class ModifyParticipantShortNameHandler
             }
         }
 
-        ModifyParticipantCompanyShortName.Output output = this.modifyParticipant.execute(
-            new ModifyParticipantCompanyShortName.Input(input.participantId(), input.companyShortName()));
+        ModifyParticipantCompanyShortNameCommand.Output output = this.modifyParticipant.execute(
+            new ModifyParticipantCompanyShortNameCommand.Input(input.participantId(), input.companyShortName()));
 
         return new Output(output.modified(), output.participantId());
     }

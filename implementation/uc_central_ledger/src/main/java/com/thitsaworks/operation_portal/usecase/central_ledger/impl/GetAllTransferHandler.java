@@ -14,7 +14,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserDat
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferData;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransfers;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransfersQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransfer;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
 
-    private final GetTransfers getTransfers;
+    private final GetTransfersQuery getTransfersQuery;
 
     private final ParticipantCache participantCache;
 
@@ -44,7 +44,7 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
                                  CreateExceptionAuditCommand createExceptionAuditCommand,
                                  ObjectMapper objectMapper,
                                  PrincipalCache principalCache,
-                                 GetTransfers getTransfers,
+                                 GetTransfersQuery getTransfersQuery,
                                  ParticipantCache participantCache,
                                  ParticipantUserCache participantUserCache) {
 
@@ -55,7 +55,7 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
               objectMapper,
               principalCache);
 
-        this.getTransfers = getTransfers;
+        this.getTransfersQuery = getTransfersQuery;
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;
 
@@ -83,19 +83,19 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
             participantData.dfspCode()
                            .getValue();
 
-        GetTransfers.Output output = this.getTransfers.execute(new GetTransfers.Input(input.fromDate(),
-                                                                                      input.toDate(),
-                                                                                      input.transferId(),
-                                                                                      input.payerFspId(),
-                                                                                      input.payeeFspId(),
-                                                                                      input.payerIdentifierTypeId(),
-                                                                                      input.payeeIdentifierTypeId(),
-                                                                                      input.payerIdentifierValue(),
-                                                                                      input.payeeIdentifierValue(),
-                                                                                      input.currencyId(),
-                                                                                      input.transferStateId(),
-                                                                                      fspName,
-                                                                                      input.timeZone()));
+        GetTransfersQuery.Output output = this.getTransfersQuery.execute(new GetTransfersQuery.Input(input.fromDate(),
+                                                                                                     input.toDate(),
+                                                                                                     input.transferId(),
+                                                                                                     input.payerFspId(),
+                                                                                                     input.payeeFspId(),
+                                                                                                     input.payerIdentifierTypeId(),
+                                                                                                     input.payeeIdentifierTypeId(),
+                                                                                                     input.payerIdentifierValue(),
+                                                                                                     input.payeeIdentifierValue(),
+                                                                                                     input.currencyId(),
+                                                                                                     input.transferStateId(),
+                                                                                                     fspName,
+                                                                                                     input.timeZone()));
 
         List<TransferData> transferDataList = new ArrayList<>();
 

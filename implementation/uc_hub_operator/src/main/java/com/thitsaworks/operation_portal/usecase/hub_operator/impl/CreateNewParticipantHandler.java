@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipant;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantCommand;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewParticipant;
 import org.slf4j.Logger;
@@ -29,14 +29,14 @@ public class CreateNewParticipantHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.OPERATION);
 
-    private final CreateParticipant createParticipant;
+    private final CreateParticipantCommand createParticipantCommand;
 
     public CreateNewParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
-                                       CreateParticipant createParticipant) {
+                                       CreateParticipantCommand createParticipantCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,30 +45,30 @@ public class CreateNewParticipantHandler
               objectMapper,
               principalCache);
 
-        this.createParticipant = createParticipant;
+        this.createParticipantCommand = createParticipantCommand;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        CreateParticipant.Output output = this.createParticipant.execute(
-            new CreateParticipant.Input(input.name(), input.dfspCode(), input.dfspName(),
-                                        input.address(),
-                                        input.mobile(),
-                                        input.contactInfoList()
+        CreateParticipantCommand.Output output = this.createParticipantCommand.execute(
+            new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
+                                               input.address(),
+                                               input.mobile(),
+                                               input.contactInfoList()
                                              .stream()
-                                             .map(info -> new CreateParticipant.Input.ContactInfo(info.name(),
-                                                                                                  info.title(),
-                                                                                                  info.email(),
-                                                                                                  info.mobile(),
-                                                                                                  info.contactType()))
+                                             .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
+                                                                                                         info.title(),
+                                                                                                         info.email(),
+                                                                                                         info.mobile(),
+                                                                                                         info.contactType()))
                                              .collect(Collectors.toList()),
-                                        input.liquidityProfileInfoList()
+                                               input.liquidityProfileInfoList()
                                              .stream()
-                                             .map(info -> new CreateParticipant.Input.LiquidityProfileInfo(info.accountName(),
-                                                                                                           info.accountNumber(),
-                                                                                                           info.currency(),
-                                                                                                           info.isActive()))
+                                             .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(info.accountName(),
+                                                                                                                  info.accountNumber(),
+                                                                                                                  info.currency(),
+                                                                                                                  info.isActive()))
                                              .collect(Collectors.toList())));
 
         return new CreateNewParticipant.Output(output.created(), output.participantId());

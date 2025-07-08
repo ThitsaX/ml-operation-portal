@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfile;
+import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfileCommand;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewLiquidityProfile;
 import org.slf4j.Logger;
@@ -26,14 +26,14 @@ public class CreateNewLiquidityProfileHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final CreateLiquidityProfile createLiquidityProfile;
+    private final CreateLiquidityProfileCommand createLiquidityProfileCommand;
 
     public CreateNewLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
                                             CreateOutputAuditCommand createOutputAuditCommand,
                                             CreateExceptionAuditCommand createExceptionAuditCommand,
                                             ObjectMapper objectMapper,
                                             PrincipalCache principalCache,
-                                            CreateLiquidityProfile createLiquidityProfile) {
+                                            CreateLiquidityProfileCommand createLiquidityProfileCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -42,7 +42,7 @@ public class CreateNewLiquidityProfileHandler
               objectMapper,
               principalCache);
 
-        this.createLiquidityProfile = createLiquidityProfile;
+        this.createLiquidityProfileCommand = createLiquidityProfileCommand;
 
     }
 
@@ -51,12 +51,12 @@ public class CreateNewLiquidityProfileHandler
 
         for (CreateNewLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
 
-            this.createLiquidityProfile.execute(
-                new CreateLiquidityProfile.Input(input.participantId(),
-                                                 profileInfo.accountName(),
-                                                 profileInfo.accountNumber(),
-                                                 profileInfo.currency(),
-                                                 profileInfo.isActive()));
+            this.createLiquidityProfileCommand.execute(
+                new CreateLiquidityProfileCommand.Input(input.participantId(),
+                                                        profileInfo.accountName(),
+                                                        profileInfo.accountNumber(),
+                                                        profileInfo.currency(),
+                                                        profileInfo.isActive()));
 
         }
 

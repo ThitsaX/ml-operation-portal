@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ChangePassword;
+import com.thitsaworks.operation_portal.core.iam.command.ChangePasswordCommand;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.ChangeCurrentPassword;
 import org.slf4j.Logger;
@@ -27,14 +27,14 @@ public class ChangeCurrentPasswordHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final ChangePassword changePassword;
+    private final ChangePasswordCommand changePasswordCommand;
 
     @Autowired
     public ChangeCurrentPasswordHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
                                         ObjectMapper objectMapper,
-                                        ChangePassword changePassword,
+                                        ChangePasswordCommand changePasswordCommand,
                                         PrincipalCache principalCache) {
 
         super(createInputAuditCommand,
@@ -44,15 +44,15 @@ public class ChangeCurrentPasswordHandler
               objectMapper,
               principalCache);
 
-        this.changePassword = changePassword;
+        this.changePasswordCommand = changePasswordCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ChangePassword.Output changePasswordOutput = this.changePassword.execute(
-            new ChangePassword.Input(input.principalId(), input.oldPassword(),
-                                     input.newPassword()));
+        ChangePasswordCommand.Output changePasswordOutput = this.changePasswordCommand.execute(
+            new ChangePasswordCommand.Input(input.principalId(), input.oldPassword(),
+                                            input.newPassword()));
 
         return new Output(changePasswordOutput.accessKey(),
                           changePasswordOutput.secretKey());

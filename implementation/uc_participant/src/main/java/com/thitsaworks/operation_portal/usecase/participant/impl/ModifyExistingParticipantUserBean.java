@@ -8,8 +8,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipal;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUser;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.ParticipantAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.participant.ModifyExistingParticipantUser;
 import org.slf4j.Logger;
@@ -27,17 +27,17 @@ public class ModifyExistingParticipantUserBean
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final ModifyParticipantUser modifyParticipantUser;
+    private final ModifyParticipantUserCommand modifyParticipantUserCommand;
 
-    private final ModifyPrincipal modifyPrincipal;
+    private final ModifyPrincipalCommand modifyPrincipalCommand;
 
     public ModifyExistingParticipantUserBean(CreateInputAuditCommand createInputAuditCommand,
                                              CreateOutputAuditCommand createOutputAuditCommand,
                                              CreateExceptionAuditCommand createExceptionAuditCommand,
                                              ObjectMapper objectMapper,
                                              PrincipalCache principalCache,
-                                             ModifyParticipantUser modifyParticipantUser,
-                                             ModifyPrincipal modifyPrincipal) {
+                                             ModifyParticipantUserCommand modifyParticipantUserCommand,
+                                             ModifyPrincipalCommand modifyPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,21 +46,21 @@ public class ModifyExistingParticipantUserBean
               objectMapper,
               principalCache);
 
-        this.modifyParticipantUser = modifyParticipantUser;
-        this.modifyPrincipal = modifyPrincipal;
+        this.modifyParticipantUserCommand = modifyParticipantUserCommand;
+        this.modifyPrincipalCommand = modifyPrincipalCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ModifyParticipantUser.Output output = this.modifyParticipantUser.execute(
-            new ModifyParticipantUser.Input(input.participantUserId(), input.name(), input.email(),
-                                            input.firstName(), input.lastName(), input.jobTitle(), null));
+        ModifyParticipantUserCommand.Output output = this.modifyParticipantUserCommand.execute(
+            new ModifyParticipantUserCommand.Input(input.participantUserId(), input.name(), input.email(),
+                                                   input.firstName(), input.lastName(), input.jobTitle(), null));
 
-        this.modifyPrincipal.execute(
-            new ModifyPrincipal.Input(new PrincipalId(output.participantUserId()
-                                                            .getId()), input.userRoleType(),
-                                      input.principalStatus()));
+        this.modifyPrincipalCommand.execute(
+            new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId()
+                                                                   .getId()), input.userRoleType(),
+                                             input.principalStatus()));
 
         return new Output(output.modified(), output.participantUserId());
 

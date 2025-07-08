@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetFinancialData;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetFinancialDataQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetDashboardData;
 import org.slf4j.Logger;
@@ -27,20 +27,20 @@ public class GetDashboardDataHandler extends CentralLedgerUseCase<GetDashboardDa
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final GetFinancialData getFinancialData;
+    private final GetFinancialDataQuery getFinancialDataQuery;
 
     private final ParticipantCache participantCache;
 
     private final ParticipantUserCache participantUserCache;
 
     public GetDashboardDataHandler(PrincipalCache principalCache,
-                                   GetFinancialData getFinancialData,
+                                   GetFinancialDataQuery getFinancialDataQuery,
                                    ParticipantCache participantCache,
                                    ParticipantUserCache participantUserCache) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getFinancialData = getFinancialData;
+        this.getFinancialDataQuery = getFinancialDataQuery;
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;
 
@@ -68,7 +68,7 @@ public class GetDashboardDataHandler extends CentralLedgerUseCase<GetDashboardDa
             participantData.dfspCode()
                            .getValue();
 
-        GetFinancialData.Output output = this.getFinancialData.execute(new GetFinancialData.Input(fspName));
+        GetFinancialDataQuery.Output output = this.getFinancialDataQuery.execute(new GetFinancialDataQuery.Input(fspName));
 
         return new GetDashboardData.Output(output.getFinancialData());
     }

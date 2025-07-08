@@ -16,13 +16,13 @@ public class GetFinancialDataUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetFinancialDataUnitTest.class);
 
     @Autowired
-    private GetFinancialData getFinancialData;
+    private GetFinancialDataQuery getFinancialDataQuery;
 
     @Test
     public void test_getFinancialDataSuccessfully() throws Exception {
 
-        GetFinancialData.Output output = this.getFinancialData.execute(
-                new GetFinancialData.Input("wallet2"));
+        GetFinancialDataQuery.Output output = this.getFinancialDataQuery.execute(
+                new GetFinancialDataQuery.Input("wallet2"));
 
         if (output.getFinancialData() != null && !output.getFinancialData().isEmpty()) {
 

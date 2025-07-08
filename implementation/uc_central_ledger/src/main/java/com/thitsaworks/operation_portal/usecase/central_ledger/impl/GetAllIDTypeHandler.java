@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetIDTypes;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetIDTypesQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllIDType;
 import org.slf4j.Logger;
@@ -21,21 +21,21 @@ public class GetAllIDTypeHandler extends CentralLedgerUseCase<GetAllIDType.Input
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
-    private final GetIDTypes getIDTypes;
+    private final GetIDTypesQuery getIDTypesQuery;
 
     public GetAllIDTypeHandler(PrincipalCache principalCache,
-                               GetIDTypes getIDTypes) {
+                               GetIDTypesQuery getIDTypesQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getIDTypes = getIDTypes;
+        this.getIDTypesQuery = getIDTypesQuery;
 
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetIDTypes.Output output = this.getIDTypes.execute(new GetIDTypes.Input());
+        GetIDTypesQuery.Output output = this.getIDTypesQuery.execute(new GetIDTypesQuery.Input());
 
         return new GetAllIDType.Output(output.getIdTypeDataList());
     }

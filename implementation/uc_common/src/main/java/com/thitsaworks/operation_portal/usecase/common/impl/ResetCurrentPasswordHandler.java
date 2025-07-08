@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ResetPassword;
+import com.thitsaworks.operation_portal.core.iam.command.ResetPasswordCommand;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -31,7 +31,7 @@ public class ResetCurrentPasswordHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final ResetPassword resetPassword;
+    private final ResetPasswordCommand resetPasswordCommand;
 
     private final ParticipantUserQuery participantUserQuery;
 
@@ -40,7 +40,7 @@ public class ResetCurrentPasswordHandler
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
-                                       ResetPassword resetPassword,
+                                       ResetPasswordCommand resetPasswordCommand,
                                        ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
@@ -50,7 +50,7 @@ public class ResetCurrentPasswordHandler
               objectMapper,
               principalCache);
 
-        this.resetPassword = resetPassword;
+        this.resetPasswordCommand = resetPasswordCommand;
         this.participantUserQuery = participantUserQuery;
     }
 
@@ -65,10 +65,10 @@ public class ResetCurrentPasswordHandler
             throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
-        ResetPassword.Output resetPasswordOutput = this.resetPassword.execute(
-            new ResetPassword.Input(new PrincipalId(participantUserData.participantUserId()
-                                                                       .getId()),
-                                    input.password()));
+        ResetPasswordCommand.Output resetPasswordOutput = this.resetPasswordCommand.execute(
+            new ResetPasswordCommand.Input(new PrincipalId(participantUserData.participantUserId()
+                                                                              .getId()),
+                                           input.password()));
 
         return new Output(resetPasswordOutput.accessKey(),
                           resetPasswordOutput.secretKey(),

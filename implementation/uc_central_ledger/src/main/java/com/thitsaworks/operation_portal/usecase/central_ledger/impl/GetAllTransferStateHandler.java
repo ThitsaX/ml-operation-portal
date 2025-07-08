@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.central_ledger.data.TransferStateData;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferStates;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferStatesQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetAllTransferState;
 import org.slf4j.Logger;
@@ -23,21 +23,21 @@ public class GetAllTransferStateHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
 
-    private final GetTransferStates getTransferStates;
+    private final GetTransferStatesQuery getTransferStatesQuery;
 
     public GetAllTransferStateHandler(PrincipalCache principalCache,
-                                      GetTransferStates getTransferStates) {
+                                      GetTransferStatesQuery getTransferStatesQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getTransferStates = getTransferStates;
+        this.getTransferStatesQuery = getTransferStatesQuery;
 
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetTransferStates.Output output = this.getTransferStates.execute(new GetTransferStates.Input());
+        GetTransferStatesQuery.Output output = this.getTransferStatesQuery.execute(new GetTransferStatesQuery.Input());
 
         List<TransferStateData> transferStateDataList = new ArrayList<>();
 

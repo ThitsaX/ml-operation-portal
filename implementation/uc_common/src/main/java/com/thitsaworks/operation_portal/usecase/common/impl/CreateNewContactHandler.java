@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.command.CreateContact;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContactCommand;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewContact;
 import org.slf4j.Logger;
@@ -25,14 +25,14 @@ public class CreateNewContactHandler extends CommonAuditableUseCase<CreateNewCon
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final CreateContact createContact;
+    private final CreateContactCommand createContactCommand;
 
     public CreateNewContactHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
-                                   CreateContact createContact) {
+                                   CreateContactCommand createContactCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -41,7 +41,7 @@ public class CreateNewContactHandler extends CommonAuditableUseCase<CreateNewCon
               objectMapper,
               principalCache);
 
-        this.createContact = createContact;
+        this.createContactCommand = createContactCommand;
     }
 
     @Override
@@ -49,12 +49,12 @@ public class CreateNewContactHandler extends CommonAuditableUseCase<CreateNewCon
 
         for (Input.ContactInfo contactInfo : input.contactInfoList()) {
 
-            this.createContact.execute(new CreateContact.Input(contactInfo.name(),
-                                                               contactInfo.title(),
-                                                               contactInfo.email(),
-                                                               contactInfo.mobile(),
-                                                               input.participantId(),
-                                                               contactInfo.contactType()));
+            this.createContactCommand.execute(new CreateContactCommand.Input(contactInfo.name(),
+                                                                             contactInfo.title(),
+                                                                             contactInfo.email(),
+                                                                             contactInfo.mobile(),
+                                                                             input.participantId(),
+                                                                             contactInfo.contactType()));
         }
 
         return new CreateNewContact.Output(true);

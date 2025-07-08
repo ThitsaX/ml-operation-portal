@@ -12,11 +12,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipal;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUser;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.ParticipantAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.participant.RemoveExistingParticipantUser;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class RemoveExistingParticipantUserBean
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final RemoveParticipantUser removeParticipantUser;
+    private final RemoveParticipantUserCommand removeParticipantUserCommand;
 
-    private final ModifyPrincipal modifyPrincipal;
+    private final ModifyPrincipalCommand modifyPrincipalCommand;
 
     private final PrincipalCache principalCache;
 
@@ -45,8 +45,8 @@ public class RemoveExistingParticipantUserBean
                                              CreateExceptionAuditCommand createExceptionAuditCommand,
                                              ObjectMapper objectMapper,
                                              PrincipalCache principalCache,
-                                             RemoveParticipantUser removeParticipantUser,
-                                             ModifyPrincipal modifyPrincipal) {
+                                             RemoveParticipantUserCommand removeParticipantUserCommand,
+                                             ModifyPrincipalCommand modifyPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -55,8 +55,8 @@ public class RemoveExistingParticipantUserBean
               objectMapper,
               principalCache);
 
-        this.removeParticipantUser = removeParticipantUser;
-        this.modifyPrincipal = modifyPrincipal;
+        this.removeParticipantUserCommand = removeParticipantUserCommand;
+        this.modifyPrincipalCommand = modifyPrincipalCommand;
         this.principalCache = principalCache;
     }
 
@@ -84,13 +84,13 @@ public class RemoveExistingParticipantUserBean
             }
         }
 
-        RemoveParticipantUser.Output output = this.removeParticipantUser.execute(
-            new RemoveParticipantUser.Input(input.participantId(), input.participantUserId()));
+        RemoveParticipantUserCommand.Output output = this.removeParticipantUserCommand.execute(
+            new RemoveParticipantUserCommand.Input(input.participantId(), input.participantUserId()));
 
-        this.modifyPrincipal.execute(
-            new ModifyPrincipal.Input(new PrincipalId(output.participantUserId()
-                                                            .getId()),
-                                      PrincipalStatus.INACTIVE));
+        this.modifyPrincipalCommand.execute(
+            new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId()
+                                                                   .getId()),
+                                             PrincipalStatus.INACTIVE));
 
         return new RemoveExistingParticipantUser.Output(output.removed(), output.participantUserId());
 

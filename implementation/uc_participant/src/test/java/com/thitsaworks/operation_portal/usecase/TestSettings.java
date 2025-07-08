@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase;
 
+import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
@@ -10,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 public class TestSettings {
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
+    @Qualifier(PersistenceQualifiers.Core.READ_SETTINGS)
+    public CoreDataSourceConfiguration.Settings coreDataSourceConfigurationReadDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
+        return new CoreDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
                                                              "root",
                                                              "password",
                                                              0,
@@ -21,10 +22,10 @@ public class TestSettings {
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
+    @Qualifier(PersistenceQualifiers.Core.WRITE_SETTINGS)
+    public CoreDataSourceConfiguration.Settings coreDataSourceConfigurationWriteDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
+        return new CoreDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/operation_portal",
                                                              "root",
                                                              "password",
                                                              0,
@@ -32,7 +33,7 @@ public class TestSettings {
     }
 
     @Bean
-    public RedisConfiguration.Settings redisConfigurationSettings(Vault vault) {
+    public RedisConfiguration.Settings redisConfigurationSettings() {
 
         return new RedisConfiguration.Settings("redis://localhost:6379");
     }

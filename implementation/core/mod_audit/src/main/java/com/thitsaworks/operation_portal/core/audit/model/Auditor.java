@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateAudit;
+import com.thitsaworks.operation_portal.core.audit.command.CreateAuditCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class Auditor {
     public static <T> void audit(ObjectMapper objectMapper, Class<T> useCase, Object input, Object output,
                                  UserId userId, RealmId realmId) {
 
-        CreateAudit createAudit = SpringContext.getBean(CreateAudit.class);
+        CreateAuditCommand createAuditCommand = SpringContext.getBean(CreateAuditCommand.class);
 
         try {
 
@@ -34,7 +34,7 @@ public class Auditor {
             String outputJson = objectMapper.writeValueAsString(output);
             String outputInfo = maskPassword(objectMapper, outputJson);
 
-            createAudit.execute(new CreateAudit.Input(useCase.getSimpleName(), userId, realmId, inputInfo, outputInfo));
+            createAuditCommand.execute(new CreateAuditCommand.Input(useCase.getSimpleName(), userId, realmId, inputInfo, outputInfo));
 
         } catch (Exception e) {
 

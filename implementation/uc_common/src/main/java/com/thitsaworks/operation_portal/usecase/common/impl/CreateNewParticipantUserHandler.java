@@ -12,11 +12,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipal;
+import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUser;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.common.CreateNewParticipantUser;
 import org.slf4j.Logger;
@@ -34,9 +34,9 @@ public class CreateNewParticipantUserHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final CreateParticipantUser createParticipantUser;
+    private final CreateParticipantUserCommand createParticipantUserCommand;
 
-    private final CreatePrincipal createPrincipal;
+    private final CreatePrincipalCommand createPrincipalCommand;
 
     private final PrincipalCache principalCache;
 
@@ -45,8 +45,8 @@ public class CreateNewParticipantUserHandler
                                            CreateExceptionAuditCommand createExceptionAuditCommand,
                                            ObjectMapper objectMapper,
                                            PrincipalCache principalCache,
-                                           CreateParticipantUser createParticipantUser,
-                                           CreatePrincipal createPrincipal) {
+                                           CreateParticipantUserCommand createParticipantUserCommand,
+                                           CreatePrincipalCommand createPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -55,8 +55,8 @@ public class CreateNewParticipantUserHandler
               objectMapper,
               principalCache);
 
-        this.createParticipantUser = createParticipantUser;
-        this.createPrincipal = createPrincipal;
+        this.createParticipantUserCommand = createParticipantUserCommand;
+        this.createPrincipalCommand = createPrincipalCommand;
         this.principalCache = principalCache;
     }
 
@@ -84,18 +84,18 @@ public class CreateNewParticipantUserHandler
             }
         }
 
-        CreateParticipantUser.Output output = this.createParticipantUser.execute(
-            new CreateParticipantUser.Input(input.name(), input.email(), input.participantId(),
-                                            input.firstName(), input.lastName(), input.jobTitle()));
+        CreateParticipantUserCommand.Output output = this.createParticipantUserCommand.execute(
+            new CreateParticipantUserCommand.Input(input.name(), input.email(), input.participantId(),
+                                                   input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipal.execute(new CreatePrincipal.Input(new PrincipalId(output.participantUserId()
-                                                                                     .getId()),
-                                                               input.realmType(),
-                                                               input.password(),
-                                                               new RealmId(input.participantId()
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.participantUserId()
+                                                                                                   .getId()),
+                                                                             input.realmType(),
+                                                                             input.password(),
+                                                                             new RealmId(input.participantId()
                                                                                 .getId()),
-                                                               input.userRoleType(),
-                                                               input.activeStatus()));
+                                                                             input.userRoleType(),
+                                                                             input.activeStatus()));
 
         return new Output(output.created());
     }

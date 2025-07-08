@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyContact;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyContactCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
@@ -29,7 +29,7 @@ public class ModifyExistingContactHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final ModifyContact modifyContact;
+    private final ModifyContactCommand modifyContactCommand;
 
     private final ParticipantCache participantCache;
 
@@ -38,7 +38,7 @@ public class ModifyExistingContactHandler
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
-                                        ModifyContact modifyContact,
+                                        ModifyContactCommand modifyContactCommand,
                                         ParticipantCache participantCache) {
 
         super(createInputAuditCommand,
@@ -48,7 +48,7 @@ public class ModifyExistingContactHandler
               objectMapper,
               principalCache);
 
-        this.modifyContact = modifyContact;
+        this.modifyContactCommand = modifyContactCommand;
         this.participantCache = participantCache;
 
     }
@@ -63,14 +63,14 @@ public class ModifyExistingContactHandler
 
         for (Input.ContactInfo contactInfo : input.contactInfoList()) {
 
-            this.modifyContact.execute(
-                new ModifyContact.Input(input.participantId(),
-                                        contactInfo.contactId(),
-                                        contactInfo.name(),
-                                        contactInfo.title(),
-                                        contactInfo.email(),
-                                        contactInfo.mobile(),
-                                        contactInfo.contactType()));
+            this.modifyContactCommand.execute(
+                new ModifyContactCommand.Input(input.participantId(),
+                                               contactInfo.contactId(),
+                                               contactInfo.name(),
+                                               contactInfo.title(),
+                                               contactInfo.email(),
+                                               contactInfo.mobile(),
+                                               contactInfo.contactType()));
         }
 
         return new ModifyExistingContact.Output(true);

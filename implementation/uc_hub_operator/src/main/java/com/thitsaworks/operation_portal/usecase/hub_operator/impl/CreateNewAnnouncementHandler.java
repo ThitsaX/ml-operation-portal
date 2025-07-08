@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hubuser.command.CreateAnnouncement;
+import com.thitsaworks.operation_portal.core.hubuser.command.CreateAnnouncementCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewAnnouncement;
@@ -24,26 +24,26 @@ public class CreateNewAnnouncementHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.OPERATION);
 
-    private final CreateAnnouncement createAnnouncement;
+    private final CreateAnnouncementCommand createAnnouncementCommand;
 
     public CreateNewAnnouncementHandler(PrincipalCache principalCache,
-                                        CreateAnnouncement createAnnouncement) {
+                                        CreateAnnouncementCommand createAnnouncementCommand) {
 
         super(PERMITTED_ROLES,
               principalCache);
 
-        this.createAnnouncement = createAnnouncement;
+        this.createAnnouncementCommand = createAnnouncementCommand;
 
     }
 
     @Override
     public CreateNewAnnouncement.Output onExecute(CreateNewAnnouncement.Input input) throws DomainException {
 
-        CreateAnnouncement.Output output =
-            this.createAnnouncement.execute(
-                new CreateAnnouncement.Input(input.announcementTitle(),
-                                             input.announcementDetail(),
-                                             input.announcementDate()));
+        CreateAnnouncementCommand.Output output =
+            this.createAnnouncementCommand.execute(
+                new CreateAnnouncementCommand.Input(input.announcementTitle(),
+                                                    input.announcementDetail(),
+                                                    input.announcementDate()));
 
         return new CreateNewAnnouncement.Output(output.created());
     }

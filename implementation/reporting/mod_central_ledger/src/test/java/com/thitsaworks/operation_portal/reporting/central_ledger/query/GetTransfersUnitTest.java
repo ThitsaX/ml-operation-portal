@@ -16,18 +16,18 @@ public class GetTransfersUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetTransfersUnitTest.class);
 
     @Autowired
-    private GetTransfers getTransfers;
+    private GetTransfersQuery getTransfersQuery;
 
     @Test
     public void test_getTransfersSuccessfully() throws Exception {
 
-        GetTransfers.Output output = this.getTransfers.execute(
-                new GetTransfers.Input("2022-01-20T10:56:15.00Z",
-                        "2022-06-20T10:56:15.00Z",
-                        "4e573c61-3129-4c2a-af39-92cb1b6d6358",
-                        null, null, null,
-                        null, null, null,
-                        null, null, null,"0630"));
+        GetTransfersQuery.Output output = this.getTransfersQuery.execute(
+                new GetTransfersQuery.Input("2022-01-20T10:56:15.00Z",
+                                            "2022-06-20T10:56:15.00Z",
+                                            "4e573c61-3129-4c2a-af39-92cb1b6d6358",
+                                            null, null, null,
+                                            null, null, null,
+                                            null, null, null, "0630"));
 
         if (output.getTransferInfoList() != null && output.getTransferInfoList().size() > 0) {
             for (var obj : output.getTransferInfoList())

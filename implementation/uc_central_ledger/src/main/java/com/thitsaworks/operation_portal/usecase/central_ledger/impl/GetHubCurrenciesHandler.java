@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrencies;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrenciesQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetHubCurrencies;
 import org.slf4j.Logger;
@@ -21,20 +21,20 @@ public class GetHubCurrenciesHandler extends CentralLedgerUseCase<GetHubCurrenci
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
-    private final GetCurrencies getCurrencies;
+    private final GetCurrenciesQuery getCurrenciesQuery;
 
     public GetHubCurrenciesHandler(PrincipalCache principalCache,
-                                   GetCurrencies getCurrencies) {
+                                   GetCurrenciesQuery getCurrenciesQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getCurrencies = getCurrencies;
+        this.getCurrenciesQuery = getCurrenciesQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetCurrencies.Output output = this.getCurrencies.execute(new GetCurrencies.Input());
+        GetCurrenciesQuery.Output output = this.getCurrenciesQuery.execute(new GetCurrenciesQuery.Input());
 
         return new GetHubCurrencies.Output(output.getCurrencyDataList());
     }

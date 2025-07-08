@@ -11,6 +11,7 @@
         <module name="mod_central_ledger" />
         <module name="app_scheduler" />
         <module name="mod_iam" />
+        <module name="mod_approval" />
         <module name="app_report_downloader" />
         <module name="mod_pending_approval" />
         <module name="mod_hubuser" />
@@ -45,6 +46,7 @@
       <module name="component" options="-parameters" />
       <module name="core" options="-parameters" />
       <module name="dfsp_portal" options="-parameters" />
+      <module name="mod_approval" options="-parameters" />
       <module name="mod_audit" options="-parameters" />
       <module name="mod_central_ledger" options="-parameters" />
       <module name="mod_common" options="-parameters" />

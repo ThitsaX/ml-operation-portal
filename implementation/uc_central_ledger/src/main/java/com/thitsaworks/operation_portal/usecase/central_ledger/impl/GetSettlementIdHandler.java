@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
-import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIds;
+import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIdsQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetSettlementId;
 import org.slf4j.Logger;
@@ -25,23 +25,23 @@ public class GetSettlementIdHandler extends CentralLedgerUseCase<GetSettlementId
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
-    private final GetSettlementIds getSettlementIds;
+    private final GetSettlementIdsQuery getSettlementIdsQuery;
 
     public GetSettlementIdHandler(PrincipalCache principalCache,
-                                  GetSettlementIds getSettlementIds) {
+                                  GetSettlementIdsQuery getSettlementIdsQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getSettlementIds = getSettlementIds;
+        this.getSettlementIdsQuery = getSettlementIdsQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetSettlementIds.Output output = this.getSettlementIds.execute(
-            new GetSettlementIds.Input(Timestamp.from(input.startDate()),
-                                       Timestamp.from(input.endDate()),
-                                       input.timezoneOffset()));
+        GetSettlementIdsQuery.Output output = this.getSettlementIdsQuery.execute(
+            new GetSettlementIdsQuery.Input(Timestamp.from(input.startDate()),
+                                            Timestamp.from(input.endDate()),
+                                            input.timezoneOffset()));
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
 

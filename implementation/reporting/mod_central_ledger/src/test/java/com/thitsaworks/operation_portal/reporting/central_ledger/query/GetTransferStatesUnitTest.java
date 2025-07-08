@@ -16,13 +16,13 @@ public class GetTransferStatesUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferStatesUnitTest.class);
 
     @Autowired
-    private GetTransferStates getTransferStates;
+    private GetTransferStatesQuery getTransferStatesQuery;
 
     @Test
     public void test_getTransferStatesSuccessfully() throws Exception {
 
-        GetTransferStates.Output output = this.getTransferStates.execute(
-                new GetTransferStates.Input());
+        GetTransferStatesQuery.Output output = this.getTransferStatesQuery.execute(
+                new GetTransferStatesQuery.Input());
 
         if (output.getTransferStateDataList() != null && output.getTransferStateDataList().size() > 0) {
             for (var obj : output.getTransferStateDataList())

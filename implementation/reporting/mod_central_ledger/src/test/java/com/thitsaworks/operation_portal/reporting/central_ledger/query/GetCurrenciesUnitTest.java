@@ -17,12 +17,12 @@ public class GetCurrenciesUnitTest{
     private static final Logger LOG = LoggerFactory.getLogger(GetCurrenciesUnitTest.class);
 
     @Autowired
-    private GetCurrencies getCurrencies;
+    private GetCurrenciesQuery getCurrenciesQuery;
 
     @Test
     public void test_getCurrenciesSuccessfully() throws Exception {
 
-        GetCurrencies.Output output = this.getCurrencies.execute(new GetCurrencies.Input());
+        GetCurrenciesQuery.Output output = this.getCurrenciesQuery.execute(new GetCurrenciesQuery.Input());
 
         if (output.getCurrencyDataList() != null && output.getCurrencyDataList().size() > 0) {
 

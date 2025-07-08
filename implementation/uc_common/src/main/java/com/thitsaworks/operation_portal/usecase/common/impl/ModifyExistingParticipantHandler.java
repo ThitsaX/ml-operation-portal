@@ -10,7 +10,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipant;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CommonAuditableUseCase;
@@ -32,7 +32,7 @@ public class ModifyExistingParticipantHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final ModifyParticipant modifyParticipant;
+    private final ModifyParticipantCommand modifyParticipantCommand;
 
     private final PrincipalCache principalCache;
 
@@ -41,7 +41,7 @@ public class ModifyExistingParticipantHandler
                                             CreateExceptionAuditCommand createExceptionAuditCommand,
                                             ObjectMapper objectMapper,
                                             PrincipalCache principalCache,
-                                            ModifyParticipant modifyParticipant) {
+                                            ModifyParticipantCommand modifyParticipantCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -50,7 +50,7 @@ public class ModifyExistingParticipantHandler
               objectMapper,
               principalCache);
 
-        this.modifyParticipant = modifyParticipant;
+        this.modifyParticipantCommand = modifyParticipantCommand;
         this.principalCache = principalCache;
     }
 
@@ -75,27 +75,27 @@ public class ModifyExistingParticipantHandler
             }
         }
 
-        ModifyParticipant.Output output = this.modifyParticipant.execute(
-            new ModifyParticipant.Input(input.participantId(),
-                                        input.companyName(),
-                                        input.address(),
-                                        input.mobile(),
-                                        input.contactInfoList()
+        ModifyParticipantCommand.Output output = this.modifyParticipantCommand.execute(
+            new ModifyParticipantCommand.Input(input.participantId(),
+                                               input.companyName(),
+                                               input.address(),
+                                               input.mobile(),
+                                               input.contactInfoList()
                                              .stream()
-                                             .map(info -> new ModifyParticipant.Input.ContactInfo(info.contactId(),
-                                                                                                  info.name(),
-                                                                                                  info.title(),
-                                                                                                  info.email(),
-                                                                                                  info.mobile(),
-                                                                                                  info.contactType()))
+                                             .map(info -> new ModifyParticipantCommand.Input.ContactInfo(info.contactId(),
+                                                                                                         info.name(),
+                                                                                                         info.title(),
+                                                                                                         info.email(),
+                                                                                                         info.mobile(),
+                                                                                                         info.contactType()))
                                              .collect(Collectors.toList()),
-                                        input.liquidityProfileInfoList()
+                                               input.liquidityProfileInfoList()
                                              .stream()
-                                             .map(info -> new ModifyParticipant.Input.LiquidityProfileInfo(info.liquidityProfileId(),
-                                                                                                           info.accountName(),
-                                                                                                           info.accountNumber(),
-                                                                                                           info.currency(),
-                                                                                                           info.isActive()))
+                                             .map(info -> new ModifyParticipantCommand.Input.LiquidityProfileInfo(info.liquidityProfileId(),
+                                                                                                                  info.accountName(),
+                                                                                                                  info.accountNumber(),
+                                                                                                                  info.currency(),
+                                                                                                                  info.isActive()))
                                              .collect(Collectors.toList())));
 
         return new ModifyExistingParticipant.Output(output.modified(), output.participantId());

@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.central_ledger.impl;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrentParticipantCurrencies;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetCurrentParticipantCurrenciesQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetParticipantCurrencies;
 import org.slf4j.Logger;
@@ -22,21 +22,21 @@ public class GetParticipantCurrenciesHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
-    private final GetCurrentParticipantCurrencies getCurrentParticipantCurrencies;
+    private final GetCurrentParticipantCurrenciesQuery getCurrentParticipantCurrenciesQuery;
 
     public GetParticipantCurrenciesHandler(PrincipalCache principalCache,
-                                           GetCurrentParticipantCurrencies getCurrentParticipantCurrencies) {
+                                           GetCurrentParticipantCurrenciesQuery getCurrentParticipantCurrenciesQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
-        this.getCurrentParticipantCurrencies = getCurrentParticipantCurrencies;
+        this.getCurrentParticipantCurrenciesQuery = getCurrentParticipantCurrenciesQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetCurrentParticipantCurrencies.Output output =
-            this.getCurrentParticipantCurrencies.execute(new GetCurrentParticipantCurrencies.Input(input.dfspId()));
+        GetCurrentParticipantCurrenciesQuery.Output output =
+            this.getCurrentParticipantCurrenciesQuery.execute(new GetCurrentParticipantCurrenciesQuery.Input(input.dfspId()));
 
         return new Output(output.getCurrencyDataList());
     }

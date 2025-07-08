@@ -16,13 +16,13 @@ public class GetIDTypesUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetIDTypesUnitTest.class);
 
     @Autowired
-    private GetIDTypes getIDTypes;
+    private GetIDTypesQuery getIDTypesQuery;
 
     @Test
     public void test_getIDTypesSuccessfully() throws Exception {
 
-        GetIDTypes.Output output = this.getIDTypes.execute(
-                new GetIDTypes.Input());
+        GetIDTypesQuery.Output output = this.getIDTypesQuery.execute(
+                new GetIDTypesQuery.Input());
 
         if (output.getIdTypeDataList() != null && output.getIdTypeDataList().size() > 0) {
             for (var obj : output.getIdTypeDataList())

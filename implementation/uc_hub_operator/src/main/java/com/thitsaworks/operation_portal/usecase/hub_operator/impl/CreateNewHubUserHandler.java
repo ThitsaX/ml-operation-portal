@@ -8,9 +8,9 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hubuser.command.CreateHubUser;
+import com.thitsaworks.operation_portal.core.hubuser.command.CreateHubUserCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipal;
+import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewHubUser;
 import org.slf4j.Logger;
@@ -30,17 +30,17 @@ public class CreateNewHubUserHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.OPERATION);
 
-    private final CreateHubUser createHubUser;
+    private final CreateHubUserCommand createHubUserCommand;
 
-    private final CreatePrincipal createPrincipal;
+    private final CreatePrincipalCommand createPrincipalCommand;
 
     public CreateNewHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
-                                   CreateHubUser createHubUser,
-                                   CreatePrincipal createPrincipal) {
+                                   CreateHubUserCommand createHubUserCommand,
+                                   CreatePrincipalCommand createPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -49,22 +49,22 @@ public class CreateNewHubUserHandler
               objectMapper,
               principalCache);
 
-        this.createHubUser = createHubUser;
-        this.createPrincipal = createPrincipal;
+        this.createHubUserCommand = createHubUserCommand;
+        this.createPrincipalCommand = createPrincipalCommand;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        CreateHubUser.Output output =
-            this.createHubUser.execute(
-                new CreateHubUser.Input(input.name(), input.email(),
-                                        input.firstName(), input.lastName(), input.jobTitle()));
+        CreateHubUserCommand.Output output =
+            this.createHubUserCommand.execute(
+                new CreateHubUserCommand.Input(input.name(), input.email(),
+                                               input.firstName(), input.lastName(), input.jobTitle()));
 
-        CreatePrincipal.Output createAccessOutput = this.createPrincipal.execute(
-            new CreatePrincipal.Input(new PrincipalId(output.hubUserId()
-                                                            .getId()), RealmType.HUB_OPERATOR,
-                                      input.password(), null, input.userRoleType(), input.activeStatus()));
+        CreatePrincipalCommand.Output createAccessOutput = this.createPrincipalCommand.execute(
+            new CreatePrincipalCommand.Input(new PrincipalId(output.hubUserId()
+                                                                   .getId()), RealmType.HUB_OPERATOR,
+                                             input.password(), null, input.userRoleType(), input.activeStatus()));
 
         return new CreateNewHubUser.Output(output.hubUserId(), createAccessOutput.accessKey(),
                                            createAccessOutput.secretKey());

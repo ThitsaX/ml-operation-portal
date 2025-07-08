@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.iam.command.Authenticate;
+import com.thitsaworks.operation_portal.core.iam.command.AuthenticateCommand;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -25,13 +25,13 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
     private final ParticipantUserQuery participantUserQuery;
 
-    private final Authenticate authenticate;
+    private final AuthenticateCommand authenticateCommand;
 
     public LoginUserAccountHandler(ParticipantUserQuery participantUserQuery,
-                                   Authenticate authenticate) {
+                                   AuthenticateCommand authenticateCommand) {
 
         this.participantUserQuery = participantUserQuery;
-        this.authenticate = authenticate;
+        this.authenticateCommand = authenticateCommand;
     }
 
     @Override
@@ -44,10 +44,10 @@ public class LoginUserAccountHandler implements LoginUserAccount {
             throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
-        Authenticate.Output securityToken = this.authenticate.execute(
-            new Authenticate.Input(new PrincipalId(participantUserData.participantUserId()
-                                                                      .getId()),
-                                   input.passwordPlain()));
+        AuthenticateCommand.Output securityToken = this.authenticateCommand.execute(
+            new AuthenticateCommand.Input(new PrincipalId(participantUserData.participantUserId()
+                                                                             .getId()),
+                                          input.passwordPlain()));
 
         return new Output(securityToken.securityToken()
                                        .getAccessKey(),

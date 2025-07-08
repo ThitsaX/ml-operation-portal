@@ -16,13 +16,13 @@ public class GetTransferDetailUnitTest extends EnvAwareUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferDetailUnitTest.class);
 
     @Autowired
-    private GetTransferDetail getTransferDetail;
+    private GetTransferDetailQuery getTransferDetailQuery;
 
     @Test
     public void test_getTransferDetailSuccessfully() throws Exception {
 
-        GetTransferDetail.Output output = this.getTransferDetail.execute(
-                new GetTransferDetail.Input("4e573c61-3129-4c2a-af39-92cb1b6d6358"));
+        GetTransferDetailQuery.Output output = this.getTransferDetailQuery.execute(
+                new GetTransferDetailQuery.Input("4e573c61-3129-4c2a-af39-92cb1b6d6358"));
 
         if (output.getBusinessData() != null) {
 

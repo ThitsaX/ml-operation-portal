@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUser;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyHubUserCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingHubUser;
@@ -29,13 +29,13 @@ public class ModifyExistingHubUserHandler
                                                                     UserRoleType.REPORTING,
                                                                     UserRoleType.SUPERUSER);
 
-    private final ModifyHubUser modifyHubUser;
+    private final ModifyHubUserCommand modifyHubUserCommand;
 
     @Autowired
     public ModifyExistingHubUserHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                        ModifyHubUser modifyHubUser,
+                                        ModifyHubUserCommand modifyHubUserCommand,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache) {
 
@@ -46,17 +46,17 @@ public class ModifyExistingHubUserHandler
               objectMapper,
               principalCache);
 
-        this.modifyHubUser = modifyHubUser;
+        this.modifyHubUserCommand = modifyHubUserCommand;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        ModifyHubUser.Output output = this.modifyHubUser.execute(new ModifyHubUser.Input(input.hubUserId(),
-                                                                                         input.name(),
-                                                                                         input.firstName(),
-                                                                                         input.lastName(),
-                                                                                         input.jobTitle()));
+        ModifyHubUserCommand.Output output = this.modifyHubUserCommand.execute(new ModifyHubUserCommand.Input(input.hubUserId(),
+                                                                                                              input.name(),
+                                                                                                              input.firstName(),
+                                                                                                              input.lastName(),
+                                                                                                              input.jobTitle()));
 
         return new Output(output.modified(), output.hubUserId());
     }

@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetail;
+import com.thitsaworks.operation_portal.reporting.central_ledger.query.GetTransferDetailQuery;
 import com.thitsaworks.operation_portal.usecase.CentralLedgerAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.central_ledger.GetTransferDetails;
 import org.slf4j.Logger;
@@ -25,14 +25,14 @@ public class GetTransferDetailsHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
 
-    private final GetTransferDetail getTransferDetail;
+    private final GetTransferDetailQuery getTransferDetailQuery;
 
     public GetTransferDetailsHandler(CreateInputAuditCommand createInputAuditCommand,
                                      CreateOutputAuditCommand createOutputAuditCommand,
                                      CreateExceptionAuditCommand createExceptionAuditCommand,
                                      ObjectMapper objectMapper,
                                      PrincipalCache principalCache,
-                                     GetTransferDetail getTransferDetail) {
+                                     GetTransferDetailQuery getTransferDetailQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -41,13 +41,13 @@ public class GetTransferDetailsHandler
               objectMapper,
               principalCache);
 
-        this.getTransferDetail = getTransferDetail;
+        this.getTransferDetailQuery = getTransferDetailQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(
+        GetTransferDetailQuery.Output output = this.getTransferDetailQuery.execute(new GetTransferDetailQuery.Input(
             input.transferId()));
 
         return new Output(output.getBusinessData());
