@@ -1,5 +1,6 @@
-package com.thitsaworks.operation_portal.component.retrofit;
+package com.thitsaworks.operation_portal.component.misc.retrofit;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.Getter;
 import okhttp3.ResponseBody;
 import org.slf4j.Logger;
@@ -23,7 +24,7 @@ public abstract class RetrofitRestApi<SERVICE, REQUEST, RESPONSE, ERROR> {
 
     }
 
-    protected abstract Call<RESPONSE> call(REQUEST request, Map<String, Object> extra);
+    protected abstract Call<RESPONSE> call(REQUEST request, Map<String, Object> extra) throws JsonProcessingException;
 
     public Response<RESPONSE> invoke(final REQUEST request) throws RestException {
 

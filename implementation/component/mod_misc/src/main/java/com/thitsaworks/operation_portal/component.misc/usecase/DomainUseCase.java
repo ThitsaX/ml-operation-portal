@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.component.misc.usecase;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 
+import java.net.ConnectException;
+
 public abstract class DomainUseCase<I, O> implements UseCase<I, O> {
 
     public O execute(I input) throws DomainException {
@@ -39,6 +41,6 @@ public abstract class DomainUseCase<I, O> implements UseCase<I, O> {
 
     protected abstract DomainException onException(Exception exception);
 
-    protected abstract O onExecute(I input) throws DomainException;
+    protected abstract O onExecute(I input) throws DomainException, ConnectException;
 
 }

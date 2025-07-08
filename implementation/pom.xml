@@ -224,6 +224,11 @@
             <!--core -->
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
+                <artifactId>mod_hub_services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_iam</artifactId>
                 <version>${project.version}</version>
             </dependency>
