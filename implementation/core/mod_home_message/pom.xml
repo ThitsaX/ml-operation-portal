@@ -4,29 +4,27 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.thitsaworks.operation_portal</groupId>
-        <artifactId>mojaloop-operation-portal</artifactId>
+        <groupId>com.thitsaworks.operation_portal.core</groupId>
+        <artifactId>core</artifactId>
         <version>1.0.0</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.thitsaworks.operation_portal.core</groupId>
-    <artifactId>core</artifactId>
-    <packaging>pom</packaging>
-    <name>Operation Portal - Core</name>
-
-    <modules>
-        <module>mod_iam</module>
-        <module>mod_participant</module>
-        <module>mod_hubuser</module>
-        <module>mod_audit</module>
-        <module>mod_home_message</module>
-    </modules>
+    <artifactId>mod_home_message</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_infra</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_audit</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
