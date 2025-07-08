@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementLatest" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
+<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementLatest" pageWidth="1280" pageHeight="600" columnWidth="1240" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="central_ledger"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet=true" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="true"/>
 	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="true"/>
@@ -629,6 +629,9 @@
 						</datasetParameter>
 						<datasetParameter name="timezoneoffset">
 							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="ORACLE_REF_CURSOR">
+							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
