@@ -19,6 +19,7 @@
         <module>mod_misc</module>
         <module>mod_infra</module>
         <module>mod_common</module>
+        <module>mod_fspiop</module>
     </modules>
 
     <properties>
@@ -26,5 +27,6 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
 
 </project>

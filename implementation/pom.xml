@@ -24,6 +24,7 @@
         <module>uc_participant</module>
         <module>uc_hub_operator</module>
         <module>web_api_operation</module>
+        <module>component/mod_fspiop</module>
     </modules>
 
     <properties>

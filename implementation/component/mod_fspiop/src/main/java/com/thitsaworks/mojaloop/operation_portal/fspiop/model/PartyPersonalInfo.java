@@ -1,0 +1,125 @@
+package com.thitsaworks.mojaloop.operation_portal.fspiop.model;
+
+import com.thitsaworks.mojaloop.operation_portal.fspiop.model.PartyComplexName;
+import javax.validation.constraints.*;
+import javax.validation.Valid;
+
+import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+
+/**
+ * Data model for the complex type PartyPersonalInfo.
+ **/
+
+@JsonTypeName("PartyPersonalInfo")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-08T12:54:58.680324+06:30[Asia/Rangoon]")
+public class PartyPersonalInfo   {
+  private @Valid PartyComplexName complexName;
+  private @Valid String dateOfBirth;
+  private @Valid String kycInformation;
+
+  /**
+   **/
+  public PartyPersonalInfo complexName(PartyComplexName complexName) {
+    this.complexName = complexName;
+    return this;
+  }
+
+  
+  @JsonProperty("complexName")
+  public PartyComplexName getComplexName() {
+    return complexName;
+  }
+
+  @JsonProperty("complexName")
+  public void setComplexName(PartyComplexName complexName) {
+    this.complexName = complexName;
+  }
+
+  /**
+   * Date of Birth of the Party.
+   **/
+  public PartyPersonalInfo dateOfBirth(String dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
+    return this;
+  }
+
+  
+  @JsonProperty("dateOfBirth")
+ @Pattern(regexp="^(?:[1-9]\\d{3}-(?:(?:0[1-9]|1[0-2])-(?:0[1-9]|1\\d|2[0-8])|(?:0[13-9]|1[0-2])-(?:29|30)|(?:0[13578]|1[02])-31)|(?:[1-9]\\d(?:0[48]|[2468][048]|[13579][26])|(?:[2468][048]|[13579][26])00)-02-29)$")  public String getDateOfBirth() {
+    return dateOfBirth;
+  }
+
+  @JsonProperty("dateOfBirth")
+  public void setDateOfBirth(String dateOfBirth) {
+    this.dateOfBirth = dateOfBirth;
+  }
+
+  /**
+   * KYC information for the party in a form mandated by an individual scheme.
+   **/
+  public PartyPersonalInfo kycInformation(String kycInformation) {
+    this.kycInformation = kycInformation;
+    return this;
+  }
+
+  
+  @JsonProperty("kycInformation")
+ @Size(min=1,max=2048)  public String getKycInformation() {
+    return kycInformation;
+  }
+
+  @JsonProperty("kycInformation")
+  public void setKycInformation(String kycInformation) {
+    this.kycInformation = kycInformation;
+  }
+
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PartyPersonalInfo partyPersonalInfo = (PartyPersonalInfo) o;
+    return Objects.equals(this.complexName, partyPersonalInfo.complexName) &&
+        Objects.equals(this.dateOfBirth, partyPersonalInfo.dateOfBirth) &&
+        Objects.equals(this.kycInformation, partyPersonalInfo.kycInformation);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(complexName, dateOfBirth, kycInformation);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class PartyPersonalInfo {\n");
+    
+    sb.append("    complexName: ").append(toIndentedString(complexName)).append("\n");
+    sb.append("    dateOfBirth: ").append(toIndentedString(dateOfBirth)).append("\n");
+    sb.append("    kycInformation: ").append(toIndentedString(kycInformation)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces
+   * (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
+  }
+
+
+}
+
