@@ -21,8 +21,6 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoginUserAccountHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
-
     private final ParticipantUserQuery participantUserQuery;
 
     private final AuthenticateCommand authenticateCommand;

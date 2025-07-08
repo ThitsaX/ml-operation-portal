@@ -5,12 +5,15 @@ import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
 import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface HubUserQuery {
 
     List<HubUserData> getHubUsers();
 
     HubUserData get(HubUserId hubUserId) throws HubUserException;
+
+    Optional<HubUserData> find(HubUserId hubUserId);
 
 }
 
