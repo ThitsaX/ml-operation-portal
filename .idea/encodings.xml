@@ -11,6 +11,7 @@
     <file url="file://$PROJECT_DIR$/implementation/app_scheduler/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/app_scheduler/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/component/mod_common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/component/mod_fspiop/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/component/mod_infra/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/component/mod_misc/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/component/mod_misc/src/main/resources/all" charset="UTF-8" />
@@ -22,6 +23,7 @@
     <file url="file://$PROJECT_DIR$/implementation/core/mod_audit/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_audit/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_audit/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_services/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/resources/all" charset="UTF-8" />
