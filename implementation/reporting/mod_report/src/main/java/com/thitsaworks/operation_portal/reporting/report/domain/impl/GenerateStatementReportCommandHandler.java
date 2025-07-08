@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -59,13 +60,6 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
 
             byte[] rptBytes = new byte[0];
 
-            JRCsvExporter csvExporter = new JRCsvExporter();
-            ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
-            csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
-            csvExporter.exportReport();
-            rptBytes = csvReport.toByteArray();
-
             if (input.filetype()
                      .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
 
@@ -76,6 +70,25 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
+            } else if (input.filetype()
+                            .equalsIgnoreCase("pdf") && rptBytes.length > 0) {
+
+                JRPdfExporter pdfExporter = new JRPdfExporter();
+                ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
+                pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+                pdfExporter.exportReport();
+                rptBytes = pdfReport.toByteArray();
+
+            } else if (input.filetype()
+                            .equalsIgnoreCase("csv") && rptBytes.length > 0) {
+
+                JRCsvExporter csvExporter = new JRCsvExporter();
+                ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
+                csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
+                csvExporter.exportReport();
+                rptBytes = csvReport.toByteArray();
             }
 
             return new Output(rptBytes);
