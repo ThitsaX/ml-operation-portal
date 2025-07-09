@@ -22,6 +22,7 @@
         <module>mod_audit</module>
         <module>mod_approval</module>
         <module>mod_hub_services</module>
+        <module>mod_report</module>
 
     </modules>
 

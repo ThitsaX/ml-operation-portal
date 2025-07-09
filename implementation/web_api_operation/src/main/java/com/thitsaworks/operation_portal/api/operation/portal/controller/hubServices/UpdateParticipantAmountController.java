@@ -9,7 +9,7 @@ import com.thitsaworks.mojaloop.operation_portal.fspiop.model.Money;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.common.ChangeCurrentPassword;
+import com.thitsaworks.operation_portal.usecase.core_services.ChangeCurrentPassword;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

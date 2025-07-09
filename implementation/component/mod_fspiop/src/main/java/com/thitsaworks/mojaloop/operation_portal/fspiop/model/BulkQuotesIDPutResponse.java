@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  **/
 
 @JsonTypeName("BulkQuotesIDPutResponse")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-08T18:26:12.180501+06:30[Asia/Rangoon]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-09T22:29:32.007258+06:30[Asia/Rangoon]")
 public class BulkQuotesIDPutResponse   {
   private @Valid List<IndividualQuoteResult> individualQuoteResults;
   private @Valid String expiration;

@@ -17,6 +17,10 @@
             <groupId>com.thitsaworks.operation_portal.component</groupId>
             <artifactId>mod_misc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_misc</artifactId>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ml-operation-portal.iml" filepath="$PROJECT_DIR$/.idea/ml-operation-portal.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation/web_api_hub_operator/web_api_hub_operator.iml" filepath="$PROJECT_DIR$/implementation/web_api_hub_operator/web_api_hub_operator.iml" />
     </modules>
   </component>
 </project>

@@ -5,7 +5,9 @@ import com.thitsaworks.operation_portal.component.misc.MiscConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
-@ComponentScan("com.thitsaworks.operation_portal.core.hubuser")
+@ComponentScan(basePackages = {
+    "com.thitsaworks.operation_portal.core.hubuser"
+})
 @Import(value = {
         MiscConfiguration.class, CorePersistenceConfiguration.class
 })

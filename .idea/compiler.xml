@@ -18,11 +18,7 @@
         <module name="uc_hub_services" />
         <module name="uc_hub_service" />
         <module name="mod_misc" />
-        <module name="uc_participant" />
         <module name="mod_hub_user" />
-        <module name="mod_report" />
-        <module name="uc_common" />
-        <module name="uc_hub_operator" />
         <module name="mod_participant" />
         <module name="mod_common" />
         <module name="uc_core_services" />
@@ -33,13 +29,21 @@
       <module name="dfsp_portal" target="21" />
       <module name="mod_central_ledger" target="21" />
       <module name="mod_datasource" target="21" />
+      <module name="mod_hubuser" target="21" />
       <module name="mod_querydsl" target="21" />
+      <module name="mod_report" target="21" />
+      <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" target="21" />
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />
+      <module name="reporting" target="21" />
       <module name="reporting-pom" target="21" />
+      <module name="uc_central_ledger" target="21" />
+      <module name="uc_common" target="21" />
+      <module name="uc_hub_operator" target="21" />
       <module name="uc_hub_service" target="21" />
+      <module name="uc_participant" target="21" />
       <module name="web_api_hub_operator" target="21" />
       <module name="web_api_participant" target="21" />
     </bytecodeTargetLevel>
@@ -66,6 +70,7 @@
       <module name="mod_pending_approval" options="-parameters" />
       <module name="mod_querydsl" options="-parameters" />
       <module name="mod_report" options="-parameters" />
+      <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" options="-parameters" />
       <module name="mod_report_querydsl" options="-parameters" />
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters" />

@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewParticipant;
+import com.thitsaworks.operation_portal.usecase.core_services.CreateParticipant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class CreateNewParticipantController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantController.class);
 
-    private final CreateNewParticipant createNewParticipant;
+    private final CreateParticipant createNewParticipant;
 
     private final ObjectMapper objectMapper;
 
@@ -42,15 +42,15 @@ public class CreateNewParticipantController {
 
         LOG.info("Create new participant request: {}", objectMapper.writeValueAsString(request));
 
-        List<CreateNewParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
-        List<CreateNewParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
+        List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
+        List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
         if (request.contactInfoList() != null || !request.contactInfoList().isEmpty()) {
 
             for (var contactInfo : request.contactInfoList()) {
 
-                CreateNewParticipant.Input.ContactInfo contact =
-                        new CreateNewParticipant.Input.ContactInfo(contactInfo.name(),
+                CreateParticipant.Input.ContactInfo contact =
+                        new CreateParticipant.Input.ContactInfo(contactInfo.name(),
                                                                    contactInfo.title(),
                                                                    new Email(contactInfo.email()),
                                                                    new Mobile(contactInfo.mobile()),
@@ -65,15 +65,15 @@ public class CreateNewParticipantController {
             for (var liquidityProfile : request.liquidityProfileInfoList()) {
 
                 liquidityProfileInfoList.add(
-                        new CreateNewParticipant.Input.LiquidityProfileInfo(liquidityProfile.accountName(),
+                        new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.accountName(),
                                                                             liquidityProfile.accountNumber(),
                                                                             liquidityProfile.currency(),
                                                                             liquidityProfile.participantStatus()));
             }
         }
 
-        CreateNewParticipant.Output output = this.createNewParticipant.execute(
-                new CreateNewParticipant.Input(request.name(),
+        CreateParticipant.Output output = this.createNewParticipant.execute(
+                new CreateParticipant.Input(request.name(),
                                                new DfspCode(request.dfspCode()),
                                                request.dfspName(),
                                                request.address(),
