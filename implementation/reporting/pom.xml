@@ -16,7 +16,7 @@
     <name>Operation Portal - Reporting</name>
 
     <modules>
-        <module>mod_central_ledger</module>
+
         <module>mod_report</module>
     </modules>
 

@@ -17,14 +17,14 @@
     <name>Mojaloop-Operation-Portal - Parent</name>
     <modules>
         <module>component</module>
-        <module>reporting</module>
         <module>core</module>
-        <module>uc_central_ledger</module>
+        <module>uc_hub_services</module>
         <module>uc_common</module>
         <module>uc_participant</module>
         <module>uc_hub_operator</module>
         <module>web_api_operation</module>
-        <module>component/mod_fspiop</module>
+        <module>uc_core_services</module>
+        <module>reporting</module>
     </modules>
 
     <properties>
@@ -234,7 +234,7 @@
             </dependency>
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
-                <artifactId>mod_hubuser</artifactId>
+                <artifactId>mod_hub_user</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -245,7 +245,7 @@
 
             <dependency>
                 <groupId>com.thitsaworks.operation_portal</groupId>
-                <artifactId>uc_central_ledger</artifactId>
+                <artifactId>uc_hub_services</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

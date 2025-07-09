@@ -43,7 +43,7 @@
 
 		<dependency>
 			<groupId>com.thitsaworks.operation_portal</groupId>
-			<artifactId>uc_central_ledger</artifactId>
+			<artifactId>uc_hub_services</artifactId>
 		</dependency>
 
 
