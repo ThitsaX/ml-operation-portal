@@ -29,13 +29,17 @@ public class GetAllAuditByParticipantHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
+    private final ActionQuery actionQuery;
+
 
     public GetAllAuditByParticipantHandler(PrincipalCache principalCache,
-                                           GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
+                                           GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
+                                           ActionQuery actionQuery) {
 
         super(PERMITTED_ROLES, principalCache);
 
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
+        this.actionQuery = actionQuery;
     }
 
     @Override

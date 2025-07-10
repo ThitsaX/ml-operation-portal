@@ -27,7 +27,7 @@ public class CreateActionUnitTest extends BaseVaultSetUpTest {
     @Test
     public void test_createActionSuccessfully() {
 
-        CreateAction.Output output = this.createAction.execute(new CreateAction.Input("hiiiiii"));
+        CreateAction.Output output = this.createAction.execute(new CreateAction.Input("iiii"));
 
         LOG.info("Action Id : " + output.actionId() + " , Created : " + output.created());
     }

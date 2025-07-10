@@ -30,10 +30,10 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
     public void test_getAuditsSuccessfully() {
 
         GetAllAuditByParticipantQuery.Input input = new GetAllAuditByParticipantQuery.Input(
-            new RealmId(731090884307693568L),
+            new RealmId(731147922761035776L),
             Instant.parse("2025-02-01T00:00:00Z"),
             Instant.parse("2025-08-31T23:59:59Z"),
-                          new UserId(731091467806683136L),
+                          new UserId(731148506436186112L),
                           "CreateNewParticipantUser"
                          );
 

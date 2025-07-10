@@ -53,7 +53,8 @@ public class GetAllAuditHandler extends CommonAuditableUseCase<GetAllAudit.Input
             this.getAuditQuery.execute(new GetAuditByParticipantAndUserQuery.Input(input.realmId(),
                                                                                    input.userId(),
                                                                                    input.fromDate(),
-                                                                                   input.toDate()));
+                                                                                   input.toDate(),
+                                                                                   input.actionName()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
