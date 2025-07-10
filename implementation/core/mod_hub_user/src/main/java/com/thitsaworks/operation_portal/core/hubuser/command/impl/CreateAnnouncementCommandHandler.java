@@ -9,11 +9,11 @@ import com.thitsaworks.operation_portal.core.hubuser.model.repository.Announceme
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class CreateAnnouncementCommandHandler implements CreateAnnouncementCommand {
 

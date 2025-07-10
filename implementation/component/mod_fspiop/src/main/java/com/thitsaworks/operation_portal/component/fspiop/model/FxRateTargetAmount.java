@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 
 
 @JsonTypeName("FxRate_targetAmount")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-10T15:05:44.502855+07:00[Asia/Bangkok]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-10T18:45:52.776834300+09:00[Asia/Tokyo]")
 public class FxRateTargetAmount   {
   private @Valid Currency currency;
   private @Valid String amount;
