@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  **/
 
 @JsonTypeName("IndividualQuote")
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-08T12:54:58.680324+06:30[Asia/Rangoon]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.JavaJAXRSSpecServerCodegen", date = "2025-07-09T22:29:32.007258+06:30[Asia/Rangoon]")
 public class IndividualQuote   {
   private @Valid String quoteId;
   private @Valid String transactionId;

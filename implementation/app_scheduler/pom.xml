@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_hubuser</artifactId>
+            <artifactId>mod_hub_user</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>

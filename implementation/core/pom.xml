@@ -18,10 +18,11 @@
     <modules>
         <module>mod_iam</module>
         <module>mod_participant</module>
-        <module>mod_hubuser</module>
+        <module>mod_hub_user</module>
         <module>mod_audit</module>
         <module>mod_approval</module>
         <module>mod_hub_services</module>
+        <module>mod_report</module>
 
     </modules>
 

@@ -28,22 +28,13 @@
 
 		<dependency>
 			<groupId>com.thitsaworks.operation_portal</groupId>
-			<artifactId>uc_common</artifactId>
+			<artifactId>uc_core_services</artifactId>
 		</dependency>
+
 
 		<dependency>
 			<groupId>com.thitsaworks.operation_portal</groupId>
-			<artifactId>uc_hub_operator</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.thitsaworks.operation_portal</groupId>
-			<artifactId>uc_participant</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.thitsaworks.operation_portal</groupId>
-			<artifactId>uc_central_ledger</artifactId>
+			<artifactId>uc_hub_services</artifactId>
 		</dependency>
 
 

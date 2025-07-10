@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.hub_operator.CreateNewAnnouncement;
+import com.thitsaworks.operation_portal.usecase.core_services.CreateAnnouncement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CreateNewAnnouncementController {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewAnnouncementController.class);
 
-    private final CreateNewAnnouncement createNewAnnouncement;
+    private final CreateAnnouncement createNewAnnouncement;
 
     private final ObjectMapper objectMapper;
 
@@ -38,8 +38,8 @@ public class CreateNewAnnouncementController {
 
         LOG.info("Create new announcement request: {}", objectMapper.writeValueAsString(request));
 
-        CreateNewAnnouncement.Output output = this.createNewAnnouncement.execute(
-                new CreateNewAnnouncement.Input(request.announcementTitle,
+        CreateAnnouncement.Output output = this.createNewAnnouncement.execute(
+                new CreateAnnouncement.Input(request.announcementTitle,
                                                 request.announcementDetail,
                                                 Instant.parse(request.announcementDate)));
 

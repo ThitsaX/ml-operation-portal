@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.usecase.common.LoginUserAccount;
+import com.thitsaworks.operation_portal.usecase.core_services.LoginUserAccount;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

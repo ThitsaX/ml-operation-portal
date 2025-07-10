@@ -10,7 +10,7 @@ import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.usecase.common.CreateNewParticipantUser;
+import com.thitsaworks.operation_portal.usecase.core_services.CreateNewParticipantUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -25,10 +25,10 @@
     <file url="file://$PROJECT_DIR$/implementation/core/mod_audit/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_audit/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_services/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/resources/all" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/core/mod_hubuser/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_user/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_user/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_user/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_hub_user/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_iam/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_iam/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_iam/src/main/resources/all" charset="UTF-8" />
@@ -36,6 +36,9 @@
     <file url="file://$PROJECT_DIR$/implementation/core/mod_participant/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_participant/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/mod_participant/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_report/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_report/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/core/mod_report/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/core/src/main/resources/local" charset="UTF-8" />
@@ -55,8 +58,6 @@
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_central_ledger/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_central_ledger/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report/src/main/resources/all" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report_querydsl/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report_querydsl/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/reporting/mod_report_querydsl/src/main/resources/local" charset="UTF-8" />
@@ -66,20 +67,23 @@
     <file url="file://$PROJECT_DIR$/implementation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/src/main/resources/local" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/uc_central_ledger/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/uc_central_ledger/src/main/resources/all" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/uc_central_ledger/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_common/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/uc_common/src/main/resources/all" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/implementation/uc_common/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_core_services/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_core_services/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_core_services/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_hub_operator/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_hub_operator/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_hub_operator/src/main/resources/local" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_hub_service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_hub_services/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_hub_services/src/main/resources/all" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/implementation/uc_hub_services/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_participant/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_participant/src/main/resources/all" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/uc_participant/src/main/resources/local" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/web_api_operation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/implementation/web_api_participant/src/main/java" charset="UTF-8" />
     <file url="file:///src/main/java" charset="UTF-8" />
+    <file url="file:///src/main/resources" charset="UTF-8" />
   </component>
 </project>
