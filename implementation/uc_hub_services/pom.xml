@@ -20,7 +20,7 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.thitsaworks.operation_portal.reporting</groupId>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_report</artifactId>
         </dependency>
         <dependency>
@@ -37,13 +37,6 @@
             <version>1.0.0</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_report</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-
     </dependencies>
 
 </project>

@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.hub_services.api;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.mojaloop.operation_portal.fspiop.model.Money;
+import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRestApi;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;

@@ -26,7 +26,6 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/implementation/app_generate_auth_header/pom.xml" />
-        <option value="$PROJECT_DIR$/implementation/core/mod_report/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_datasource/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_vault/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/reporting/mod_central_ledger/pom.xml" />

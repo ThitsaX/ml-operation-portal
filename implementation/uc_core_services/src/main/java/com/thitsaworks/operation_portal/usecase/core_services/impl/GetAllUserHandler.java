@@ -9,7 +9,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hubuser.data.HubUserData;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.GetAllUser;
 import org.slf4j.Logger;

@@ -21,9 +21,8 @@
     <dependencies>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_hub_user</artifactId>
+            <artifactId>mod_hub_services</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_audit</artifactId>
@@ -32,14 +31,6 @@
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_iam</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_hub_services</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
-        </dependency>
-
-
     </dependencies>
 
 </project>

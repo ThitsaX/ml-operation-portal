@@ -1,6 +1,6 @@
-package com.thitsaworks.operation_portal.usecase.hub_operator;
+package com.thitsaworks.operation_portal.usecase.core_services;
 
-import com.thitsaworks.mojaloop.operation_portal.fspiop.model.Money;
+import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.io.Serializable;

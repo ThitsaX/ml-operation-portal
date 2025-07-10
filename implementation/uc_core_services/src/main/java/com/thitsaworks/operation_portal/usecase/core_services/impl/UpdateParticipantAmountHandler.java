@@ -1,12 +1,18 @@
-package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
+package com.thitsaworks.operation_portal.usecase.core_services.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.HubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.HubOperatorUseCase;
-import com.thitsaworks.operation_portal.usecase.hub_operator.UpdateParticipantAmount;
+import com.thitsaworks.operation_portal.core.iam.command.ResetPasswordCommand;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.core_services.UpdateParticipantAmount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +23,7 @@ import java.util.Set;
 
 @Service
 public class UpdateParticipantAmountHandler
-        extends HubOperatorUseCase<UpdateParticipantAmount.Input, UpdateParticipantAmount.Output>
+        extends CoreServicesAuditableUseCase<UpdateParticipantAmount.Input, UpdateParticipantAmount.Output>
         implements UpdateParticipantAmount {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateParticipantAmountHandler.class);
@@ -30,10 +36,19 @@ public class UpdateParticipantAmountHandler
     private final HubClient hubClient;
 
     @Autowired
-    public UpdateParticipantAmountHandler(PrincipalCache principalCache,
+    public UpdateParticipantAmountHandler(CreateInputAuditCommand createInputAuditCommand,
+                                          CreateOutputAuditCommand createOutputAuditCommand,
+                                          CreateExceptionAuditCommand createExceptionAuditCommand,
+                                          ObjectMapper objectMapper,
+                                          PrincipalCache principalCache,
                                           HubClient hubClient) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
 
         this.hubClient = hubClient;
     }

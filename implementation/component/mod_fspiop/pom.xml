@@ -4,10 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.thitsaworks.operation_portal</groupId>
-        <artifactId>mojaloop-operation-portal</artifactId>
+        <groupId>com.thitsaworks.operation_portal.component</groupId>
+        <artifactId>component</artifactId>
         <version>1.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>mod_fspiop</artifactId>
@@ -151,7 +151,7 @@
                             <inputSpec>${project.basedir}/interface/fspiop_v2.0.draft.yaml</inputSpec>
                             <output>${project.basedir}</output>
 
-                            <groupId>com.thitsaworks.mojaloop.operation_portal</groupId>
+                            <groupId>com.thitsaworks.mojaloop.operation_portal.component</groupId>
                             <artifactId>mod_fspiop_interface</artifactId>
                             <artifactVersion>1.0</artifactVersion>
 
@@ -168,8 +168,8 @@
 
                             <generateSupportingFiles>false</generateSupportingFiles>
 
-                            <modelPackage>com.thitsaworks.mojaloop.operation_portal.fspiop.model</modelPackage>
-                            <invokerPackage>com.thitsaworks.mojaloop.operation_portal.fspiop.invoker</invokerPackage>
+                            <modelPackage>com.thitsaworks.operation_portal.component.fspiop.model</modelPackage>
+                            <invokerPackage>com.thitsaworks.operation_portal.component.fspiop.invoker</invokerPackage>
                             <configOptions>
                                 <sourceFolder>src/main/java</sourceFolder>
                                 <dateLibrary>java8</dateLibrary>

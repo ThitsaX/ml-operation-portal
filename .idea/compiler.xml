@@ -19,6 +19,7 @@
         <module name="uc_hub_service" />
         <module name="mod_misc" />
         <module name="mod_hub_user" />
+        <module name="mod_report" />
         <module name="mod_participant" />
         <module name="mod_common" />
         <module name="uc_core_services" />
@@ -31,7 +32,6 @@
       <module name="mod_datasource" target="21" />
       <module name="mod_hubuser" target="21" />
       <module name="mod_querydsl" target="21" />
-      <module name="mod_report" target="21" />
       <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" target="21" />
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
