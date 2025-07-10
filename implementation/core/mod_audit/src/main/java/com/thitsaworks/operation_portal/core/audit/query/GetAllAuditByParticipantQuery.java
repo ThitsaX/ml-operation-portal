@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.audit.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -9,7 +10,11 @@ import java.util.List;
 
 public interface GetAllAuditByParticipantQuery {
 
-    record Input(RealmId realmId, Instant fromDate, Instant toDate) {}
+    record Input(RealmId realmId,
+                 Instant fromDate,
+                 Instant toDate,
+                 UserId userId,
+                 String actionName) {}
 
     @Value
     class Output {

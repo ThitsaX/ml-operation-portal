@@ -2,8 +2,11 @@ package com.thitsaworks.operation_portal.usecase.common.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.audit.query.ActionQuery;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.CommonUseCase;
 import com.thitsaworks.operation_portal.usecase.common.GetAllAuditByParticipant;
 import org.slf4j.Logger;
@@ -26,6 +29,7 @@ public class GetAllAuditByParticipantHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
+
     public GetAllAuditByParticipantHandler(PrincipalCache principalCache,
                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
 
@@ -41,7 +45,9 @@ public class GetAllAuditByParticipantHandler
             this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
                 input.realmId(),
                 input.fromDate(),
-                input.toDate()));
+                input.toDate(),
+                input.userId(),
+                input.actionName()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
