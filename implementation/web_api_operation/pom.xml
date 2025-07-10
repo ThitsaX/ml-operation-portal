@@ -70,10 +70,8 @@
 			<scope>test</scope>
 		</dependency>
         <dependency>
-            <groupId>com.thitsaworks.operation_portal</groupId>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
             <artifactId>mod_fspiop</artifactId>
-            <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 

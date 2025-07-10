@@ -8,7 +8,6 @@
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <groupId>com.thitsaworks.operation_portal.core</groupId>
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mod_hub_services</artifactId>
@@ -22,6 +21,14 @@
     <dependencies>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_fspiop</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_misc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
             <artifactId>mod_infra</artifactId>
         </dependency>
         <dependency>
@@ -31,6 +38,10 @@
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_participant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_hub_user</artifactId>
         </dependency>
     </dependencies>
 </project>
