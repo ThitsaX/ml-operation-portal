@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.hub_operator.ModifyExistingAnnouncement;
+import com.thitsaworks.operation_portal.usecase.core_services.ModifyAnnouncement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class ModifyAnnouncementController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyAnnouncementController.class);
 
-    private final ModifyExistingAnnouncement modifyExistingAnnouncement;
+    private final ModifyAnnouncement modifyExistingAnnouncement;
 
     private final ObjectMapper objectMapper;
 
@@ -37,8 +37,8 @@ public class ModifyAnnouncementController {
 
         LOG.info("Modify announcement request: {}", objectMapper.writeValueAsString(request));
 
-        ModifyExistingAnnouncement.Output output = this.modifyExistingAnnouncement.execute(
-                new ModifyExistingAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId)),
+        ModifyAnnouncement.Output output = this.modifyExistingAnnouncement.execute(
+                new ModifyAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId)),
                         request.announcementTitle, request.announcementDetail, Instant.parse(request.announcementDate),
                         request.isDeleted));
 

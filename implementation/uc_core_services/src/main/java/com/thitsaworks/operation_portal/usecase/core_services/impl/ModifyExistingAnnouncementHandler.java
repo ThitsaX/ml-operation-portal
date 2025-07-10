@@ -1,0 +1,63 @@
+package com.thitsaworks.operation_portal.usecase.core_services.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
+import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncementCommand;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.core_services.ModifyAnnouncement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Set;
+
+@Service
+public class ModifyExistingAnnouncementHandler
+    extends CoreServicesAuditableUseCase<ModifyAnnouncement.Input, ModifyAnnouncement.Output>
+    implements ModifyAnnouncement {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingAnnouncementHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
+                                                                    UserRoleType.OPERATION,
+                                                                    UserRoleType.REPORTING,
+                                                                    UserRoleType.SUPERUSER);
+
+    private final ModifyAnnouncementCommand modifyAnnouncementCommand;
+
+    @Autowired
+    public ModifyExistingAnnouncementHandler(CreateInputAuditCommand createInputAuditCommand,
+                                             CreateOutputAuditCommand createOutputAuditCommand,
+                                             CreateExceptionAuditCommand createExceptionAuditCommand,
+                                             ModifyAnnouncementCommand modifyAnnouncementCommand,
+                                             ObjectMapper objectMapper,
+                                             PrincipalCache principalCache) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache);
+
+        this.modifyAnnouncementCommand = modifyAnnouncementCommand;
+    }
+
+    @Override
+    public ModifyAnnouncement.Output onExecute(ModifyAnnouncement.Input input) throws
+                                                                                               DomainException {
+
+        ModifyAnnouncementCommand.Output output = this.modifyAnnouncementCommand.execute(
+            new ModifyAnnouncementCommand.Input(input.announcementId(), input.announcementTitle(),
+                                                input.announcementDetail(), input.announcementDate(), input.isDeleted()));
+
+        return new ModifyAnnouncement.Output(output.announcementId(), output.modified());
+    }
+
+}
