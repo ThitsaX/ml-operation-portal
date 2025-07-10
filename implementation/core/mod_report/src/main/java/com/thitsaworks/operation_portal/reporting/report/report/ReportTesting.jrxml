@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportTesting" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a194379e-af8f-47b5-a7b8-de037cfc127f">
+	<property name="com.jaspersoft.studio.data.sql.tables">
+		<![CDATA[dGJsX2FjdGlvbiBBUyAsNjYxLDE1LGQ1MTVlNDM0LWE0NGEtNDgwYi04ZGY4LTc0MjY3MDQ2Nzk4
+NDt0YmxfYXVkaXQgQVMgLDE1LDE1LDVjYTMyYzM3LTkwODItNGZiMy04MzY2LTM2ZjQ0NjQyODRi
+NDt0YmxfcGFydGljaXBhbnQgQVMgLDE2MSwxNSxkZjI2N2VlNS1iMTFkLTQ1NWMtOTg2ZC1kYzFh
+MmE3YTc4MmY7dGJsX3BhcnRpY2lwYW50X3VzZXIgQVMgLDM3NywxNSxiOWE0NjNmMy04NDljLTRi
+N2YtODQ4Zi05OGQ5MTM1Zjk3Yzk7]]>
+	</property>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
+	<parameter name="realmId" class="java.lang.String">
+		<defaultValueExpression><![CDATA["728940508132732928"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="fromDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2025-01-08")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="toDate" class="java.util.Date">
+		<defaultValueExpression><![CDATA[new java.text.SimpleDateFormat("yyyy-MM-dd").parse("2025-08-09")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="timezoneoffset" class="java.lang.String">
+		<defaultValueExpression><![CDATA["+06:30"]]></defaultValueExpression>
+	</parameter>
+	<queryString language="SQL">
+		<![CDATA[SELECT 
+    participant_user.name AS user_name,
+    action.name AS action_name,
+    DATE_FORMAT(
+        CONVERT_TZ(FROM_UNIXTIME(audit.created_date), '+00:00', $P{timezoneoffset}),
+        '%d-%b-%Y %h:%i:%s %p'
+    ) AS date
+FROM tbl_audit AS audit
+JOIN tbl_participant AS participant ON participant.participant_id = audit.participant_id
+LEFT JOIN tbl_participant_user AS participant_user ON participant_user.user_id = audit.user_id
+JOIN tbl_action AS action ON action.action_id = audit.action_id
+WHERE 
+    ($P{realmId} IS NULL OR audit.participant_id = $P{realmId})
+    AND (
+        ($P{fromDate} IS NULL OR $P{toDate} IS NULL)
+        OR (
+            DATE(CONVERT_TZ(FROM_UNIXTIME(audit.created_date), '+00:00', $P{timezoneoffset}))
+            BETWEEN $P{fromDate} AND $P{toDate}
+        )
+    )
+ORDER BY audit.created_date DESC]]>
+	</queryString>
+	<field name="date" class="java.lang.String"/>
+	<field name="user_name" class="java.lang.String"/>
+	<field name="action_name" class="java.lang.String"/>
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="72">
+			<frame>
+				<reportElement mode="Opaque" x="-20" y="-20" width="595" height="92" backcolor="#006699" uuid="ac863e27-dfee-4f66-bf8d-a8f251f98ef5"/>
+				<staticText>
+					<reportElement x="20" y="20" width="234" height="43" forecolor="#FFFFFF" uuid="6eceeaab-1108-4bd8-9e86-d36430f3ae9c"/>
+					<textElement>
+						<font size="34" isBold="true"/>
+					</textElement>
+					<text><![CDATA[TITLE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="395" y="43" width="180" height="20" forecolor="#FFFFFF" uuid="1cc9d99a-33e6-488f-9cdd-383012d517df"/>
+					<textElement textAlignment="Right">
+						<font size="14" isBold="false"/>
+					</textElement>
+					<text><![CDATA[Add a description here]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="13"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="21">
+			<line>
+				<reportElement x="-20" y="20" width="595" height="1" forecolor="#666666" uuid="59109873-65fe-41ea-a96d-9558ff9233d4"/>
+			</line>
+			<staticText>
+				<reportElement x="207" y="0" width="100" height="21" uuid="59ffe848-e689-4fb0-a8b0-d20b808319e2">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="73b0d016-8ad6-41e8-96df-5ad5a8550f4f"/>
+				</reportElement>
+				<text><![CDATA[Action]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="50" y="0" width="100" height="21" uuid="d5325251-3e55-4f48-a5f3-f7695f31eb95">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3a4d514c-db10-406b-b8d6-9e797d7ed555"/>
+				</reportElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="340" y="0" width="100" height="21" uuid="e5b43ae5-9c39-40ab-aca9-dd593e5003a3">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a49b3b01-465d-4451-bf00-7e153238fed2"/>
+				</reportElement>
+				<text><![CDATA[Made By]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="40">
+			<line>
+				<reportElement positionType="FixRelativeToBottom" x="0" y="19" width="555" height="1" uuid="6916decf-546b-4346-aae9-7e5553a9cc5c"/>
+			</line>
+			<textField>
+				<reportElement x="50" y="10" width="100" height="30" uuid="12110827-0a8f-4d02-9655-27e37b3d0e75">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="3a4d514c-db10-406b-b8d6-9e797d7ed555"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="201" y="8" width="100" height="30" uuid="3598f84d-0b66-4873-8b43-4602aa4124b4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="73b0d016-8ad6-41e8-96df-5ad5a8550f4f"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{action_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="340" y="9" width="100" height="30" uuid="28548f1d-63c0-4494-8ee2-54edeb9e4479">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="a49b3b01-465d-4451-bf00-7e153238fed2"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{user_name}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="17">
+			<textField>
+				<reportElement mode="Opaque" x="0" y="4" width="515" height="13" backcolor="#E6E6E6" uuid="6d23d36d-3207-4626-af7f-758210814f93"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement mode="Opaque" x="515" y="4" width="40" height="13" backcolor="#E6E6E6" uuid="21b3e117-f42f-4cdf-9b20-6b49d9342efd"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="4" width="100" height="13" uuid="e0446102-f666-4c89-9600-b574dbada2e2"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band/>
+	</summary>
+</jasperReport>
