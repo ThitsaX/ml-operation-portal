@@ -100,6 +100,7 @@ public class GetAllTransferController {
                     transferInfo.getAmount(),
                     transferInfo.getPayerDfsp(),
                     transferInfo.getPayeeDfsp(),
+                    transferInfo.getWindowId(),
                     transferInfo.getSettlementBatch(),
                     (TimeZoneConverter.convertTimeZone(transferInfo.getSubmittedOnDate().replace(" ", "T") + "Z",
                                                        showTimezone) + timezone).replace("T", " ").replace("Z", " ")));
@@ -123,6 +124,7 @@ public class GetAllTransferController {
                 @JsonProperty("amount") BigDecimal amount,
                 @JsonProperty("payer_dfsp") String payerDfsp,
                 @JsonProperty("payee_dfsp") String payeeDfsp,
+                @JsonProperty("window_id") String windowId,
                 @JsonProperty("settlement_batch") String settlementBatch,
                 @JsonProperty("submitted_on_date") String submittedOnDate
         ) {}

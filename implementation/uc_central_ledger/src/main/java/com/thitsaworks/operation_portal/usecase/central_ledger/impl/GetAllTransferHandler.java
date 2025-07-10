@@ -110,6 +110,7 @@ public class GetAllTransferHandler extends CentralLedgerAuditableUseCase<GetAllT
                     data.getAmount(),
                     data.getPayerDfsp(),
                     data.getPayeeDfsp(),
+                    data.getWindowId(),
                     data.getSettlementBatch(),
                     data.getSubmittedOnDate()));
         }

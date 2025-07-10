@@ -19,6 +19,7 @@ public class TransferDataMapper implements RowMapper<TransferData> {
                 rs.getBigDecimal("amount"),
                 rs.getString("payer_dfsp"),
                 rs.getString("payee_dfsp"),
+                rs.getString("window_id"),
                 rs.getString("settlement_batch"),
                 rs.getString("submitted_on_date")
         );
