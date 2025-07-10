@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
+package com.thitsaworks.operation_portal.usecase.core_services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
@@ -8,8 +8,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.hub_operator.CreateApprovalRequest;
+import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.core_services.CreateApprovalRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Service
 public class CreateApprovalRequestHandler
-    extends HubOperatorAuditableUseCase<CreateApprovalRequest.Input, CreateApprovalRequest.Output>
+    extends CoreServicesAuditableUseCase<CreateApprovalRequest.Input, CreateApprovalRequest.Output>
     implements CreateApprovalRequest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateApprovalRequestHandler.class);

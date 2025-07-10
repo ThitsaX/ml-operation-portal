@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.usecase.hub_operator.impl;
+package com.thitsaworks.operation_portal.usecase.core_services.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
@@ -10,8 +10,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.HubOperatorAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllPendingApproval;
+import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.core_services.GetAllPendingApproval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ import java.util.Set;
 
 @Service
 public class GetAllPendingApprovalHandler
-    extends HubOperatorAuditableUseCase<GetAllPendingApproval.Input, GetAllPendingApproval.Output>
+    extends CoreServicesAuditableUseCase<GetAllPendingApproval.Input, GetAllPendingApproval.Output>
     implements GetAllPendingApproval {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllPendingApprovalHandler.class);

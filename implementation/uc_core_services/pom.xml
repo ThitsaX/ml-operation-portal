@@ -34,6 +34,10 @@
         </dependency>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_approval</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_hub_services</artifactId>
             <version>1.0.0</version>
             <scope>compile</scope>

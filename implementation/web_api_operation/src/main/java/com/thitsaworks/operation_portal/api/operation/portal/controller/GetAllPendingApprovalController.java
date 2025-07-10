@@ -1,11 +1,10 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.hub_operator.GetAllPendingApproval;
+import com.thitsaworks.operation_portal.usecase.core_services.GetAllPendingApproval;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +19,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllPendingRequestController {
+public class GetAllPendingApprovalController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllPendingRequestController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllPendingApprovalController.class);
 
     private final ObjectMapper objectMapper;
 

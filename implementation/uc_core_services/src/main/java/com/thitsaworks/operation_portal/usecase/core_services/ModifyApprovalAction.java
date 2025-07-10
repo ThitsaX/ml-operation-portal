@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.usecase.hub_operator;
+package com.thitsaworks.operation_portal.usecase.core_services;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequestId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
