@@ -10,7 +10,7 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -63,23 +63,28 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/ReportTesting.jrxml");
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/reportTesting.jrxml");
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("ReportTesting");
+            design.setName("reportTesting");
             JasperReport jasperReport = JasperCompileManager.compileReport(design);
-
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
                                                                    conn);
 
             byte[] rptBytes = new byte[0];
 
-            JRPdfExporter pdfExporter = new JRPdfExporter();
-            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-            pdfExporter.exportReport();
-            rptBytes = pdfReport.toByteArray();
+//            JRPdfExporter pdfExporter = new JRPdfExporter();
+//            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
+//            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+//            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+//            pdfExporter.exportReport();
+//            rptBytes = pdfReport.toByteArray();
+            JRXlsxExporter xlsxExporter = new JRXlsxExporter();
+            ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
+            xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+            xlsxExporter.exportReport();
+            rptBytes = xlsReport.toByteArray();
 
             return new Output(rptBytes);
 

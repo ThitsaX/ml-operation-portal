@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReportTesting" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a194379e-af8f-47b5-a7b8-de037cfc127f">
-	<property name="com.jaspersoft.studio.data.sql.tables">
-		<![CDATA[dGJsX2FjdGlvbiBBUyAsNjYxLDE1LGQ1MTVlNDM0LWE0NGEtNDgwYi04ZGY4LTc0MjY3MDQ2Nzk4
-NDt0YmxfYXVkaXQgQVMgLDE1LDE1LDVjYTMyYzM3LTkwODItNGZiMy04MzY2LTM2ZjQ0NjQyODRi
-NDt0YmxfcGFydGljaXBhbnQgQVMgLDE2MSwxNSxkZjI2N2VlNS1iMTFkLTQ1NWMtOTg2ZC1kYzFh
-MmE3YTc4MmY7dGJsX3BhcnRpY2lwYW50X3VzZXIgQVMgLDM3NywxNSxiOWE0NjNmMy04NDljLTRi
-N2YtODQ4Zi05OGQ5MTM1Zjk3Yzk7]]>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportTesting" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a194379e-af8f-47b5-a7b8-de037cfc127f">
+	<property name="com.jaspersoft.studio.data.sql.tables" value="">
 	</property>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="New Data Adapter"/>
 	<parameter name="realmId" class="java.lang.String">
@@ -33,15 +28,6 @@ FROM tbl_audit AS audit
 JOIN tbl_participant AS participant ON participant.participant_id = audit.participant_id
 LEFT JOIN tbl_participant_user AS participant_user ON participant_user.user_id = audit.user_id
 JOIN tbl_action AS action ON action.action_id = audit.action_id
-WHERE 
-    ($P{realmId} IS NULL OR audit.participant_id = $P{realmId})
-    AND (
-        ($P{fromDate} IS NULL OR $P{toDate} IS NULL)
-        OR (
-            DATE(CONVERT_TZ(FROM_UNIXTIME(audit.created_date), '+00:00', $P{timezoneoffset}))
-            BETWEEN $P{fromDate} AND $P{toDate}
-        )
-    )
 ORDER BY audit.created_date DESC]]>
 	</queryString>
 	<field name="date" class="java.lang.String"/>
