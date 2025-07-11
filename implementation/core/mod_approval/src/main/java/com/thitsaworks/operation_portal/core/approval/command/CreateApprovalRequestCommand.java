@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 
 import java.math.BigDecimal;
 
-public interface CreateApprovalCommand {
+public interface CreateApprovalRequestCommand {
 
     Output execute(Input input);
 

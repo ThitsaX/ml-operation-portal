@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.approval.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.approval.command.CreateApprovalCommand;
+import com.thitsaworks.operation_portal.core.approval.command.CreateApprovalRequestCommand;
 import com.thitsaworks.operation_portal.core.approval.model.ApprovalRequest;
 import com.thitsaworks.operation_portal.core.approval.model.repository.ApprovalRequestRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CreateApprovalCommandHandler implements CreateApprovalCommand {
+public class CreateApprovalRequestCommandHandler implements CreateApprovalRequestCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateApprovalCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateApprovalRequestCommandHandler.class);
 
     private final ApprovalRequestRepository approvalRequestRepository;
 

@@ -28,11 +28,16 @@ public class HubUserQueryJpaHandler implements HubUserQuery {
     @Override
     public List<HubUserData> getHubUsers() {
 
-        BooleanExpression predicate = this.hubUser.isNotNull().and(hubUser.isDeleted.isFalse());
+        BooleanExpression
+            predicate =
+            this.hubUser.isNotNull()
+                        .and(hubUser.isDeleted.isFalse());
 
         List<HubUser> hubUsers = (List<HubUser>) this.hubUserRepository.findAll(predicate);
 
-        return hubUsers.stream().map(HubUserData::new).toList();
+        return hubUsers.stream()
+                       .map(HubUserData::new)
+                       .toList();
     }
 
     @Override
@@ -48,6 +53,17 @@ public class HubUserQueryJpaHandler implements HubUserQuery {
         }
 
         return new HubUserData(optionalHubUser.get());
+    }
+
+    @Override
+    public Optional<HubUserData> find(HubUserId hubUserId) {
+
+        BooleanExpression predicate = this.hubUser.userId.eq(hubUserId);
+
+        Optional<HubUser> optionalHubUser = this.hubUserRepository.findOne(predicate);
+
+        return optionalHubUser.map(HubUserData::new);
+
     }
 
 }

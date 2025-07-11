@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.approval.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.approval.command.UpdateApprovalActionCommand;
+import com.thitsaworks.operation_portal.core.approval.command.ModifyApprovalActionCommand;
 import com.thitsaworks.operation_portal.core.approval.exception.ApprovalErrors;
 import com.thitsaworks.operation_portal.core.approval.exception.ApprovalException;
 import com.thitsaworks.operation_portal.core.approval.model.repository.ApprovalRequestRepository;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UpdateApprovalActionCommandHandler implements UpdateApprovalActionCommand {
+public class ModifyApprovalActionCommandHandler implements ModifyApprovalActionCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UpdateApprovalActionCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyApprovalActionCommandHandler.class);
 
     private final ApprovalRequestRepository approvalRequestRepository;
 

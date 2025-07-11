@@ -52,7 +52,7 @@ public class ApiAuthenticator implements Authenticator {
             throw new AccessDeniedException(SecurityErrors.INVALID_KEY_NO);
         }
 
-        PrincipalData principalData = this.principalCache.get(new AccessKey(accessKey), RealmType.HUB_OPERATOR);
+        PrincipalData principalData = this.principalCache.get(new AccessKey(accessKey));
 
         if (principalData == null) {
 

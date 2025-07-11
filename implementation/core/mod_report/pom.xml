@@ -19,11 +19,15 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->     
+        <!-- https://mvnrepository.com/artifact/net.sf.jasperreports/jasperreports -->
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_common</artifactId>
+        </dependency>
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
-            <version>6.20.0</version>
+            <version>6.21.2</version>
         </dependency>
 
         <dependency>

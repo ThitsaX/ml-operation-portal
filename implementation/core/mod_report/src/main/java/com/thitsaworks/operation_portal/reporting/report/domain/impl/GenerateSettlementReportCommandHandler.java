@@ -12,6 +12,8 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 @Service
 public class GenerateSettlementReportCommandHandler implements GenerateSettlementReportCommand {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportCommandHandler.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -91,6 +95,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
         } catch (Exception e) {
 
+            LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
         }
     }
