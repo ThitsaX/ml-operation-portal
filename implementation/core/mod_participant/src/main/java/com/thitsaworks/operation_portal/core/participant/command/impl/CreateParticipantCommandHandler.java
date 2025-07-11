@@ -37,8 +37,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
                     input.mobile());
 
             //For ContactInfo
-            if ((input.contactInfoList() != null || !input.contactInfoList().isEmpty()) &&
-                    input.contactInfoList().size() > 0) {
+            if (input.contactInfoList() != null && !input.contactInfoList().isEmpty()) {
 
                 for (var contact : input.contactInfoList()) {
 
@@ -51,8 +50,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
             }
 
             //For Liquidity Profile
-            if ((input.liquidityProfileInfoList() != null || !input.liquidityProfileInfoList().isEmpty()) &&
-                    input.liquidityProfileInfoList().size() > 0) {
+            if (input.liquidityProfileInfoList() != null && !input.liquidityProfileInfoList().isEmpty()) {
 
                 for (var liquidityProfile : input.liquidityProfileInfoList()) {
 

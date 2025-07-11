@@ -67,8 +67,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         Validate.notNull(dfspCode);
         Validate.notBlank(name);
         Validate.notBlank(dfspName);
-        Validate.notBlank(address);
-        Validate.notNull(mobile);
 
         this.participantId = new ParticipantId(Snowflake.get().nextId());
         this.dfspCode = dfspCode;
