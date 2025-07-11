@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.MyanmarZoneId;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
@@ -10,10 +9,13 @@ import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,19 +53,32 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
-            var fromDate = this.convertInstantToDate(input.fromDate());
-            var toDate = this.convertInstantToDate(input.toDate());
 
-            params.put("timezoneoffset", input.timezoneoffset());
+            var timeOffset = input.timezoneoffset();
+
+            var fromDate = this.convertInstantToDate(input.fromDate(), timeOffset);
+            var toDate = this.convertInstantToDate(input.toDate(), timeOffset);
+
+            params.put("timezoneoffset", timeOffset);
             params.put("fromDate", fromDate);
             params.put("toDate", toDate);
-            params.put("realmId", String.valueOf(input.realmId()));
 
-            LOG.info("fromDate : [{}], toDate : [{}]", fromDate, toDate);
+            if (input.realmId() != null) {
+                params.put("realmId", input.realmId());
+            }
+
+            if (input.participantUserId() != null) {
+                params.put("userId", input.participantUserId());
+            }
+
+            if (input.action() != null) {
+                params.put("action", input.action());
+            }
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
                                                     "com/thitsaworks/operation_portal/reporting/report/report/reportTesting.jrxml");
+
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("reportTesting");
             JasperReport jasperReport = JasperCompileManager.compileReport(design);
@@ -73,18 +88,36 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             byte[] rptBytes = new byte[0];
 
-//            JRPdfExporter pdfExporter = new JRPdfExporter();
-//            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-//            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-//            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-//            pdfExporter.exportReport();
-//            rptBytes = pdfReport.toByteArray();
-            JRXlsxExporter xlsxExporter = new JRXlsxExporter();
-            ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
-            xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
-            xlsxExporter.exportReport();
-            rptBytes = xlsReport.toByteArray();
+            if (input.fileType()
+                     .equalsIgnoreCase("xlsx")) {
+
+                JRXlsxExporter xlsxExporter = new JRXlsxExporter();
+                ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
+                xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+                xlsxExporter.exportReport();
+                rptBytes = xlsReport.toByteArray();
+
+            } else if (input.fileType()
+                            .equalsIgnoreCase("pdf")) {
+
+                JRPdfExporter pdfExporter = new JRPdfExporter();
+                ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
+                pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+                pdfExporter.exportReport();
+                rptBytes = pdfReport.toByteArray();
+
+            } else if (input.fileType()
+                            .equalsIgnoreCase("csv")) {
+
+                JRCsvExporter csvExporter = new JRCsvExporter();
+                ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
+                csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
+                csvExporter.exportReport();
+                rptBytes = csvReport.toByteArray();
+            }
 
             return new Output(rptBytes);
 
@@ -95,9 +128,9 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         }
     }
 
-    private Date convertInstantToDate(Instant instant) {
+    private Date convertInstantToDate(Instant instant, String timeOffset) {
 
-        ZoneId zoneId = ZoneId.of(MyanmarZoneId.ZONE_ID);
+        ZoneId zoneId = ZoneId.of(timeOffset);
 
         ZonedDateTime zonedDateTime = instant.atZone(zoneId);
 
