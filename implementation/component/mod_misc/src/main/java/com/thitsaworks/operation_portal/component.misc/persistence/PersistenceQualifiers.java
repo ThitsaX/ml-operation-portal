@@ -24,7 +24,6 @@ public class PersistenceQualifiers {
 
         public static final String TRANSACTION_MANAGER = "transactionManager";
 
-
     }
 
     public static class Core {
@@ -42,6 +41,8 @@ public class PersistenceQualifiers {
         public static final String READ_DATA_SOURCE = "coreReadDataSource";
 
         public static final String READ_JDBC_TEMPLATE = "coreReadJdbcTemplate";
+
+        public static final String WRITE_JDBC_TEMPLATE = "coreWriteJdbcTemplate";
 
         public static final String ENTITY_MANAGER_FACTORY = "coreEntityManagerFactory";
 
@@ -82,6 +83,7 @@ public class PersistenceQualifiers {
         public static final String JPA_QUERY_FACTORY = "reportingJpaQueryFactory";
 
         public static final String DATA_SOURCE = "reportingDataSource";
+
     }
 
 }
