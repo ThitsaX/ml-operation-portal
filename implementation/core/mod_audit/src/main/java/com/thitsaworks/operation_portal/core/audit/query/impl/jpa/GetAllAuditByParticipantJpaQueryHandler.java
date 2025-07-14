@@ -47,7 +47,11 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                                      audit.createdAt.eq(audit.createdAt) :
                                                                                                                         audit.createdAt.between(
                                                                                                                                 input.fromDate(),
-                                                                                                                                input.toDate())))
+                                                                                                                                input.toDate()))
+                                        .and(input.userId() == null ? audit.userId.eq(audit.userId)
+                                                                    : audit.userId.id.eq(input.userId().getId()))
+                                                                                                           .and(input.actionName() == null ? action.name.eq(action.name)
+                                                                    : action.name.eq(input.actionName())))
                                      .orderBy(audit.createdAt.desc());
 
         QueryResults<Tuple> results = tupleSQLQuery.fetchResults();

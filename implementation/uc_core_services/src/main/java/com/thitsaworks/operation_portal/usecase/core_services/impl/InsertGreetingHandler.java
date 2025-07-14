@@ -5,7 +5,6 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.home_message.command.InsertGreetingCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.CoreServicesUseCase;
-
 import com.thitsaworks.operation_portal.usecase.core_services.InsertGreeting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

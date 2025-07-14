@@ -50,8 +50,12 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
                                                                        audit.createdAt.eq(audit.createdAt) :
                                                                        audit.createdAt.between(input.getFromDate(),
                                                                                                input.getToDate()))
+                                                                                                           .and(input.getActionName() == null || input.getActionName().isEmpty()
+                                                                                                                    ? action.name.isNotNull()
+                                                                                                                    : action.name.eq(input.getActionName())));
 
-                                     );
+
+
         QueryResults<Tuple> results = tupleSQLQuery.fetchResults();
 
         if (results == null || results.isEmpty()) {
