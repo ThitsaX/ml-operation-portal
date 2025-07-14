@@ -30,13 +30,9 @@ public class CreateApprovalRequestController {
 
     private final CreateApprovalRequest createApprovalRequest;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/createApprovalRequest")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
-
-        LOG.info("Create Approval request : [{}]", this.objectMapper.writeValueAsString(request));
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -52,8 +48,6 @@ public class CreateApprovalRequestController {
         var response = new Response(output.approvalRequestId()
                                           .getEntityId()
                                           .toString());
-
-        LOG.info("Create Approval Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
