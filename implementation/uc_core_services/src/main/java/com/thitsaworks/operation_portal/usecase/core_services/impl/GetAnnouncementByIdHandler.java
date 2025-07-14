@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 @Service
@@ -27,10 +28,7 @@ public class GetAnnouncementByIdHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAnnouncementByIdHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
-                                                                    UserRoleType.OPERATION,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.SUPERUSER);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final AnnouncementQuery announcementQuery;
 

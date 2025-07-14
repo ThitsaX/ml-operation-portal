@@ -9,8 +9,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hub_services.HubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ResetPasswordCommand;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.UpdateParticipantAmount;
 import org.slf4j.Logger;
@@ -19,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
+import java.util.EnumSet;
 import java.util.Set;
 
 @Service
@@ -28,10 +27,7 @@ public class UpdateParticipantAmountHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateParticipantAmountHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
-                                                                    UserRoleType.OPERATION,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.SUPERUSER);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final HubClient hubClient;
 

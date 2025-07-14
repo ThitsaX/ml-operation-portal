@@ -48,6 +48,8 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
         params.put("startDate", input.startDate());
         params.put("endDate", input.endDate());
 
+        LOG.info("Params : {}", params);
+
         InputStream settlementReport =
                 this.getClass()
                     .getResourceAsStream(

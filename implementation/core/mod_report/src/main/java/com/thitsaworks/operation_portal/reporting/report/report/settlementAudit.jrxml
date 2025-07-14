@@ -102,6 +102,7 @@
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 		<parameter name="startDate" class="java.lang.String"/>
 		<parameter name="endDate" class="java.lang.String"/>
+		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT
             p.participantId AS participantId,
@@ -139,7 +140,13 @@
         WHERE tpr.name = 'DFSP_SETTLEMENT'
         AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
         AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
-        AND ( tp.createdDate BETWEEN STR_TO_DATE($P{startDate}, '%Y-%m-%dT%T') AND STR_TO_DATE($P{endDate}, '%Y-%m-%dT%T'))
+        AND ( tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+                CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+                CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+                AND 
+                (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+                CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+                CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
         ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate]]>
 		</queryString>
 		<field name="participantId" class="java.lang.Long">
@@ -216,6 +223,7 @@
 	</subDataset>
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
+	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
 		<![CDATA[SELECT
             p.participantId AS participantId,
@@ -253,7 +261,13 @@
         WHERE tpr.name = 'DFSP_SETTLEMENT'
         AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
         AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
-        AND ( tp.createdDate BETWEEN STR_TO_DATE($P{startDate}, '%Y-%m-%dT%T') AND STR_TO_DATE($P{endDate}, '%Y-%m-%dT%T'))
+        AND ( tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+                CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+                CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+                AND 
+                (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+                CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+                CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
         ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate]]>
 	</queryString>
 	<field name="participantId" class="java.lang.Long">
@@ -459,7 +473,7 @@
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{startDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="90" width="200" height="17" uuid="0e3e79a0-147c-4b04-9cb5-5d4dea0e40c1"/>
@@ -472,7 +486,7 @@
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{endDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[""]]></textFieldExpression>
 			</textField>
 			<componentElement>
 				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="170" width="1230" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">

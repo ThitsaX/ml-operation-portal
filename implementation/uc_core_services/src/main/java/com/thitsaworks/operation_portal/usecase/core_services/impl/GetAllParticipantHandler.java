@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +29,7 @@ public class GetAllParticipantHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
-                                                                    UserRoleType.ADMIN,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ParticipantQuery participantQuery;
 

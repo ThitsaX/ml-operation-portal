@@ -29,7 +29,7 @@ public class GetExistingParticipantController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_participant")
+    @GetMapping("/secured/getParticipant")
     public ResponseEntity<Response> execute(
             @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
@@ -79,30 +79,30 @@ public class GetExistingParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participant_id") String participantId,
-            @JsonProperty("dfsp_code") String dfsp_code,
+            @JsonProperty("participantId") String participantId,
+            @JsonProperty("dfspCode") String dfspCode,
             @JsonProperty("name") String name,
             @JsonProperty("address") String address,
             @JsonProperty("mobile") String mobile,
-            @JsonProperty("created_date") Long createdDate,
-            @JsonProperty("contact_info_list") List<ContactInfo> contactInfoList,
-            @JsonProperty("liquidity_profile_list") List<LiquidityProfileInfo> liquidityProfileInfoList) {
+            @JsonProperty("createdDate") Long createdDate,
+            @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
+            @JsonProperty("liquidityProfileInfoList") List<LiquidityProfileInfo> liquidityProfileInfoList) {
 
         public record ContactInfo(
-                @JsonProperty("contact_id") String contactId,
+                @JsonProperty("contactId") String contactId,
                 @JsonProperty("name") String name,
                 @JsonProperty("title") String title,
                 @JsonProperty("email") String email,
                 @JsonProperty("mobile") String mobile,
-                @JsonProperty("contact_type") String contactType) {
+                @JsonProperty("contactType") String contactType) {
         }
 
         public record LiquidityProfileInfo(
-                @JsonProperty("liquidity_profile_id") String liquidityProfileId,
-                @JsonProperty("account_name") String accountName,
-                @JsonProperty("account_number") String accountNumber,
+                @JsonProperty("liquidityProfileId") String liquidityProfileId,
+                @JsonProperty("accountName") String accountName,
+                @JsonProperty("accountNumber") String accountNumber,
                 @JsonProperty("currency") String currency,
-                @JsonProperty("is_active") Boolean isActive) {
+                @JsonProperty("isActive") Boolean isActive) {
         }
 
     }

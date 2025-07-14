@@ -51,7 +51,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
             settlementReport =
             this.getClass()
                 .getResourceAsStream(
-                    "/com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jasper");
+                    "/com/thitsaworks/operation_portal/reporting/report/report/settlementStatement.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {

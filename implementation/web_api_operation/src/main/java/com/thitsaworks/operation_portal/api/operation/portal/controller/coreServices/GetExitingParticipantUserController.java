@@ -28,7 +28,7 @@ public class GetExitingParticipantUserController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_exiting_participant_user")
+    @GetMapping("/secured/getExitingParticipantUser")
     public ResponseEntity<Response> execute(@Valid @RequestParam String participantUserId)
         throws DomainException, JsonProcessingException {
 
@@ -53,18 +53,18 @@ public class GetExitingParticipantUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participant_user_id") String participantUserId
+            @NotNull @JsonProperty("participantUserId") String participantUserId
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("participant_user_id") String participantUserId,
+            @JsonProperty("participantUserId") String participantUserId,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,
-        @JsonProperty("first_name") String firstName,
-        @JsonProperty("last_name") String lastName,
-        @JsonProperty("job_title") String jobTitle,
-        @JsonProperty("created_date") Long createdDate
+            @JsonProperty("firstName") String firstName,
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("jobTitle") String jobTitle,
+            @JsonProperty("createdDate") Long createdDate
     ) { }
 
 }

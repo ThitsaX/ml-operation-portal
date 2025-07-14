@@ -38,7 +38,7 @@ public class ModifyExistingParticipantController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/modify_participant")
+    @PostMapping("/secured/modifyParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
@@ -102,42 +102,42 @@ public class ModifyExistingParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participant_id") String participantId,
+        @NotNull @JsonProperty("participantId") String participantId,
         @NotNull @JsonProperty("name") String companyName,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("contact_info_list") List<ContactInfo> contactInfoList,
-        @JsonProperty("liquidity_profile_list") List<LiquidityProfileInfo> liquidityProfileInfoList
+        @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
+        @JsonProperty("liquidityProfileInfoList") List<LiquidityProfileInfo> liquidityProfileInfoList
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record ContactInfo(
-        @JsonProperty("contact_id") String contactId,
+        @JsonProperty("contactId") String contactId,
         @NotNull @JsonProperty("name") String name,
         @NotNull @JsonProperty("title") String title,
         @NotNull @JsonProperty("email") String email,
         @NotNull @JsonProperty("mobile") String mobile,
-        @NotNull @JsonProperty("contact_type") String contactType
+        @NotNull @JsonProperty("contactType") String contactType
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record LiquidityProfileInfo(
-        @JsonProperty("liquidity_profile_id") String liquidityProfileId,
-        @NotNull @JsonProperty("account_name") String accountName,
-        @NotNull @JsonProperty("account_number") String accountNumber,
+        @JsonProperty("liquidityProfileId") String liquidityProfileId,
+        @NotNull @JsonProperty("accountName") String accountName,
+        @NotNull @JsonProperty("accountNumber") String accountNumber,
         @NotNull @JsonProperty("currency") String currency,
-        @NotNull @JsonProperty("is_active") Boolean isActive
+        @NotNull @JsonProperty("isActive") Boolean isActive
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("participant_id") String participantId,
+        @JsonProperty("participantId") String participantId,
         @JsonProperty("modified") boolean modified
     ) {
 
