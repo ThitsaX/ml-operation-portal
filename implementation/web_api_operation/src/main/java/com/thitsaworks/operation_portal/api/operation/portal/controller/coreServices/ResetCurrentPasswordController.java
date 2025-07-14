@@ -30,7 +30,7 @@ public class ResetCurrentPasswordController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/reset_password")
+    @PostMapping("/secured/resetPassword")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 

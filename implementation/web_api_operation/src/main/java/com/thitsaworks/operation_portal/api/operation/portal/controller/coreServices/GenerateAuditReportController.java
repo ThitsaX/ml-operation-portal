@@ -31,20 +31,20 @@ public class GenerateAuditReportController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generate_audit_report")
+    @PostMapping("/secured/generateAuditReport")
     public ResponseEntity<Response> execute(@RequestParam(
-                                                value = "participant_id",
+            value = "participantId",
                                                 required = false) String participantId,
-                                            @RequestParam("from_date") String fromDate,
-                                            @RequestParam("to_date") String toDate,
-                                            @RequestParam("timezoneoffset") String timezoneOffset,
+                                            @RequestParam("fromDate") String fromDate,
+                                            @RequestParam("toDate") String toDate,
+                                            @RequestParam("timezoneOffset") String timezoneOffset,
                                             @RequestParam(
-                                                value = "participant_user_id",
+                                                    value = "participantUserId",
                                                 required = false) String participantUserId,
                                             @RequestParam(
                                                 value = "action",
                                                 required = false) String action,
-                                            @RequestParam("file_type") String fileType)
+                                            @RequestParam("fileType") String fileType)
         throws DomainException, JsonProcessingException {
 
         String showTimezone = timezoneOffset;

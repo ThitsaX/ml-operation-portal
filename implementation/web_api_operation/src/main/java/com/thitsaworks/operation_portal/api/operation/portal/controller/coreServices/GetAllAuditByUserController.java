@@ -33,7 +33,7 @@ public class GetAllAuditByUserController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/get_all_audit")
+    @PostMapping("/secured/getAllAudit")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
@@ -67,22 +67,22 @@ public class GetAllAuditByUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participant_id") String participantId,
-        @JsonProperty("participant_user_id") String participantUserId,
-        @NotNull @JsonProperty("from_date") Long fromDate,
-        @NotNull @JsonProperty("to_date") Long toDate
+            @NotNull @JsonProperty("participantId") String participantId,
+            @JsonProperty("participantUserId") String participantUserId,
+            @NotNull @JsonProperty("fromDate") Long fromDate,
+            @NotNull @JsonProperty("toDate") Long toDate
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("audit_info_list") List<AuditInfo> auditInfoList) {
+    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) {
 
         public record AuditInfo(
-            @JsonProperty("participant_name") String participantName,
-            @JsonProperty("user_name") String userName,
-            @JsonProperty("action_name") String actionName,
-            @JsonProperty("input_info") String inputInfo,
-            @JsonProperty("output_info") String outputInfo,
-            @JsonProperty("action_date") Long actionDate
+                @JsonProperty("participantName") String participantName,
+                @JsonProperty("userName") String userName,
+                @JsonProperty("actionName") String actionName,
+                @JsonProperty("inputInfo") String inputInfo,
+                @JsonProperty("outputInfo") String outputInfo,
+                @JsonProperty("actionDate") Long actionDate
         ) { }
 
     }

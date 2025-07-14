@@ -35,7 +35,7 @@ public class ModifyExistingContactController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/modify_contact")
+    @PostMapping("/secured/modifyContact")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 

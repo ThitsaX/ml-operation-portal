@@ -91,7 +91,7 @@ public class CreateNewContactController {
                 String mobile,
 
                 @NotNull
-                @JsonProperty("contact_type")
+                @JsonProperty("contactType")
                 String contactType) {
         }
 

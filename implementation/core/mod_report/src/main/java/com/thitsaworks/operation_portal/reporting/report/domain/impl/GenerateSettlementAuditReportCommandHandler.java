@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
@@ -26,15 +27,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GenerateSettlementReportCommandHandler implements GenerateSettlementReportCommand {
+public class GenerateSettlementAuditReportCommandHandler implements GenerateSettlementAuditReportCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementAuditReportCommandHandler.class);
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenerateSettlementReportCommandHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GenerateSettlementAuditReportCommandHandler(
+            @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -44,13 +45,15 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("dfspId", input.fspId());
-        params.put("settlementId", input.settlementId());
-        params.put("timezoneoffset", input.timezoneOffset());
+        params.put("startDate", input.startDate());
+        params.put("endDate", input.endDate());
+
+        LOG.info("Params : {}", params);
 
         InputStream settlementReport =
-            this.getClass()
-                .getResourceAsStream("/com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jasper");
+                this.getClass()
+                    .getResourceAsStream(
+                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementAudit.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
@@ -61,7 +64,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
             byte[] rptBytes = new byte[0];
 
             if (input.filetype()
-                     .equalsIgnoreCase("xlsx")) {
+                     .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -71,7 +74,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 rptBytes = xlsReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("pdf")) {
+                            .equalsIgnoreCase("pdf") && rptBytes.length > 0) {
 
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
@@ -81,7 +84,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 rptBytes = pdfReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("csv")) {
+                            .equalsIgnoreCase("csv") && rptBytes.length > 0) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();

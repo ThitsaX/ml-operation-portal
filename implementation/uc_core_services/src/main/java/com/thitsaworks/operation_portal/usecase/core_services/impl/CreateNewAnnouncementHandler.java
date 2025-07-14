@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.Set;
 
 @Service
@@ -19,10 +20,7 @@ public class CreateNewAnnouncementHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewAnnouncementHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
-                                                                    UserRoleType.ADMIN,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final CreateAnnouncementCommand createAnnouncementCommand;
 

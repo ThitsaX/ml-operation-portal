@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-
 import com.thitsaworks.operation_portal.usecase.CoreServicesUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.GetAllOtherParticipants;
 import org.slf4j.Logger;
@@ -14,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,10 +24,7 @@ public class GetAllOtherParticipantsBean
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllOtherParticipantsBean.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
-                                                                    UserRoleType.OPERATION,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.SUPERUSER);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ParticipantQuery participantQuery;
 

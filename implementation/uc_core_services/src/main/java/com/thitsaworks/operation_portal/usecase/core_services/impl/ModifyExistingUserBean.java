@@ -10,7 +10,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUserCommand;
-
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.ModifyExistingUser;
 import org.slf4j.Logger;
@@ -54,16 +53,19 @@ public class ModifyExistingUserBean
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ModifyParticipantUserCommand.Output output = this.modifyParticipantUserCommand.execute(
-            new ModifyParticipantUserCommand.Input(null, input.name(), null,
-                                                   input.firstName(), input.lastName(), input.jobTitle(), null));
+        ModifyParticipantUserCommand.Output output =
+                this.modifyParticipantUserCommand.execute(new ModifyParticipantUserCommand.Input(
+                        input.participantUserId(),
+                        input.name(),
+                        null,
+                        input.firstName(), input.lastName(), input.jobTitle(), null));
 
         this.modifyPrincipalCommand.execute(
-            new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId()
-                                                                   .getId()), null,
-                                           null));
+                new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId().getId()),
+                                                 input.userRoleType(),
+                                                 input.principalStatus()));
 
-        return new Output(output.modified(), null);
+        return new Output(output.modified(), output.participantUserId());
 
     }
 
