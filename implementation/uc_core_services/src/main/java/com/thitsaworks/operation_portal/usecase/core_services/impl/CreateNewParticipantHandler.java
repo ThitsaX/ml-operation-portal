@@ -8,13 +8,13 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantCommand;
-
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.CreateParticipant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,10 +25,7 @@ public class CreateNewParticipantHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
-                                                                    UserRoleType.ADMIN,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final CreateParticipantCommand createParticipantCommand;
 

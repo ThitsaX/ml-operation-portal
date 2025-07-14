@@ -74,7 +74,7 @@ public class GetAllAuditByParticipantController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("audit_info_list") List<AuditInfo> auditInfoList) {
+    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) {
 
         public record AuditInfo(
                 @JsonProperty("userName") String userName,

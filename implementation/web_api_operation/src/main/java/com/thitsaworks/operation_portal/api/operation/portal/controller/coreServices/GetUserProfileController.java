@@ -27,7 +27,7 @@ public class GetUserProfileController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_user_profile")
+    @GetMapping("/secured/getUserProfile")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
@@ -67,17 +67,17 @@ public class GetUserProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("user_id") String participantUserId,
+            @JsonProperty("participantUserId") String participantUserId,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,
-        @JsonProperty("first_name") String firstName,
-        @JsonProperty("last_name") String lastName,
-        @JsonProperty("job_title") String jobTitle,
-        @JsonProperty("dfsp_code") String dfspCode,
-        @JsonProperty("dfsp_name") String dfspName,
-        @JsonProperty("user_role_type") String roleType,
-        @JsonProperty("participant_id") String participantId,
-        @JsonProperty("created_date") Long createdDate
+            @JsonProperty("firstName") String firstName,
+            @JsonProperty("lastName") String lastName,
+            @JsonProperty("jobTitle") String jobTitle,
+            @JsonProperty("dfspCode") String dfspCode,
+            @JsonProperty("dfspName") String dfspName,
+            @JsonProperty("userRoleType") String roleType,
+            @JsonProperty("participantId") String participantId,
+            @JsonProperty("createdDate") Long createdDate
     ) {
 
     }

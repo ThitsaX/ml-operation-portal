@@ -27,7 +27,7 @@ public class GetAllParticipantUserController {
 
     private final GetAllParticipantUser getAllParticipantUser;
 
-    @GetMapping(value = "/secured/get_all_participant_users")
+    @GetMapping(value = "/secured/getAllParticipantUsers")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException, JsonProcessingException {
 

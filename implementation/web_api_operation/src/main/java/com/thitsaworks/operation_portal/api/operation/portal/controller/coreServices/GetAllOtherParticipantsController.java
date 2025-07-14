@@ -30,9 +30,9 @@ public class GetAllOtherParticipantsController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_all_other_participants")
+    @GetMapping("/secured/getAllOtherParticipants")
     public ResponseEntity<Response> execute(
-        @RequestParam("participant_id") String participantId) throws DomainException, JsonProcessingException {
+            @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
         LOG.info("Get all participants request : participantId = {}", participantId);
 
@@ -58,14 +58,14 @@ public class GetAllOtherParticipantsController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("participant_info_list") List<ParticipantInfo> participantInfoList
+            @JsonProperty("participantInfoList") List<ParticipantInfo> participantInfoList
     ) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record ParticipantInfo(
-            @JsonProperty("participant_id") String participantId,
-            @JsonProperty("dfsp_code") String dfspCode,
-            @JsonProperty("dfsp_name") String name
+                @JsonProperty("participantId") String participantId,
+                @JsonProperty("dfspCode") String dfspCode,
+                @JsonProperty("dfspName") String name
         ) implements Serializable { }
 
     }

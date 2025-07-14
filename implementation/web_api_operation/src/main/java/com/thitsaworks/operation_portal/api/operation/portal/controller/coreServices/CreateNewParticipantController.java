@@ -122,7 +122,7 @@ public class CreateNewParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participant_id") String participantId,
+            @JsonProperty("participantId") String participantId,
             @JsonProperty("created") boolean created) implements Serializable {
     }
 

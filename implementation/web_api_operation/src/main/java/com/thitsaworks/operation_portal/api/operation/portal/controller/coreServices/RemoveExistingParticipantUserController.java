@@ -31,7 +31,7 @@ public class RemoveExistingParticipantUserController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/remove_participant_user")
+    @PostMapping("/secured/removeParticipantUser")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 

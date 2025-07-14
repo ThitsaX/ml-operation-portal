@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -25,10 +26,7 @@ public class GetAllUserHandler extends CoreServicesAuditableUseCase<GetAllUser.I
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllUserHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.SUPERUSER,
-                                                                    UserRoleType.ADMIN,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final HubUserQuery hubUserQuery;
 
