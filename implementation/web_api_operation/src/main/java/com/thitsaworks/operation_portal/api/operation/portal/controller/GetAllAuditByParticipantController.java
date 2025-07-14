@@ -33,7 +33,7 @@ public class GetAllAuditByParticipantController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/getAllAudit")
+    @GetMapping("/secured/get_all_by_participant")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
             @RequestParam("fromDate") Long fromDate,

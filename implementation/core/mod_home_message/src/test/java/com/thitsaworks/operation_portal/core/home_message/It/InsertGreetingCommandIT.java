@@ -24,8 +24,8 @@ public class InsertGreetingCommandIT extends BaseVaultSetUpTest {
     @Test
     public void testInsertGreetingCommand() {
         // Arrange
-        String greetingTitle = "Welcome to Portal";
-        String greetingDetail = "We are glad to havehere!";
+        String greetingTitle = "Welcooo  to Portal";
+        String greetingDetail = "We are doooo to havehere!";
 
         // Act
         InsertGreetingCommand.Input input = new InsertGreetingCommand.Input(greetingTitle, greetingDetail);

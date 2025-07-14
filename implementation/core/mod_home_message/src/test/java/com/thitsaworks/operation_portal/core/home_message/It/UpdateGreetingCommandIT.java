@@ -28,7 +28,7 @@ public class UpdateGreetingCommandIT extends BaseVaultSetUpTest {
     @Test
     public void testUpdateGreetingCommand() throws GreetingException {
 
-        var input = new UpdateGreetingCommand.Input(new GreetingId(730159064823083008L),
+        var input = new UpdateGreetingCommand.Input(new GreetingId(731443340671692800L),
                                                                             "Updated Greeting Title",
                                                                             "Updated Greeting Detail");
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UpdateHomeMessageCommandHandler implements UpdateGreetingCommand {
 
-    private GreetingRepository greetingRepository;
+    private final GreetingRepository greetingRepository;
 
     @Override
     @CoreWriteTransactional
