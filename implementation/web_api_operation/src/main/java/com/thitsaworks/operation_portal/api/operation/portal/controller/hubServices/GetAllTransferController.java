@@ -31,7 +31,7 @@ public class GetAllTransferController {
 
     private final GetAllTransfer getAllTransfer;
 
-    @GetMapping("/secured/get_all_transfer")
+    @GetMapping("/secured/getAllTransfer")
     public ResponseEntity<Response> execute(
         @Valid @RequestParam String fromDate, String toDate, String transferId, String payerFspId,
         String payeeFspId,
@@ -99,18 +99,18 @@ public class GetAllTransferController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public record Response(@JsonProperty("transfer_info_list") List<TransferInfo> transferInfoList) {
+    public record Response(@JsonProperty("transferInfoList") List<TransferInfo> transferInfoList) {
 
         public record TransferInfo(
-            @JsonProperty("transfer_id") String transferId,
+            @JsonProperty("transferId") String transferId,
             @JsonProperty("state") String state,
             @JsonProperty("type") String type,
             @JsonProperty("currency") String currency,
             @JsonProperty("amount") BigDecimal amount,
-            @JsonProperty("payer_dfsp") String payerDfsp,
-            @JsonProperty("payee_dfsp") String payeeDfsp,
-            @JsonProperty("settlement_batch") String settlementBatch,
-            @JsonProperty("submitted_on_date") String submittedOnDate
+            @JsonProperty("payerDfsp") String payerDfsp,
+            @JsonProperty("payeeDfsp") String payeeDfsp,
+            @JsonProperty("settlementBatch") String settlementBatch,
+            @JsonProperty("submittedOnDate") String submittedOnDate
         ) { }
 
     }

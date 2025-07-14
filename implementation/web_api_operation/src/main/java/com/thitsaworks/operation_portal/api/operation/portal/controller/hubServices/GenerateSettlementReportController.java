@@ -24,11 +24,11 @@ public class GenerateSettlementReportController {
 
     private final GenerateSettlementReport generateSettlementReport;
 
-    @PostMapping("/secured/generate_settlement_report")
+    @PostMapping("/secured/generateSettlementReport")
     public ResponseEntity<Response> execute
-        (@RequestParam("fsp_id") String fspId,
-         @RequestParam("settlement_id") String settlementId,
-         @RequestParam("file_type") String fileType,
+        (@RequestParam("fspId") String fspId,
+         @RequestParam("settlementId") String settlementId,
+         @RequestParam("fileType") String fileType,
          @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
@@ -41,8 +41,7 @@ public class GenerateSettlementReportController {
 
     }
 
-    // Request and Response records
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("generated") byte[] settlementByte) implements Serializable { }
+    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
 
 }

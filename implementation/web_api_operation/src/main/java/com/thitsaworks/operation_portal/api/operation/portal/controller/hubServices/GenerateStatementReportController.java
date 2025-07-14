@@ -24,12 +24,12 @@ public class GenerateStatementReportController {
 
     private final GenerateStatementReport generateStatementReport;
 
-    @PostMapping("/secured/generate_statement_report")
+    @PostMapping("/secured/generateStatementReport")
     public ResponseEntity<Response> execute(
-        @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate,
-        @RequestParam("fsp_id") String fspId,
-        @RequestParam("file_type") String fileType,
-        @RequestParam("timezoneoffset") String timeZoneOffset,
+        @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+        @RequestParam("fspId") String fspId,
+        @RequestParam("fileType") String fileType,
+        @RequestParam("timeZoneOffset") String timeZoneOffset,
         @RequestParam("currencyId") String currencyId) throws DomainException, JsonProcessingException {
 
         GenerateStatementReport.Output output = this.generateStatementReport.execute(
@@ -47,6 +47,6 @@ public class GenerateStatementReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("detail_report_byte") byte[] statementReportByte) { }
+    public record Response(@JsonProperty("rptByte") byte[] statementReportByte) { }
 
 }

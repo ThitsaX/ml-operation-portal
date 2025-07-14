@@ -27,7 +27,7 @@ public class GetTransferDetailsController {
 
     private final GetTransferDetails getTransferDetails;
 
-    @GetMapping("/secured/get_transfer_detail")
+    @GetMapping("/secured/getTransferDetail")
     public ResponseEntity<Response> execute(@Valid @RequestParam String transferId, String timezone)
         throws DomainException, ParseException, JsonProcessingException {
 
@@ -76,26 +76,26 @@ public class GetTransferDetailsController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("transfer_details") TransferInfo transferInfo
+        @JsonProperty("transferDetails") TransferInfo transferInfo
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record TransferInfo(
-        @JsonProperty("transfer_id") String transferId,
+        @JsonProperty("transferId") String transferId,
         @JsonProperty("state") String state,
         @JsonProperty("type") String type,
         @JsonProperty("currency") String currency,
         @JsonProperty("amount") BigDecimal amount,
         @JsonProperty("payer") String payer,
-        @JsonProperty("payer_details") String payerDetails,
-        @JsonProperty("payer_dfsp") String payerDfsp,
+        @JsonProperty("payerDetails") String payerDetails,
+        @JsonProperty("payerDfsp") String payerDfsp,
         @JsonProperty("payee") String payee,
-        @JsonProperty("payee_details") String payeeDetails,
-        @JsonProperty("payee_dfsp") String payeeDfsp,
-        @JsonProperty("settlement_batch") String settlementBatch,
-        @JsonProperty("submitted_on_date") String submittedOnDate
+        @JsonProperty("payeeDetails") String payeeDetails,
+        @JsonProperty("payeeDfsp") String payeeDfsp,
+        @JsonProperty("settlementBatch") String settlementBatch,
+        @JsonProperty("submittedOnDate") String submittedOnDate
     ) {
 
     }

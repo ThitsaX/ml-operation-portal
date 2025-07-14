@@ -27,19 +27,19 @@ public class GenerateFeeSettlementReportController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generate_fee_report")
+    @PostMapping("/secured/generateFeeReport")
     public ResponseEntity<Response> execute(
-        @RequestParam("start_date") String startDate, @RequestParam("end_date") String endDate,
-        @RequestParam("from_fsp_id") String fromFspId, @RequestParam("to_fsp_id") String toFspId,
+            @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+            @RequestParam("fromFspId") String fromFspId, @RequestParam("toFspId") String toFspId,
         @RequestParam("currency") String currency,
-        @RequestParam("time_zone_offset") String timezoneoffset,
-        @RequestParam("file_type") String fileType) throws DomainException, JsonProcessingException {
+            @RequestParam("timezoneOffset") String timezoneOffset,
+            @RequestParam("fileType") String fileType) throws DomainException, JsonProcessingException {
 
         GenerateFeeSettlementReport.Output output = this.generateFeeSettlementReport.execute(
             new GenerateFeeSettlementReport.Input(Instant.parse(startDate), Instant.parse(endDate), fromFspId,
                                                   toFspId,
                                                   currency,
-                                                  timezoneoffset,
+                                                  timezoneOffset,
                                                   fileType));
 
         var response = new Response(output.rptData());
@@ -49,7 +49,7 @@ public class GenerateFeeSettlementReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rpt_byte") byte[] feeReportByte) {
+    public record Response(@JsonProperty("rptByte") byte[] feeReportByte) {
     }
 
 }

@@ -55,6 +55,6 @@ public class GenerateSettlementAuditReportController {
 
     // Request and Response records
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("generated") byte[] settlementByte) implements Serializable {}
+    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable {}
 
 }
