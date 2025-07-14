@@ -27,7 +27,7 @@ public class GetAllPendingApprovalController {
 
     private final GetAllPendingApproval getAllPendingApproval;
 
-    @GetMapping(value = "/secured/getPendingApprovals")
+    @GetMapping(value = "/secured/getPendingApprovalList")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var output = this.getAllPendingApproval.execute(new GetAllPendingApproval.Input());
