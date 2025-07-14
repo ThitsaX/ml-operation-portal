@@ -10,11 +10,11 @@ import javax.sql.DataSource;
 
 public class ReportingDataSourceConfiguration {
 
-    public static final String FLYWAY_MIGRATION = "mysql/reporting/flyway/settings";
+    public static final String FLYWAY_MIGRATION = "mysql/hub_data/flyway/settings";
 
-    public static final String WRITE_DB_SETTINGS_PATH = "mysql/reporting/write_db/settings";
+    public static final String WRITE_DB_SETTINGS_PATH = "mysql/hub_data/write_db/settings";
 
-    public static final String READ_DB_SETTINGS_PATH = "mysql/reporting/read_db/settings";
+    public static final String READ_DB_SETTINGS_PATH = "mysql/hub_data/read_db/settings";
 
     @Bean(name = PersistenceQualifiers.Reporting.READ_DATA_SOURCE)
     @Qualifier(PersistenceQualifiers.Reporting.READ_DATA_SOURCE)
@@ -49,7 +49,7 @@ public class ReportingDataSourceConfiguration {
     @Bean(name = PersistenceQualifiers.Reporting.WRITE_DATA_SOURCE)
     @Qualifier(PersistenceQualifiers.Reporting.WRITE_DATA_SOURCE)
     public DataSource writeDataSource(
-            @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS) Settings settings) {
+        @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS) Settings settings) {
 
         var config = new HikariConfig();
 
@@ -77,6 +77,6 @@ public class ReportingDataSourceConfiguration {
 
     }
 
-    public record Settings(String url, String username, String password, int minPoolSize, int maxPoolSize) {}
+    public record Settings(String url, String username, String password, int minPoolSize, int maxPoolSize) { }
 
 }

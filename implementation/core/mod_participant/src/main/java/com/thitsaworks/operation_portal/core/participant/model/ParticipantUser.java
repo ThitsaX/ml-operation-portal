@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.participant.model;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

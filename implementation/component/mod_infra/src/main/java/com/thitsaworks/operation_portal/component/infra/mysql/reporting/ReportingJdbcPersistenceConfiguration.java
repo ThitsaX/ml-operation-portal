@@ -12,14 +12,6 @@ import javax.sql.DataSource;
 @Import(value = {ReportingDataSourceConfiguration.class})
 public class ReportingJdbcPersistenceConfiguration {
 
-    public static final String READ_DB_POOL_SIZE = "overlap/mysql/read_db/pool_sizes";
-
-    public static final String READ_DB_SETTINGS = "overlap/mysql/read_db/settings";
-
-    public static final String WRITE_DB_POOL_SIZE = "overlap/mysql/write_db/pool_sizes";
-
-    public static final String WRITE_DB_SETTINGS = "overlap/mysql/write_db/settings";
-
     @Primary
     @Bean(name = PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE)
     public JdbcTemplate writeJdbcTemplate(@Qualifier(PersistenceQualifiers.Reporting.WRITE_DATA_SOURCE) DataSource dataSource) {

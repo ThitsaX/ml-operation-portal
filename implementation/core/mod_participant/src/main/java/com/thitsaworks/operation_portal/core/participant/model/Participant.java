@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -67,8 +67,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         Validate.notNull(dfspCode);
         Validate.notBlank(name);
         Validate.notBlank(dfspName);
-        Validate.notBlank(address);
-        Validate.notNull(mobile);
 
         this.participantId = new ParticipantId(Snowflake.get().nextId());
         this.dfspCode = dfspCode;

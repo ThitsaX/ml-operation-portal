@@ -11,7 +11,7 @@ public abstract class DomainException extends Exception {
 
     public DomainException(ErrorMessage errorMessage) {
 
-        super();
+        super(errorMessage.code() + "-" + errorMessage.description());
         this.errorMessage = errorMessage;
     }
 

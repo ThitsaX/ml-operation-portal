@@ -2,14 +2,12 @@ package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.util.Snowflake;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.participant.cache.LiquidityProfileCache;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -49,7 +47,8 @@ public class LiquidityProfile extends JpaEntity<LiquidityProfileId> {
 
         Validate.notNull(participant);
 
-        this.liquidityProfileId = new LiquidityProfileId(Snowflake.get().nextId());
+        this.liquidityProfileId = new LiquidityProfileId(Snowflake.get()
+                                                                  .nextId());
         this.participant = participant;
         this.accountName = accountName;
         this.accountNumber = accountNumber;

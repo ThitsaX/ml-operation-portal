@@ -8,34 +8,44 @@
         <outputRelativeToContentRoot value="true" />
         <module name="mod_audit" />
         <module name="web_api_operation" />
-        <module name="mod_central_ledger" />
         <module name="app_scheduler" />
         <module name="mod_iam" />
+        <module name="mod_approval" />
         <module name="app_report_downloader" />
-        <module name="mod_hubuser" />
+        <module name="mod_fspiop" />
+        <module name="mod_pending_approval" />
+        <module name="mod_hub_services" />
+        <module name="uc_hub_services" />
+        <module name="uc_hub_service" />
         <module name="mod_misc" />
-        <module name="uc_participant" />
-        <module name="mod_home_message" />
+        <module name="mod_hub_user" />
         <module name="mod_report" />
-        <module name="uc_common" />
-        <module name="uc_hub_operator" />
         <module name="mod_participant" />
-        <module name="uc_central_ledger" />
         <module name="mod_common" />
-        <module name="web_api_participant" />
+        <module name="uc_core_services" />
         <module name="mod_infra" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="dfsp_portal" target="21" />
+      <module name="mod_central_ledger" target="21" />
       <module name="mod_datasource" target="21" />
+      <module name="mod_hubuser" target="21" />
       <module name="mod_querydsl" target="21" />
+      <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" target="21" />
       <module name="mod_report_querydsl" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />
+      <module name="reporting" target="21" />
       <module name="reporting-pom" target="21" />
+      <module name="uc_central_ledger" target="21" />
+      <module name="uc_common" target="21" />
+      <module name="uc_hub_operator" target="21" />
+      <module name="uc_hub_service" target="21" />
+      <module name="uc_participant" target="21" />
       <module name="web_api_hub_operator" target="21" />
+      <module name="web_api_participant" target="21" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -45,18 +55,22 @@
       <module name="component" options="-parameters" />
       <module name="core" options="-parameters" />
       <module name="dfsp_portal" options="-parameters" />
+      <module name="mod_approval" options="-parameters" />
       <module name="mod_audit" options="-parameters" />
       <module name="mod_central_ledger" options="-parameters" />
       <module name="mod_common" options="-parameters" />
       <module name="mod_datasource" options="-parameters" />
-      <module name="mod_home_message" options="-parameters" />
-      <module name="mod_hubuser" options="-parameters" />
+      <module name="mod_fspiop" options="-parameters" />
+      <module name="mod_hub_services" options="-parameters" />
+      <module name="mod_hub_user" options="-parameters" />
       <module name="mod_iam" options="-parameters" />
       <module name="mod_infra" options="-parameters" />
       <module name="mod_misc" options="-parameters" />
       <module name="mod_participant" options="-parameters" />
+      <module name="mod_pending_approval" options="-parameters" />
       <module name="mod_querydsl" options="-parameters" />
       <module name="mod_report" options="-parameters" />
+      <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" options="-parameters" />
       <module name="mod_report_querydsl" options="-parameters" />
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters" />
@@ -64,9 +78,11 @@
       <module name="operation_portal_component" options="-parameters" />
       <module name="reporting" options="-parameters" />
       <module name="reporting-pom" options="-parameters" />
-      <module name="uc_central_ledger" options="-parameters" />
       <module name="uc_common" options="-parameters" />
+      <module name="uc_core_services" options="-parameters" />
       <module name="uc_hub_operator" options="-parameters" />
+      <module name="uc_hub_service" options="-parameters" />
+      <module name="uc_hub_services" options="-parameters" />
       <module name="uc_participant" options="-parameters" />
       <module name="web_api_operation" options="-parameters" />
       <module name="web_api_participant" options="-parameters" />

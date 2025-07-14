@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.QUserId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.common.GetAllAuditByParticipant;
+import com.thitsaworks.operation_portal.usecase.core_services.GetAllAuditByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

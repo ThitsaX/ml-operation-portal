@@ -19,19 +19,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.thitsaworks.operation_portal.reporting</groupId>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_report</artifactId>
             <version>1.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.operation_portal.reporting</groupId>
-            <artifactId>reporting</artifactId>
-            <version>1.0.0</version>
-        </dependency>
+
         <dependency>
             <groupId>net.sf.jasperreports</groupId>
             <artifactId>jasperreports</artifactId>
             <version>6.17.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_report</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

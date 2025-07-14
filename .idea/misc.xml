@@ -17,6 +17,10 @@
         <option value="$PROJECT_DIR$/implementation/uc_common/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_hub_operator/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/component/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/core/mod_hub_services/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/uc_core_services/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/core/mod_report/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/web_api_operation/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
@@ -24,6 +28,11 @@
         <option value="$PROJECT_DIR$/implementation/app_generate_auth_header/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_datasource/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/mod_vault/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/reporting/mod_central_ledger/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/reporting/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/uc_hub_operator/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/uc_participant/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/web_api_participant/pom.xml" />
       </set>
     </option>
   </component>
