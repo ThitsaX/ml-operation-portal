@@ -21,6 +21,7 @@
         <option value="$PROJECT_DIR$/implementation/uc_core_services/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/core/mod_report/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/web_api_operation/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/core/mod_home_message/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">

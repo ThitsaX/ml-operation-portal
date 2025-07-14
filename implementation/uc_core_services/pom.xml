@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_home_message</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_approval</artifactId>
         </dependency>
     </dependencies>

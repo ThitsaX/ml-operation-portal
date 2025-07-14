@@ -1,6 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.core_services;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.io.Serializable;
@@ -12,7 +15,9 @@ public interface GetAllAuditByParticipant
 
     record Input(RealmId realmId,
                  Instant fromDate,
-                 Instant toDate) { }
+                 Instant toDate,
+                 UserId userId,
+                 String actionName){ }
 
     record Output(List<AuditInfo> auditInfoList) {
 

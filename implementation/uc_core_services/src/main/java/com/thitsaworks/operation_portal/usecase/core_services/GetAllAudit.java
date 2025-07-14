@@ -13,7 +13,8 @@ public interface GetAllAudit extends UseCase<GetAllAudit.Input, GetAllAudit.Outp
     record Input(RealmId realmId,
                  UserId userId,
                  Instant fromDate,
-                 Instant toDate) { }
+                 Instant toDate,
+                 String actionName) { }
 
     record Output(List<AuditInfo> auditInfoList) {
 

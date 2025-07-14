@@ -19,6 +19,7 @@
         <module name="uc_hub_service" />
         <module name="mod_misc" />
         <module name="mod_hub_user" />
+        <module name="mod_home_message" />
         <module name="mod_report" />
         <module name="mod_participant" />
         <module name="mod_common" />
@@ -61,6 +62,7 @@
       <module name="mod_common" options="-parameters" />
       <module name="mod_datasource" options="-parameters" />
       <module name="mod_fspiop" options="-parameters" />
+      <module name="mod_home_message" options="-parameters" />
       <module name="mod_hub_services" options="-parameters" />
       <module name="mod_hub_user" options="-parameters" />
       <module name="mod_iam" options="-parameters" />
