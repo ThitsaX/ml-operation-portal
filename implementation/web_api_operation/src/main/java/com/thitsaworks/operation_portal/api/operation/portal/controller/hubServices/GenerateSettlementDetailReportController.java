@@ -21,10 +21,10 @@ public class GenerateSettlementDetailReportController {
 
     private final GenerateDetailReport generateDetailReport;
 
-    @PostMapping("/secured/generate_detail_report")
-    public ResponseEntity<Response> execute(@RequestParam("settlement_id") String settlementId,
-                                            @RequestParam("fspid") String fspId,
-                                            @RequestParam("file_type") String fileType,
+    @PostMapping("/secured/generateDetailReport")
+    public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
+                                            @RequestParam("fspId") String fspId,
+                                            @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
@@ -38,7 +38,7 @@ public class GenerateSettlementDetailReportController {
     }
 
     public record Response(
-        @JsonProperty("detail_report_byte") byte[] detailReportByte
+        @JsonProperty("rptByte") byte[] detailReportByte
     ) { }
 
 }

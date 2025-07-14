@@ -24,7 +24,7 @@ public class GetAllTransferStateController {
 
     private final GetAllTransferState getAllTransferState;
 
-    @GetMapping("/secured/get_all_transfer_state")
+    @GetMapping("/secured/getAllTransferState")
     public ResponseEntity<Response> execute() throws DomainException,
                                                      JsonProcessingException {
 
@@ -45,11 +45,11 @@ public class GetAllTransferStateController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("transfer_state_list") List<TransferStateInfo> transferStateInfoList) {
+    public record Response(@JsonProperty("transferStateInfoList") List<TransferStateInfo> transferStateInfoList) {
 
         public record TransferStateInfo(
-            @JsonProperty("transfer_state_id") String transferStateId,
-            @JsonProperty("transfer_state") String transferState
+            @JsonProperty("transferStateId") String transferStateId,
+            @JsonProperty("transferState") String transferState
         ) { }
 
     }

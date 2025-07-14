@@ -23,7 +23,7 @@ public class GetHubCurrenciesController {
 
     private final GetHubCurrencies getHubCurrencies;
 
-    @GetMapping("/secured/get_hub_currency")
+    @GetMapping("/secured/getHubCurrency")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var output = this.getHubCurrencies.execute(new GetHubCurrencies.Input());
@@ -42,7 +42,7 @@ public class GetHubCurrenciesController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("hub_currency_list") List<CurrencyInfo> currencyInfoList
+        @JsonProperty("currencyInfoList") List<CurrencyInfo> currencyInfoList
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

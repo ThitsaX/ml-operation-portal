@@ -32,7 +32,7 @@ public class GetDashboardDataController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_dashboard_data")
+    @GetMapping("/secured/getDashboardData")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         LOG.info("Get dashboard data request : {}", "");
@@ -75,7 +75,7 @@ public class GetDashboardDataController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("financial_data") List<FinancialData> financialData) {
+    public record Response(@JsonProperty("financialData") List<FinancialData> financialData) {
 
         public Response {
 
@@ -83,12 +83,12 @@ public class GetDashboardDataController {
         }
 
         public record FinancialData(
-            @JsonProperty("dfsp_name") String dfspName,
+            @JsonProperty("dfspName") String dfspName,
             @JsonProperty("currency") String currency,
             @JsonProperty("balance") BigDecimal balance,
-            @JsonProperty("current_position") BigDecimal currentPosition,
+            @JsonProperty("currentPosition") BigDecimal currentPosition,
             @JsonProperty("ndc") BigDecimal ndc,
-            @JsonProperty("ndc_used") BigDecimal ndcUsed) {
+            @JsonProperty("ndcUsed") BigDecimal ndcUsed) {
         }
 
     }

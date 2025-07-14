@@ -24,7 +24,7 @@ public class GetParticipantCurrenciesController {
 
     private final GetParticipantCurrencies getParticipantCurrencies;
 
-    @GetMapping("/secured/get_participant_currency")
+    @GetMapping("/secured/getParticipantCurrency")
     public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId)
         throws DomainException, JsonProcessingException {
 
@@ -44,7 +44,7 @@ public class GetParticipantCurrenciesController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("hub_currency_list") List<CurrencyInfo> currencyInfoList
+        @JsonProperty("hubCurrencyList") List<CurrencyInfo> currencyInfoList
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

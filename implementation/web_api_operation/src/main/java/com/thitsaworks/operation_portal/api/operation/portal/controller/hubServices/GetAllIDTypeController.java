@@ -28,7 +28,7 @@ public class GetAllIDTypeController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_all_id_type")
+    @GetMapping("/secured/getAllIdType")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         GetAllIDType.Output output = this.getAllIDType.execute(new GetAllIDType.Input());
@@ -49,12 +49,12 @@ public class GetAllIDTypeController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("id_type_list") List<IDTypeInfo> idTypeInfoList
+        @JsonProperty("idTypeInfoList") List<IDTypeInfo> idTypeInfoList
     ) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record IDTypeInfo(
-            @JsonProperty("party_identifier_type_id") String partyIdentifierTypeId,
+            @JsonProperty("partyIdentifierTypeId") String partyIdentifierTypeId,
             @JsonProperty("name") String name
         ) implements Serializable { }
 

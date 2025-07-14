@@ -25,10 +25,10 @@ public class GetSettlementIdController {
 
     private final GetSettlementId getSettlementId;
 
-    @GetMapping("/secured/get_settlement_id")
+    @GetMapping("/secured/getSettlementId")
     public ResponseEntity<Response> execute(
-        @RequestParam("start_date") String startDate,
-        @RequestParam("end_date") String endDate,
+            @RequestParam("startDate") String startDate,
+            @RequestParam("endDate") String endDate,
         @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
@@ -49,14 +49,14 @@ public class GetSettlementIdController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("settlement_id_list") List<SettlementIdInfo> settlementIdDataList
+            @JsonProperty("settlementIdDataList") List<SettlementIdInfo> settlementIdDataList
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record SettlementIdInfo(
-        @JsonProperty("settlement_id") String SettlementId
+            @JsonProperty("settlementId") String settlementId
     ) {
 
     }
