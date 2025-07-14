@@ -15,11 +15,25 @@ public class GenerateAuditReportHandler implements GenerateAuditReport {
     @Override
     public Output execute(Input input) throws ReportException {
 
-        var output = this.generateAuditReportCommand.execute(new GenerateAuditReportCommand.Input(input.realmId()
-                                                                                                       .getId(),
+        var
+            realmId =
+            input.realmId() == null ? null : input.realmId()
+                                                  .getEntityId()
+                                                  .toString();
+
+        var
+            userId =
+            input.participantUserId() == null ? null : input.participantUserId()
+                                                            .getEntityId()
+                                                            .toString();
+
+        var output = this.generateAuditReportCommand.execute(new GenerateAuditReportCommand.Input(realmId,
                                                                                                   input.fromDate(),
                                                                                                   input.toDate(),
-                                                                                                  input.timezoneoffset()));
+                                                                                                  input.timezoneoffset(),
+                                                                                                  userId,
+                                                                                                  input.action(),
+                                                                                                  input.fileType()));
 
         return new Output(output.rptData());
     }

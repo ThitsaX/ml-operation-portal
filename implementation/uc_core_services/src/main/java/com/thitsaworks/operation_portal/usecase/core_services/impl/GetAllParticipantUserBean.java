@@ -11,10 +11,8 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
-
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.GetAllParticipantUser;
-import com.thitsaworks.operation_portal.usecase.core_services.GetAllUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,8 @@ import java.util.Set;
 
 @Service
 public class GetAllParticipantUserBean
-    extends CoreServicesAuditableUseCase<GetAllUser.Input, GetAllUser.Output>
-    implements GetAllUser {
+    extends CoreServicesAuditableUseCase<GetAllParticipantUser.Input, GetAllParticipantUser.Output>
+    implements GetAllParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantUserBean.class);
 
@@ -77,13 +75,13 @@ public class GetAllParticipantUserBean
                                                                 participantUserData.lastName(),
                                                                 participantUserData.jobTitle(),
                                                                 principalData.userRoleType()
-                                                       .toString(),
+                                                                             .toString(),
                                                                 principalData.principalStatus()
-                                                       .toString(),
+                                                                             .toString(),
                                                                 Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 
-        return new GetAllUser.Output(null);
+        return new Output(null);
     }
 
 }
