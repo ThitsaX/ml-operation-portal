@@ -64,6 +64,8 @@ public interface GetTransfersQuery {
 
             private String payeeDfsp;
 
+            private String windowId;
+
             private String settlementBatch;
 
             private String submittedOnDate;

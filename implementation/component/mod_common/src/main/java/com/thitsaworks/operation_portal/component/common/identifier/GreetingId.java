@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 public class GreetingId extends JpaId<Long> {
 
-    @Column(name = "greet_id")
+    @Column(name = "greeting_id")
     private Long id;
 
     @Override

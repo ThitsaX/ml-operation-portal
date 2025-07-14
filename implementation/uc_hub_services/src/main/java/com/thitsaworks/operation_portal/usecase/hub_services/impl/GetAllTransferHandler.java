@@ -111,6 +111,7 @@ public class GetAllTransferHandler extends HubServicesAuditableUseCase<GetAllTra
                     data.getAmount(),
                     data.getPayerDfsp(),
                     data.getPayeeDfsp(),
+                    data.getWindowId(),
                     data.getSettlementBatch(),
                     data.getSubmittedOnDate()));
         }
