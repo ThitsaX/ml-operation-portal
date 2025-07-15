@@ -271,16 +271,6 @@
                 <artifactId>uc_core_services</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal</groupId>
-                <artifactId>uc_participant</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal</groupId>
-                <artifactId>uc_hub_operator</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <!-- web api participant -->
             <dependency>

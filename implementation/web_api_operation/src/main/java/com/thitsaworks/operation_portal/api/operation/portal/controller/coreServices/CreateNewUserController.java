@@ -37,22 +37,22 @@ public class CreateNewUserController {
 
     @PostMapping(value = "/secured/createNewUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Create new participant user request: {}", objectMapper.writeValueAsString(request));
 
         CreateNewParticipantUser.Output output = this.createNewParticipantUser.execute(
-                new CreateNewParticipantUser.Input(request.name,
-                                                   new Email(request.email),
-                                                   request.password,
-                                                   request.firstName,
-                                                   request.lastName,
-                                                   request.jobTitle,
-                                                   new ParticipantId(Long.parseLong(request.participantId)),
-                                                   request.userRoleType,
-                                                   RealmType.PARTICIPANT,
-                                                   request.userStatus ? PrincipalStatus.ACTIVE :
-                                                           PrincipalStatus.INACTIVE));
+            new CreateNewParticipantUser.Input(request.name,
+                                               new Email(request.email),
+                                               request.password,
+                                               request.firstName,
+                                               request.lastName,
+                                               request.jobTitle,
+                                               new ParticipantId(Long.parseLong(request.participantId)),
+                                               request.userRoleType,
+                                               RealmType.PARTICIPANT,
+                                               request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
+                                                   PrincipalStatus.INACTIVE));
 
         Response response = new Response(output.created());
 
@@ -64,15 +64,17 @@ public class CreateNewUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("name") String name,
-            @NotNull @Pattern(regexp = Email.FORMAT, message = "Email must be with valid format.") @JsonProperty("email") String email,
-            @NotNull @JsonProperty("password") String password,
-            @NotNull @JsonProperty("firstName") String firstName,
-            @NotNull @JsonProperty("lastName") String lastName,
-            @NotNull @JsonProperty("jobTitle") String jobTitle,
-            @NotNull @JsonProperty("participantId") String participantId,
-            @NotNull @JsonProperty("userRoleType") UserRoleType userRoleType,
-            @NotNull @JsonProperty("userStatus") boolean userStatus) implements Serializable {
+        @NotNull @JsonProperty("name") String name,
+        @NotNull @Pattern(
+            regexp = Email.FORMAT,
+            message = "Email must be with valid format.") @JsonProperty("email") String email,
+        @NotNull @JsonProperty("password") String password,
+        @NotNull @JsonProperty("firstName") String firstName,
+        @NotNull @JsonProperty("lastName") String lastName,
+        @NotNull @JsonProperty("jobTitle") String jobTitle,
+        @NotNull @JsonProperty("participantId") String participantId,
+        @NotNull @JsonProperty("userRoleType") UserRoleType userRoleType,
+        @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 
     }
 

@@ -33,13 +33,13 @@ public class GenerateAuditReportController {
 
     @PostMapping("/secured/generateAuditReport")
     public ResponseEntity<Response> execute(@RequestParam(
-            value = "participantId",
+                                                value = "participantId",
                                                 required = false) String participantId,
                                             @RequestParam("fromDate") String fromDate,
                                             @RequestParam("toDate") String toDate,
                                             @RequestParam("timezoneOffset") String timezoneOffset,
                                             @RequestParam(
-                                                    value = "participantUserId",
+                                                value = "participantUserId",
                                                 required = false) String participantUserId,
                                             @RequestParam(
                                                 value = "action",
