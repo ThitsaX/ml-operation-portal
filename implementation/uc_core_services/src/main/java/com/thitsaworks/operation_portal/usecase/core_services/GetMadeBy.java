@@ -9,5 +9,6 @@ public interface GetMadeBy extends UseCase<GetMadeBy.Input, GetMadeBy.Output> {
 
 record Input(){}
 
-record Output(Set<UserId> madeBy){}
+record Output(Set<User> madeBy){}
+    public record User(UserId userId){}
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,13 +20,17 @@ public class GetMadeByController {
     @GetMapping(value = "/secured/getMydebyList")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        var output = this.getMadeBy.execute(new GetMadeBy.Input());
-        Response response = new Response(output.madeBy());
-        return ResponseEntity.ok(response);
+        GetMadeBy.Input input = new GetMadeBy.Input();
+        GetMadeBy.Output output = getMadeBy.execute(input);
 
+        Set<Response.User> users = output.madeBy().stream()
+                                         .map(user -> new Response.User(user.userId().getId()))
+                                         .collect(Collectors.toSet());
+
+        return ResponseEntity.ok(new Response(users));
     }
-    public record Response(Set<UserId> MadeBy) {
-    }
+    public record Response(Set<User> MadeBy) {
 
+        public record User(Long UserId) { }
 
-}
+    }}

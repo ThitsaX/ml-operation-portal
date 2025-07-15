@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.usecase.core_services.GetMadeBy;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,10 +44,18 @@ public class MadeByHandler extends CoreServicesAuditableUseCase<GetMadeBy.Input,
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        Set<UserId> madeBy = this.auditQuery.getAudits()
-                                            .stream()
-                                            .map(AuditData::userId).collect(Collectors.toSet());
-        return new Output(madeBy);
+        Set<UserId>
+            madeByUsers =
+            auditQuery.getAudits()
+                      .stream()
+                      .map(AuditData::userId)
+                      .filter(Objects::nonNull)
+                      .collect(Collectors.toSet());
+
+
+        return new Output(madeByUsers.stream()
+                                     .map(User::new)
+                                     .collect(Collectors.toSet()));
     }
 
 }
