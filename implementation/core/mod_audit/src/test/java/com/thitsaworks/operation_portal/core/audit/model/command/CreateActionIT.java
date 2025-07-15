@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.audit.model.command;
 
-import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.command.CreateActionCommand;
+import com.thitsaworks.operation_portal.core.audit.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,10 +13,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AuditConfiguration.class, TestSettings.class, RedisConfiguration.class})
-public class CreateActionCommandUnitTest {
+@ContextConfiguration(
+    classes = {
+        AuditConfiguration.class, TestSettings.class})
+public class CreateActionIT extends BaseVaultSetUpTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateActionCommandUnitTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateActionIT.class);
 
     @Autowired
     private CreateActionCommand createActionCommand;
@@ -24,8 +26,7 @@ public class CreateActionCommandUnitTest {
     @Test
     public void test_createActionSuccessfully() {
 
-        CreateActionCommand.Output output = this.createActionCommand.execute(new CreateActionCommand.Input(this.getClass()
-                                                                                                               .getSimpleName()));
+        var output = this.createActionCommand.execute(new CreateActionCommand.Input("iiii"));
 
         LOG.info("Action Id : " + output.actionId() + " , Created : " + output.created());
     }
