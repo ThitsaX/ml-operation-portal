@@ -11,7 +11,6 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 
 import com.thitsaworks.operation_portal.usecase.core_services.GetGreeting;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
