@@ -15,7 +15,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyExistingParticipant;
+import com.thitsaworks.operation_portal.usecase.core_services.ModifyParticipantProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,11 +24,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class ModifyExistingParticipantHandler
-    extends CoreServicesAuditableUseCase<ModifyExistingParticipant.Input, ModifyExistingParticipant.Output>
-    implements ModifyExistingParticipant {
+public class ModifyParticipantProfileHandler
+    extends CoreServicesAuditableUseCase<ModifyParticipantProfile.Input, ModifyParticipantProfile.Output>
+    implements ModifyParticipantProfile {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantProfileHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
@@ -37,12 +37,12 @@ public class ModifyExistingParticipantHandler
 
     private final PrincipalCache principalCache;
 
-    public ModifyExistingParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                            CreateOutputAuditCommand createOutputAuditCommand,
-                                            CreateExceptionAuditCommand createExceptionAuditCommand,
-                                            ObjectMapper objectMapper,
-                                            PrincipalCache principalCache,
-                                            ModifyParticipantCommand modifyParticipantCommand) {
+    public ModifyParticipantProfileHandler(CreateInputAuditCommand createInputAuditCommand,
+                                           CreateOutputAuditCommand createOutputAuditCommand,
+                                           CreateExceptionAuditCommand createExceptionAuditCommand,
+                                           ObjectMapper objectMapper,
+                                           PrincipalCache principalCache,
+                                           ModifyParticipantCommand modifyParticipantCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -99,7 +99,7 @@ public class ModifyExistingParticipantHandler
                                                                                                                   info.isActive()))
                                              .collect(Collectors.toList())));
 
-        return new ModifyExistingParticipant.Output(output.modified(), output.participantId());
+        return new ModifyParticipantProfile.Output(output.modified(), output.participantId());
     }
 
 }

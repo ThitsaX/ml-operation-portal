@@ -8,6 +8,7 @@ public interface ModifyLiquidityProfileCommand {
 
     record Input(ParticipantId participantId,
                  LiquidityProfileId liquidityProfileId,
+                 String bankName,
                  String accountName,
                  String accountNumber,
                  String currency,

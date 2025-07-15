@@ -17,25 +17,8 @@ public interface ModifyParticipantCommand {
                  String companyName,
                  String address,
                  Mobile mobile,
-                 List<ContactInfo> contactInfoList,
-                 List<Input.LiquidityProfileInfo> liquidityProfileInfoList) {
-
-        public record ContactInfo(ContactId contactId,
-                                  String name,
-                                  String title,
-                                  Email email,
-                                  Mobile mobile,
-                                  ContactType contactType) implements Serializable {
-
-        }
-
-        public record LiquidityProfileInfo(LiquidityProfileId liquidityProfileId,
-                                           String accountName,
-                                           String accountNumber,
-                                           String currency,
-                                           Boolean isActive) implements Serializable {
-
-        }
+                 String logoType,
+                 byte[] logo) {
 
     }
 

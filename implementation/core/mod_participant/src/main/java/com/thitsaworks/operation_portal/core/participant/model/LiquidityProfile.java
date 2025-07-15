@@ -30,6 +30,9 @@ public class LiquidityProfile extends JpaEntity<LiquidityProfileId> {
     @JoinColumn(name = "participant_id")
     protected Participant participant;
 
+    @Column(name = "bank_name")
+    protected String bankName;
+
     @Column(name = "account_name")
     protected String accountName;
 
@@ -42,13 +45,18 @@ public class LiquidityProfile extends JpaEntity<LiquidityProfileId> {
     @Column(name = "is_active")
     protected Boolean isActive;
 
-    public LiquidityProfile(Participant participant, String accountName, String accountNumber, String currency,
+    public LiquidityProfile(Participant participant,
+                            String bankName,
+                            String accountName,
+                            String accountNumber,
+                            String currency,
                             Boolean isActive) {
 
         Validate.notNull(participant);
 
         this.liquidityProfileId = new LiquidityProfileId(Snowflake.get()
                                                                   .nextId());
+        this.bankName = bankName;
         this.participant = participant;
         this.accountName = accountName;
         this.accountNumber = accountNumber;
@@ -60,6 +68,12 @@ public class LiquidityProfile extends JpaEntity<LiquidityProfileId> {
     public LiquidityProfileId getId() {
 
         return this.liquidityProfileId;
+    }
+
+    public LiquidityProfile bankName(String bankName) {
+
+        this.bankName = bankName;
+        return this;
     }
 
     public LiquidityProfile accountName(String accountName) {

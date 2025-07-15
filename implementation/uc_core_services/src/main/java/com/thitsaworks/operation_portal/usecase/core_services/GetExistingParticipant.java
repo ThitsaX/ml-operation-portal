@@ -17,10 +17,12 @@ public interface GetExistingParticipant extends
     record Input(ParticipantId participantId) { }
 
     record Output(ParticipantId participantId,
-                  String dfsp_code,
+                  String dfspCode,
                   String name,
                   String address,
                   Mobile mobile,
+                  String logoType,
+                  byte[] logo,
                   Instant createdDate,
                   List<ContactInfo> contactInfoList,
                   List<LiquidityProfileInfo> liquidityProfileInfoList) {
@@ -33,6 +35,7 @@ public interface GetExistingParticipant extends
                                   String contactType) implements Serializable { }
 
         public record LiquidityProfileInfo(LiquidityProfileId liquidityProfileId,
+                                           String bankName,
                                            String accountName,
                                            String accountNumber,
                                            String currency,

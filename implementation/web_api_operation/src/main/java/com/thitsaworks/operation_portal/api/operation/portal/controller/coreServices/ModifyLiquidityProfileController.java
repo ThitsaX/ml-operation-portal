@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyExistingLiquidityProfile;
+import com.thitsaworks.operation_portal.usecase.core_services.ModifyLiquidityProfile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ModifyLiquidityProfileController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyLiquidityProfileController.class);
 
-    private final ModifyExistingLiquidityProfile modifyExistingLiquidityProfile;
+    private final ModifyLiquidityProfile modifyLiquidityProfile;
 
     private final ObjectMapper objectMapper;
 
@@ -40,20 +40,20 @@ public class ModifyLiquidityProfileController {
 
         LOG.info("Modify liquidity profile request: {}", objectMapper.writeValueAsString(request));
 
-        List<ModifyExistingLiquidityProfile.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
+        List<ModifyLiquidityProfile.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
         for (Request.LiquidityProfileInfo liquidityProfileInfo : request.liquidityProfileInfoList) {
 
-            liquidityProfileInfoList.add(new ModifyExistingLiquidityProfile.Input.LiquidityProfileInfo(
+            liquidityProfileInfoList.add(new ModifyLiquidityProfile.Input.LiquidityProfileInfo(
                     new LiquidityProfileId(Long.parseLong(liquidityProfileInfo.liquidityProfileId)),
                     liquidityProfileInfo.accountName(), liquidityProfileInfo.accountNumber(),
                     liquidityProfileInfo.currency(), liquidityProfileInfo.isActive()));
 
         }
 
-        ModifyExistingLiquidityProfile.Output output = this.modifyExistingLiquidityProfile.execute(
-                new ModifyExistingLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
-                        liquidityProfileInfoList));
+        ModifyLiquidityProfile.Output output = this.modifyLiquidityProfile.execute(
+                new ModifyLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
+                                                 liquidityProfileInfoList));
 
         Response response = new Response(request.participantId, output.modified());
 

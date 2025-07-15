@@ -24,15 +24,16 @@ public class ModifyLiquidityProfileCommandHandler implements ModifyLiquidityProf
     public Output execute(Input input) throws ParticipantException {
 
         LiquidityProfile liquidityProfile =
-                this.liquidityProfileRepository.findById(input.liquidityProfileId())
-                                               .orElseThrow(() -> new ParticipantException(
-                                                       ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND));
-
-
+            this.liquidityProfileRepository.findById(input.liquidityProfileId())
+                                           .orElseThrow(() -> new ParticipantException(
+                                               ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND));
 
         this.liquidityProfileRepository.save(
-                liquidityProfile.accountName(input.accountName()).accountNumber(input.accountNumber())
-                                .currency(input.currency()).isActive(input.isActive()));
+            liquidityProfile.bankName(input.bankName())
+                            .accountName(input.accountName())
+                            .accountNumber(input.accountNumber())
+                            .currency(input.currency())
+                            .isActive(input.isActive()));
 
         return new Output(liquidityProfile.getLiquidityProfileId(), true);
     }

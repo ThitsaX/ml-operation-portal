@@ -10,8 +10,8 @@ import com.thitsaworks.operation_portal.component.type.Mobile;
 import java.io.Serializable;
 import java.util.List;
 
-public interface ModifyExistingContact extends
-                                       UseCase<ModifyExistingContact.Input, ModifyExistingContact.Output> {
+public interface ModifyContact extends
+                                       UseCase<ModifyContact.Input, ModifyContact.Output> {
 
     record Input(ParticipantId participantId,
                  List<Input.ContactInfo> contactInfoList) {

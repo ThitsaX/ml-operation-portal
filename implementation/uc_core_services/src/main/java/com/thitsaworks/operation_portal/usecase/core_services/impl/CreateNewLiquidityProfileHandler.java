@@ -53,6 +53,7 @@ public class CreateNewLiquidityProfileHandler
 
             this.createLiquidityProfileCommand.execute(
                 new CreateLiquidityProfileCommand.Input(input.participantId(),
+                                                        profileInfo.bankName(),
                                                         profileInfo.accountName(),
                                                         profileInfo.accountNumber(),
                                                         profileInfo.currency(),

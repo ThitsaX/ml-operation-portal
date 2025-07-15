@@ -12,5 +12,7 @@ public class ParticipantErrors {
     public static final ErrorMessage PARTICIPANT_ALREADY_REGISTER = new ErrorMessage("PARTICIPANT_ALREADY_REGISTER", "The Participant has already registered in the system with provided DFSP Code");
     public static final ErrorMessage PARTICIPANT_NOT_FOUND = new ErrorMessage("PARTICIPANT_NOT_FOUND", "System cannot find the participant with provided ID.");
     public static final ErrorMessage USER_NOT_FOUND = new ErrorMessage("USER_NOT_FOUND", "System cannot find the user with provided ID.");
+    public static final ErrorMessage CONTACT_ALREADY_REGISTERED = new ErrorMessage("CONTACT_ALREADY_REGISTERED", "The Contact has already registered in the system with provided Contact Type.");
+
     //@@formatter:on
 }

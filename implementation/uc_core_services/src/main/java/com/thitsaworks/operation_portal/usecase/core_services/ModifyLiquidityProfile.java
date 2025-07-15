@@ -7,13 +7,14 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import java.io.Serializable;
 import java.util.List;
 
-public interface ModifyExistingLiquidityProfile extends
-                                                UseCase<ModifyExistingLiquidityProfile.Input, ModifyExistingLiquidityProfile.Output> {
+public interface ModifyLiquidityProfile extends
+                                                UseCase<ModifyLiquidityProfile.Input, ModifyLiquidityProfile.Output> {
 
     record Input(ParticipantId participantId,
                  List<Input.LiquidityProfileInfo> liquidityProfileInfoList) {
 
         public record LiquidityProfileInfo(LiquidityProfileId liquidityProfileId,
+                                           String bankName,
                                            String accountName,
                                            String accountNumber,
                                            String currency,
