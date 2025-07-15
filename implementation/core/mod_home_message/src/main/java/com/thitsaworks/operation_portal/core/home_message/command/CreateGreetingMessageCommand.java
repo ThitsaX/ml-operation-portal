@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.home_message.command;
 
-public interface InsertGreetingCommand {
+public interface CreateGreetingMessageCommand {
 
     Output execute(Input input);
     record Input(String greetingTitle,

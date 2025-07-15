@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.persistence.transactional
 import com.thitsaworks.operation_portal.core.home_message.data.GreetingData;
 import com.thitsaworks.operation_portal.core.home_message.exception.GreetingErrors;
 import com.thitsaworks.operation_portal.core.home_message.exception.GreetingException;
-import com.thitsaworks.operation_portal.core.home_message.model.QGreeting;
+import com.thitsaworks.operation_portal.core.home_message.model.QGreetingMessage;
 import com.thitsaworks.operation_portal.core.home_message.model.repository.GreetingRepository;
 import com.thitsaworks.operation_portal.core.home_message.query.GreetingQuery;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class GreetingQueryHandler implements GreetingQuery {
 
     private final GreetingRepository greetingRepository;
 
-    private final QGreeting greeting = QGreeting.greeting;
+    private final QGreetingMessage greeting = QGreetingMessage.greetingMessage;
 
     @Override
     public List<GreetingData> getGreeting() {

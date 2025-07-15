@@ -2,15 +2,16 @@ package com.thitsaworks.operation_portal.core.home_message.model.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
-import com.thitsaworks.operation_portal.core.home_message.model.Greeting;
-import com.thitsaworks.operation_portal.core.home_message.model.QGreeting;
+import com.thitsaworks.operation_portal.core.home_message.model.GreetingMessage;
+
+import com.thitsaworks.operation_portal.core.home_message.model.QGreetingMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 
-public interface GreetingRepository extends JpaRepository<Greeting , GreetingId>,
-                                            QuerydslPredicateExecutor<Greeting> {
+public interface GreetingRepository extends JpaRepository<GreetingMessage, GreetingId>,
+                                            QuerydslPredicateExecutor<GreetingMessage> {
     class Filters{
-        private  static  final QGreeting greeting = QGreeting.greeting;
+        private  static  final QGreetingMessage greeting = QGreetingMessage.greetingMessage;
 
         public  static BooleanExpression findByGreetingTitle(String greetingTitle){
             return greeting.greetingTitle.eq(greetingTitle);

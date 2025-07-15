@@ -18,9 +18,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(
     classes = {
         HomeMessageConfiguration.class, TestSettings.class})
-public class UpdateGreetingCommandIT extends BaseVaultSetUpTest {
+public class UpdateGreetingMessageCommandIT extends BaseVaultSetUpTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateGreetingCommandIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UpdateGreetingMessageCommandIT.class);
 
     @Autowired
     private UpdateGreetingCommand updateGreetingCommand;
