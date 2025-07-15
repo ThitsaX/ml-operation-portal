@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.GetAllAction;
+import com.thitsaworks.operation_portal.usecase.core_services.GetMadeBy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,22 +12,20 @@ import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllActionController {
+public class GetMadeByController {
 
-    private final GetAllAction getAllAction;
+    private final GetMadeBy getMadeBy;
 
-    private final ObjectMapper objectMapper;
-
-    @GetMapping(value = "/secured/getActionList")
+    @GetMapping(value = "/secured/getMydebyList")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        GetAllAction.Output output = this.getAllAction.execute(new GetAllAction.Input());
-
-        Response response = new Response(output.actionNames());
+        var output = this.getMadeBy.execute(new GetMadeBy.Input());
+        Response response = new Response(output.madeBy());
         return ResponseEntity.ok(response);
+
+    }
+    public record Response(Set<UserId> MadeBy) {
     }
 
-    public record Response(Set<String> actionNames) {
-    }
 
 }
