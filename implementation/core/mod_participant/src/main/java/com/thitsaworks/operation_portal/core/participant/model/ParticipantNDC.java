@@ -22,8 +22,8 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
     @EmbeddedId
     protected ParticipantNDCId participantNDCId;
 
-    @Column(name = "dfsp")
-    protected String dfsp;
+    @Column(name = "dfsp_code")
+    protected String dfspCode;
 
     @Column(name = "currency")
     protected String currency;
@@ -34,20 +34,28 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         scale = 4)
     protected BigDecimal ndcPercent;
 
-    public ParticipantNDC(String dfsp,
+    @Column(
+            name = "ndc_amount",
+            precision = 5,
+            scale = 4)
+    protected BigDecimal ndcAmount;
+
+    public ParticipantNDC(String dfspCode,
                           String currency,
-                          BigDecimal ndcPercent) {
+                          BigDecimal ndcPercent,
+                          BigDecimal ndcAmount) {
 
         this.participantNDCId = new ParticipantNDCId(Snowflake.get()
                                                               .nextId());
-        this.dfsp(dfsp);
+        this.dfspCode(dfspCode);
         this.currency(currency);
         this.ndcPercent(ndcPercent);
+        this.ndcAmount(ndcAmount);
     }
 
-    public void dfsp(String dfsp) {
+    public void dfspCode(String dfspCode) {
 
-        this.dfsp = dfsp;
+        this.dfspCode = dfspCode;
     }
 
     public void currency(String currency) {
@@ -59,6 +67,12 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
 
         this.ndcPercent = ndcPercent;
     }
+
+    public void ndcAmount(BigDecimal ndcAmount) {
+
+        this.ndcAmount = ndcAmount;
+    }
+
 
     @Override
     public ParticipantNDCId getId() {
