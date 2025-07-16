@@ -29,7 +29,10 @@ public class CreateParticipantCommandUnitTest {
         this.createParticipantCommand.execute(new CreateParticipantCommand.Input("Vision Fund",
                                                                                  new DfspCode("abcdefg"), "abc",
                                                                                  "Yankin Township, Yangon.",
-                                                                                 new Mobile("+959250661838"), null, null));
+                                                                                 new Mobile("+959250661838"),
+                                                                                 "image",
+                                                                                 null,
+                                                                                 null, null));
 
     }
 

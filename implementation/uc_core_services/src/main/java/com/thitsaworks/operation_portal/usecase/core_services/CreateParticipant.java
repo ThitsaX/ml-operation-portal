@@ -18,6 +18,8 @@ public interface CreateParticipant
                  String dfspName,
                  String address,
                  Mobile mobile,
+                 String logoType,
+                 byte[] logo,
                  List<ContactInfo> contactInfoList,
                  List<LiquidityProfileInfo> liquidityProfileInfoList
     ) implements Serializable {

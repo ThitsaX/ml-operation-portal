@@ -53,6 +53,8 @@ public class CreateNewParticipantHandler
             new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
                                                input.address(),
                                                input.mobile(),
+                                               input.logoType(),
+                                               input.logo(),
                                                input.contactInfoList()
                                                     .stream()
                                                     .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),

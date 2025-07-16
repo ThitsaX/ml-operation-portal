@@ -34,7 +34,7 @@ public class CreateNewLiquidityProfileController {
 
     @PostMapping(value = "/secured/createLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws JsonProcessingException, DomainException {
+        throws JsonProcessingException, DomainException {
 
         LOG.info("Create liquidity profile request: {}", objectMapper.writeValueAsString(request));
 
@@ -43,16 +43,17 @@ public class CreateNewLiquidityProfileController {
         for (Request.LiquidityProfileInfo liquidityProfileInfo : request.liquidityProfileInfoList) {
 
             liquidityProfileInfoList.add(
-                    new CreateNewLiquidityProfile.Input.LiquidityProfileInfo(liquidityProfileInfo.accountName,
-                                                                             liquidityProfileInfo.accountNumber,
-                                                                             liquidityProfileInfo.currency,
-                                                                             liquidityProfileInfo.isActive));
+                new CreateNewLiquidityProfile.Input.LiquidityProfileInfo(liquidityProfileInfo.bankName,
+                                                                         liquidityProfileInfo.accountName,
+                                                                         liquidityProfileInfo.accountNumber,
+                                                                         liquidityProfileInfo.currency,
+                                                                         liquidityProfileInfo.isActive));
 
         }
 
         CreateNewLiquidityProfile.Output output = this.createNewLiquidityProfile.execute(
-                new CreateNewLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
-                                                    liquidityProfileInfoList));
+            new CreateNewLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
+                                                liquidityProfileInfoList));
 
         Response response = new Response(request.participantId, output.created());
 
@@ -63,39 +64,43 @@ public class CreateNewLiquidityProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull
-            @JsonProperty("participantId")
-            String participantId,
+        @NotNull
+        @JsonProperty("participantId")
+        String participantId,
 
-            @NotNull
-            @JsonProperty("liquidityProfileList")
-            List<LiquidityProfileInfo> liquidityProfileInfoList) implements Serializable {
+        @NotNull
+        @JsonProperty("liquidityProfileList")
+        List<LiquidityProfileInfo> liquidityProfileInfoList) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record LiquidityProfileInfo(
-                @NotNull
-                @JsonProperty("accountName")
-                String accountName,
+            @NotNull
+            @JsonProperty("bankName")
+            String bankName,
 
-                @NotNull
-                @JsonProperty("accountNumber")
-                String accountNumber,
+            @NotNull
+            @JsonProperty("accountName")
+            String accountName,
 
-                @NotNull
-                @JsonProperty("currency")
-                String currency,
+            @NotNull
+            @JsonProperty("accountNumber")
+            String accountNumber,
 
-                @JsonProperty("accountStatus")
-                Boolean isActive) implements Serializable {}
+            @NotNull
+            @JsonProperty("currency")
+            String currency,
+
+            @JsonProperty("accountStatus")
+            Boolean isActive) implements Serializable { }
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participantId")
-            String participantId,
+        @JsonProperty("participantId")
+        String participantId,
 
-            @JsonProperty("isCreated")
-            boolean created) implements Serializable {}
+        @JsonProperty("isCreated")
+        boolean created) implements Serializable { }
 
 }

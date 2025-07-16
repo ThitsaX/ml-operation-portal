@@ -14,9 +14,7 @@ public interface ModifyParticipantProfile extends
                  Mobile mobile,
                  String logoType,
                  byte[] logo,
-                 AccessKey accessKey) {
-
-    }
+                 AccessKey accessKey) { }
 
     record Output(boolean modified, ParticipantId participantId) { }
 

@@ -7,10 +7,9 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.command.SaveContactCommand;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveContactCommand;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyContact;
+import com.thitsaworks.operation_portal.usecase.core_services.RemoveContact;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,24 +17,22 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class ModifyContactHandler
-    extends CoreServicesAuditableUseCase<ModifyContact.Input, ModifyContact.Output>
-    implements ModifyContact {
+public class RemoveContactHandler extends CoreServicesAuditableUseCase<RemoveContact.Input, RemoveContact.Output>
+    implements RemoveContact {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyContactHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveContactHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final SaveContactCommand saveContactCommand;
+    private final RemoveContactCommand removeContactCommand;
 
-    public ModifyContactHandler(CreateInputAuditCommand createInputAuditCommand,
+    public RemoveContactHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
-                                SaveContactCommand saveContactCommand,
-                                ParticipantCache participantCache) {
+                                RemoveContactCommand removeContactCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -44,26 +41,16 @@ public class ModifyContactHandler
               objectMapper,
               principalCache);
 
-        this.saveContactCommand = saveContactCommand;
-
+        this.removeContactCommand = removeContactCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        for (Input.ContactInfo contactInfo : input.contactInfoList()) {
+        var output = this.removeContactCommand.execute(new RemoveContactCommand.Input(input.participantId(),
+                                                                                      input.contactId()));
 
-            this.saveContactCommand.execute(
-                new SaveContactCommand.Input(input.participantId(),
-                                             contactInfo.contactId(),
-                                             contactInfo.name(),
-                                             contactInfo.title(),
-                                             contactInfo.email(),
-                                             contactInfo.mobile(),
-                                             contactInfo.contactType()));
-        }
-
-        return new ModifyContact.Output(true);
+        return new Output(output.removed(), output.contactId());
     }
 
 }

@@ -14,14 +14,12 @@ import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipa
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
-
 import com.thitsaworks.operation_portal.usecase.core_services.ModifyParticipantProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ModifyParticipantProfileHandler
@@ -76,30 +74,14 @@ public class ModifyParticipantProfileHandler
             }
         }
 
-        ModifyParticipantCommand.Output output = this.modifyParticipantCommand.execute(
-            new ModifyParticipantCommand.Input(input.participantId(),
-                                               input.companyName(),
-                                               input.address(),
-                                               input.mobile(),
-                                               input.contactInfoList()
-                                             .stream()
-                                             .map(info -> new ModifyParticipantCommand.Input.ContactInfo(info.contactId(),
-                                                                                                         info.name(),
-                                                                                                         info.title(),
-                                                                                                         info.email(),
-                                                                                                         info.mobile(),
-                                                                                                         info.contactType()))
-                                             .collect(Collectors.toList()),
-                                               input.liquidityProfileInfoList()
-                                             .stream()
-                                             .map(info -> new ModifyParticipantCommand.Input.LiquidityProfileInfo(info.liquidityProfileId(),
-                                                                                                                  info.accountName(),
-                                                                                                                  info.accountNumber(),
-                                                                                                                  info.currency(),
-                                                                                                                  info.isActive()))
-                                             .collect(Collectors.toList())));
+        var output = this.modifyParticipantCommand.execute(new ModifyParticipantCommand.Input(input.participantId(),
+                                                                                              input.companyName(),
+                                                                                              input.address(),
+                                                                                              input.mobile(),
+                                                                                              input.logoType(),
+                                                                                              input.logo()));
 
-        return new ModifyParticipantProfile.Output(output.modified(), output.participantId());
+        return new Output(output.modified(), output.participantId());
     }
 
 }

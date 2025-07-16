@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyContactCommand;
+import com.thitsaworks.operation_portal.core.participant.command.SaveContactCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ModifyContactCommandHandler implements ModifyContactCommand {
+public class SaveContactCommandHandler implements SaveContactCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyContactCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SaveContactCommandHandler.class);
 
     private final ParticipantRepository participantRepository;
 
@@ -27,16 +27,16 @@ public class ModifyContactCommandHandler implements ModifyContactCommand {
             this.participantRepository.findById(input.participantId())
                                       .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
-        var contact = participant.updateContact(input.contactId(),
-                                                input.name(),
-                                                input.title(),
-                                                input.email(),
-                                                input.mobile(),
-                                                input.contactType());
+        var contact = participant.saveContact(input.contactId(),
+                                              input.name(),
+                                              input.title(),
+                                              input.email(),
+                                              input.mobile(),
+                                              input.contactType());
 
         this.participantRepository.saveAndFlush(participant);
 
-        return new ModifyContactCommand.Output(true, contact.getContactId());
+        return new SaveContactCommand.Output(true, contact.getContactId());
     }
 
 }

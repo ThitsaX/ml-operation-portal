@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyLiquidityProfileCommand;
+import com.thitsaworks.operation_portal.core.participant.command.SaveLiquidityProfileCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
@@ -29,7 +29,7 @@ public class ModifyLiquidityProfileHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final ModifyLiquidityProfileCommand modifyLiquidityProfileCommand;
+    private final SaveLiquidityProfileCommand saveLiquidityProfileCommand;
 
     private final ParticipantCache participantCache;
 
@@ -38,7 +38,7 @@ public class ModifyLiquidityProfileHandler
                                          CreateExceptionAuditCommand createExceptionAuditCommand,
                                          ObjectMapper objectMapper,
                                          PrincipalCache principalCache,
-                                         ModifyLiquidityProfileCommand modifyLiquidityProfileCommand,
+                                         SaveLiquidityProfileCommand saveLiquidityProfileCommand,
                                          ParticipantCache participantCache) {
 
         super(createInputAuditCommand,
@@ -48,7 +48,7 @@ public class ModifyLiquidityProfileHandler
               objectMapper,
               principalCache);
 
-        this.modifyLiquidityProfileCommand = modifyLiquidityProfileCommand;
+        this.saveLiquidityProfileCommand = saveLiquidityProfileCommand;
         this.participantCache = participantCache;
     }
 
@@ -62,14 +62,13 @@ public class ModifyLiquidityProfileHandler
 
         for (ModifyLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
 
-            this.modifyLiquidityProfileCommand.execute(
-                new ModifyLiquidityProfileCommand.Input(input.participantId(),
-                                                        profileInfo.liquidityProfileId(),
-                                                        profileInfo.bankName(),
-                                                        profileInfo.accountName(),
-                                                        profileInfo.accountNumber(),
-                                                        profileInfo.currency(),
-                                                        profileInfo.isActive()));
+            this.saveLiquidityProfileCommand.execute(
+                new SaveLiquidityProfileCommand.Input(input.participantId(),
+                                                      profileInfo.liquidityProfileId(),
+                                                      profileInfo.bankName(),
+                                                      profileInfo.accountName(),
+                                                      profileInfo.accountNumber(),
+                                                      profileInfo.currency()));
         }
 
         return new Output(true);

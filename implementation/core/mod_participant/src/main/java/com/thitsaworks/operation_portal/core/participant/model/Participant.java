@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
+import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.DfspCode;
@@ -127,12 +128,12 @@ public class Participant extends JpaEntity<ParticipantId> {
         return contact;
     }
 
-    public Contact updateContact(ContactId contactId,
-                                 String name,
-                                 String title,
-                                 Email email,
-                                 Mobile mobile,
-                                 ContactType contactType) {
+    public Contact saveContact(ContactId contactId,
+                               String name,
+                               String title,
+                               Email email,
+                               Mobile mobile,
+                               ContactType contactType) {
 
         Optional<Contact> existingContact = this.contacts.stream()
                                                          .filter(c -> c.contactId.equals(contactId))
@@ -141,6 +142,16 @@ public class Participant extends JpaEntity<ParticipantId> {
         if (existingContact.isPresent()) {
 
             Contact contact = existingContact.get();
+
+            boolean isChangingType = !contact.contactType.equals(contactType);
+            boolean typeExist = this.contacts.stream()
+                                             .anyMatch(c -> c != contact &&
+                                                                c.contactType.equals(contactType));
+
+            if (isChangingType && typeExist) {
+                throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+            }
+
             contact.name(name);
             contact.title(title);
             contact.email(email);
@@ -203,16 +214,113 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                  accountNumber,
                                                                  currency,
                                                                  isActive);
+        boolean currencyExist = this.liquidityProfiles.stream()
+                                                      .anyMatch(profile -> profile.currency.equals(currency));
+
+        if (currencyExist) {
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+        }
+
         this.liquidityProfiles.add(liquidityProfile);
 
         return liquidityProfile;
     }
 
-    public boolean removeLiquidityProfile(LiquidityProfile liquidityProfile) {
+    public LiquidityProfile saveLiquidityProfile(LiquidityProfileId liquidityProfileId,
+                                                 String bankName,
+                                                 String accountName,
+                                                 String accountNumber,
+                                                 String currency) {
 
-        Validate.notNull(liquidityProfile);
+        Validate.notBlank(bankName);
+        Validate.notBlank(accountName);
+        Validate.notBlank(accountNumber);
+        Validate.notBlank(currency);
 
-        return this.liquidityProfiles.remove(liquidityProfile);
+        Optional<LiquidityProfile> existingLiquidityProfile = this.liquidityProfiles.stream()
+                                                                                    .filter(profile -> profile.getLiquidityProfileId()
+                                                                                                              .equals(
+                                                                                                                  liquidityProfileId))
+                                                                                    .findFirst();
+
+        if (existingLiquidityProfile.isPresent()) {
+
+            var liquidityProfile = existingLiquidityProfile.get();
+
+            boolean isChangingCurrency = !liquidityProfile.currency.equals(currency);
+            boolean currencyExist = this.liquidityProfiles.stream()
+                                                          .anyMatch(profile -> profile != liquidityProfile &&
+                                                                                   profile.currency.equals(currency));
+
+            if (isChangingCurrency && currencyExist) {
+                throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+            }
+
+            liquidityProfile.bankName(bankName);
+            liquidityProfile.accountName(accountName);
+            liquidityProfile.accountNumber(accountNumber);
+            liquidityProfile.currency(currency);
+
+            return liquidityProfile;
+
+        } else {
+
+            boolean currencyExists = this.liquidityProfiles.stream()
+                                                           .anyMatch(profile -> profile.currency.equals(currency));
+
+            if (currencyExists) {
+                throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+            }
+
+            LiquidityProfile liquidityProfile = new LiquidityProfile(this,
+                                                                     bankName,
+                                                                     accountName,
+                                                                     accountNumber,
+                                                                     currency,
+                                                                     true);
+
+            this.liquidityProfiles.add(liquidityProfile);
+
+            return liquidityProfile;
+
+        }
+
+    }
+
+    public boolean removeLiquidityProfile(LiquidityProfileId liquidityProfileId) {
+
+        Validate.notNull(liquidityProfileId);
+
+        var
+            optLiquidityProfile =
+            this.liquidityProfiles.stream()
+                                  .filter(item -> item.liquidityProfileId.equals(liquidityProfileId))
+                                  .findFirst();
+
+        if (optLiquidityProfile.isPresent()) {
+
+            LiquidityProfile liquidityProfile = optLiquidityProfile.get();
+            liquidityProfile.isActive(false);
+
+            return true;
+        }
+
+        return false;
+
+    }
+
+    public boolean removeContact(ContactId contactId) {
+
+        Validate.notNull(contactId);
+
+        var
+            optContact =
+            this.contacts.stream()
+                         .filter(item -> item.contactId.equals(contactId))
+                         .findFirst();
+
+        return optContact.filter(contact -> this.contacts.remove(contact))
+                         .isPresent();
     }
 
     public Participant name(String name) {

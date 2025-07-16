@@ -19,7 +19,9 @@ public class CreateLiquidityProfileCommandUnitTest extends EnvAwareUnitTest {
     public void test_createLiquidityProfileSuccessfully() throws Exception {
 
         this.createLiquidityProfileCommand.execute(
-                new CreateLiquidityProfileCommand.Input(new ParticipantId(390906682871414784L), "NYEIN NYEIN EI",
+                new CreateLiquidityProfileCommand.Input(new ParticipantId(390906682871414784L),
+                                                        "",
+                                                        "NYEIN NYEIN EI",
                                                         "2341895948958343",
                                                         "MMK", true
                 ));

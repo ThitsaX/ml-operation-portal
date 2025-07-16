@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class SyncHubParticipantsToPortalHandler
-        extends CoreServicesAuditableUseCase<SyncHubParticipantsToPortal.Input, SyncHubParticipantsToPortal.Output>
-        implements SyncHubParticipantsToPortal {
+    extends CoreServicesAuditableUseCase<SyncHubParticipantsToPortal.Input, SyncHubParticipantsToPortal.Output>
+    implements SyncHubParticipantsToPortal {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncHubParticipantsToPortalHandler.class);
 
@@ -65,9 +65,12 @@ public class SyncHubParticipantsToPortalHandler
 
         List<HubParticipantData> hubParticipantData = this.hubParticipantQuery.getParticipants();
 
-        Set<String> existingParticipantNames = this.participantQuery.getParticipants().stream()
-                                                              .map(ParticipantData::name)
-                                                              .collect(Collectors.toSet());
+        Set<String>
+            existingParticipantNames =
+            this.participantQuery.getParticipants()
+                                 .stream()
+                                 .map(ParticipantData::name)
+                                 .collect(Collectors.toSet());
 
         for (HubParticipantData hubParticipant : hubParticipantData) {
             if (!existingParticipantNames.contains(hubParticipant.name())) {
@@ -75,7 +78,12 @@ public class SyncHubParticipantsToPortalHandler
                 this.createParticipantCommand.execute(new CreateParticipantCommand.Input(hubParticipant.name(),
                                                                                          new DfspCode(hubParticipant.name()),
                                                                                          hubParticipant.name(),
-                                                                                         null, null, null, null));
+                                                                                         null,
+                                                                                         null,
+                                                                                         "",
+                                                                                         null,
+                                                                                         null,
+                                                                                         null));
             }
         }
 

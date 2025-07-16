@@ -13,6 +13,7 @@ public class ParticipantErrors {
     public static final ErrorMessage PARTICIPANT_NOT_FOUND = new ErrorMessage("PARTICIPANT_NOT_FOUND", "System cannot find the participant with provided ID.");
     public static final ErrorMessage USER_NOT_FOUND = new ErrorMessage("USER_NOT_FOUND", "System cannot find the user with provided ID.");
     public static final ErrorMessage CONTACT_ALREADY_REGISTERED = new ErrorMessage("CONTACT_ALREADY_REGISTERED", "The Contact has already registered in the system with provided Contact Type.");
+    public static final ErrorMessage LIQUIDITY_PROFILE_ALREADY_REGISTERED = new ErrorMessage("LIQUIDITY_PROFILE_ALREADY_REGISTERED", "The Liquidity profile has already registered in the system with provided Currency.");
 
     //@@formatter:on
 }
