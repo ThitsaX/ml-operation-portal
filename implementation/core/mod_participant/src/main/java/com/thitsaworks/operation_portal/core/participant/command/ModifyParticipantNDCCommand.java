@@ -9,7 +9,8 @@ public interface ModifyParticipantNDCCommand {
     Output execute(Input input);
 
     record Input(ParticipantNDCId participantNDCId,
-                 BigDecimal ndcPercent) { }
+                 BigDecimal ndcPercent,
+                 BigDecimal ndcAmount) {}
 
     record Output(ParticipantNDCId participantNDCId) { }
 
