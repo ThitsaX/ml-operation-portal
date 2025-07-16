@@ -32,6 +32,7 @@
         <option value="$PROJECT_DIR$/implementation/reporting/mod_central_ledger/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/reporting/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_hub_operator/pom.xml" />
+        <option value="$PROJECT_DIR$/implementation/uc_hub_services/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/uc_participant/pom.xml" />
         <option value="$PROJECT_DIR$/implementation/web_api_participant/pom.xml" />
       </set>

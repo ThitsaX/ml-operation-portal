@@ -10,7 +10,7 @@ import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.usecase.core_services.CreateNewParticipantUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewParticipantUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

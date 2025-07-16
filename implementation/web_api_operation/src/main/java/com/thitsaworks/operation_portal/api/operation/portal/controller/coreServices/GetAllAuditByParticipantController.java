@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.GetAllAuditByParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllAuditByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

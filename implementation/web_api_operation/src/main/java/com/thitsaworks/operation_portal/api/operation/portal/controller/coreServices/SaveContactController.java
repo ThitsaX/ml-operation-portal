@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.usecase.core_services.SaveContact;
+import com.thitsaworks.operation_portal.usecase.operation_portal.SaveContact;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

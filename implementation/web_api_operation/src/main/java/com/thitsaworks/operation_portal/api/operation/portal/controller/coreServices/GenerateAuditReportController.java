@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.hub_services.GenerateAuditReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateAuditReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

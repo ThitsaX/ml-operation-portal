@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyContact;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyContact;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

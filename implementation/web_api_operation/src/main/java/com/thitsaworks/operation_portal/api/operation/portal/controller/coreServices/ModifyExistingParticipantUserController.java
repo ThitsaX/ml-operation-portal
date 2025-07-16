@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantU
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyExistingUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyExistingUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

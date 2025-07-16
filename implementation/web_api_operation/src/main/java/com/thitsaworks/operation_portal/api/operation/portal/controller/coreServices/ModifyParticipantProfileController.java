@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyParticipantProfile;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;

@@ -1,0 +1,47 @@
+package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
+
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
+import com.thitsaworks.operation_portal.usecase.operation_portal.RemovePastSixMonthsAnnouncements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.EnumSet;
+import java.util.Set;
+
+@Service
+public class RemovePastSixMonthsAnnouncementsHandler
+    extends OperationPortalUseCase<RemovePastSixMonthsAnnouncements.Input, RemovePastSixMonthsAnnouncements.Output>
+    implements RemovePastSixMonthsAnnouncements {
+
+    private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsHandler.class);
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
+
+    private final RemoveAnnouncementsCommand removeAnnouncementsCommand;
+
+    @Autowired
+    public RemovePastSixMonthsAnnouncementsHandler(PrincipalCache principalCache,
+                                                   RemoveAnnouncementsCommand removeAnnouncementsCommand) {
+
+        super(PERMITTED_ROLES, principalCache);
+
+        this.removeAnnouncementsCommand = removeAnnouncementsCommand;
+    }
+
+    @Override
+    public Output onExecute(Input input) throws DomainException {
+
+        RemoveAnnouncementsCommand.Output output = this.removeAnnouncementsCommand.execute(
+            new RemoveAnnouncementsCommand.Input());
+
+        return new Output(output.removed());
+    }
+
+}
