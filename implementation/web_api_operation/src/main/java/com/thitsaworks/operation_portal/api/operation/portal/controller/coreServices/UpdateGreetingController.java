@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +33,10 @@ public class UpdateGreetingController {
         var input = new UpdateGreeting.Input(
             new GreetingId(Long.parseLong(request.greetingId())),
             request.greetingTitle(),
-            request.greetingDetail()
-        );
+            request.greetingDetail(),
+            request.isDeleted(),
+            Instant.parse(request.greetingDate())
+                         );
         var output = this.updateGreeting.execute(input);
 
         var response = new Response(output.greetingId().toString());
@@ -52,7 +55,12 @@ public class UpdateGreetingController {
 
         @NotNull
         @JsonProperty("greetingDetail")
-        String greetingDetail) implements Serializable {
+        String greetingDetail,
+
+        @NotNull @JsonProperty("isDeleted") boolean isDeleted,
+
+        @NotNull @JsonProperty("greetingDate") String greetingDate
+    ) implements Serializable {
     }
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(

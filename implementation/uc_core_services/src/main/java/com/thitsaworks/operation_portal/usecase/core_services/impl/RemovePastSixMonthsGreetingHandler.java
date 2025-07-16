@@ -1,0 +1,41 @@
+package com.thitsaworks.operation_portal.usecase.core_services.impl;
+
+
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+
+import com.thitsaworks.operation_portal.core.hubuser.command.RemoveGreetingCommand;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.usecase.CoreServicesUseCase;
+import com.thitsaworks.operation_portal.usecase.core_services.RemovePastSixMonthsGreetingMessage;
+import org.springframework.stereotype.Service;
+
+import java.net.ConnectException;
+import java.util.EnumSet;
+import java.util.Set;
+
+@Service
+public class RemovePastSixMonthsGreetingHandler
+extends CoreServicesUseCase<RemovePastSixMonthsGreetingMessage.Input,RemovePastSixMonthsGreetingMessage.Output>
+    implements  RemovePastSixMonthsGreetingMessage{
+
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
+
+    private  final RemoveGreetingCommand removeGreetingCommand;
+
+    public RemovePastSixMonthsGreetingHandler(Set<UserRoleType> permittedRoles, PrincipalCache principalCache,
+                                              RemoveGreetingCommand removeGreetingCommand) {
+
+        super(PERMITTED_ROLES, principalCache);
+        this.removeGreetingCommand = removeGreetingCommand;
+    }
+
+    @Override
+    protected Output onExecute(Input input) throws DomainException, ConnectException {
+
+        var output = this.removeGreetingCommand.execute(new RemoveGreetingCommand.Input());
+
+        return  new Output(output.removed());
+    }
+
+}

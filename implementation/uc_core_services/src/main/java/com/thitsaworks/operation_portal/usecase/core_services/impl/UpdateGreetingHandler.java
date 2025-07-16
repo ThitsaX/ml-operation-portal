@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.home_message.command.UpdateGreetingCommand;
+import com.thitsaworks.operation_portal.core.hubuser.command.UpdateGreetingCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.UpdateGreeting;
@@ -45,7 +45,9 @@ public class UpdateGreetingHandler extends CoreServicesAuditableUseCase<UpdateGr
 
         var output = this.updateGreetingCommand.execute(new UpdateGreetingCommand.Input(input.greetingId(),
                                                                                         input.greetingTitle(),
-                                                                                        input.greetingDetail()));
+                                                                                        input.greetingDetail(),
+                                                                                        input.isDeleted(),
+                                                                                        input.greetingDate()));
 
         return  new Output(output.greetingId());
     }

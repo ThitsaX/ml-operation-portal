@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import retrofit2.http.POST;
 
 import java.io.Serializable;
 
@@ -38,7 +37,7 @@ public class GetGreetingController {
             output.greetingId().toString(),
             output.greetingTitle(),
             output.greetingDetail(),
-            output.createdDate().getEpochSecond()
+            output.isDeleted()
         );
 
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -51,10 +50,20 @@ public class GetGreetingController {
         String greetingId) implements Serializable {
     }
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(String greetingId,
-                           String greetingTitle,
-                           String greetingDetail,
-                           long createdDate) implements Serializable {}
+    public record Response( @NotNull
+                                @JsonProperty("greetingId")
+                                String greetingId,
+
+                            @NotNull
+                                @JsonProperty("greetingTitle")
+                                String greetingTitle,
+
+                            @NotNull
+                                @JsonProperty("greetingDetail")
+                                String greetingDetail,
+
+                            @NotNull @JsonProperty("isDeleted") boolean isDeleted
+                            ) implements Serializable {}
 
 
 }
