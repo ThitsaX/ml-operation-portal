@@ -12,7 +12,8 @@ public interface CreateNewLiquidityProfile extends
     public record Input(ParticipantId participantId,
                         List<LiquidityProfileInfo> liquidityProfileInfoList) {
 
-        public record LiquidityProfileInfo(String accountName,
+        public record LiquidityProfileInfo(String bankName,
+                                           String accountName,
                                            String accountNumber,
                                            String currency,
                                            Boolean isActive) implements Serializable {

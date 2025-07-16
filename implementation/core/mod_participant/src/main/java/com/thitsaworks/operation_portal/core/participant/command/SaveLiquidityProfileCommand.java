@@ -4,17 +4,17 @@ import com.thitsaworks.operation_portal.component.common.identifier.LiquidityPro
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
-public interface ModifyLiquidityProfileCommand {
+public interface SaveLiquidityProfileCommand {
 
     record Input(ParticipantId participantId,
                  LiquidityProfileId liquidityProfileId,
+                 String bankName,
                  String accountName,
                  String accountNumber,
-                 String currency,
-                 Boolean isActive) {}
+                 String currency) { }
 
-    record Output(LiquidityProfileId liquidityProfileId,
-                  boolean modified) {}
+    record Output(boolean saved,
+                  LiquidityProfileId liquidityProfileId) { }
 
     Output execute(Input input) throws ParticipantException;
 

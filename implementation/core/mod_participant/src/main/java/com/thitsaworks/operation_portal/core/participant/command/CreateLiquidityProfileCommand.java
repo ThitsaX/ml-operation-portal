@@ -5,14 +5,14 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEx
 
 public interface CreateLiquidityProfileCommand {
 
-    record Input(
-            ParticipantId participantId,
-            String accountName,
-            String accountNumber,
-            String currency,
-            Boolean isActive) {}
+    record Input(ParticipantId participantId,
+                 String bankName,
+                 String accountName,
+                 String accountNumber,
+                 String currency,
+                 Boolean isActive) { }
 
-    record Output(boolean created) {}
+    record Output(boolean created) { }
 
     Output execute(Input input) throws ParticipantException;
 

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.ModifyExistingLiquidityProfile;
+import com.thitsaworks.operation_portal.usecase.core_services.ModifyLiquidityProfile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,37 +23,39 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @RestController
 @RequiredArgsConstructor
 public class ModifyLiquidityProfileController {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyLiquidityProfileController.class);
 
-    private final ModifyExistingLiquidityProfile modifyExistingLiquidityProfile;
+    private final ModifyLiquidityProfile modifyLiquidityProfile;
 
     private final ObjectMapper objectMapper;
 
     @PostMapping(value = "/secured/modifyLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException, DomainException {
+        throws DomainException, JsonProcessingException, DomainException {
 
         LOG.info("Modify liquidity profile request: {}", objectMapper.writeValueAsString(request));
 
-        List<ModifyExistingLiquidityProfile.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
+        List<ModifyLiquidityProfile.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
         for (Request.LiquidityProfileInfo liquidityProfileInfo : request.liquidityProfileInfoList) {
 
-            liquidityProfileInfoList.add(new ModifyExistingLiquidityProfile.Input.LiquidityProfileInfo(
-                    new LiquidityProfileId(Long.parseLong(liquidityProfileInfo.liquidityProfileId)),
-                    liquidityProfileInfo.accountName(), liquidityProfileInfo.accountNumber(),
-                    liquidityProfileInfo.currency(), liquidityProfileInfo.isActive()));
+            liquidityProfileInfoList.add(new ModifyLiquidityProfile.Input.LiquidityProfileInfo(
+                new LiquidityProfileId(Long.parseLong(liquidityProfileInfo.liquidityProfileId)),
+                liquidityProfileInfo.bankName(),
+                liquidityProfileInfo.accountName(),
+                liquidityProfileInfo.accountNumber(),
+                liquidityProfileInfo.currency(),
+                liquidityProfileInfo.isActive()));
 
         }
 
-        ModifyExistingLiquidityProfile.Output output = this.modifyExistingLiquidityProfile.execute(
-                new ModifyExistingLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
-                        liquidityProfileInfoList));
+        ModifyLiquidityProfile.Output output = this.modifyLiquidityProfile.execute(
+            new ModifyLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId)),
+                                             liquidityProfileInfoList));
 
         Response response = new Response(request.participantId, output.modified());
 
@@ -65,44 +67,33 @@ public class ModifyLiquidityProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull
-            @JsonProperty("participantId")
-            String participantId,
+        @NotNull
+        @JsonProperty("participantId")
+        String participantId,
 
-            @NotNull
-            @JsonProperty("liquidityProfileInfoList")
-            List<LiquidityProfileInfo> liquidityProfileInfoList) implements Serializable {
+        @NotNull
+        @JsonProperty("liquidityProfileInfoList")
+        List<LiquidityProfileInfo> liquidityProfileInfoList) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record LiquidityProfileInfo(
-                @JsonProperty("liquidityProfileId")
-                String liquidityProfileId,
-
-                @NotNull
-                @JsonProperty("accountName")
-                String accountName,
-
-                @NotNull
-                @JsonProperty("accountNumber")
-                String accountNumber,
-
-                @NotNull
-                @JsonProperty("currency")
-                String currency,
-
-                @JsonProperty("liquidityProfileStatus")
-                Boolean isActive) implements Serializable {
+            @JsonProperty("liquidityProfileId") String liquidityProfileId,
+            @NotNull @JsonProperty("bankName") String bankName,
+            @NotNull @JsonProperty("accountName") String accountName,
+            @NotNull @JsonProperty("accountNumber") String accountNumber,
+            @NotNull @JsonProperty("currency") String currency,
+            @JsonProperty("liquidityProfileStatus") Boolean isActive) implements Serializable {
         }
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participantId")
-            String participantId,
+        @JsonProperty("participantId")
+        String participantId,
 
-            @JsonProperty("isModified")
-            boolean isModified) implements Serializable {
+        @JsonProperty("isModified")
+        boolean isModified) implements Serializable {
     }
 
 }

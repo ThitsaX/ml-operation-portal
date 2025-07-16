@@ -91,24 +91,24 @@ public class GetExistingParticipantHandler
 
             liquidityProfileInfoList.add(
                 new Output.LiquidityProfileInfo(liquidityProfileData.liquidityProfileId(),
+                                                liquidityProfileData.bankName(),
                                                 liquidityProfileData.accountName(),
                                                 liquidityProfileData.accountNumber(),
                                                 liquidityProfileData.currency(),
                                                 liquidityProfileData.isActive()));
         }
 
-        GetExistingParticipant.Output result =
-            new GetExistingParticipant.Output(participantData.participantId(),
-                                              participantData.dfspCode()
-                                                             .getValue(),
-                                              participantData.name(),
-                                              participantData.address(),
-                                              participantData.mobile(),
-                                              Instant.ofEpochSecond(participantData.createdDate()),
-                                              contactInfoList,
-                                              liquidityProfileInfoList);
-
-        return result;
+        return new Output(participantData.participantId(),
+                      participantData.dfspCode()
+                                                         .getValue(),
+                      participantData.name(),
+                      participantData.address(),
+                      participantData.mobile(),
+                      participantData.logoType(),
+                      participantData.logo(),
+                      Instant.ofEpochSecond(participantData.createdDate()),
+                      contactInfoList,
+                      liquidityProfileInfoList);
     }
 
 }

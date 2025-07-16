@@ -53,21 +53,25 @@ public class CreateNewParticipantHandler
             new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
                                                input.address(),
                                                input.mobile(),
+                                               input.logoType(),
+                                               input.logo(),
                                                input.contactInfoList()
-                                             .stream()
-                                             .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
-                                                                                                         info.title(),
-                                                                                                         info.email(),
-                                                                                                         info.mobile(),
-                                                                                                         info.contactType()))
-                                             .collect(Collectors.toList()),
+                                                    .stream()
+                                                    .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
+                                                                                                                info.title(),
+                                                                                                                info.email(),
+                                                                                                                info.mobile(),
+                                                                                                                info.contactType()))
+                                                    .collect(Collectors.toList()),
                                                input.liquidityProfileInfoList()
-                                             .stream()
-                                             .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(info.accountName(),
-                                                                                                                  info.accountNumber(),
-                                                                                                                  info.currency(),
-                                                                                                                  info.isActive()))
-                                             .collect(Collectors.toList())));
+                                                    .stream()
+                                                    .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(
+                                                        info.bankName(),
+                                                        info.accountName(),
+                                                        info.accountNumber(),
+                                                        info.currency(),
+                                                        info.isActive()))
+                                                    .collect(Collectors.toList())));
 
         return new CreateParticipant.Output(output.created(), output.participantId());
     }

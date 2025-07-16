@@ -17,28 +17,29 @@ public record ParticipantData(ParticipantId participantId,
                               String dfspName,
                               String address,
                               Mobile mobile,
+                              String logoType,
+                              byte[] logo,
                               Long createdDate,
                               Set<ParticipantUserId> participantUserIds) implements Serializable {
 
     public ParticipantData(Participant participant) {
 
         this(participant.getParticipantId(),
-
              participant.getName(),
-
              participant.getDfspCode(),
-
              participant.getDfspName(),
-
              participant.getAddress(),
-
              participant.getMobile(),
-
-             participant.getCreatedAt().getEpochSecond(),
-
-             participant.getParticipantUsers().stream()
+             participant.getLogoType(),
+             participant.getLogo(),
+             participant.getCreatedAt()
+                        .getEpochSecond(),
+             participant.getParticipantUsers()
+                        .stream()
                         .map((ParticipantUser participantUser) -> new ParticipantUserId(
-                                participantUser.getParticipantUserId().getId())).collect(Collectors.toSet()));
+                            participantUser.getParticipantUserId()
+                                           .getId()))
+                        .collect(Collectors.toSet()));
 
     }
 

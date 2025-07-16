@@ -1,0 +1,67 @@
+package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.usecase.core_services.GetContactList;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+public class GetContactListController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetContactListController.class);
+
+    private final GetContactList getContactList;
+
+    @GetMapping(value = "/secured/getContactList")
+    public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
+        throws DomainException {
+
+        var
+            output =
+            this.getContactList.execute(new GetContactList.Input(new ParticipantId(Long.parseLong(participantId))));
+
+        var response = new Response(output.contactInfoList()
+                                          .stream()
+                                          .map(contact -> new Response.ContactInfo(contact.contactId()
+                                                                                          .getEntityId()
+                                                                                          .toString(),
+                                                                                   contact.name(),
+                                                                                   contact.title(),
+                                                                                   contact.email()
+                                                                                          .getValue(),
+                                                                                   contact.mobile()
+                                                                                          .getValue(),
+                                                                                   contact.contactType()))
+                                          .toList());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Response(List<ContactInfo> contactInfoList) implements Serializable {
+
+        public record ContactInfo(
+            @JsonProperty("contactId") String contactId,
+            @JsonProperty("name") String name,
+            @JsonProperty("title") String title,
+            @JsonProperty("email") String email,
+            @JsonProperty("mobile") String mobile,
+            @JsonProperty("contactType") String contactType) {
+        }
+
+    }
+
+}
