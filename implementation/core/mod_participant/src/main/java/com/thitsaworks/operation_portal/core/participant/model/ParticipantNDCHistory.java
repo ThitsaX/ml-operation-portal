@@ -28,8 +28,8 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @JoinColumn(name = "participant_ndc_id")
     protected ParticipantNDC participantNDC;
 
-    @Column(name = "dfsp")
-    protected String dfsp;
+    @Column(name = "dfsp_code")
+    protected String dfspCode;
 
     @Column(name = "currency")
     protected String currency;
@@ -40,17 +40,22 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
         scale = 4)
     protected BigDecimal ndcPercent;
 
+    @Column(name = "ndc_amount", precision = 5, scale = 4)
+    protected BigDecimal ndcAmount;
+
     public ParticipantNDCHistory(ParticipantNDC participantNDC,
-                                 String dfsp,
+                                 String dfspCode,
                                  String currency,
-                                 BigDecimal ndcPercent) {
+                                 BigDecimal ndcPercent,
+                                 BigDecimal ndcAmount) {
 
         this.participantNDCHistoryId = new ParticipantNDCHistoryId(Snowflake.get()
                                                                             .nextId());
         this.participantNDC(participantNDC);
-        this.dfsp(dfsp);
+        this.dfspCode(dfspCode);
         this.currency(currency);
         this.ndcPercent(ndcPercent);
+        this.ndcAmount(ndcAmount);
 
     }
 
@@ -59,9 +64,9 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
         this.participantNDC = participantNDC;
     }
 
-    public void dfsp(String dfsp) {
+    public void dfspCode(String dfspCode) {
 
-        this.dfsp = dfsp;
+        this.dfspCode = dfspCode;
     }
 
     public void currency(String currency) {
@@ -72,6 +77,11 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     public void ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
+    }
+
+    public void ndcAmount(BigDecimal ndcAmount) {
+
+        this.ndcAmount = ndcAmount;
     }
 
     @Override

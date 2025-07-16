@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "tbl_greeting")
 @Getter
 @NoArgsConstructor
-public class Greeting extends JpaEntity<GreetingId> {
+public class GreetingMessage extends JpaEntity<GreetingId> {
 
     @EmbeddedId
     protected GreetingId greetingId;
@@ -26,8 +26,8 @@ public class Greeting extends JpaEntity<GreetingId> {
     @Column(name = "greeting_detail")
     protected String greetingDetail;
 
-    public Greeting(String greetingTitle,
-                    String greetingDetail) {
+    public GreetingMessage(String greetingTitle,
+                           String greetingDetail) {
 
         this.greetingId =new GreetingId(Snowflake.get().nextId());
         this.greetingTitle(greetingTitle);

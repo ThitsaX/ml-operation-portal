@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.InsertGreeting;
+import com.thitsaworks.operation_portal.usecase.core_services.CreateGreetingMessage;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +19,21 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class InsertGreetingController {
+public class CreateGreetingMessageController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InsertGreetingController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateGreetingMessageController.class);
 
-    private final InsertGreeting insertGreeting;
+    private final CreateGreetingMessage createGreetingMessage;
 
-    @PostMapping(value = "/secured/insertGreeting")
+    @PostMapping(value = "/secured/createGreetingMessage")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
 
-        var input = new InsertGreeting.Input(
+        var input = new CreateGreetingMessage.Input(
             request.greetingTitle(),
             request.greetingDetail()
         );
-        var output = this.insertGreeting.execute(input);
+        var output = this.createGreetingMessage.execute(input);
 
         var response = new Response(output.created());
 
@@ -53,8 +53,8 @@ public class InsertGreetingController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("created")
-        boolean created) implements Serializable {
+        @JsonProperty("isCreated")
+        boolean isCreated) implements Serializable {
 
 
 
