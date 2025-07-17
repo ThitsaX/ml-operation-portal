@@ -54,7 +54,7 @@ public class GetLiquidityProfileListHandler
 
         List<LiquidityProfileData>
             liquidityProfileDataList =
-            this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
+            this.liquidityProfileQuery.getActiveLiquidityProfiles(input.participantId());
 
         List<Output.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 

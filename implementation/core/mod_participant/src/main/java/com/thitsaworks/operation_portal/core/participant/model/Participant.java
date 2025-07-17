@@ -58,11 +58,14 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Convert(converter = Mobile.JpaConverter.class)
     protected Mobile mobile;
 
+    @Column(name = "logo_data_type")
+    protected String logoDatatype;
+
     @Lob
     @Column(
         name = "logo",
         columnDefinition = "LONGBLOB")
-    protected byte[] logo;
+    protected byte[] logoBase64;
 
     @OneToMany(
         cascade = {CascadeType.ALL},
@@ -90,8 +93,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                        String name,
                        String dfspName,
                        String address,
-                       Mobile mobile,
-                       byte[] logo) {
+                       Mobile mobile) {
 
         Validate.notNull(dfspCode);
         Validate.notBlank(name);
@@ -104,7 +106,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         this.dfspName = dfspName;
         this.address = address;
         this.mobile = mobile;
-        this.logo = logo;
     }
 
     public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType) {
@@ -328,9 +329,15 @@ public class Participant extends JpaEntity<ParticipantId> {
 
     }
 
-    public Participant logo(byte[] logo) {
+    public Participant logoDataType(String logoDatatype){
 
-        this.logo = logo;
+        this.logoDatatype = logoDatatype;
+        return this;
+    }
+
+    public Participant logoBase64(byte[] logoBase64) {
+
+        this.logoBase64 = logoBase64;
         return this;
     }
 

@@ -33,8 +33,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
                                                       input.name(),
                                                       input.dfspName(),
                                                       input.address(),
-                                                      input.mobile(),
-                                                      input.logo());
+                                                      input.mobile());
 
             //For ContactInfo
             if (input.contactInfoList() != null && !input.contactInfoList()
@@ -56,7 +55,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
                 for (var liquidityProfile : input.liquidityProfileInfoList()) {
 
-                    participant.addLiquidityProfile(liquidityProfile.bankName(),
+                    participant.addLiquidityProfile(null,
                                                     liquidityProfile.accountName(),
                                                     liquidityProfile.accountNumber(),
                                                     liquidityProfile.currency(),

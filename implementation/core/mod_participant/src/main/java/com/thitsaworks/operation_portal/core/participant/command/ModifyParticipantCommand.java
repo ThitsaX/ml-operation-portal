@@ -17,9 +17,8 @@ public interface ModifyParticipantCommand {
                  String companyName,
                  String address,
                  Mobile mobile,
-                 byte[] logo) {
-
-    }
+                 String logoDataType,
+                 byte[] logo) { }
 
     record Output(boolean modified,
                   ParticipantId participantId) { }

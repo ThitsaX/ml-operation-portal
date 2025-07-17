@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Base64;
+
 @RestController
 @RequiredArgsConstructor
 public class ModifyParticipantProfileController {
@@ -43,7 +45,9 @@ public class ModifyParticipantProfileController {
                                                request.companyName(),
                                                request.address(),
                                                new Mobile(request.mobile()),
-                                               request.logo(),
+                                               request.logoDataType(),
+                                               Base64.getDecoder()
+                                                     .decode(request.logoBase64()),
                                                userContext.accessKey()));
 
         var response = new Response(output.participantId()
@@ -59,7 +63,8 @@ public class ModifyParticipantProfileController {
         @NotNull @JsonProperty("name") String companyName,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logo") byte[] logo
+        @JsonProperty("logoDataType") String logoDataType,
+        @JsonProperty("logo") String logoBase64
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -78,6 +78,7 @@ public class ModifyParticipantProfileHandler
                                                                                               input.companyName(),
                                                                                               input.address(),
                                                                                               input.mobile(),
+                                                                                              input.logoDataType(),
                                                                                               input.logo()));
 
         return new Output(output.modified(), output.participantId());

@@ -17,7 +17,6 @@ public interface CreateParticipantCommand {
                  String dfspName,
                  String address,
                  Mobile mobile,
-                 byte[] logo,
                  List<ContactInfo> contactInfoList,
                  List<LiquidityProfileInfo> liquidityProfileInfoList
     ) implements Serializable {
@@ -29,8 +28,7 @@ public interface CreateParticipantCommand {
                                   ContactType contactType
         ) implements Serializable { }
 
-        public record LiquidityProfileInfo(String bankName,
-                                           String accountName,
+        public record LiquidityProfileInfo(String accountName,
                                            String accountNumber,
                                            String currency,
                                            Boolean isActive

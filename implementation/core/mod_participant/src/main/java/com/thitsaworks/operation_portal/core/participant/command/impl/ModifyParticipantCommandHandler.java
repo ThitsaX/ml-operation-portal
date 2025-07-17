@@ -31,7 +31,8 @@ public class ModifyParticipantCommandHandler implements ModifyParticipantCommand
         this.participantRepository.save(participant.name(input.companyName())
                                                    .address(input.address())
                                                    .mobile(input.mobile())
-                                                   .logo(input.logo()));
+                                                   .logoDataType(input.logoDataType())
+                                                   .logoBase64(input.logo()));
 
         return new ModifyParticipantCommand.Output(true, participant.getParticipantId());
     }

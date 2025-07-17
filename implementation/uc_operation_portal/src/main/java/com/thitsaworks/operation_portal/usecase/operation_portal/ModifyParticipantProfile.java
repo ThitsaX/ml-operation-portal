@@ -12,6 +12,7 @@ public interface ModifyParticipantProfile extends
                  String companyName,
                  String address,
                  Mobile mobile,
+                 String logoDataType,
                  byte[] logo,
                  AccessKey accessKey) { }
 

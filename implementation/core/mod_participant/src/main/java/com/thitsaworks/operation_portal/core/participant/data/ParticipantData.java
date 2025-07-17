@@ -17,6 +17,7 @@ public record ParticipantData(ParticipantId participantId,
                               String dfspName,
                               String address,
                               Mobile mobile,
+                              String logoDataType,
                               byte[] logo,
                               Long createdDate,
                               Set<ParticipantUserId> participantUserIds) implements Serializable {
@@ -29,7 +30,8 @@ public record ParticipantData(ParticipantId participantId,
              participant.getDfspName(),
              participant.getAddress(),
              participant.getMobile(),
-             participant.getLogo(),
+             participant.getLogoDatatype(),
+             participant.getLogoBase64(),
              participant.getCreatedAt()
                         .getEpochSecond(),
              participant.getParticipantUsers()

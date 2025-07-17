@@ -81,7 +81,6 @@ public class SyncHubParticipantsToPortalHandler
                                                                                          null,
                                                                                          null,
                                                                                          null,
-                                                                                         null,
                                                                                          null));
             }
         }

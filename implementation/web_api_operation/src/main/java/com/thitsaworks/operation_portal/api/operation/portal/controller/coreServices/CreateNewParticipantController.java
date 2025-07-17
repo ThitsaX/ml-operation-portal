@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @RestController
 @RequiredArgsConstructor
 public class CreateNewParticipantController {
@@ -33,40 +34,41 @@ public class CreateNewParticipantController {
 
     private final CreateParticipant createNewParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createNewParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
+        LOG.info("Create new participant request: {}", objectMapper.writeValueAsString(request));
+
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
-        if (request.contactInfoList() != null || !request.contactInfoList()
-                                                         .isEmpty()) {
+        if (request.contactInfoList() != null || !request.contactInfoList().isEmpty()) {
 
             for (var contactInfo : request.contactInfoList()) {
 
                 CreateParticipant.Input.ContactInfo contact =
                     new CreateParticipant.Input.ContactInfo(contactInfo.name(),
-                                                            contactInfo.position(),
+                                                            contactInfo.title(),
                                                             new Email(contactInfo.email()),
                                                             new Mobile(contactInfo.mobile()),
-                                                            ContactType.valueOf(contactInfo.contactType()
-                                                                                           .toUpperCase()));
+                                                            ContactType.valueOf(contactInfo.contactType().toUpperCase()));
                 contactInfoList.add(contact);
             }
         }
 
         //Liquidity Profile Info
-        if (request.liquidityProfileInfoList() != null || !request.liquidityProfileInfoList()
-                                                                  .isEmpty()) {
+        if (request.liquidityProfileInfoList() != null || !request.liquidityProfileInfoList().isEmpty()) {
 
             for (var liquidityProfile : request.liquidityProfileInfoList()) {
 
                 liquidityProfileInfoList.add(
-                    new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.bankName(),
-                                                                     liquidityProfile.accountName(),
+                    new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.accountName(),
                                                                      liquidityProfile.accountNumber(),
-                                                                     liquidityProfile.currency()));
+                                                                     liquidityProfile.currency(),
+                                                                     liquidityProfile.participantStatus()));
             }
         }
 
@@ -76,13 +78,12 @@ public class CreateNewParticipantController {
                                         request.dfspName(),
                                         request.address(),
                                         new Mobile(request.mobile()),
-                                        request.logo(),
                                         contactInfoList,
                                         liquidityProfileInfoList));
 
-        Response response = new Response(output.participantId()
-                                               .getId()
-                                               .toString(), output.created());
+        Response response = new Response(output.participantId().getId().toString(), output.created());
+
+        LOG.info("Create new participant response: {}", objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -95,7 +96,6 @@ public class CreateNewParticipantController {
         @NotNull @JsonProperty("dfspName") String dfspName,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logo") byte[] logo,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileList") List<LiquidityProfileInfo> liquidityProfileInfoList)
         implements Serializable {
@@ -103,7 +103,7 @@ public class CreateNewParticipantController {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record ContactInfo(
             @NotNull @JsonProperty("name") String name,
-            @NotNull @JsonProperty("position") String position,
+            @NotNull @JsonProperty("title") String title,
             @NotNull @JsonProperty("email") String email,
             @NotNull @JsonProperty("mobile") String mobile,
             @NotNull @JsonProperty("contactType") String contactType) implements Serializable {
@@ -112,10 +112,10 @@ public class CreateNewParticipantController {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record LiquidityProfileInfo(
             @JsonProperty("liquidityProfileId") String liquidityProfileId,
-            @NotNull @JsonProperty("bankName") String bankName,
             @NotNull @JsonProperty("accountName") String accountName,
             @NotNull @JsonProperty("accountNumber") String accountNumber,
-            @NotNull @JsonProperty("currency") String currency) implements Serializable {
+            @NotNull @JsonProperty("currency") String currency,
+            @JsonProperty("participantStatus") Boolean participantStatus) implements Serializable {
         }
 
     }

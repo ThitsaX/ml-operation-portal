@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.Base64;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,7 +42,9 @@ public class GetParticipantProfileController {
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
-                                    output.logo(),
+                                    output.logoDataType(),
+                                    Base64.getEncoder()
+                                          .encodeToString(output.logo()),
                                     output.createdDate()
                                           .getEpochSecond());
 
@@ -54,7 +57,8 @@ public class GetParticipantProfileController {
                            @JsonProperty("name") String name,
                            @JsonProperty("address") String address,
                            @JsonProperty("mobile") String mobile,
-                           @JsonProperty("logo") byte[] logo,
+                           @JsonProperty("logoFileType") String logoFileType,
+                           @JsonProperty("logo") String logoBase64,
                            @JsonProperty("createdDate") long createdDate) implements Serializable { }
 
 }

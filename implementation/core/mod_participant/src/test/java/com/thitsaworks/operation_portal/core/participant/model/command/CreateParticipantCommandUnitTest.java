@@ -30,7 +30,6 @@ public class CreateParticipantCommandUnitTest {
                                                                                  new DfspCode("abcdefg"), "abc",
                                                                                  "Yankin Township, Yangon.",
                                                                                  new Mobile("+959250661838"),
-                                                                                 null,
                                                                                  null, null));
 
     }
