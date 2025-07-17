@@ -70,7 +70,6 @@ public class ModifyParticipantProfileController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("participantId") String participantId,
-        @JsonProperty("modified") boolean modified
-    ) { }
+        @JsonProperty("isModified") boolean isModified) { }
 
 }
