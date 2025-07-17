@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase;
 
 import com.thitsaworks.operation_portal.core.approval.ApprovalConfiguration;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
-import com.thitsaworks.operation_portal.core.home_message.HomeMessageConfiguration;
+
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
@@ -15,8 +15,7 @@ import org.springframework.context.annotation.Import;
 @Import(
     value = {
         ParticipantConfiguration.class, AuditConfiguration.class, IAMConfiguration.class,
-        HubServicesConfiguration.class, HubUserConfiguration.class, ApprovalConfiguration.class,
-        HomeMessageConfiguration.class, ReportConfiguration.class
+        HubServicesConfiguration.class, HubUserConfiguration.class, ApprovalConfiguration.class, ReportConfiguration.class
     })
 public class OperationPortalUseCaseConfiguration {
 

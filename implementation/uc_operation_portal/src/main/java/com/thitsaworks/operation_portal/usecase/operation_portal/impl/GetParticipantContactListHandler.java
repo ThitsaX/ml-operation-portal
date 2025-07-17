@@ -1,4 +1,5 @@
-package com.thitsaworks.operation_portal.usecase.core_services.impl;
+package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
+
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
@@ -9,8 +10,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-import com.thitsaworks.operation_portal.usecase.CoreServicesAuditableUseCase;
+
+import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.GetParticipantContactList;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetParticipantContactListHandler extends CoreServicesAuditableUseCase<GetParticipantContactList.Input,GetParticipantContactList.Output>implements GetParticipantContactList {
+public class GetParticipantContactListHandler extends OperationPortalAuditableUseCase<GetParticipantContactList.Input,GetParticipantContactList.Output>
+    implements GetParticipantContactList {
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
