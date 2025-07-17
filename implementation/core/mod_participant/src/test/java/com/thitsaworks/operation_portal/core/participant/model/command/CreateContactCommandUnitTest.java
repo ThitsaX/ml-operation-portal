@@ -22,11 +22,12 @@ public class CreateContactCommandUnitTest extends EnvAwareUnitTest {
     public void test_createContactSuccessfully() throws Exception {
 
         this.createContactCommand.execute(
-                new CreateContactCommand.Input("Sandi",
-                                               "Manager",
-                                               new Email("info@thitsaworks.com"),
-                                               new Mobile("+959400547258"),
-                                               new ParticipantId(390906682871414784L), ContactType.BUSINESS));
+            new CreateContactCommand.Input(new ParticipantId(390906682871414784L),
+                                           "Sandi",
+                                           "Manager",
+                                           new Email("info@thitsaworks.com"),
+                                           new Mobile("+959400547258"),
+                                           ContactType.BUSINESS));
     }
 
 }

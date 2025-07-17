@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.usecase.core_services.CreateParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +33,9 @@ public class CreateNewParticipantController {
 
     private final CreateParticipant createNewParticipant;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/createNewParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
-
-        LOG.info("Create new participant request: {}", objectMapper.writeValueAsString(request));
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -51,7 +47,7 @@ public class CreateNewParticipantController {
 
                 CreateParticipant.Input.ContactInfo contact =
                     new CreateParticipant.Input.ContactInfo(contactInfo.name(),
-                                                            contactInfo.title(),
+                                                            contactInfo.position(),
                                                             new Email(contactInfo.email()),
                                                             new Mobile(contactInfo.mobile()),
                                                             ContactType.valueOf(contactInfo.contactType()
@@ -70,8 +66,7 @@ public class CreateNewParticipantController {
                     new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.bankName(),
                                                                      liquidityProfile.accountName(),
                                                                      liquidityProfile.accountNumber(),
-                                                                     liquidityProfile.currency(),
-                                                                     liquidityProfile.participantStatus()));
+                                                                     liquidityProfile.currency()));
             }
         }
 
@@ -81,7 +76,6 @@ public class CreateNewParticipantController {
                                         request.dfspName(),
                                         request.address(),
                                         new Mobile(request.mobile()),
-                                        request.logoType(),
                                         request.logo(),
                                         contactInfoList,
                                         liquidityProfileInfoList));
@@ -89,8 +83,6 @@ public class CreateNewParticipantController {
         Response response = new Response(output.participantId()
                                                .getId()
                                                .toString(), output.created());
-
-        LOG.info("Create new participant response: {}", objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -103,7 +95,6 @@ public class CreateNewParticipantController {
         @NotNull @JsonProperty("dfspName") String dfspName,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logoType") String logoType,
         @JsonProperty("logo") byte[] logo,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileList") List<LiquidityProfileInfo> liquidityProfileInfoList)
@@ -112,7 +103,7 @@ public class CreateNewParticipantController {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record ContactInfo(
             @NotNull @JsonProperty("name") String name,
-            @NotNull @JsonProperty("title") String title,
+            @NotNull @JsonProperty("position") String position,
             @NotNull @JsonProperty("email") String email,
             @NotNull @JsonProperty("mobile") String mobile,
             @NotNull @JsonProperty("contactType") String contactType) implements Serializable {
@@ -124,8 +115,7 @@ public class CreateNewParticipantController {
             @NotNull @JsonProperty("bankName") String bankName,
             @NotNull @JsonProperty("accountName") String accountName,
             @NotNull @JsonProperty("accountNumber") String accountNumber,
-            @NotNull @JsonProperty("currency") String currency,
-            @JsonProperty("participantStatus") Boolean participantStatus) implements Serializable {
+            @NotNull @JsonProperty("currency") String currency) implements Serializable {
         }
 
     }

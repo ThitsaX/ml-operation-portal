@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.GetContactList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetContactList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class GetContactListController {
                                                                                           .getEntityId()
                                                                                           .toString(),
                                                                                    contact.name(),
-                                                                                   contact.title(),
+                                                                                   contact.position(),
                                                                                    contact.email()
                                                                                           .getValue(),
                                                                                    contact.mobile()
@@ -56,7 +56,7 @@ public class GetContactListController {
         public record ContactInfo(
             @JsonProperty("contactId") String contactId,
             @JsonProperty("name") String name,
-            @JsonProperty("title") String title,
+            @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
             @JsonProperty("contactType") String contactType) {

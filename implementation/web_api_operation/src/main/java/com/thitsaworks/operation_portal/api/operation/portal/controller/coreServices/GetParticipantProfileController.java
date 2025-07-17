@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.GetParticipantProfile;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantProfile;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,6 @@ public class GetParticipantProfileController {
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
-                                    output.logoType(),
                                     output.logo(),
                                     output.createdDate()
                                           .getEpochSecond());
@@ -55,7 +54,6 @@ public class GetParticipantProfileController {
                            @JsonProperty("name") String name,
                            @JsonProperty("address") String address,
                            @JsonProperty("mobile") String mobile,
-                           @JsonProperty("logoType") String logoType,
                            @JsonProperty("logo") byte[] logo,
                            @JsonProperty("createdDate") long createdDate) implements Serializable { }
 

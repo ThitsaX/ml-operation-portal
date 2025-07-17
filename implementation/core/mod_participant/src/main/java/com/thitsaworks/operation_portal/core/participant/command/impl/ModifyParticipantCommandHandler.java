@@ -28,13 +28,10 @@ public class ModifyParticipantCommandHandler implements ModifyParticipantCommand
                                                             .orElseThrow(() -> new ParticipantException(
                                                                 ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
-        this.participantRepository.save(participant
-                                            .name(input.companyName())
-                                            .address(input.address())
-                                            .mobile(input.mobile())
-                                            .logoType(input.logoType())
-                                            .logo(input.logo())
-                                       );
+        this.participantRepository.save(participant.name(input.companyName())
+                                                   .address(input.address())
+                                                   .mobile(input.mobile())
+                                                   .logo(input.logo()));
 
         return new ModifyParticipantCommand.Output(true, participant.getParticipantId());
     }

@@ -19,8 +19,7 @@
        <module>web_api_operation</module>
         <module>component</module>
         <module>core</module>
-        <module>uc_hub_services</module>
-        <module>uc_core_services</module>
+        <module>uc_operation_portal</module>
 
 
     </modules>
@@ -237,11 +236,6 @@
             </dependency>
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
-                <artifactId>mod_home_message</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_participant</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -261,14 +255,10 @@
                 <version>${project.version}</version>
             </dependency>
 
+
             <dependency>
                 <groupId>com.thitsaworks.operation_portal</groupId>
-                <artifactId>uc_hub_services</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal</groupId>
-                <artifactId>uc_core_services</artifactId>
+                <artifactId>uc_operation_portal</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

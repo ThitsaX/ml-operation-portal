@@ -28,11 +28,11 @@ public class CreateContactCommandHandler implements CreateContactCommand {
                                                                     ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
 
-        participant.addContact(input.name(), input.title(), input.email(), input.mobile(), input.contactType());
+        var contact = participant.addContact(input.name(), input.position(), input.email(), input.mobile(), input.contactType());
 
         this.participantRepository.save(participant);
 
-        return new CreateContactCommand.Output(true);
+        return new CreateContactCommand.Output(true, contact.getContactId());
 
     }
 
