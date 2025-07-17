@@ -236,11 +236,6 @@
             </dependency>
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
-                <artifactId>mod_home_message</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_participant</artifactId>
                 <version>${project.version}</version>
             </dependency>

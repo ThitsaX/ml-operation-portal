@@ -1,14 +1,14 @@
-package com.thitsaworks.operation_portal.core.home_message.query.impl;
+package com.thitsaworks.operation_portal.core.hubuser.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.core.home_message.data.GreetingData;
-import com.thitsaworks.operation_portal.core.home_message.exception.GreetingErrors;
-import com.thitsaworks.operation_portal.core.home_message.exception.GreetingException;
-import com.thitsaworks.operation_portal.core.home_message.model.QGreetingMessage;
-import com.thitsaworks.operation_portal.core.home_message.model.repository.GreetingRepository;
-import com.thitsaworks.operation_portal.core.home_message.query.GreetingQuery;
+import com.thitsaworks.operation_portal.core.hubuser.data.GreetingData;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
+import com.thitsaworks.operation_portal.core.hubuser.model.QGreetingMessage;
+import com.thitsaworks.operation_portal.core.hubuser.model.repository.GreetingRepository;
+import com.thitsaworks.operation_portal.core.hubuser.query.GreetingQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +33,13 @@ public class GreetingQueryHandler implements GreetingQuery {
                                       .map(Greeting-> new GreetingData(Greeting.getId()
                                           ,Greeting.getGreetingTitle(),
                                                                        Greeting.getGreetingDetail(),
-                                                                       Greeting.getCreatedAt()))
+                                                                       Greeting.isDeleted()))
                                       .collect(Collectors.toList());
     }
 
 
     @Override
-    public GreetingData get(GreetingId greetingId) throws GreetingException {
+    public GreetingData get(GreetingId greetingId) throws HubUserException {
         BooleanExpression predicate = this.greeting.greetingId.eq(greetingId);
 
 
@@ -47,8 +47,8 @@ public class GreetingQueryHandler implements GreetingQuery {
                                       .map(Greeting -> new GreetingData(Greeting.getId(),
                                                                         Greeting.getGreetingTitle(),
                                                                         Greeting.getGreetingDetail(),
-                                                                        Greeting.getCreatedAt()))
-                                      .orElseThrow(() -> new GreetingException(GreetingErrors.GREETING_NOT_FOUND));
+                                                                        Greeting.isDeleted()))
+                                      .orElseThrow(() -> new HubUserException(HubUserErrors.GREETING_NOT_FOUND));
 
     }
 }

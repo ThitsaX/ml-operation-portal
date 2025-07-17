@@ -11,5 +11,5 @@ public interface GetGreeting extends UseCase<GetGreeting.Input ,GetGreeting.Outp
     record Output(GreetingId greetingId,
                   String greetingTitle,
                   String greetingDetail,
-                  Instant createdDate ){}
+                  boolean isDeleted ){}
 }

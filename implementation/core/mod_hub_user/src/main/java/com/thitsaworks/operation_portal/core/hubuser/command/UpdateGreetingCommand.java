@@ -1,16 +1,19 @@
-package com.thitsaworks.operation_portal.usecase.operation_portal;
+package com.thitsaworks.operation_portal.core.hubuser.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 import java.time.Instant;
 
-public interface UpdateGreeting extends UseCase<UpdateGreeting.Input ,UpdateGreeting.Output> {
+public interface UpdateGreetingCommand {
+
+    Output execute(Input input) throws HubUserException;
+
     record Input (GreetingId greetingId,
                   String greetingTitle,
                   String greetingDetail,
                   boolean isDeleted,
-                  Instant greetingDate){}
+                  Instant isDelete){}
 
     record Output(GreetingId greetingId){}
 }
