@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.core_services.GetExistingParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,23 +31,27 @@ public class GetExistingParticipantController {
 
     @GetMapping("/secured/getParticipant")
     public ResponseEntity<Response> execute(
-            @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
+        @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
         LOG.info("Get participant request : participantId = {}", participantId);
 
         GetExistingParticipant.Output output = this.getExistingParticipant.execute(
-                new GetExistingParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
+            new GetExistingParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
 
         List<Response.ContactInfo> contactInfoList = new ArrayList<>();
 
         for (var contact : output.contactInfoList()) {
 
-            contactInfoList.add(new Response.ContactInfo(contact.contactId().getId().toString(),
-                    contact.name(),
-                    contact.title(),
-                    contact.email().getValue(),
-                    contact.mobile().getValue(),
-                    contact.contactType()));
+            contactInfoList.add(new Response.ContactInfo(contact.contactId()
+                                                                .getId()
+                                                                .toString(),
+                                                         contact.name(),
+                                                         contact.title(),
+                                                         contact.email()
+                                                                .getValue(),
+                                                         contact.mobile()
+                                                                .getValue(),
+                                                         contact.contactType()));
         }
 
         List<Response.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -55,21 +59,30 @@ public class GetExistingParticipantController {
         for (var liquidityProfile : output.liquidityProfileInfoList()) {
 
             liquidityProfileInfoList.add(
-                    new Response.LiquidityProfileInfo(liquidityProfile.liquidityProfileId().getId().toString(),
-                            liquidityProfile.accountName(),
-                            liquidityProfile.accountNumber(),
-                            liquidityProfile.currency(),
-                            liquidityProfile.isActive()));
+                new Response.LiquidityProfileInfo(liquidityProfile.liquidityProfileId()
+                                                                  .getId()
+                                                                  .toString(),
+                                                  liquidityProfile.bankName(),
+                                                  liquidityProfile.accountName(),
+                                                  liquidityProfile.accountNumber(),
+                                                  liquidityProfile.currency(),
+                                                  liquidityProfile.isActive()));
         }
 
-        var response = new Response(output.participantId().getId().toString(),
-                                                                     output.dfsp_code(),
-                                                                     output.name(),
-                                                                     output.address(),
-                                                                     output.mobile().getValue(),
-                                                                     output.createdDate().getEpochSecond(),
-                                                                     contactInfoList,
-                                                                     liquidityProfileInfoList);
+        var response = new Response(output.participantId()
+                                          .getId()
+                                          .toString(),
+                                    output.dfspCode(),
+                                    output.name(),
+                                    output.address(),
+                                    output.mobile()
+                                          .getValue(),
+                                    output.logoType(),
+                                    output.logo(),
+                                    output.createdDate()
+                                          .getEpochSecond(),
+                                    contactInfoList,
+                                    liquidityProfileInfoList);
 
         LOG.info("Get participant response : {}", this.objectMapper.writeValueAsString(response));
 
@@ -79,31 +92,35 @@ public class GetExistingParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participantId") String participantId,
-            @JsonProperty("dfspCode") String dfspCode,
-            @JsonProperty("name") String name,
-            @JsonProperty("address") String address,
-            @JsonProperty("mobile") String mobile,
-            @JsonProperty("createdDate") Long createdDate,
-            @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
-            @JsonProperty("liquidityProfileInfoList") List<LiquidityProfileInfo> liquidityProfileInfoList) {
+        @JsonProperty("participantId") String participantId,
+        @JsonProperty("dfspCode") String dfspCode,
+        @JsonProperty("name") String name,
+        @JsonProperty("address") String address,
+        @JsonProperty("mobile") String mobile,
+        @JsonProperty("logoType") String logoType,
+        @JsonProperty("logo") byte[] logo,
+        @JsonProperty("createdDate") Long createdDate,
+        @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
+        @JsonProperty("liquidityProfileInfoList") List<LiquidityProfileInfo> liquidityProfileInfoList) {
 
         public record ContactInfo(
-                @JsonProperty("contactId") String contactId,
-                @JsonProperty("name") String name,
-                @JsonProperty("title") String title,
-                @JsonProperty("email") String email,
-                @JsonProperty("mobile") String mobile,
-                @JsonProperty("contactType") String contactType) {
+            @JsonProperty("contactId") String contactId,
+            @JsonProperty("name") String name,
+            @JsonProperty("title") String title,
+            @JsonProperty("email") String email,
+            @JsonProperty("mobile") String mobile,
+            @JsonProperty("contactType") String contactType) {
         }
 
         public record LiquidityProfileInfo(
-                @JsonProperty("liquidityProfileId") String liquidityProfileId,
-                @JsonProperty("accountName") String accountName,
-                @JsonProperty("accountNumber") String accountNumber,
-                @JsonProperty("currency") String currency,
-                @JsonProperty("isActive") Boolean isActive) {
+            @JsonProperty("liquidityProfileId") String liquidityProfileId,
+            @JsonProperty("bankName") String bankName,
+            @JsonProperty("accountName") String accountName,
+            @JsonProperty("accountNumber") String accountNumber,
+            @JsonProperty("currency") String currency,
+            @JsonProperty("isActive") Boolean isActive) {
         }
 
     }
+
 }

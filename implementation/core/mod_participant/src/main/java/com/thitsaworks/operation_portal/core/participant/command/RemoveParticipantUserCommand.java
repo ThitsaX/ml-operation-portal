@@ -12,6 +12,6 @@ public interface RemoveParticipantUserCommand {
     record Output(
             ParticipantUserId participantUserId, boolean removed) {}
 
-    RemoveParticipantUserCommand.Output execute(RemoveParticipantUserCommand.Input input) throws ParticipantException;
+    Output execute(Input input) throws ParticipantException;
 
 }

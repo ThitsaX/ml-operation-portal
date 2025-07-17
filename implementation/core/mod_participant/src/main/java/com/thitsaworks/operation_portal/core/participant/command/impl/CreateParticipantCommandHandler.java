@@ -29,15 +29,17 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
         if (participantByDfspCode.isEmpty()) {
 
-            Participant participant = new Participant(
-                    input.dfspCode(),
-                    input.name(),
-                    input.dfspName(),
-                    input.address(),
-                    input.mobile());
+            Participant participant = new Participant(input.dfspCode(),
+                                                      input.name(),
+                                                      input.dfspName(),
+                                                      input.address(),
+                                                      input.mobile(),
+                                                      input.logoType(),
+                                                      input.logo());
 
             //For ContactInfo
-            if (input.contactInfoList() != null && !input.contactInfoList().isEmpty()) {
+            if (input.contactInfoList() != null && !input.contactInfoList()
+                                                         .isEmpty()) {
 
                 for (var contact : input.contactInfoList()) {
 
@@ -50,11 +52,13 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
             }
 
             //For Liquidity Profile
-            if (input.liquidityProfileInfoList() != null && !input.liquidityProfileInfoList().isEmpty()) {
+            if (input.liquidityProfileInfoList() != null && !input.liquidityProfileInfoList()
+                                                                  .isEmpty()) {
 
                 for (var liquidityProfile : input.liquidityProfileInfoList()) {
 
-                    participant.addLiquidityProfile(liquidityProfile.accountName(),
+                    participant.addLiquidityProfile(liquidityProfile.bankName(),
+                                                    liquidityProfile.accountName(),
                                                     liquidityProfile.accountNumber(),
                                                     liquidityProfile.currency(),
                                                     liquidityProfile.isActive());
@@ -64,9 +68,9 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
             this.participantRepository.save(participant);
 
             return new CreateParticipantCommand.Output(true, participant.getParticipantId());
-        }
-        else
-        {
+
+        } else {
+
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTER);
         }
     }

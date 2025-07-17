@@ -19,8 +19,13 @@ public class ParticipantRepositoryUnitTest extends EnvAwareUnitTest {
     @Test
     public void test_createParticipantSuccessfully() {
 
-        Participant participant = new Participant(new DfspCode("okdollar"), "OK Dollar", null , "Sanchaung Township, Yangon.",
-                                                  new Mobile("+959400547258"));
+        Participant participant = new Participant(new DfspCode("okdollar"),
+                                                  "OK Dollar", null ,
+                                                  "Sanchaung Township, Yangon.",
+                                                  new Mobile("+959400547258"),
+                                                  "",
+                                                  null);
+
         this.participantRepository.save(participant);
 
     }

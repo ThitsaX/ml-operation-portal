@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
-import com.thitsaworks.operation_portal.usecase.hub_services.GetAllTransfer;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransfer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;

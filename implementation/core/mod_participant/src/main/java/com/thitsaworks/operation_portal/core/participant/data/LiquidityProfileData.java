@@ -6,31 +6,23 @@ import com.thitsaworks.operation_portal.core.participant.model.LiquidityProfile;
 
 import java.io.Serializable;
 
-public record LiquidityProfileData(
-        LiquidityProfileId liquidityProfileId,
-
-        ParticipantId participantId,
-
-        String accountName,
-
-        String accountNumber,
-
-        String currency,
-
-        Boolean isActive) implements Serializable {
+public record LiquidityProfileData(LiquidityProfileId liquidityProfileId,
+                                   ParticipantId participantId,
+                                   String bankName,
+                                   String accountName,
+                                   String accountNumber,
+                                   String currency,
+                                   Boolean isActive) implements Serializable {
 
     public LiquidityProfileData(LiquidityProfile liquidityProfile) {
 
         this(liquidityProfile.getLiquidityProfileId(),
-
-             liquidityProfile.getParticipant().getParticipantId(),
-
+             liquidityProfile.getParticipant()
+                             .getParticipantId(),
+             liquidityProfile.getBankName(),
              liquidityProfile.getAccountName(),
-
              liquidityProfile.getAccountNumber(),
-
              liquidityProfile.getCurrency(),
-
              liquidityProfile.getIsActive());
 
     }

@@ -25,10 +25,13 @@ public class CreateLiquidityProfileCommandHandler implements CreateLiquidityProf
 
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
-        participant.addLiquidityProfile(input.accountName(), input.accountNumber(),
-                                        input.currency(), input.isActive());
+        participant.addLiquidityProfile(input.bankName(),
+                                        input.accountName(),
+                                        input.accountNumber(),
+                                        input.currency(),
+                                        input.isActive());
 
         this.participantRepository.save(participant);
 
