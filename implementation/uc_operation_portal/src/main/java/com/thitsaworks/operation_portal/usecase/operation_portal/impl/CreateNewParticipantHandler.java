@@ -53,12 +53,11 @@ public class CreateNewParticipantHandler
             new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
                                                input.address(),
                                                input.mobile(),
-                                               input.logoType(),
                                                input.logo(),
                                                input.contactInfoList()
                                                     .stream()
                                                     .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
-                                                                                                                info.title(),
+                                                                                                                info.position(),
                                                                                                                 info.email(),
                                                                                                                 info.mobile(),
                                                                                                                 info.contactType()))
@@ -70,7 +69,7 @@ public class CreateNewParticipantHandler
                                                         info.accountName(),
                                                         info.accountNumber(),
                                                         info.currency(),
-                                                        info.isActive()))
+                                                        true))
                                                     .collect(Collectors.toList())));
 
         return new CreateParticipant.Output(output.created(), output.participantId());

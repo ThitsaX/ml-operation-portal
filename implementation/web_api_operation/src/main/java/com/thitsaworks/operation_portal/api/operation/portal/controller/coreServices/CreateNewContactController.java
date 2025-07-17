@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -22,9 +21,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 public class CreateNewContactController {
@@ -33,77 +29,43 @@ public class CreateNewContactController {
 
     private final CreateNewContact createNewContact;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/createContact")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
-
-        LOG.info("Create new contact request : {}", this.objectMapper.writeValueAsString(request));
-
-        List<CreateNewContact.Input.ContactInfo> contactInfoList = new ArrayList<>();
-
-        for (Request.ContactInfo contactInfo : request.contactInfoList) {
-            contactInfoList.add(new CreateNewContact.Input.ContactInfo(contactInfo.name(), contactInfo.title(),
-                    new Email(contactInfo.email()), new Mobile(contactInfo.mobile()),
-                                                                       ContactType.valueOf(contactInfo.contactType()
-                                                                                                      .toUpperCase())));
-        }
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
         CreateNewContact.Output output = this.createNewContact.execute(
-                new CreateNewContact.Input(new ParticipantId(Long.parseLong(request.participantId)), contactInfoList));
+            new CreateNewContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
+                                       request.name(),
+                                       request.position(),
+                                       new Email(request.email()),
+                                       new Mobile(request.mobile()),
+                                       ContactType.valueOf(request.contactType()
+                                                                  .toUpperCase())));
 
-        var response = new Response(request.participantId, output.created());
-
-        LOG.info("Create new contact response : {}", this.objectMapper.writeValueAsString(response));
+        var response = new Response(output.created(),
+                                    output.contactId()
+                                          .getEntityId()
+                                          .toString());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-            @NotNull
-            @JsonProperty("participantId")
-            String participantId,
-
-            @NotNull
-            @JsonProperty("contactInfoList")
-            List<ContactInfo> contactInfoList) {
-
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public record ContactInfo(
-                @NotNull
-                @JsonProperty("name")
-                String name,
-
-                @NotNull
-                @JsonProperty("title")
-                String title,
-
-                @NotNull
-                @JsonProperty("email")
-                @Pattern(regexp = Email.FORMAT, message = "Email must be with valid format.")
-                String email,
-
-                @NotNull
-                @JsonProperty("mobile")
-                String mobile,
-
-                @NotNull
-                @JsonProperty("contactType")
-                String contactType) {
-        }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("name") String name,
+                          @NotNull @JsonProperty("position") String position,
+                          @NotNull @JsonProperty("email") @Pattern(
+                              regexp = Email.FORMAT,
+                              message = "Email must be with valid format.") String email,
+                          @NotNull @JsonProperty("mobile") String mobile,
+                          @NotNull @JsonProperty("contactType") String contactType) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("participantId")
-            String participantId,
-
-            @JsonProperty("isCreated")
-            boolean isCreated) {
+    public record Response(@JsonProperty("isCreated") boolean isCreated,
+                           @JsonProperty("contactId") String contactId) {
     }
 
 }

@@ -57,7 +57,6 @@ public class GetParticipantProfileHandler
                           participantData.name(),
                           participantData.address(),
                           participantData.mobile(),
-                          participantData.logoType(),
                           participantData.logo(),
                           Instant.ofEpochSecond(participantData.createdDate()));
     }

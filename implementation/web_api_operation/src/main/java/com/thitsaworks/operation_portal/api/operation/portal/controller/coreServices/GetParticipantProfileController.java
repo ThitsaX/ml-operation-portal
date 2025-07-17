@@ -41,7 +41,6 @@ public class GetParticipantProfileController {
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
-                                    output.logoType(),
                                     output.logo(),
                                     output.createdDate()
                                           .getEpochSecond());
@@ -55,7 +54,6 @@ public class GetParticipantProfileController {
                            @JsonProperty("name") String name,
                            @JsonProperty("address") String address,
                            @JsonProperty("mobile") String mobile,
-                           @JsonProperty("logoType") String logoType,
                            @JsonProperty("logo") byte[] logo,
                            @JsonProperty("createdDate") long createdDate) implements Serializable { }
 

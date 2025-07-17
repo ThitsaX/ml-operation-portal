@@ -17,7 +17,6 @@ public interface ModifyParticipantCommand {
                  String companyName,
                  String address,
                  Mobile mobile,
-                 String logoType,
                  byte[] logo) {
 
     }

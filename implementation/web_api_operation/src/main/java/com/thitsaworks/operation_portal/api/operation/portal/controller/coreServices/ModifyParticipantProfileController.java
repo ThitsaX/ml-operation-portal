@@ -43,7 +43,6 @@ public class ModifyParticipantProfileController {
                                                request.companyName(),
                                                request.address(),
                                                new Mobile(request.mobile()),
-                                               request.logoType(),
                                                request.logo(),
                                                userContext.accessKey()));
 
@@ -60,7 +59,6 @@ public class ModifyParticipantProfileController {
         @NotNull @JsonProperty("name") String companyName,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logoType") String logoType,
         @JsonProperty("logo") byte[] logo
     ) { }
 

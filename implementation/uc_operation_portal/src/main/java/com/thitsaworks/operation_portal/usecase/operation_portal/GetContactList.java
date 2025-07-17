@@ -17,7 +17,7 @@ public interface GetContactList extends UseCase<GetContactList.Input, GetContact
 
         public record ContactInfo(ContactId contactId,
                                   String name,
-                                  String title,
+                                  String position,
                                   Email email,
                                   Mobile mobile,
                                   String contactType) implements Serializable { }

@@ -46,7 +46,7 @@ public class GetExistingParticipantController {
                                                                 .getId()
                                                                 .toString(),
                                                          contact.name(),
-                                                         contact.title(),
+                                                         contact.position(),
                                                          contact.email()
                                                                 .getValue(),
                                                          contact.mobile()
@@ -77,7 +77,6 @@ public class GetExistingParticipantController {
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
-                                    output.logoType(),
                                     output.logo(),
                                     output.createdDate()
                                           .getEpochSecond(),
@@ -97,7 +96,6 @@ public class GetExistingParticipantController {
         @JsonProperty("name") String name,
         @JsonProperty("address") String address,
         @JsonProperty("mobile") String mobile,
-        @JsonProperty("logoType") String logoType,
         @JsonProperty("logo") byte[] logo,
         @JsonProperty("createdDate") Long createdDate,
         @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
@@ -106,7 +104,7 @@ public class GetExistingParticipantController {
         public record ContactInfo(
             @JsonProperty("contactId") String contactId,
             @JsonProperty("name") String name,
-            @JsonProperty("title") String title,
+            @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
             @JsonProperty("contactType") String contactType) {

@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.command.SaveContactCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyContact;
 import org.slf4j.Logger;
@@ -27,14 +27,14 @@ public class ModifyContactHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final SaveContactCommand saveContactCommand;
+    private final ModifyContactCommand modifyContactCommand;
 
     public ModifyContactHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
-                                SaveContactCommand saveContactCommand,
+                                ModifyContactCommand modifyContactCommand,
                                 ParticipantCache participantCache) {
 
         super(createInputAuditCommand,
@@ -44,26 +44,22 @@ public class ModifyContactHandler
               objectMapper,
               principalCache);
 
-        this.saveContactCommand = saveContactCommand;
+        this.modifyContactCommand = modifyContactCommand;
 
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        for (Input.ContactInfo contactInfo : input.contactInfoList()) {
+        var output = this.modifyContactCommand.execute(new ModifyContactCommand.Input(input.participantId(),
+                                                                                      input.contactId(),
+                                                                                      input.name(),
+                                                                                      input.position(),
+                                                                                      input.email(),
+                                                                                      input.mobile(),
+                                                                                      input.contactType()));
 
-            this.saveContactCommand.execute(
-                new SaveContactCommand.Input(input.participantId(),
-                                             contactInfo.contactId(),
-                                             contactInfo.name(),
-                                             contactInfo.title(),
-                                             contactInfo.email(),
-                                             contactInfo.mobile(),
-                                             contactInfo.contactType()));
-        }
-
-        return new ModifyContact.Output(true);
+        return new ModifyContact.Output(output.modified());
     }
 
 }

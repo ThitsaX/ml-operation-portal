@@ -7,19 +7,17 @@ import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
-public interface SaveContactCommand {
+public interface ModifyContactCommand {
 
     record Input(ParticipantId participantId,
                  ContactId contactId,
                  String name,
-                 String title,
+                 String position,
                  Email email,
                  Mobile mobile,
-                 ContactType contactType) {
+                 ContactType contactType) { }
 
-    }
-
-    record Output(boolean saved,
+    record Output(boolean modified,
                   ContactId contactId) {}
 
     Output execute(Input input) throws ParticipantException;

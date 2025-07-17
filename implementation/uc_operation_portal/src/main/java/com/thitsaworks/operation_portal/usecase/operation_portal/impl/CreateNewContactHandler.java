@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class CreateNewContactHandler extends OperationPortalAuditableUseCase<CreateNewContact.Input, CreateNewContact.Output>
+public class CreateNewContactHandler
+    extends OperationPortalAuditableUseCase<CreateNewContact.Input, CreateNewContact.Output>
     implements CreateNewContact {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewContactHandler.class);
@@ -47,17 +48,14 @@ public class CreateNewContactHandler extends OperationPortalAuditableUseCase<Cre
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        for (Input.ContactInfo contactInfo : input.contactInfoList()) {
+        var output = this.createContactCommand.execute(new CreateContactCommand.Input(input.participantId(),
+                                                                                      input.name(),
+                                                                                      input.position(),
+                                                                                      input.email(),
+                                                                                      input.mobile(),
+                                                                                      input.contactType()));
 
-            this.createContactCommand.execute(new CreateContactCommand.Input(contactInfo.name(),
-                                                                             contactInfo.title(),
-                                                                             contactInfo.email(),
-                                                                             contactInfo.mobile(),
-                                                                             input.participantId(),
-                                                                             contactInfo.contactType()));
-        }
-
-        return new CreateNewContact.Output(true);
+        return new CreateNewContact.Output(output.created(), output.contactId());
     }
 
 }

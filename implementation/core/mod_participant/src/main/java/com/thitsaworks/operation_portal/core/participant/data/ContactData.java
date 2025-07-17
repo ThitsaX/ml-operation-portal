@@ -13,7 +13,7 @@ public record ContactData(ContactId contactId,
 
                           String name,
 
-                          String title,
+                          String position,
 
                           Email email,
 
@@ -29,7 +29,7 @@ public record ContactData(ContactId contactId,
 
              contact.getName(),
 
-             contact.getTitle(),
+             contact.getPosition(),
 
              contact.getEmail(),
 

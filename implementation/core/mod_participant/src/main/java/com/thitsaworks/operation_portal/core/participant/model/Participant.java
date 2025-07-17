@@ -58,9 +58,6 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Convert(converter = Mobile.JpaConverter.class)
     protected Mobile mobile;
 
-    @Column(name = "logo_type")
-    protected String logoType;
-
     @Lob
     @Column(
         name = "logo",
@@ -94,7 +91,6 @@ public class Participant extends JpaEntity<ParticipantId> {
                        String dfspName,
                        String address,
                        Mobile mobile,
-                       String logoType,
                        byte[] logo) {
 
         Validate.notNull(dfspCode);
@@ -108,7 +104,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         this.dfspName = dfspName;
         this.address = address;
         this.mobile = mobile;
-        this.logoType = logoType;
         this.logo = logo;
     }
 
@@ -128,12 +123,12 @@ public class Participant extends JpaEntity<ParticipantId> {
         return contact;
     }
 
-    public Contact saveContact(ContactId contactId,
-                               String name,
-                               String title,
-                               Email email,
-                               Mobile mobile,
-                               ContactType contactType) {
+    public Contact updateContact(ContactId contactId,
+                                 String name,
+                                 String title,
+                                 Email email,
+                                 Mobile mobile,
+                                 ContactType contactType) {
 
         Optional<Contact> existingContact = this.contacts.stream()
                                                          .filter(c -> c.contactId.equals(contactId))
@@ -153,7 +148,7 @@ public class Participant extends JpaEntity<ParticipantId> {
             }
 
             contact.name(name);
-            contact.title(title);
+            contact.position(title);
             contact.email(email);
             contact.mobile(mobile);
             contact.contactType(contactType);
@@ -162,18 +157,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            boolean typeExists = this.contacts.stream()
-                                              .anyMatch(c -> c.contactType.equals(contactType));
-
-            if (typeExists) {
-                throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
-            }
-
-            Contact contact = new Contact(name, title, email, mobile, contactType, this);
-
-            this.contacts.add(contact);
-
-            return contact;
+            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND);
 
         }
     }
@@ -215,7 +199,8 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                  currency,
                                                                  isActive);
         boolean currencyExist = this.liquidityProfiles.stream()
-                                                      .anyMatch(profile -> profile.currency.equals(currency));
+                                                      .anyMatch(profile -> profile.currency.equals(currency) &&
+                                                                               profile.isActive);
 
         if (currencyExist) {
             throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
@@ -226,11 +211,11 @@ public class Participant extends JpaEntity<ParticipantId> {
         return liquidityProfile;
     }
 
-    public LiquidityProfile saveLiquidityProfile(LiquidityProfileId liquidityProfileId,
-                                                 String bankName,
-                                                 String accountName,
-                                                 String accountNumber,
-                                                 String currency) {
+    public LiquidityProfile updateLiquidityProfile(LiquidityProfileId liquidityProfileId,
+                                                   String bankName,
+                                                   String accountName,
+                                                   String accountNumber,
+                                                   String currency) {
 
         Validate.notBlank(bankName);
         Validate.notBlank(accountName);
@@ -250,7 +235,8 @@ public class Participant extends JpaEntity<ParticipantId> {
             boolean isChangingCurrency = !liquidityProfile.currency.equals(currency);
             boolean currencyExist = this.liquidityProfiles.stream()
                                                           .anyMatch(profile -> profile != liquidityProfile &&
-                                                                                   profile.currency.equals(currency));
+                                                                                   (profile.currency.equals(currency) &&
+                                                                                        profile.isActive));
 
             if (isChangingCurrency && currencyExist) {
                 throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
@@ -265,23 +251,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            boolean currencyExists = this.liquidityProfiles.stream()
-                                                           .anyMatch(profile -> profile.currency.equals(currency));
-
-            if (currencyExists) {
-                throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
-            }
-
-            LiquidityProfile liquidityProfile = new LiquidityProfile(this,
-                                                                     bankName,
-                                                                     accountName,
-                                                                     accountNumber,
-                                                                     currency,
-                                                                     true);
-
-            this.liquidityProfiles.add(liquidityProfile);
-
-            return liquidityProfile;
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND);
 
         }
 
@@ -356,12 +326,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         this.mobile = mobile;
         return this;
 
-    }
-
-    public Participant logoType(String logoType) {
-
-        this.logoType = logoType;
-        return this;
     }
 
     public Participant logo(byte[] logo) {

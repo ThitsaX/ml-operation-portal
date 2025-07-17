@@ -34,7 +34,6 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
                                                       input.dfspName(),
                                                       input.address(),
                                                       input.mobile(),
-                                                      input.logoType(),
                                                       input.logo());
 
             //For ContactInfo
@@ -44,7 +43,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
                 for (var contact : input.contactInfoList()) {
 
                     participant.addContact(contact.name(),
-                                           contact.title(),
+                                           contact.position(),
                                            contact.email(),
                                            contact.mobile(),
                                            contact.contactType());

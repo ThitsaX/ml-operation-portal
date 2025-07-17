@@ -23,7 +23,6 @@ public class ParticipantRepositoryUnitTest extends EnvAwareUnitTest {
                                                   "OK Dollar", null ,
                                                   "Sanchaung Township, Yangon.",
                                                   new Mobile("+959400547258"),
-                                                  "",
                                                   null);
 
         this.participantRepository.save(participant);

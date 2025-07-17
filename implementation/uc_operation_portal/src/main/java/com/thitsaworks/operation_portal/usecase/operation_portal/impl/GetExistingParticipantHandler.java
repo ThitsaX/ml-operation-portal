@@ -75,7 +75,7 @@ public class GetExistingParticipantHandler
             contactInfoList.add(
                 new Output.ContactInfo(contactData.contactId(),
                                        contactData.name(),
-                                       contactData.title(),
+                                       contactData.position(),
                                        contactData.email(),
                                        contactData.mobile(),
                                        contactData.contactType()
@@ -104,7 +104,6 @@ public class GetExistingParticipantHandler
                       participantData.name(),
                       participantData.address(),
                       participantData.mobile(),
-                      participantData.logoType(),
                       participantData.logo(),
                       Instant.ofEpochSecond(participantData.createdDate()),
                       contactInfoList,

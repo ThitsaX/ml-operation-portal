@@ -15,7 +15,6 @@ public interface GetParticipantProfile extends UseCase<GetParticipantProfile.Inp
                   String name,
                   String address,
                   Mobile mobile,
-                  String logoType,
                   byte[] logo,
                   Instant createdDate) { }
 

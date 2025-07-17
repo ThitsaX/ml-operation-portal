@@ -39,7 +39,7 @@ public class GetContactListController {
                                                                                           .getEntityId()
                                                                                           .toString(),
                                                                                    contact.name(),
-                                                                                   contact.title(),
+                                                                                   contact.position(),
                                                                                    contact.email()
                                                                                           .getValue(),
                                                                                    contact.mobile()
@@ -56,7 +56,7 @@ public class GetContactListController {
         public record ContactInfo(
             @JsonProperty("contactId") String contactId,
             @JsonProperty("name") String name,
-            @JsonProperty("title") String title,
+            @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
             @JsonProperty("contactType") String contactType) {

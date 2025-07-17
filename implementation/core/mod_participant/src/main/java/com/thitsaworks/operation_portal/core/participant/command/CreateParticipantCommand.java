@@ -17,14 +17,13 @@ public interface CreateParticipantCommand {
                  String dfspName,
                  String address,
                  Mobile mobile,
-                 String logoType,
                  byte[] logo,
                  List<ContactInfo> contactInfoList,
                  List<LiquidityProfileInfo> liquidityProfileInfoList
     ) implements Serializable {
 
         public record ContactInfo(String name,
-                                  String title,
+                                  String position,
                                   Email email,
                                   Mobile mobile,
                                   ContactType contactType

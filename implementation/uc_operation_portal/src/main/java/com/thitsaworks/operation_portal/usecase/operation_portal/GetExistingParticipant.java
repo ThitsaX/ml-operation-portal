@@ -21,7 +21,6 @@ public interface GetExistingParticipant extends
                   String name,
                   String address,
                   Mobile mobile,
-                  String logoType,
                   byte[] logo,
                   Instant createdDate,
                   List<ContactInfo> contactInfoList,
@@ -29,7 +28,7 @@ public interface GetExistingParticipant extends
 
         public record ContactInfo(ContactId contactId,
                                   String name,
-                                  String title,
+                                  String position,
                                   Email email,
                                   Mobile mobile,
                                   String contactType) implements Serializable { }

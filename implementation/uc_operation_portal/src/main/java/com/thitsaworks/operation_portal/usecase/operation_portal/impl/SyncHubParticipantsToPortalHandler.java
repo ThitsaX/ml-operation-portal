@@ -80,7 +80,6 @@ public class SyncHubParticipantsToPortalHandler
                                                                                          hubParticipant.name(),
                                                                                          null,
                                                                                          null,
-                                                                                         "",
                                                                                          null,
                                                                                          null,
                                                                                          null));
