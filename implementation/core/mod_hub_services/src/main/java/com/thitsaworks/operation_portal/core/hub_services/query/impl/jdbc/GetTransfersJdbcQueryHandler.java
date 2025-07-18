@@ -67,13 +67,13 @@ public class GetTransfersJdbcQueryHandler implements GetTransfersQuery {
                         " AND t.transferId = IFNULL(?,t.transferId) \n" +
                         " AND payerv.fspId = IFNULL(?,payerv.fspId) \n" +
                         " AND payeev.fspId = IFNULL(?,payeev.fspId) \n" +
-                        " AND idenpayer.description = IFNULL(?,idenpayer.name) \n" +
-                        " AND idenpayee.description = IFNULL(?,idenpayee.name) \n" +
+                        " AND idenpayer.name = IFNULL(?,idenpayer.name) \n" +
+                        " AND idenpayee.name = IFNULL(?,idenpayee.name) \n" +
                         " AND payerv.partyIdentifierValue = IFNULL(?,payerv.partyIdentifierValue) \n" +
                         " AND payeev.partyIdentifierValue = IFNULL(?,payeev.partyIdentifierValue) \n" +
                         " AND t.currencyId = IFNULL(?, t.currencyId)\n" +
                         " AND tst.transferStateId IN (SELECT DISTINCT transferStateId FROM transferState WHERE enumeration = IFNULL(?,enumeration))\n" +
-                        " AND (payer.description = IFNULL(?, payer.name) OR payee.name = IFNULL(?, payee.name))  ORDER BY  t.createdDate DESC;",
+                        " AND (payer.name = IFNULL(?, payer.name) OR payee.name = IFNULL(?, payee.name))  ORDER BY  t.createdDate DESC;",
                 new TransferDataMapper(), input.getFromDate(), input.getToDate() , input.getTransferId(),
                 input.getPayerFspId(), input.getPayeeFspId(), input.getPayerIdentifierTypeId(), input.getPayeeIdentifierTypeId(),
                 input.getPayerIdentifierValue(), input.getPayeeIdentifierValue(),
