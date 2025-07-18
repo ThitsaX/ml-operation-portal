@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -102,7 +103,8 @@ public class Participant extends JpaEntity<ParticipantId> {
         this.mobile = mobile;
     }
 
-    public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType) {
+    public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType)
+        throws ParticipantException {
 
         Contact contact = new Contact(name, title, email, mobile, contactType, this);
 
@@ -110,7 +112,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                              .anyMatch(c -> c.contactType.equals(contactType));
 
         if (contactExists) {
-            throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
         }
 
         this.contacts.add(contact);
@@ -123,7 +125,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                  String title,
                                  Email email,
                                  Mobile mobile,
-                                 ContactType contactType) {
+                                 ContactType contactType) throws ParticipantException {
 
         Optional<Contact> existingContact = this.contacts.stream()
                                                          .filter(c -> c.contactId.equals(contactId))
@@ -139,7 +141,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                 c.contactType.equals(contactType));
 
             if (isChangingType && typeExist) {
-                throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
             }
 
             contact.name(name);
@@ -181,7 +183,8 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                 String accountName,
                                                 String accountNumber,
                                                 String currency,
-                                                Boolean isActive) throws IllegalArgumentException {
+                                                Boolean isActive) throws IllegalArgumentException,
+                                                                         ParticipantException {
 
         Validate.notBlank(accountName);
         Validate.notBlank(accountNumber);
@@ -198,7 +201,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                profile.isActive);
 
         if (currencyExist) {
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
         }
 
         this.liquidityProfiles.add(liquidityProfile);
@@ -210,7 +213,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                    String bankName,
                                                    String accountName,
                                                    String accountNumber,
-                                                   String currency) {
+                                                   String currency) throws ParticipantException {
 
         Validate.notBlank(bankName);
         Validate.notBlank(accountName);
@@ -234,7 +237,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                         profile.isActive));
 
             if (isChangingCurrency && currencyExist) {
-                throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
             }
 
             liquidityProfile.bankName(bankName);
