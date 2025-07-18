@@ -27,7 +27,7 @@ public class GetFinancialDataJdbcQueryHandler implements GetFinancialDataQuery {
     public Output execute(Input input) {
 
         var result = this.jdbcTemplate.query(
-                "SELECT p.description AS dfspName, IFNULL(pc.currencyId,'') AS currency, IFNULL(ROUND( SUM(IFNULL(pb.value,0)),2),0) AS balance" +
+                "SELECT p.name AS dfspName, IFNULL(pc.currencyId,'') AS currency, IFNULL(ROUND( SUM(IFNULL(pb.value,0)),2),0) AS balance" +
                         ", IFNULL(ROUND(SUM(IFNULL(pp.value,0)),2),0) AS currentPosition, IFNULL(ROUND( SUM(IFNULL(pl.value,0)),2),0) AS ndc,\n" +
                         " IFNULL(ROUND(((SUM(IFNULL(pp.value,0))/SUM(IFNULL(pl.value,0))) * 100),2),0) AS ndcUsed \n" +
                         "FROM participant p\n" +

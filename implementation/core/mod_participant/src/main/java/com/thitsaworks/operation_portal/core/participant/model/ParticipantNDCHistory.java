@@ -28,7 +28,7 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @JoinColumn(name = "participant_ndc_id")
     protected ParticipantNDC participantNDC;
 
-    @Column(name = "participantName")
+    @Column(name = "dfsp_code")
     protected String dfspCode;
 
     @Column(name = "currency")

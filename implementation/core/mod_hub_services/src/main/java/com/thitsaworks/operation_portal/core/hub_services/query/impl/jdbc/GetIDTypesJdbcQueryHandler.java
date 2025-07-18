@@ -37,7 +37,7 @@ public class GetIDTypesJdbcQueryHandler implements GetIDTypesQuery {
         try {
 
             results = this.jdbcTemplate.query(
-                "SELECT description as partyIdentifierTypeId, description FROM partyIdentifierType ORDER BY partyIdentifierTypeId;",
+                "SELECT name as partyIdentifierTypeId, description FROM partyIdentifierType ORDER BY partyIdentifierTypeId;",
                 new IDTypeDataMapper());
 
         } catch (Exception e) {

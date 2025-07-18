@@ -23,7 +23,7 @@ public class HubParticipantQueryUnitTest {
     private HubParticipantQuery hubParticipantQuery;
 
     @Test
-    public void getByDescriptionHubParticipants() throws Exception {
+    public void getByNameHubParticipants() throws Exception {
 
         List<HubParticipantData> hubParticipantDataList = hubParticipantQuery.getParticipants();
 
@@ -34,7 +34,7 @@ public class HubParticipantQueryUnitTest {
     }
 
     @Test
-    public void getByNameHubParticipantByDescription() throws Exception {
+    public void getByNameHubParticipantByName() throws Exception {
 
         String participantName = "hub5";
 

@@ -120,7 +120,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         var userRole = principalData.userRoleType();
         if (!PERMITTED_ROLES.contains(userRole)) {
 
-            LOGGER.info("User is NOT authorized for description :[{}]", this.getName());
+            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
             throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
         }
 
