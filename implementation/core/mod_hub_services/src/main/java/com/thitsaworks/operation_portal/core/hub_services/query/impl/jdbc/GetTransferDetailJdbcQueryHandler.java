@@ -37,25 +37,25 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
         try {
             //@@Formatter:off
                 result = this.jdbcTemplate.query(
-                "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.name,'') AS type, \n" +
+                "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.description,'') AS type, \n" +
                         " IFNULL(t.currencyId,'') AS currency,ROUND( t.amount,2 )AS amount, \n" +
                         " CONCAT(IFNULL(ppayer.firstName,'') , ' ' , IFNULL(ppayer.middleName,'') , ' ', IFNULL(ppayer.lastName,'')) AS payer,\n" +
-                        " CONCAT(idenpayer.name ,' ' , payerv.partyIdentifierValue) AS payer_details,  IFNULL(payer.name,'') AS payer_dfsp, \n" +
+                        " CONCAT(idenpayer.description ,' ' , payerv.partyIdentifierValue) AS payer_details,  IFNULL(payer.description,'') AS payer_dfsp, \n" +
                         " CONCAT(IFNULL(ppayee.firstName,'') , ' ' , IFNULL(ppayee.middleName,'') , ' ', IFNULL(ppayee.lastName,'')) AS payee, \n" +
-                        " CONCAT(idenpayee.name ,' ', payeev.partyIdentifierValue) AS payee_details, IFNULL(payee.name,'') AS payee_dfsp, \n" +
+                        " CONCAT(idenpayee.description ,' ', payeev.partyIdentifierValue) AS payee_details, IFNULL(payee.description,'') AS payee_dfsp, \n" +
                         " IFNULL(swc.settlementId,'') AS settlement_batch, t.createdDate AS submitted_on_date  \n" +
                         "FROM transfer t \n" +
-                        "LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')\n" +
+                        "LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE description = 'PAYER_DFSP')\n" +
                         "LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId\n" +
                         "LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId\n" +
-                        "LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')\n" +
+                        "LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE description = 'PAYEE_DFSP')\n" +
                         "LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId\n" +
                         "LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId\n" +
                         "LEFT JOIN quote q ON q.transactionReferenceId = t.transferId\n" +
-                        "LEFT JOIN quoteParty payerv ON q.quoteId = payerv.quoteId AND payerv.fspId = payer.name  AND payerv.partyTypeId = (SELECT partyTypeId FROM partyType WHERE NAME='PAYER') \n" +
-                        "LEFT JOIN quoteParty payeev ON q.quoteId = payeev.quoteId AND payeev.fspId = payee.name AND payeev.partyTypeId =  (SELECT partyTypeId FROM partyType WHERE NAME='PAYEE') \n" +
-                        "LEFT JOIN party ppayer ON ppayer.quotePartyId = payerv.quotePartyId AND payerv.fspId = payer.name \n" +
-                        "LEFT JOIN party ppayee ON ppayee.quotePartyId = payeev.quotePartyId AND payeev.fspId = payee.name \n" +
+                        "LEFT JOIN quoteParty payerv ON q.quoteId = payerv.quoteId AND payerv.fspId = payer.description  AND payerv.partyTypeId = (SELECT partyTypeId FROM partyType WHERE NAME='PAYER') \n" +
+                        "LEFT JOIN quoteParty payeev ON q.quoteId = payeev.quoteId AND payeev.fspId = payee.description AND payeev.partyTypeId =  (SELECT partyTypeId FROM partyType WHERE NAME='PAYEE') \n" +
+                        "LEFT JOIN party ppayer ON ppayer.quotePartyId = payerv.quotePartyId AND payerv.fspId = payer.description \n" +
+                        "LEFT JOIN party ppayee ON ppayee.quotePartyId = payeev.quotePartyId AND payeev.fspId = payee.description \n" +
                         "LEFT JOIN partyIdentifierType idenpayer ON payerv.partyIdentifierTypeId= idenpayer.partyIdentifierTypeId \n" +
                         "LEFT JOIN partyIdentifierType idenpayee ON payeev.partyIdentifierTypeId= idenpayee.partyIdentifierTypeId \n" +
                         "LEFT JOIN transactionScenario ts ON ts.transactionScenarioId = q.transactionScenarioId\n" +

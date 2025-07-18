@@ -42,7 +42,7 @@ public class ModifyParticipantProfileController {
 
         ModifyParticipantProfile.Output output = this.modifyParticipantProfile.execute(
             new ModifyParticipantProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                               request.companyName(),
+                                               request.description(),
                                                request.address(),
                                                new Mobile(request.mobile()),
                                                request.logoDataType(),
@@ -60,7 +60,7 @@ public class ModifyParticipantProfileController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
         @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("name") String companyName,
+        @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
         @JsonProperty("logoDataType") String logoDataType,

@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.query.FindAccountNumberByDfspCodeQuery;
+import com.thitsaworks.operation_portal.core.participant.query.FindAccountNumberByParticipantNameQuery;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateStatementReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateStatementReport;
@@ -28,7 +28,7 @@ public class GenerateStatementReportHandler
 
     private final GenerateStatementReportCommand generateStatementReportCommand;
 
-    private final FindAccountNumberByDfspCodeQuery findAccountNumberByDfspCodeQuery;
+    private final FindAccountNumberByParticipantNameQuery findAccountNumberByParticipantNameQuery;
 
     public GenerateStatementReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                           CreateOutputAuditCommand createOutputAuditCommand,
@@ -36,7 +36,7 @@ public class GenerateStatementReportHandler
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
                                           GenerateStatementReportCommand generateStatementReportCommand,
-                                          FindAccountNumberByDfspCodeQuery findAccountNumberByDfspCodeQuery) {
+                                          FindAccountNumberByParticipantNameQuery findAccountNumberByParticipantNameQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,15 +46,15 @@ public class GenerateStatementReportHandler
               principalCache);
 
         this.generateStatementReportCommand = generateStatementReportCommand;
-        this.findAccountNumberByDfspCodeQuery = findAccountNumberByDfspCodeQuery;
+        this.findAccountNumberByParticipantNameQuery = findAccountNumberByParticipantNameQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        FindAccountNumberByDfspCodeQuery.Output accountNumberOutput =
-            this.findAccountNumberByDfspCodeQuery.execute(new FindAccountNumberByDfspCodeQuery.Input(input.fspId(),
-                                                                                                     input.currencyId()));
+        FindAccountNumberByParticipantNameQuery.Output accountNumberOutput =
+            this.findAccountNumberByParticipantNameQuery.execute(new FindAccountNumberByParticipantNameQuery.Input(input.fspId(),
+                                                                                                                   input.currencyId()));
 
         GenerateStatementReportCommand.Output output =
             this.generateStatementReportCommand.execute(new GenerateStatementReportCommand.Input(input.startDate(),

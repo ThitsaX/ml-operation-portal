@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -13,9 +13,8 @@ import java.util.List;
 public interface CreateParticipant
     extends UseCase<CreateParticipant.Input, CreateParticipant.Output> {
 
-    record Input(String name,
-                 DfspCode dfspCode,
-                 String dfspName,
+    record Input(ParticipantName participantName,
+                 String description,
                  String address,
                  Mobile mobile,
                  List<ContactInfo> contactInfoList,

@@ -37,14 +37,14 @@ public class GetParticipantProfileController {
         var response = new Response(output.participantId()
                                           .getEntityId()
                                           .toString(),
-                                    output.dfspCode(),
-                                    output.name(),
+                                    output.participantName(),
+                                    output.description(),
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
                                     output.logoDataType(),
-                                    Base64.getEncoder()
-                                          .encodeToString(output.logo()),
+                                    output.logo() == null ? null : Base64.getEncoder()
+                                                                         .encodeToString(output.logo()),
                                     output.createdDate()
                                           .getEpochSecond());
 
@@ -53,8 +53,8 @@ public class GetParticipantProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("participantId") String participantId,
-                           @JsonProperty("dfspCode") String dfspCode,
-                           @JsonProperty("name") String name,
+                           @JsonProperty("participantName") String participantName,
+                           @JsonProperty("description") String description,
                            @JsonProperty("address") String address,
                            @JsonProperty("mobile") String mobile,
                            @JsonProperty("logoFileType") String logoFileType,

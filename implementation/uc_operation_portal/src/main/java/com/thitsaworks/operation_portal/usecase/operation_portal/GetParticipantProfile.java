@@ -11,8 +11,8 @@ public interface GetParticipantProfile extends UseCase<GetParticipantProfile.Inp
     record Input(ParticipantId participantId) { }
 
     record Output(ParticipantId participantId,
-                  String dfspCode,
-                  String name,
+                  String participantName,
+                  String description,
                   String address,
                   Mobile mobile,
                   String logoDataType,

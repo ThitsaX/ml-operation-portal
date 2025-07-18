@@ -39,20 +39,20 @@ public class GetTransfersJdbcQueryHandler implements GetTransfersQuery {
 
             //@@Formatter:off
             results = this.jdbcTemplate.query(
-                "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.name,'') AS type,\n" +
-                        "    IFNULL(t.currencyId,'') AS currency, ROUND(t.amount,2) AS amount, IFNULL(payer.name,'') AS payer_dfsp,\n" +
-                        "    IFNULL(payee.name,'') AS payee_dfsp, IFNULL(swc.settlementWindowId, '') AS window_id, IFNULL(swc.settlementId,'') AS settlement_batch," +
+                "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.description,'') AS type,\n" +
+                        "    IFNULL(t.currencyId,'') AS currency, ROUND(t.amount,2) AS amount, IFNULL(payer.description,'') AS payer_dfsp,\n" +
+                        "    IFNULL(payee.description,'') AS payee_dfsp, IFNULL(swc.settlementWindowId, '') AS window_id, IFNULL(swc.settlementId,'') AS settlement_batch," +
                         " t.createdDate AS submitted_on_date \n" +
                         "FROM transfer t \n" +
-                        "LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')\n" +
+                        "LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE description = 'PAYER_DFSP')\n" +
                         "LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId\n" +
                         "LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId\n" +
-                        "LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')\n" +
+                        "LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE description = 'PAYEE_DFSP')\n" +
                         "LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId\n" +
                         "LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId\n" +
                         "LEFT JOIN quote q ON q.transactionReferenceId = t.transferId\n" +
-                        "LEFT JOIN quoteParty payerv ON q.quoteId = payerv.quoteId AND payerv.fspId = payer.name AND payerv.partyTypeId = (SELECT partyTypeId FROM partyType WHERE NAME='PAYER') \n" +
-                        "LEFT JOIN quoteParty payeev ON q.quoteId = payeev.quoteId AND payeev.fspId = payee.name  AND payeev.partyTypeId =  (SELECT partyTypeId FROM partyType WHERE NAME='PAYEE') \n" +
+                        "LEFT JOIN quoteParty payerv ON q.quoteId = payerv.quoteId AND payerv.fspId = payer.description AND payerv.partyTypeId = (SELECT partyTypeId FROM partyType WHERE NAME='PAYER') \n" +
+                        "LEFT JOIN quoteParty payeev ON q.quoteId = payeev.quoteId AND payeev.fspId = payee.description  AND payeev.partyTypeId =  (SELECT partyTypeId FROM partyType WHERE NAME='PAYEE') \n" +
                         "LEFT JOIN partyIdentifierType idenpayer ON payerv.partyIdentifierTypeId= idenpayer.partyIdentifierTypeId \n" +
                         "LEFT JOIN partyIdentifierType idenpayee ON payeev.partyIdentifierTypeId= idenpayee.partyIdentifierTypeId \n" +
                         "LEFT JOIN transactionScenario ts ON ts.transactionScenarioId = q.transactionScenarioId\n" +
@@ -67,13 +67,13 @@ public class GetTransfersJdbcQueryHandler implements GetTransfersQuery {
                         " AND t.transferId = IFNULL(?,t.transferId) \n" +
                         " AND payerv.fspId = IFNULL(?,payerv.fspId) \n" +
                         " AND payeev.fspId = IFNULL(?,payeev.fspId) \n" +
-                        " AND idenpayer.name = IFNULL(?,idenpayer.name) \n" +
-                        " AND idenpayee.name = IFNULL(?,idenpayee.name) \n" +
+                        " AND idenpayer.description = IFNULL(?,idenpayer.description) \n" +
+                        " AND idenpayee.description = IFNULL(?,idenpayee.description) \n" +
                         " AND payerv.partyIdentifierValue = IFNULL(?,payerv.partyIdentifierValue) \n" +
                         " AND payeev.partyIdentifierValue = IFNULL(?,payeev.partyIdentifierValue) \n" +
                         " AND t.currencyId = IFNULL(?, t.currencyId)\n" +
                         " AND tst.transferStateId IN (SELECT DISTINCT transferStateId FROM transferState WHERE enumeration = IFNULL(?,enumeration))\n" +
-                        " AND (payer.name = IFNULL(?, payer.name) OR payee.name = IFNULL(?, payee.name))  ORDER BY  t.createdDate DESC;",
+                        " AND (payer.description = IFNULL(?, payer.description) OR payee.description = IFNULL(?, payee.description))  ORDER BY  t.createdDate DESC;",
                 new TransferDataMapper(), input.getFromDate(), input.getToDate() , input.getTransferId(),
                 input.getPayerFspId(), input.getPayeeFspId(), input.getPayerIdentifierTypeId(), input.getPayeeIdentifierTypeId(),
                 input.getPayerIdentifierValue(), input.getPayeeIdentifierValue(),

@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -41,15 +41,12 @@ public class Participant extends JpaEntity<ParticipantId> {
     @EmbeddedId
     protected ParticipantId participantId;
 
-    @Column(name = "name")
-    protected String name;
+    @Column(name = "participant_name")
+    @Convert(converter = ParticipantName.JpaConverter.class)
+    protected ParticipantName participantName;
 
-    @Column(name = "dfsp_code")
-    @Convert(converter = DfspCode.JpaConverter.class)
-    protected DfspCode dfspCode;
-
-    @Column(name = "dfsp_name")
-    protected String dfspName;
+    @Column(name = "description")
+    protected String description;
 
     @Column(name = "address")
     protected String address;
@@ -89,21 +86,18 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Getter(AccessLevel.NONE)
     protected Set<LiquidityProfile> liquidityProfiles = new HashSet<>();
 
-    public Participant(DfspCode dfspCode,
-                       String name,
-                       String dfspName,
+    public Participant(ParticipantName participantName,
+                       String description,
                        String address,
                        Mobile mobile) {
 
-        Validate.notNull(dfspCode);
-        Validate.notBlank(name);
-        Validate.notBlank(dfspName);
+        Validate.notNull(participantName);
+        Validate.notBlank(description);
 
         this.participantId = new ParticipantId(Snowflake.get()
                                                         .nextId());
-        this.dfspCode = dfspCode;
-        this.name = name;
-        this.dfspName = dfspName;
+        this.participantName = participantName;
+        this.description = description;
         this.address = address;
         this.mobile = mobile;
     }
@@ -294,23 +288,17 @@ public class Participant extends JpaEntity<ParticipantId> {
                          .isPresent();
     }
 
-    public Participant name(String name) {
+    public Participant description(String description) {
 
-        this.name = name;
+        this.description = description;
         return this;
 
     }
 
-    public Participant dfsp_name(String dfspName) {
 
-        this.dfspName = dfspName;
-        return this;
+    public Participant participantName(ParticipantName participantName) {
 
-    }
-
-    public Participant dfspCode(DfspCode dfspCode) {
-
-        this.dfspCode = dfspCode;
+        this.participantName = participantName;
         return this;
 
     }

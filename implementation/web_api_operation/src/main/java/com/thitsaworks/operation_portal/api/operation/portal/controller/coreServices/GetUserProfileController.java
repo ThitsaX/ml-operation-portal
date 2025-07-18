@@ -52,8 +52,8 @@ public class GetUserProfileController {
                                     output.firstName(),
                                     output.lastName(),
                                     output.jobTitle(),
-                                    output.dfspCode(),
-                                    output.dfspName(),
+                                    output.participantName(),
+                                    output.description(),
                                     output.roleType(),
                                     output.participantId()
                                           .getId()
@@ -67,17 +67,17 @@ public class GetUserProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participantUserId") String participantUserId,
+        @JsonProperty("participantUserId") String participantUserId,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,
-            @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName,
-            @JsonProperty("jobTitle") String jobTitle,
-            @JsonProperty("dfspCode") String dfspCode,
-            @JsonProperty("dfspName") String dfspName,
-            @JsonProperty("userRoleType") String roleType,
-            @JsonProperty("participantId") String participantId,
-            @JsonProperty("createdDate") Long createdDate
+        @JsonProperty("firstName") String firstName,
+        @JsonProperty("lastName") String lastName,
+        @JsonProperty("jobTitle") String jobTitle,
+        @JsonProperty("participantName") String participantName,
+        @JsonProperty("description") String description,
+        @JsonProperty("userRoleType") String roleType,
+        @JsonProperty("participantId") String participantId,
+        @JsonProperty("createdDate") Long createdDate
     ) {
 
     }

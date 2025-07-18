@@ -31,7 +31,7 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
         QAudit audit = QAudit.audit;
 
         JPAQuery<Tuple> tupleSQLQuery =
-                this.readQueryFactory.select(participant.name, participantUser.name, action.name, audit.inputInfo,
+                this.readQueryFactory.select(participant.description, participantUser.name, action.name, audit.inputInfo,
                                              audit.outputInfo, audit.createdAt).from(audit).join(participant)
                                      .on(participant.participantId.id.eq(audit.realmId.id)).leftJoin(participantUser)
                                      .on(participantUser.participantUserId.id.eq(audit.userId.id)).join(action)
@@ -67,7 +67,7 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
 
         for (Tuple tuple : results.getResults()) {
 
-            auditInfoList.add(new Output.AuditInfo(tuple.get(participant.name),
+            auditInfoList.add(new Output.AuditInfo(tuple.get(participant.description),
                                                    tuple.get(participantUser.name), tuple.get(action.name),
                                                    tuple.get(audit.inputInfo), tuple.get(audit.outputInfo),
                                                    Instant.ofEpochSecond(tuple.get(audit.createdAt).getEpochSecond())));

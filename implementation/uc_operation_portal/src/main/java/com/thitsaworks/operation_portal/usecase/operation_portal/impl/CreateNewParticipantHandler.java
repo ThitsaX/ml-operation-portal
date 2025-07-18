@@ -50,7 +50,8 @@ public class CreateNewParticipantHandler
     public Output onExecute(Input input) throws DomainException {
 
         CreateParticipantCommand.Output output = this.createParticipantCommand.execute(
-            new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
+            new CreateParticipantCommand.Input(input.participantName(),
+                                               input.description(),
                                                input.address(),
                                                input.mobile(),
                                                input.contactInfoList()

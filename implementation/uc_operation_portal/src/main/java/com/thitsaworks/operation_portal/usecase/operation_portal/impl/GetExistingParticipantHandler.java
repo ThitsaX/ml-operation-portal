@@ -99,15 +99,16 @@ public class GetExistingParticipantHandler
         }
 
         return new Output(participantData.participantId(),
-                      participantData.dfspCode()
-                                                         .getValue(),
-                      participantData.name(),
-                      participantData.address(),
-                      participantData.mobile(),
-                      participantData.logo(),
-                      Instant.ofEpochSecond(participantData.createdDate()),
-                      contactInfoList,
-                      liquidityProfileInfoList);
+                          participantData.participantName()
+                                         .getValue(),
+                          participantData.description(),
+                          participantData.address(),
+                          participantData.mobile(),
+                          participantData.logoDataType(),
+                          participantData.logo(),
+                          Instant.ofEpochSecond(participantData.createdDate()),
+                          contactInfoList,
+                          liquidityProfileInfoList);
     }
 
 }

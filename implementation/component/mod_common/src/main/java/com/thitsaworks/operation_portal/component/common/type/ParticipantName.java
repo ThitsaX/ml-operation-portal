@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class DfspCode implements Serializable {
+public class ParticipantName implements Serializable {
 
     public static final String FORMAT = "^\\w+$";
 
@@ -19,7 +19,7 @@ public class DfspCode implements Serializable {
     @EqualsAndHashCode.Include
     private String value;
 
-    public DfspCode(String value) {
+    public ParticipantName(String value) {
 
         assert value != null : "Value is required.";
 
@@ -33,19 +33,19 @@ public class DfspCode implements Serializable {
     }
 
     @Converter
-    public static class JpaConverter implements AttributeConverter<DfspCode, String> {
+    public static class JpaConverter implements AttributeConverter<ParticipantName, String> {
 
         @Override
-        public String convertToDatabaseColumn(DfspCode attribute) {
+        public String convertToDatabaseColumn(ParticipantName attribute) {
 
             return attribute == null ? null : attribute.value;
 
         }
 
         @Override
-        public DfspCode convertToEntityAttribute(String dbData) {
+        public ParticipantName convertToEntityAttribute(String dbData) {
 
-            return dbData == null ? null : new DfspCode(dbData);
+            return dbData == null ? null : new ParticipantName(dbData);
 
         }
 

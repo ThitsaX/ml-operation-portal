@@ -71,7 +71,7 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
 
         if (!PERMITTED_ROLES.contains(userRole)) {
 
-            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
+            LOGGER.info("User is NOT authorized for description :[{}]", this.getName());
             throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
         }
 

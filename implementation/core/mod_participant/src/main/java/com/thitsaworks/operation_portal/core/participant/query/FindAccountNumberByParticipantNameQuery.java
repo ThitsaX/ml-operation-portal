@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.participant.query;
 
-public interface FindAccountNumberByDfspCodeQuery {
+public interface FindAccountNumberByParticipantNameQuery {
 
-    record Input(String dfspCode, String currencyId) {
+    record Input(String participantName, String currencyId) {
     }
 
     record Output(String accountNumber) {

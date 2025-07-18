@@ -22,7 +22,7 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
     @EmbeddedId
     protected ParticipantNDCId participantNDCId;
 
-    @Column(name = "dfsp_code")
+    @Column(name = "participantName")
     protected String dfspCode;
 
     @Column(name = "currency")

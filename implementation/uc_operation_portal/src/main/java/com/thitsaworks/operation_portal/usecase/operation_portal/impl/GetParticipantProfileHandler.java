@@ -52,9 +52,9 @@ public class GetParticipantProfileHandler
         var participantData = this.participantQuery.get(input.participantId());
 
         return new Output(participantData.participantId(),
-                          participantData.dfspCode()
+                          participantData.participantName()
                                          .getValue(),
-                          participantData.name(),
+                          participantData.description(),
                           participantData.address(),
                           participantData.mobile(),
                           participantData.logoDataType(),

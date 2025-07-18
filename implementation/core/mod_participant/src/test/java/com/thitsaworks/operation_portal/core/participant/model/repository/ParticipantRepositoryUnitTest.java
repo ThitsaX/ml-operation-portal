@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.core.participant.model.repository;
 
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,8 @@ public class ParticipantRepositoryUnitTest extends EnvAwareUnitTest {
     @Test
     public void test_createParticipantSuccessfully() {
 
-        Participant participant = new Participant(new DfspCode("okdollar"),
-                                                  "OK Dollar", null ,
+        Participant participant = new Participant(new ParticipantName("okdollar"),
+                                                  "OK Dollar",
                                                   "Sanchaung Township, Yangon.",
                                                   new Mobile("+959400547258"));
 

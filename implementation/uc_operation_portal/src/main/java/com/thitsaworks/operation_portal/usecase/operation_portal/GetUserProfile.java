@@ -19,8 +19,8 @@ public interface GetUserProfile extends
             String jobTitle,
             ParticipantId participantId,
             Long createdDate,
-            String dfspCode,
-            String dfspName,
+            String participantName,
+            String description,
             String roleType
     ) {}
 

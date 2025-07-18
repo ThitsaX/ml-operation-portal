@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @RestController
 @RequiredArgsConstructor
@@ -45,7 +44,8 @@ public class CreateNewParticipantController {
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
-        if (request.contactInfoList() != null || !request.contactInfoList().isEmpty()) {
+        if (request.contactInfoList() != null || !request.contactInfoList()
+                                                         .isEmpty()) {
 
             for (var contactInfo : request.contactInfoList()) {
 
@@ -54,13 +54,15 @@ public class CreateNewParticipantController {
                                                             contactInfo.title(),
                                                             new Email(contactInfo.email()),
                                                             new Mobile(contactInfo.mobile()),
-                                                            ContactType.valueOf(contactInfo.contactType().toUpperCase()));
+                                                            ContactType.valueOf(contactInfo.contactType()
+                                                                                           .toUpperCase()));
                 contactInfoList.add(contact);
             }
         }
 
         //Liquidity Profile Info
-        if (request.liquidityProfileInfoList() != null || !request.liquidityProfileInfoList().isEmpty()) {
+        if (request.liquidityProfileInfoList() != null || !request.liquidityProfileInfoList()
+                                                                  .isEmpty()) {
 
             for (var liquidityProfile : request.liquidityProfileInfoList()) {
 
@@ -73,15 +75,16 @@ public class CreateNewParticipantController {
         }
 
         CreateParticipant.Output output = this.createNewParticipant.execute(
-            new CreateParticipant.Input(request.name(),
-                                        new DfspCode(request.dfspCode()),
-                                        request.dfspName(),
+            new CreateParticipant.Input(new ParticipantName(request.participantName()),
+                                        request.description(),
                                         request.address(),
                                         new Mobile(request.mobile()),
                                         contactInfoList,
                                         liquidityProfileInfoList));
 
-        Response response = new Response(output.participantId().getId().toString(), output.created());
+        Response response = new Response(output.participantId()
+                                               .getId()
+                                               .toString(), output.created());
 
         LOG.info("Create new participant response: {}", objectMapper.writeValueAsString(response));
 
@@ -91,9 +94,8 @@ public class CreateNewParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("name") String name,
-        @NotNull @JsonProperty("dfspCode") String dfspCode,
-        @NotNull @JsonProperty("dfspName") String dfspName,
+        @NotNull @JsonProperty("participantName") String participantName,
+        @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,

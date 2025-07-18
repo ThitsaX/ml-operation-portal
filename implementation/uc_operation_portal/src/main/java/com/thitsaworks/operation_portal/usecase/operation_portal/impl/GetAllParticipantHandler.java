@@ -61,10 +61,9 @@ public class GetAllParticipantHandler
 
             participantInfoList.add(
                 new GetAllParticipant.Output.ParticipantInfo(participantData.participantId(),
-                                                             participantData.dfspCode()
+                                                             participantData.participantName()
                                                                             .getValue(),
-                                                             participantData.name(),
-                                                             participantData.dfspName(),
+                                                             participantData.description(),
                                                              participantData.address(),
                                                              participantData.mobile(),
                                                              Instant.ofEpochSecond(participantData.createdDate())));

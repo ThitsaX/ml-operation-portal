@@ -75,7 +75,7 @@ public class ModifyParticipantProfileHandler
         }
 
         var output = this.modifyParticipantCommand.execute(new ModifyParticipantCommand.Input(input.participantId(),
-                                                                                              input.companyName(),
+                                                                                              input.description(),
                                                                                               input.address(),
                                                                                               input.mobile(),
                                                                                               input.logoDataType(),

@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 
 import java.io.Serializable;
 
-public record ParticipantInfo(ParticipantId participantId, DfspCode dfsp_code, String name)
+public record ParticipantInfo(ParticipantId participantId, ParticipantName participantName, String description)
         implements Serializable {
 
 }

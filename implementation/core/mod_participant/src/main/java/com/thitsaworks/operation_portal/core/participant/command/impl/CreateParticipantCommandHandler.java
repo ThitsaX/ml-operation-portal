@@ -25,13 +25,14 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
     @CoreWriteTransactional
     public Output execute(Input input) throws ParticipantException {
 
-        Optional<Participant> participantByDfspCode = this.participantRepository.findByDfspCode(input.dfspCode());
+        Optional<Participant>
+            participantByParticipantName =
+            this.participantRepository.findByParticipantName(input.participantName());
 
-        if (participantByDfspCode.isEmpty()) {
+        if (participantByParticipantName.isEmpty()) {
 
-            Participant participant = new Participant(input.dfspCode(),
-                                                      input.name(),
-                                                      input.dfspName(),
+            Participant participant = new Participant(input.participantName(),
+                                                      input.description(),
                                                       input.address(),
                                                       input.mobile());
 
