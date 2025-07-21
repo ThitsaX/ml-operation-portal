@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
-import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.type.Mobile;
-import com.thitsaworks.operation_portal.core.participant.command.CreateContactCommand;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ContactType;
+import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Mobile;
+import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContactCommand;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

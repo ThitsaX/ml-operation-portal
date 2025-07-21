@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.hubuser.domain.command;
 
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.hubuser.command.CreateHubUserCommand;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;

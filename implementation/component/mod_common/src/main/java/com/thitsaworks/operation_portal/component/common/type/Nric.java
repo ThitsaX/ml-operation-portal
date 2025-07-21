@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.type;
+package com.thitsaworks.operation_portal.component.common.type;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

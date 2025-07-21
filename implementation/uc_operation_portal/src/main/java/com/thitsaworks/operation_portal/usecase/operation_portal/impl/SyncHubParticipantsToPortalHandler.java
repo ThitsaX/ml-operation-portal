@@ -63,16 +63,13 @@ public class SyncHubParticipantsToPortalHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        List<HubParticipantData> hubParticipantData = this.hubParticipantQuery.getParticipants();
+        List<HubParticipantData> hubParticipantDataList = this.hubParticipantQuery.getParticipants();
 
-        Set<String>
-            existingParticipantNames =
-            this.participantQuery.getParticipants()
-                                 .stream()
-                                 .map(ParticipantData::description)
-                                 .collect(Collectors.toSet());
+        Set<String> existingParticipantNames = this.participantQuery.getParticipants().stream()
+                                                                        .map(pd   -> pd.participantName().getValue())
+                                                                        .collect(Collectors.toSet());
 
-        for (HubParticipantData hubParticipant : hubParticipantData) {
+        for (HubParticipantData hubParticipant : hubParticipantDataList) {
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
                 this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(hubParticipant.name()),

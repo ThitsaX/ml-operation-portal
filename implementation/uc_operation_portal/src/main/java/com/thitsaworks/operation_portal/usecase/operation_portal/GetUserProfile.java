@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 
 public interface GetUserProfile extends
                                 UseCase<GetUserProfile.Input, GetUserProfile.Output> {

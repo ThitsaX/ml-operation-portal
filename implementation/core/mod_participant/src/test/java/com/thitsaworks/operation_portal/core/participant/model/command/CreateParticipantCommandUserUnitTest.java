@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;

@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;

@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 
 public interface LoginUserAccount {
 
