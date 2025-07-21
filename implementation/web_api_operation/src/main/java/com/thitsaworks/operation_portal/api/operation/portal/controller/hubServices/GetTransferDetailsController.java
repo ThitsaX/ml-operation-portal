@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
+import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 
 @RestController
@@ -34,33 +33,21 @@ public class GetTransferDetailsController {
 
         GetTransferDetails.Output output = this.getTransferDetails.execute(new GetTransferDetails.Input(transferId));
 
-        String convertedDate;
-
         TransferDetailData transferDetailData = output.transferDetailData();
 
         String showTimezone;
 
+        String convertedDate;
+
         if (timezone.startsWith("-")) {
-
             showTimezone = timezone.replaceFirst(".", "+");
-
         } else {
-
             showTimezone = timezone.replaceFirst(".", "-");
         }
 
-        convertedDate =
-                (TimeZoneConverter.convertTimeZone(transferDetailData.submittedOnDate()
-                                                   .replace(" ", "T") + "Z", showTimezone) +
-                 timezone).replace("T", " ")
-                          .replace("Z", " ");
-
-        var response = getResponse(transferDetailData);
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    private static @NotNull Response getResponse(TransferDetailData transferDetailData) {
+        convertedDate = (TimeZoneConverter.convertTimeZone(transferDetailData.submittedOnDate().replace(" ", "T") + "Z",
+                                                           showTimezone) + timezone).replace("T", " ").replace("Z",
+                                                                                                               " ");
 
         TransferInfo transferInfo =
                 new TransferInfo(transferDetailData.transferId(),
@@ -74,7 +61,7 @@ public class GetTransferDetailsController {
                                  transferDetailData.payeeReceivedAmount(),
                                  transferDetailData.payeeDfspFee(),
                                  transferDetailData.payeeDfspCommission(),
-                                 transferDetailData.submittedOnDate(),
+                                 convertedDate,
                                  transferDetailData.windowId(),
                                  transferDetailData.settlementId());
 
@@ -91,7 +78,7 @@ public class GetTransferDetailsController {
         TransferErrorInfo errorInfo = new TransferErrorInfo(transferDetailData.transferErrorInfo().errorCode(),
                                                             transferDetailData.transferErrorInfo().errorDescription());
 
-        return new Response(transferInfo, payerInfo, payeeInfo, errorInfo);
+        return new ResponseEntity<>(new Response(transferInfo, payerInfo, payeeInfo, errorInfo), HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -112,11 +99,11 @@ public class GetTransferDetailsController {
         @JsonProperty("transferType") String transferType,
         @JsonProperty("currency") String currency,
         @JsonProperty("amountType") String amountType,
-        @JsonProperty("quoteAmount") BigDecimal quoteAmount,
-        @JsonProperty("transferAmount") BigDecimal transferAmount,
-        @JsonProperty("payeeReceivedAmount") BigDecimal payeeReceivedAmount,
-        @JsonProperty("payeeDfspFeeAmount") BigDecimal payeeDfspFeeAmount,
-        @JsonProperty("payeeDfspCommissionAmount") BigDecimal payeeDfspCommissionAmount,
+        @JsonProperty("quoteAmount") String quoteAmount,
+        @JsonProperty("transferAmount") String transferAmount,
+        @JsonProperty("payeeReceivedAmount") String payeeReceivedAmount,
+        @JsonProperty("payeeDfspFeeAmount") String payeeDfspFeeAmount,
+        @JsonProperty("payeeDfspCommissionAmount") String payeeDfspCommissionAmount,
         @JsonProperty("submittedOnDate") String submittedOnDate,
         @JsonProperty("windowId") String windowId,
         @JsonProperty("settlementId") String settlementId

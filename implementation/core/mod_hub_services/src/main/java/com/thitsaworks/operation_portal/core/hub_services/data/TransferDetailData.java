@@ -17,15 +17,15 @@ public record TransferDetailData(
 
         String amountType,
 
-        BigDecimal quoteAmount,
+        String quoteAmount,
 
-        BigDecimal transferAmount,
+        String transferAmount,
 
-        BigDecimal payeeReceivedAmount,
+        String payeeReceivedAmount,
 
-        BigDecimal payeeDfspFee,
+        String payeeDfspFee,
 
-        BigDecimal payeeDfspCommission,
+        String payeeDfspCommission,
 
         String submittedOnDate,
 
