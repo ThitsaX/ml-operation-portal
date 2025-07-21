@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
@@ -67,8 +67,7 @@ public class CreateNewParticipantController {
             for (var liquidityProfile : request.liquidityProfileInfoList()) {
 
                 liquidityProfileInfoList.add(
-                    new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.bankName(),
-                                                                     liquidityProfile.accountName(),
+                    new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.accountName(),
                                                                      liquidityProfile.accountNumber(),
                                                                      liquidityProfile.currency(),
                                                                      liquidityProfile.participantStatus()));
@@ -76,13 +75,10 @@ public class CreateNewParticipantController {
         }
 
         CreateParticipant.Output output = this.createNewParticipant.execute(
-            new CreateParticipant.Input(request.name(),
-                                        new DfspCode(request.dfspCode()),
-                                        request.dfspName(),
+            new CreateParticipant.Input(new ParticipantName(request.participantName()),
+                                        request.description(),
                                         request.address(),
                                         new Mobile(request.mobile()),
-                                        request.logoType(),
-                                        request.logo(),
                                         contactInfoList,
                                         liquidityProfileInfoList));
 
@@ -98,13 +94,10 @@ public class CreateNewParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("name") String name,
-        @NotNull @JsonProperty("dfspCode") String dfspCode,
-        @NotNull @JsonProperty("dfspName") String dfspName,
+        @NotNull @JsonProperty("participantName") String participantName,
+        @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logoType") String logoType,
-        @JsonProperty("logo") byte[] logo,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileList") List<LiquidityProfileInfo> liquidityProfileInfoList)
         implements Serializable {
@@ -121,7 +114,6 @@ public class CreateNewParticipantController {
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record LiquidityProfileInfo(
             @JsonProperty("liquidityProfileId") String liquidityProfileId,
-            @NotNull @JsonProperty("bankName") String bankName,
             @NotNull @JsonProperty("accountName") String accountName,
             @NotNull @JsonProperty("accountNumber") String accountNumber,
             @NotNull @JsonProperty("currency") String currency,

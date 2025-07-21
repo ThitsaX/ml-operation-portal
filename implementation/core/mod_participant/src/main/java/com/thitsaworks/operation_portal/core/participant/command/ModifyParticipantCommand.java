@@ -14,13 +14,11 @@ import java.util.List;
 public interface ModifyParticipantCommand {
 
     record Input(ParticipantId participantId,
-                 String companyName,
+                 String description,
                  String address,
                  Mobile mobile,
-                 String logoType,
-                 byte[] logo) {
-
-    }
+                 String logoDataType,
+                 byte[] logo) { }
 
     record Output(boolean modified,
                   ParticipantId participantId) { }

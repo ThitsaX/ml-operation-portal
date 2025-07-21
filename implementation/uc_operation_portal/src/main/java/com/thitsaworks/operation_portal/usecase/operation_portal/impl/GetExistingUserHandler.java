@@ -64,7 +64,7 @@ public class GetExistingUserHandler
                                           participantUserData.jobTitle(),
                                           participantUserData.participantId(),
                                           participantUserData.createdDate(),
-                                          participantUserData.dfspCode().getValue());
+                                          participantUserData.participantName().getValue());
     }
 
 }

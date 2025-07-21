@@ -17,8 +17,8 @@ public interface GetExistingParticipant extends
     record Input(ParticipantId participantId) { }
 
     record Output(ParticipantId participantId,
-                  String dfspCode,
-                  String name,
+                  String participantName,
+                  String description,
                   String address,
                   Mobile mobile,
                   String logoType,
@@ -29,7 +29,7 @@ public interface GetExistingParticipant extends
 
         public record ContactInfo(ContactId contactId,
                                   String name,
-                                  String title,
+                                  String position,
                                   Email email,
                                   Mobile mobile,
                                   String contactType) implements Serializable { }

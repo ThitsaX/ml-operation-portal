@@ -49,19 +49,16 @@ public class CreateNewLiquidityProfileHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        for (CreateNewLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
+        var
+            output =
+            this.createLiquidityProfileCommand.execute(new CreateLiquidityProfileCommand.Input(input.participantId(),
+                                                                                               input.bankName(),
+                                                                                               input.accountName(),
+                                                                                               input.accountNumber(),
+                                                                                               input.currency(),
+                                                                                               true));
 
-            this.createLiquidityProfileCommand.execute(
-                new CreateLiquidityProfileCommand.Input(input.participantId(),
-                                                        profileInfo.bankName(),
-                                                        profileInfo.accountName(),
-                                                        profileInfo.accountNumber(),
-                                                        profileInfo.currency(),
-                                                        profileInfo.isActive()));
-
-        }
-
-        return new Output(true);
+        return new Output(true, output.liquidityProfileId());
     }
 
 }

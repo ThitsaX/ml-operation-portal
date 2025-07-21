@@ -34,8 +34,8 @@ public class Contact extends JpaEntity<ContactId> {
     @Column(name = "name")
     protected String name;
 
-    @Column(name = "title")
-    protected String title;
+    @Column(name = "position")
+    protected String position;
 
     @Column(name = "email")
     @Convert(converter = Email.JpaConverter.class)
@@ -49,12 +49,12 @@ public class Contact extends JpaEntity<ContactId> {
     @Enumerated(EnumType.STRING)
     protected ContactType contactType;
 
-    public Contact(String name, String title, Email email, Mobile mobile, ContactType contactType,
+    public Contact(String name, String position, Email email, Mobile mobile, ContactType contactType,
                    Participant participant) {
 
         this.contactId = new ContactId(Snowflake.get().nextId());
         this.name = name;
-        this.title = title;
+        this.position = position;
         this.email = email;
         this.mobile = mobile;
         this.contactType = contactType;
@@ -74,9 +74,9 @@ public class Contact extends JpaEntity<ContactId> {
 
     }
 
-    public Contact title(String title) {
+    public Contact position(String position) {
 
-        this.title = title;
+        this.position = position;
         return this;
 
     }

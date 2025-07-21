@@ -56,9 +56,7 @@ public class RemoveExistingParticipantUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        @JsonProperty("removed") boolean removed
-    ) implements Serializable {
+    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable {
 
     }
 

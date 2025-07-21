@@ -36,10 +36,28 @@ public class LiquidityProfileJpaQueryHandler implements LiquidityProfileQuery {
         BooleanExpression predicate = this.liquidityProfile.participant.participantId.eq(participantId);
 
         List<LiquidityProfile> liquidityProfiles = (List<LiquidityProfile>) this.liquidityProfileRepository.findAll(
-                predicate);
+            predicate);
 
-        return liquidityProfiles.stream().map(LiquidityProfileData::new).toList();
+        return liquidityProfiles.stream()
+                                .map(LiquidityProfileData::new)
+                                .toList();
 
+    }
+
+    @Override
+    public List<LiquidityProfileData> getActiveLiquidityProfiles(ParticipantId participantId) {
+
+        BooleanExpression
+            predicate =
+            this.liquidityProfile.participant.participantId.eq(participantId)
+                                                           .and(this.liquidityProfile.isActive.eq(true));
+
+        List<LiquidityProfile> liquidityProfiles = (List<LiquidityProfile>) this.liquidityProfileRepository.findAll(
+            predicate);
+
+        return liquidityProfiles.stream()
+                                .map(LiquidityProfileData::new)
+                                .toList();
     }
 
     @Override

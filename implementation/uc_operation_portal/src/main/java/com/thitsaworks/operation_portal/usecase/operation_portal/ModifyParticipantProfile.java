@@ -9,10 +9,10 @@ public interface ModifyParticipantProfile extends
                                           UseCase<ModifyParticipantProfile.Input, ModifyParticipantProfile.Output> {
 
     record Input(ParticipantId participantId,
-                 String companyName,
+                 String description,
                  String address,
                  Mobile mobile,
-                 String logoType,
+                 String logoDataType,
                  byte[] logo,
                  AccessKey accessKey) { }
 

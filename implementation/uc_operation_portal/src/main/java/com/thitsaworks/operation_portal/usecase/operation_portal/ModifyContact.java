@@ -7,23 +7,16 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 
-import java.io.Serializable;
-import java.util.List;
-
 public interface ModifyContact extends
-                                       UseCase<ModifyContact.Input, ModifyContact.Output> {
+                               UseCase<ModifyContact.Input, ModifyContact.Output> {
 
     record Input(ParticipantId participantId,
-                 List<Input.ContactInfo> contactInfoList) {
-
-        public record ContactInfo(ContactId contactId,
-                                  String name,
-                                  String title,
-                                  Email email,
-                                  Mobile mobile,
-                                  ContactType contactType) implements Serializable { }
-
-    }
+                 ContactId contactId,
+                 String name,
+                 String position,
+                 Email email,
+                 Mobile mobile,
+                 ContactType contactType) { }
 
     record Output(boolean modified) { }
 

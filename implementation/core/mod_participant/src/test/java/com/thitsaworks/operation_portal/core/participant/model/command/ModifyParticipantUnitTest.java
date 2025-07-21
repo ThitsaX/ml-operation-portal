@@ -20,9 +20,11 @@ public class ModifyParticipantUnitTest extends EnvAwareUnitTest {
     public void test_modifyParticipantSuccessfully() throws Exception {
 
         this.modifyParticipantCommand.execute(
-                new ModifyParticipantCommand.Input(new ParticipantId(390908599471210496L), "abc",
-                                                   "Ahlone Township, Yangon.",
-                                                   new Mobile("+959250661838"), null, null));
+            new ModifyParticipantCommand.Input(new ParticipantId(390908599471210496L),
+                                               "abc",
+                                               "Ahlone Township, Yangon.",
+                                               new Mobile("+959250661838"),
+                                               null, null));
     }
 
 }

@@ -11,7 +11,6 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserProfile;
 import org.slf4j.Logger;
@@ -73,9 +72,9 @@ public class GetUserProfileBean extends OperationPortalUseCase<GetUserProfile.In
                           participantUserData.jobTitle(),
                           participantUserData.participantId(),
                           participantUserData.createdDate(),
-                          participantData.dfspCode()
+                          participantData.participantName()
                                          .getValue(),
-                          participantData.dfspName(),
+                          participantData.description(),
                           principalData.userRoleType()
                                        .toString());
 

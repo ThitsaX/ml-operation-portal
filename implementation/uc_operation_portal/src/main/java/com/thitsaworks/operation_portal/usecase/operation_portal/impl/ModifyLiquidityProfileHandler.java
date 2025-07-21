@@ -8,9 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.command.SaveLiquidityProfileCommand;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyLiquidityProfileCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyLiquidityProfile;
 import org.slf4j.Logger;
@@ -29,16 +27,14 @@ public class ModifyLiquidityProfileHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final SaveLiquidityProfileCommand saveLiquidityProfileCommand;
-
-    private final ParticipantCache participantCache;
+    private final ModifyLiquidityProfileCommand modifyLiquidityProfileCommand;
 
     public ModifyLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
                                          CreateOutputAuditCommand createOutputAuditCommand,
                                          CreateExceptionAuditCommand createExceptionAuditCommand,
                                          ObjectMapper objectMapper,
                                          PrincipalCache principalCache,
-                                         SaveLiquidityProfileCommand saveLiquidityProfileCommand,
+                                         ModifyLiquidityProfileCommand modifyLiquidityProfileCommand,
                                          ParticipantCache participantCache) {
 
         super(createInputAuditCommand,
@@ -48,30 +44,22 @@ public class ModifyLiquidityProfileHandler
               objectMapper,
               principalCache);
 
-        this.saveLiquidityProfileCommand = saveLiquidityProfileCommand;
-        this.participantCache = participantCache;
+        this.modifyLiquidityProfileCommand = modifyLiquidityProfileCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        if (this.participantCache.get(input.participantId()) == null) {
+        var
+            output =
+            this.modifyLiquidityProfileCommand.execute(new ModifyLiquidityProfileCommand.Input(input.participantId(),
+                                                                                               input.liquidityProfileId(),
+                                                                                               input.bankName(),
+                                                                                               input.accountName(),
+                                                                                               input.accountNumber(),
+                                                                                               input.currency()));
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
-        }
-
-        for (ModifyLiquidityProfile.Input.LiquidityProfileInfo profileInfo : input.liquidityProfileInfoList()) {
-
-            this.saveLiquidityProfileCommand.execute(
-                new SaveLiquidityProfileCommand.Input(input.participantId(),
-                                                      profileInfo.liquidityProfileId(),
-                                                      profileInfo.bankName(),
-                                                      profileInfo.accountName(),
-                                                      profileInfo.accountNumber(),
-                                                      profileInfo.currency()));
-        }
-
-        return new Output(true);
+        return new Output(output.modified());
     }
 
 }

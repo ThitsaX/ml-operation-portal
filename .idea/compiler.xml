@@ -18,7 +18,6 @@
         <module name="uc_hub_service" />
         <module name="mod_misc" />
         <module name="mod_hub_user" />
-        <module name="mod_home_message" />
         <module name="mod_report" />
         <module name="uc_operation_portal" />
         <module name="mod_participant" />
@@ -30,6 +29,7 @@
       <module name="dfsp_portal" target="21" />
       <module name="mod_central_ledger" target="21" />
       <module name="mod_datasource" target="21" />
+      <module name="mod_home_message" target="21" />
       <module name="mod_hubuser" target="21" />
       <module name="mod_querydsl" target="21" />
       <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" target="21" />

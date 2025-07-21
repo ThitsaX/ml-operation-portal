@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -46,7 +47,7 @@ public class GetExistingParticipantController {
                                                                 .getId()
                                                                 .toString(),
                                                          contact.name(),
-                                                         contact.title(),
+                                                         contact.position(),
                                                          contact.email()
                                                                 .getValue(),
                                                          contact.mobile()
@@ -72,13 +73,14 @@ public class GetExistingParticipantController {
         var response = new Response(output.participantId()
                                           .getId()
                                           .toString(),
-                                    output.dfspCode(),
-                                    output.name(),
+                                    output.participantName(),
+                                    output.description(),
                                     output.address(),
                                     output.mobile()
                                           .getValue(),
                                     output.logoType(),
-                                    output.logo(),
+                                    output.logo() == null ? null : Base64.getEncoder()
+                                                                         .encodeToString(output.logo()),
                                     output.createdDate()
                                           .getEpochSecond(),
                                     contactInfoList,
@@ -93,12 +95,12 @@ public class GetExistingParticipantController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("participantId") String participantId,
-        @JsonProperty("dfspCode") String dfspCode,
-        @JsonProperty("name") String name,
+        @JsonProperty("participantName") String participantName,
+        @JsonProperty("description") String description,
         @JsonProperty("address") String address,
         @JsonProperty("mobile") String mobile,
         @JsonProperty("logoType") String logoType,
-        @JsonProperty("logo") byte[] logo,
+        @JsonProperty("logo") String logo,
         @JsonProperty("createdDate") Long createdDate,
         @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileInfoList") List<LiquidityProfileInfo> liquidityProfileInfoList) {
@@ -106,7 +108,7 @@ public class GetExistingParticipantController {
         public record ContactInfo(
             @JsonProperty("contactId") String contactId,
             @JsonProperty("name") String name,
-            @JsonProperty("title") String title,
+            @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
             @JsonProperty("contactType") String contactType) {

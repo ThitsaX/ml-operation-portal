@@ -59,7 +59,7 @@ public class GetContactListHandler extends OperationPortalAuditableUseCase<GetCo
             contactInfoList.add(
                 new Output.ContactInfo(contactData.contactId(),
                                        contactData.name(),
-                                       contactData.title(),
+                                       contactData.position(),
                                        contactData.email(),
                                        contactData.mobile(),
                                        contactData.contactType()

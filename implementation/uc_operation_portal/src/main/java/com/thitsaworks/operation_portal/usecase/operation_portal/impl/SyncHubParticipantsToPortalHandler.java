@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -69,18 +69,15 @@ public class SyncHubParticipantsToPortalHandler
             existingParticipantNames =
             this.participantQuery.getParticipants()
                                  .stream()
-                                 .map(ParticipantData::name)
+                                 .map(ParticipantData::description)
                                  .collect(Collectors.toSet());
 
         for (HubParticipantData hubParticipant : hubParticipantData) {
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
-                this.createParticipantCommand.execute(new CreateParticipantCommand.Input(hubParticipant.name(),
-                                                                                         new DfspCode(hubParticipant.name()),
-                                                                                         hubParticipant.name(),
+                this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(hubParticipant.name()),
+                                                                                         hubParticipant.description(),
                                                                                          null,
-                                                                                         null,
-                                                                                         "",
                                                                                          null,
                                                                                          null,
                                                                                          null));

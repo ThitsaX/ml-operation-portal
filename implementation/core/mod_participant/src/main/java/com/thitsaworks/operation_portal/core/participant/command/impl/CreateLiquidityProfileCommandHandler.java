@@ -27,15 +27,15 @@ public class CreateLiquidityProfileCommandHandler implements CreateLiquidityProf
                                                             .orElseThrow(() -> new ParticipantException(
                                                                 ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
-        participant.addLiquidityProfile(input.bankName(),
-                                        input.accountName(),
-                                        input.accountNumber(),
-                                        input.currency(),
-                                        input.isActive());
+        var liquidityProfile = participant.addLiquidityProfile(input.bankName(),
+                                                               input.accountName(),
+                                                               input.accountNumber(),
+                                                               input.currency(),
+                                                               input.isActive());
 
         this.participantRepository.save(participant);
 
-        return new Output(true);
+        return new Output(true, liquidityProfile.getLiquidityProfileId());
     }
 
 }

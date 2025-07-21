@@ -32,7 +32,7 @@ public class GetAllOtherParticipantsController {
 
     @GetMapping("/secured/getAllOtherParticipants")
     public ResponseEntity<Response> execute(
-            @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
+        @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
         LOG.info("Get all participants request : participantId = {}", participantId);
 
@@ -45,8 +45,9 @@ public class GetAllOtherParticipantsController {
             participantInfoList.add(new Response.ParticipantInfo(participant.participantId()
                                                                             .getId()
                                                                             .toString(),
-                                                                 participant.dfsp_code()
-                                                                            .toString(), participant.name()));
+                                                                 participant.participantName()
+                                                                            .toString(),
+                                                                 participant.description()));
         }
 
         var response = new Response(participantInfoList);
@@ -58,14 +59,14 @@ public class GetAllOtherParticipantsController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("participantInfoList") List<ParticipantInfo> participantInfoList
+        @JsonProperty("participantInfoList") List<ParticipantInfo> participantInfoList
     ) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
         public record ParticipantInfo(
-                @JsonProperty("participantId") String participantId,
-                @JsonProperty("dfspCode") String dfspCode,
-                @JsonProperty("dfspName") String name
+            @JsonProperty("participantId") String participantId,
+            @JsonProperty("participantName") String participantName,
+            @JsonProperty("description") String description
         ) implements Serializable { }
 
     }

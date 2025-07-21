@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
 import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetLiquidityProfileList;
 import org.slf4j.Logger;
@@ -31,12 +32,15 @@ public class GetLiquidityProfileListHandler
 
     private final LiquidityProfileQuery liquidityProfileQuery;
 
+    private final ParticipantQuery participantQuery;
+
     public GetLiquidityProfileListHandler(CreateInputAuditCommand createInputAuditCommand,
                                           CreateOutputAuditCommand createOutputAuditCommand,
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
-                                          LiquidityProfileQuery liquidityProfileQuery) {
+                                          LiquidityProfileQuery liquidityProfileQuery,
+                                          ParticipantQuery participantQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,15 +50,18 @@ public class GetLiquidityProfileListHandler
               principalCache);
 
         this.liquidityProfileQuery = liquidityProfileQuery;
+        this.participantQuery = participantQuery;
 
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        var participant = this.participantQuery.get(input.participantId());
+
         List<LiquidityProfileData>
             liquidityProfileDataList =
-            this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
+            this.liquidityProfileQuery.getActiveLiquidityProfiles(participant.participantId());
 
         List<Output.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 

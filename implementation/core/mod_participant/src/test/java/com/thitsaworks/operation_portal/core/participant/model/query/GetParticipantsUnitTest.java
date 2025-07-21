@@ -34,8 +34,8 @@ public class GetParticipantsUnitTest {
         }
 
         for (var participant : participantDataList) {
-            System.out.println(participant.dfspCode() + " , " +
-                                   participant.name() + " , " +
+            System.out.println(participant.participantName() + " , " +
+                                   participant.description() + " , " +
                                    participant.address() + " , " +
                                    participant.mobile()
                                               .getValue());
