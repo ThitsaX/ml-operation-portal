@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.command.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
@@ -28,7 +28,7 @@ public class CreateParticipantNDCCommandHandler implements CreateParticipantNDCC
     @CoreWriteTransactional
     public Output execute(Input input) throws ParticipantException {
 
-        Participant participant = this.participantRepository.findByDfspCode(new DfspCode(input.dfspCode()))
+        Participant participant = this.participantRepository.findByParticipantName(new ParticipantName(input.dfspCode()))
                                                             .orElseThrow(() -> new ParticipantException(
                                                                     ParticipantErrors.PARTICIPANT_NOT_FOUND));
 

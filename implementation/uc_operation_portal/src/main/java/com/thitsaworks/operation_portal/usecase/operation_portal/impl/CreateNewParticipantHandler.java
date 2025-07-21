@@ -50,10 +50,10 @@ public class CreateNewParticipantHandler
     public Output onExecute(Input input) throws DomainException {
 
         CreateParticipantCommand.Output output = this.createParticipantCommand.execute(
-            new CreateParticipantCommand.Input(input.name(), input.dfspCode(), input.dfspName(),
+            new CreateParticipantCommand.Input(input.participantName(),
+                                               input.description(),
                                                input.address(),
                                                input.mobile(),
-                                               input.logo(),
                                                input.contactInfoList()
                                                     .stream()
                                                     .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
@@ -65,11 +65,10 @@ public class CreateNewParticipantHandler
                                                input.liquidityProfileInfoList()
                                                     .stream()
                                                     .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(
-                                                        info.bankName(),
                                                         info.accountName(),
                                                         info.accountNumber(),
                                                         info.currency(),
-                                                        true))
+                                                        info.status()))
                                                     .collect(Collectors.toList())));
 
         return new CreateParticipant.Output(output.created(), output.participantId());

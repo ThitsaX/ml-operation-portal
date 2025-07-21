@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 
@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public record ParticipantUserData(ParticipantUserId participantUserId,
                                   ParticipantId participantId,
-                                  DfspCode dfspCode,
+                                  ParticipantName participantName,
                                   String name,
                                   Email email,
                                   String firstName,
@@ -24,7 +24,7 @@ public record ParticipantUserData(ParticipantUserId participantUserId,
 
              participantUser.getParticipant().getParticipantId(),
 
-             participantUser.getParticipant().getDfspCode(),
+             participantUser.getParticipant().getParticipantName(),
 
              participantUser.getName(),
 

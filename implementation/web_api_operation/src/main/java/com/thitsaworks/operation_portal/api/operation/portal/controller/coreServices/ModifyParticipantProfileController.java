@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Base64;
+
 @RestController
 @RequiredArgsConstructor
 public class ModifyParticipantProfileController {
@@ -40,10 +42,12 @@ public class ModifyParticipantProfileController {
 
         ModifyParticipantProfile.Output output = this.modifyParticipantProfile.execute(
             new ModifyParticipantProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                               request.companyName(),
+                                               request.description(),
                                                request.address(),
                                                new Mobile(request.mobile()),
-                                               request.logo(),
+                                               request.logoDataType(),
+                                               Base64.getDecoder()
+                                                     .decode(request.logoBase64()),
                                                userContext.accessKey()));
 
         var response = new Response(output.participantId()
@@ -56,16 +60,16 @@ public class ModifyParticipantProfileController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
         @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("name") String companyName,
+        @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
-        @JsonProperty("logo") byte[] logo
+        @JsonProperty("logoDataType") String logoDataType,
+        @JsonProperty("logo") String logoBase64
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("participantId") String participantId,
-        @JsonProperty("modified") boolean modified
-    ) { }
+        @JsonProperty("isModified") boolean isModified) { }
 
 }

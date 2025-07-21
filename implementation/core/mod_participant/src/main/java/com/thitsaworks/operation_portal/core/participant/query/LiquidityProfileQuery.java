@@ -11,6 +11,8 @@ public interface LiquidityProfileQuery {
 
     List<LiquidityProfileData> getLiquidityProfiles(ParticipantId participantId);
 
+    List<LiquidityProfileData> getActiveLiquidityProfiles(ParticipantId participantId);
+
     LiquidityProfileData get(LiquidityProfileId contactId) throws ParticipantException;
 
 }

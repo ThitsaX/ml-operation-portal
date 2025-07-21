@@ -32,8 +32,8 @@ public class GetParticipantUnitTest extends EnvAwareUnitTest {
             this.participantQuery.get(new ParticipantId(486547382195986432L));
 
         if (participantData != null) {
-            LOG.info(participantData.dfspCode() + " , " +
-                         participantData.name() + " , " +
+            LOG.info(participantData.participantName() + " , " +
+                         participantData.description() + " , " +
                          participantData.address() + " , " +
                          participantData.mobile()
                                         .getValue()

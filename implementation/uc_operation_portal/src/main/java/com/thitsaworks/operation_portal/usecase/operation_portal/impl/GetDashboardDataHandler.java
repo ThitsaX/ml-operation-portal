@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetFinancialDataQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
@@ -9,8 +10,6 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-import com.thitsaworks.operation_portal.core.hub_services.query.GetFinancialDataQuery;
-
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetDashboardData;
 import org.slf4j.Logger;
@@ -66,10 +65,12 @@ public class GetDashboardDataHandler extends OperationPortalUseCase<GetDashboard
 
         String
             fspName =
-            participantData.dfspCode()
+            participantData.participantName()
                            .getValue();
 
-        GetFinancialDataQuery.Output output = this.getFinancialDataQuery.execute(new GetFinancialDataQuery.Input(fspName));
+        GetFinancialDataQuery.Output
+            output =
+            this.getFinancialDataQuery.execute(new GetFinancialDataQuery.Input(fspName));
 
         return new GetDashboardData.Output(output.getFinancialData());
     }

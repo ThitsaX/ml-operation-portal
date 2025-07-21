@@ -81,7 +81,7 @@ public class GetAllTransferHandler extends OperationPortalAuditableUseCase<GetAl
 
         String
             fspName =
-            participantData.dfspCode()
+            participantData.participantName()
                            .getValue();
 
         GetTransfersQuery.Output output = this.getTransfersQuery.execute(new GetTransfersQuery.Input(input.fromDate(),

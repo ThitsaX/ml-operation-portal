@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
@@ -26,12 +26,12 @@ public class CreateParticipantCommandUnitTest {
     @Test
     public void test_createParticipantSuccessfully() throws Exception {
 
-        this.createParticipantCommand.execute(new CreateParticipantCommand.Input("Vision Fund",
-                                                                                 new DfspCode("abcdefg"), "abc",
-                                                                                 "Yankin Township, Yangon.",
+        this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName("abcdefg"),
+                                                                                 "Vision Fund",
+                                                                                 "address",
                                                                                  new Mobile("+959250661838"),
                                                                                  null,
-                                                                                 null, null));
+                                                                                 null));
 
     }
 

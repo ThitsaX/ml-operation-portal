@@ -44,8 +44,8 @@ public class GetAllOtherParticipantsBean
 
         for (ParticipantData participantData : participantDataList) {
             participantInfoList.add(new ParticipantInfo(participantData.participantId(),
-                                                        participantData.dfspCode(),
-                                                        participantData.name()));
+                                                        participantData.participantName(),
+                                                        participantData.description()));
         }
 
         return new Output(participantInfoList);

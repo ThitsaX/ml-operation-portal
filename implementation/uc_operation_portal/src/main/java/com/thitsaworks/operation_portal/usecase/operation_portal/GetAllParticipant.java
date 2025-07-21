@@ -16,9 +16,8 @@ public interface GetAllParticipant
     record Output(List<ParticipantInfo> participantInfoList) {
         public record ParticipantInfo(
                 ParticipantId participantId,
-                String dfsp_code,
-                String name,
-                String dfsp_name,
+                String participantName,
+                String description,
                 String address,
                 Mobile mobile,
                 Instant createdDate

@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.DfspCode;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -41,15 +42,12 @@ public class Participant extends JpaEntity<ParticipantId> {
     @EmbeddedId
     protected ParticipantId participantId;
 
-    @Column(name = "name")
-    protected String name;
+    @Column(name = "participant_name")
+    @Convert(converter = ParticipantName.JpaConverter.class)
+    protected ParticipantName participantName;
 
-    @Column(name = "dfsp_code")
-    @Convert(converter = DfspCode.JpaConverter.class)
-    protected DfspCode dfspCode;
-
-    @Column(name = "dfsp_name")
-    protected String dfspName;
+    @Column(name = "description")
+    protected String description;
 
     @Column(name = "address")
     protected String address;
@@ -58,11 +56,14 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Convert(converter = Mobile.JpaConverter.class)
     protected Mobile mobile;
 
+    @Column(name = "logo_data_type")
+    protected String logoDatatype;
+
     @Lob
     @Column(
         name = "logo",
         columnDefinition = "LONGBLOB")
-    protected byte[] logo;
+    protected byte[] logoBase64;
 
     @OneToMany(
         cascade = {CascadeType.ALL},
@@ -86,28 +87,24 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Getter(AccessLevel.NONE)
     protected Set<LiquidityProfile> liquidityProfiles = new HashSet<>();
 
-    public Participant(DfspCode dfspCode,
-                       String name,
-                       String dfspName,
+    public Participant(ParticipantName participantName,
+                       String description,
                        String address,
-                       Mobile mobile,
-                       byte[] logo) {
+                       Mobile mobile) {
 
-        Validate.notNull(dfspCode);
-        Validate.notBlank(name);
-        Validate.notBlank(dfspName);
+        Validate.notNull(participantName);
+        Validate.notBlank(description);
 
         this.participantId = new ParticipantId(Snowflake.get()
                                                         .nextId());
-        this.dfspCode = dfspCode;
-        this.name = name;
-        this.dfspName = dfspName;
+        this.participantName = participantName;
+        this.description = description;
         this.address = address;
         this.mobile = mobile;
-        this.logo = logo;
     }
 
-    public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType) {
+    public Contact addContact(String name, String title, Email email, Mobile mobile, ContactType contactType)
+        throws ParticipantException {
 
         Contact contact = new Contact(name, title, email, mobile, contactType, this);
 
@@ -115,7 +112,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                              .anyMatch(c -> c.contactType.equals(contactType));
 
         if (contactExists) {
-            throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
         }
 
         this.contacts.add(contact);
@@ -128,7 +125,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                  String title,
                                  Email email,
                                  Mobile mobile,
-                                 ContactType contactType) {
+                                 ContactType contactType) throws ParticipantException {
 
         Optional<Contact> existingContact = this.contacts.stream()
                                                          .filter(c -> c.contactId.equals(contactId))
@@ -144,7 +141,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                 c.contactType.equals(contactType));
 
             if (isChangingType && typeExist) {
-                throw new InputException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
             }
 
             contact.name(name);
@@ -186,7 +183,8 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                 String accountName,
                                                 String accountNumber,
                                                 String currency,
-                                                Boolean isActive) throws IllegalArgumentException {
+                                                Boolean isActive) throws IllegalArgumentException,
+                                                                         ParticipantException {
 
         Validate.notBlank(accountName);
         Validate.notBlank(accountNumber);
@@ -203,7 +201,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                profile.isActive);
 
         if (currencyExist) {
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
         }
 
         this.liquidityProfiles.add(liquidityProfile);
@@ -215,7 +213,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                    String bankName,
                                                    String accountName,
                                                    String accountNumber,
-                                                   String currency) {
+                                                   String currency) throws ParticipantException {
 
         Validate.notBlank(bankName);
         Validate.notBlank(accountName);
@@ -239,7 +237,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                         profile.isActive));
 
             if (isChangingCurrency && currencyExist) {
-                throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
             }
 
             liquidityProfile.bankName(bankName);
@@ -293,23 +291,17 @@ public class Participant extends JpaEntity<ParticipantId> {
                          .isPresent();
     }
 
-    public Participant name(String name) {
+    public Participant description(String description) {
 
-        this.name = name;
+        this.description = description;
         return this;
 
     }
 
-    public Participant dfsp_name(String dfspName) {
 
-        this.dfspName = dfspName;
-        return this;
+    public Participant participantName(ParticipantName participantName) {
 
-    }
-
-    public Participant dfspCode(DfspCode dfspCode) {
-
-        this.dfspCode = dfspCode;
+        this.participantName = participantName;
         return this;
 
     }
@@ -328,9 +320,15 @@ public class Participant extends JpaEntity<ParticipantId> {
 
     }
 
-    public Participant logo(byte[] logo) {
+    public Participant logoDataType(String logoDatatype){
 
-        this.logo = logo;
+        this.logoDatatype = logoDatatype;
+        return this;
+    }
+
+    public Participant logoBase64(byte[] logoBase64) {
+
+        this.logoBase64 = logoBase64;
         return this;
     }
 

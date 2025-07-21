@@ -25,16 +25,16 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
     @CoreWriteTransactional
     public Output execute(Input input) throws ParticipantException {
 
-        Optional<Participant> participantByDfspCode = this.participantRepository.findByDfspCode(input.dfspCode());
+        Optional<Participant>
+            participantByParticipantName =
+            this.participantRepository.findByParticipantName(input.participantName());
 
-        if (participantByDfspCode.isEmpty()) {
+        if (participantByParticipantName.isEmpty()) {
 
-            Participant participant = new Participant(input.dfspCode(),
-                                                      input.name(),
-                                                      input.dfspName(),
+            Participant participant = new Participant(input.participantName(),
+                                                      input.description(),
                                                       input.address(),
-                                                      input.mobile(),
-                                                      input.logo());
+                                                      input.mobile());
 
             //For ContactInfo
             if (input.contactInfoList() != null && !input.contactInfoList()
@@ -56,7 +56,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
                 for (var liquidityProfile : input.liquidityProfileInfoList()) {
 
-                    participant.addLiquidityProfile(liquidityProfile.bankName(),
+                    participant.addLiquidityProfile(null,
                                                     liquidityProfile.accountName(),
                                                     liquidityProfile.accountNumber(),
                                                     liquidityProfile.currency(),

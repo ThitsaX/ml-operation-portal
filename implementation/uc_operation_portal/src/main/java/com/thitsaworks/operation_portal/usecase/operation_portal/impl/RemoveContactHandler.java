@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContactHistoryCommand;
 import com.thitsaworks.operation_portal.core.participant.command.RemoveContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveContact;
@@ -27,12 +28,15 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
 
     private final RemoveContactCommand removeContactCommand;
 
+    private final CreateContactHistoryCommand createContactHistoryCommand;
+
     public RemoveContactHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
-                                RemoveContactCommand removeContactCommand) {
+                                RemoveContactCommand removeContactCommand,
+                                CreateContactHistoryCommand createContactHistoryCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -42,10 +46,14 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
               principalCache);
 
         this.removeContactCommand = removeContactCommand;
+        this.createContactHistoryCommand = createContactHistoryCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
+
+        this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
+            input.contactId(), input.participantId()));
 
         var output = this.removeContactCommand.execute(new RemoveContactCommand.Input(input.participantId(),
                                                                                       input.contactId()));
