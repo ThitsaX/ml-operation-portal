@@ -41,6 +41,7 @@
       <module name="reporting-pom" target="21" />
       <module name="uc_central_ledger" target="21" />
       <module name="uc_common" target="21" />
+      <module name="uc_core_services" target="21" />
       <module name="uc_hub_operator" target="21" />
       <module name="uc_hub_service" target="21" />
       <module name="uc_hub_services" target="21" />

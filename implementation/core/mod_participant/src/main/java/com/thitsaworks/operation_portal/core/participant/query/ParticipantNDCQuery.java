@@ -8,4 +8,6 @@ public interface ParticipantNDCQuery {
 
     ParticipantNDCData get(ParticipantNDCId participantNDCId) throws ParticipantNDCException;
 
+    ParticipantNDCData get(String dfspCode, String currency) throws ParticipantNDCException;
+
 }
