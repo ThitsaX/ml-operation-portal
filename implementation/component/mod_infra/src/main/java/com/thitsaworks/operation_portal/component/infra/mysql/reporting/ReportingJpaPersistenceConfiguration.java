@@ -46,7 +46,7 @@ public class ReportingJpaPersistenceConfiguration {
         Properties jpaProperties = new Properties();
 
         jpaProperties.put("hibernate.dialect", MySQLDialect.class);
-        jpaProperties.put("hibernate.show_sql", true);
+        jpaProperties.put("hibernate.show_sql", false);
         jpaProperties.put("hibernate.format_sql", false);
         jpaProperties.put("hibernate.hibernate.connection.provider_disables_autocommit", true);
         jpaProperties.put("hibernate.flushMode", FlushMode.MANUAL.name());
