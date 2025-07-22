@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.component.common.type;
 
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
+import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -23,9 +25,9 @@ public class ParticipantName implements Serializable {
 
         assert value != null : "Value is required.";
 
-        if (!PATTERN.matcher(value).matches()) {
+        if (!Pattern.matches(FORMAT, value)) {
 
-            throw new IllegalArgumentException("Value is in wrong format.");
+            throw new InputException(new ErrorMessage("FORMAT_ERROR", "Invalid name format."));
         }
 
         this.value = value;
