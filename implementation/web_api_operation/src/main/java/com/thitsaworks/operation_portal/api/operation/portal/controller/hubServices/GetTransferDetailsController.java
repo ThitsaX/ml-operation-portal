@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
+import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetails;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 
 @RestController
@@ -33,50 +33,60 @@ public class GetTransferDetailsController {
 
         GetTransferDetails.Output output = this.getTransferDetails.execute(new GetTransferDetails.Input(transferId));
 
-        String convertedDate;
-
-        var info = output.businessData();
+        TransferDetailData transferDetailData = output.transferDetailData();
 
         String showTimezone;
 
+        String convertedDate;
+
         if (timezone.startsWith("-")) {
-
             showTimezone = timezone.replaceFirst(".", "+");
-
         } else {
-
             showTimezone = timezone.replaceFirst(".", "-");
         }
 
-        convertedDate =
-            (TimeZoneConverter.convertTimeZone(info.getSubmittedOnDate()
-                                                   .replace(" ", "T") + "Z", showTimezone) +
-                 timezone).replace("T", " ")
-                          .replace("Z", " ");
+        convertedDate = (TimeZoneConverter.convertTimeZone(transferDetailData.submittedOnDate().replace(" ", "T") + "Z",
+                                                           showTimezone) + timezone).replace("T", " ").replace("Z",
+                                                                                                               " ");
 
         TransferInfo transferInfo =
-            new TransferInfo(info.getTransferId(),
-                             info.getState(),
-                             info.getType(),
-                             info.getCurrency(),
-                             info.getAmount(),
-                             info.getPayer(),
-                             info.getPayerDetails(),
-                             info.getPayerDfsp(),
-                             info.getPayee(),
-                             info.getPayeeDetails(),
-                             info.getPayeeDfsp(),
-                             info.getSettlementBatch(),
-                             convertedDate);
+                new TransferInfo(transferDetailData.transferId(),
+                                 transferDetailData.quoteId(),
+                                 transferDetailData.transferState(),
+                                 transferDetailData.transferType(),
+                                 transferDetailData.currency(),
+                                 transferDetailData.amountType(),
+                                 transferDetailData.quoteAmount(),
+                                 transferDetailData.transferAmount(),
+                                 transferDetailData.payeeReceivedAmount(),
+                                 transferDetailData.payeeDfspFee(),
+                                 transferDetailData.payeeDfspCommission(),
+                                 convertedDate,
+                                 transferDetailData.windowId(),
+                                 transferDetailData.settlementId());
 
-        var response = new Response(transferInfo);
+        PartyInfo payerInfo = new PartyInfo(transferDetailData.payerInformation().idType(),
+                                            transferDetailData.payerInformation().idValue(),
+                                            transferDetailData.payerInformation().dfspId(),
+                                            transferDetailData.payerInformation().name());
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        PartyInfo payeeInfo = new PartyInfo(transferDetailData.payeeInformation().idType(),
+                                            transferDetailData.payeeInformation().idValue(),
+                                            transferDetailData.payeeInformation().dfspId(),
+                                            transferDetailData.payeeInformation().name());
+
+        TransferErrorInfo errorInfo = new TransferErrorInfo(transferDetailData.transferErrorInfo().errorCode(),
+                                                            transferDetailData.transferErrorInfo().errorDescription());
+
+        return new ResponseEntity<>(new Response(transferInfo, payerInfo, payeeInfo, errorInfo), HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("transferDetails") TransferInfo transferInfo
+            @JsonProperty("transferDetails") TransferInfo transferInfo,
+            @JsonProperty("payerInformation") PartyInfo payerInfo,
+            @JsonProperty("payeeInformation") PartyInfo payeeInfo,
+            @JsonProperty("errorInformation") TransferErrorInfo errorInfo
     ) {
 
     }
@@ -84,20 +94,36 @@ public class GetTransferDetailsController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record TransferInfo(
         @JsonProperty("transferId") String transferId,
-        @JsonProperty("state") String state,
-        @JsonProperty("type") String type,
+        @JsonProperty("quoteId") String quoteId,
+        @JsonProperty("transferState") String transferState,
+        @JsonProperty("transferType") String transferType,
         @JsonProperty("currency") String currency,
-        @JsonProperty("amount") BigDecimal amount,
-        @JsonProperty("payer") String payer,
-        @JsonProperty("payerDetails") String payerDetails,
-        @JsonProperty("payerDfsp") String payerDfsp,
-        @JsonProperty("payee") String payee,
-        @JsonProperty("payeeDetails") String payeeDetails,
-        @JsonProperty("payeeDfsp") String payeeDfsp,
-        @JsonProperty("settlementBatch") String settlementBatch,
-        @JsonProperty("submittedOnDate") String submittedOnDate
-    ) {
+        @JsonProperty("amountType") String amountType,
+        @JsonProperty("quoteAmount") String quoteAmount,
+        @JsonProperty("transferAmount") String transferAmount,
+        @JsonProperty("payeeReceivedAmount") String payeeReceivedAmount,
+        @JsonProperty("payeeDfspFeeAmount") String payeeDfspFeeAmount,
+        @JsonProperty("payeeDfspCommissionAmount") String payeeDfspCommissionAmount,
+        @JsonProperty("submittedOnDate") String submittedOnDate,
+        @JsonProperty("windowId") String windowId,
+        @JsonProperty("settlementId") String settlementId
+    ) {}
 
-    }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record PartyInfo(
+
+            @JsonProperty("idType") String idType,
+
+            @JsonProperty("idValue") String idValue,
+
+            @JsonProperty("dfspId") String dfspId,
+
+            @JsonProperty("name") String name) {}
+
+    public record TransferErrorInfo(
+
+            @JsonProperty("errorCode") String errorCode,
+
+            @JsonProperty("errorDescription") String errorDescription) {}
 
 }

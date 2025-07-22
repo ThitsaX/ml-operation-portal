@@ -9,6 +9,8 @@ public interface UpdateParticipantAmount
         extends UseCase<UpdateParticipantAmount.Input, UpdateParticipantAmount.Output> {
 
     public record Input(
+            String participantId,
+            String accountId,
             String transferId,
             String externalReference,
             String action,

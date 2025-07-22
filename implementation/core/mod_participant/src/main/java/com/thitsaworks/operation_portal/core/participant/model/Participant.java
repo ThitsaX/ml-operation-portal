@@ -7,9 +7,9 @@ import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
+import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -93,7 +93,6 @@ public class Participant extends JpaEntity<ParticipantId> {
                        Mobile mobile) {
 
         Validate.notNull(participantName);
-        Validate.notBlank(description);
 
         this.participantId = new ParticipantId(Snowflake.get()
                                                         .nextId());

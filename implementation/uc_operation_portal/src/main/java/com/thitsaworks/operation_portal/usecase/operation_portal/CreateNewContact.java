@@ -4,8 +4,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
-import com.thitsaworks.operation_portal.component.type.Email;
-import com.thitsaworks.operation_portal.component.type.Mobile;
+import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Mobile;
 
 public interface CreateNewContact extends UseCase<CreateNewContact.Input, CreateNewContact.Output> {
 

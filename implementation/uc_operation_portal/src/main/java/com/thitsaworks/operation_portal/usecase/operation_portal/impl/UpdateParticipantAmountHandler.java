@@ -52,9 +52,6 @@ public class UpdateParticipantAmountHandler
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
-        String participantId = "wallet1";
-
-        String accountId = "6";
 
         PostParticipantBalance.Request request = new PostParticipantBalance.Request(input.transferId(),
                                                                                     input.externalReference(),
@@ -62,8 +59,8 @@ public class UpdateParticipantAmountHandler
                                                                                     input.reason(),
                                                                                     input.amount());
 
-        PostParticipantBalance.Response response = this.hubClient.postParticipantBalance(participantId,
-                                                                                         accountId,
+        PostParticipantBalance.Response response = this.hubClient.postParticipantBalance(input.participantId(),
+                                                                                         input.accountId(),
                                                                                          request);
 
         return new Output(response.accessKey(), response.secretKey());

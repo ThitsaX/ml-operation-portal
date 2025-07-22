@@ -39,8 +39,7 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
                         rs.getString("description"),
                         rs.getBoolean("isActive"),
                         rs.getTimestamp("createdDate").toInstant(),
-                        rs.getString("createdBy"),
-                        rs.getBoolean("isProxy")
+                        rs.getString("createdBy")
                 ));
 
     }
@@ -57,8 +56,7 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
                         rs.getString("description"),
                         rs.getBoolean("isActive"),
                         rs.getTimestamp("createdDate").toInstant(),
-                        rs.getString("createdBy"),
-                        rs.getBoolean("isProxy")
+                        rs.getString("createdBy")
                 ));
 
         if (participantDataList.isEmpty()) {

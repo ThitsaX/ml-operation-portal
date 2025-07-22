@@ -8,7 +8,6 @@ public record HubParticipantData(String participantId,
                                  String description,
                                  boolean isActive,
                                  Instant createdDate,
-                                 String createdBy,
-                                 boolean isProxy) implements Serializable {
+                                 String createdBy) implements Serializable {
 
 }

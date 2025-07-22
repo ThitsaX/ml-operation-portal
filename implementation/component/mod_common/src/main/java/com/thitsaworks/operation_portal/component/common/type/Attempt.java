@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.misc.type;
+package com.thitsaworks.operation_portal.component.common.type;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaInstantConverter;
 import lombok.AccessLevel;

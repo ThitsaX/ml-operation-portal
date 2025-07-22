@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
 
 public interface CreateHubUserCommand {

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model.repository;
 
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import org.springframework.data.jpa.repository.JpaRepository;
