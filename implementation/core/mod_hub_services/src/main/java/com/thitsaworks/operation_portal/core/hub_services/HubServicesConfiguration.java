@@ -13,9 +13,10 @@ public class HubServicesConfiguration {
     @Bean
     public HubServicesConfiguration.Settings hubServiceConfigurationSettings() {
 
-        return new HubServicesConfiguration.Settings(System.getProperty("hubEndpoint"));
+        return new HubServicesConfiguration.Settings(System.getProperty("CENTRAL_LEDGER_ENDPOINT"));
 
     }
-    public record Settings(String hubEndpoint) {}
+
+    public record Settings(String centralLedgerEndpoint) {}
 
 }

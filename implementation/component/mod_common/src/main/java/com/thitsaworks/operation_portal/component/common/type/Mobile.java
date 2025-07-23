@@ -1,10 +1,12 @@
-package com.thitsaworks.operation_portal.component.type;
+package com.thitsaworks.operation_portal.component.common.type;
 
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
+import com.thitsaworks.operation_portal.component.misc.exception.InputException;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import jakarta.persistence.AttributeConverter;
-import jakarta.persistence.Converter;
 import java.io.Serializable;
 import java.util.regex.Pattern;
 
@@ -46,14 +48,19 @@ public class Mobile implements Serializable {
 
         assert value != null : "Value is required.";
 
-        if (!PATTERN.matcher(value).matches() && !value.isEmpty()) {
+        if (!Pattern.matches(FORMAT, value)) {
 
-            throw new IllegalArgumentException("Value is in wrong format.");
-
+            throw new InputException(new ErrorMessage("FORMAT_ERROR", "Invalid mobile format."));
         }
 
         this.value = value;
 
+    }
+
+    @Override
+    public String toString() {
+
+        return this.value;
     }
 
     public String getPlainValue(String discardingPrefix, String replacement) {

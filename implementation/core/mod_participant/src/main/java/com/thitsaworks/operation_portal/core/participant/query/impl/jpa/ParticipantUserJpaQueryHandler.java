@@ -3,8 +3,8 @@ package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.component.type.Email;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -34,12 +34,17 @@ public class ParticipantUserJpaQueryHandler implements ParticipantUserQuery {
     @Override
     public List<ParticipantUserData> getParticipantUsers(ParticipantId participantId) {
 
-        BooleanExpression predicate = this.participantUser.participant.participantId.eq(participantId).and(participantUser.isDeleted.isFalse());
+        BooleanExpression
+            predicate =
+            this.participantUser.participant.participantId.eq(participantId)
+                                                          .and(participantUser.isDeleted.isFalse());
 
         List<ParticipantUser> participantUsers = (List<ParticipantUser>) this.participantUserRepository.findAll(
-                predicate);
+            predicate);
 
-        return participantUsers.stream().map(ParticipantUserData::new).toList();
+        return participantUsers.stream()
+                               .map(ParticipantUserData::new)
+                               .toList();
 
     }
 
@@ -56,6 +61,17 @@ public class ParticipantUserJpaQueryHandler implements ParticipantUserQuery {
         }
 
         return new ParticipantUserData(optionalParticipantUser.get());
+    }
+
+    @Override
+    public Optional<ParticipantUserData> find(ParticipantUserId participantUserId) {
+
+        BooleanExpression predicate = this.participantUser.participantUserId.eq(participantUserId);
+
+        Optional<ParticipantUser> optionalParticipantUser = this.participantUserRepository.findOne(predicate);
+
+        return optionalParticipantUser.map(ParticipantUserData::new);
+
     }
 
     @Override

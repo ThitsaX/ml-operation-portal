@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.model;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import lombok.Getter;

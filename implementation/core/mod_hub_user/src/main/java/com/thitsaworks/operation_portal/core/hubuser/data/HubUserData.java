@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hubuser.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.hubuser.model.HubUser;
 
 import java.time.Instant;

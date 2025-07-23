@@ -1,17 +1,23 @@
 package com.thitsaworks.operation_portal.core.hub_services;
 
-import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRestApi;
-import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitService;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
+import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
+import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorDecoder;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServiceErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.net.ConnectException;
 
@@ -20,15 +26,29 @@ public class HubClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(HubClient.class);
 
-    @Autowired
-    private HubServicesConfiguration.Settings settings;
+    private final HubServicesConfiguration.Settings settings;
 
     private final HubService hubService;
 
-    public HubClient() {
+    private final HubErrorDecoder hubErrorDecoder;
 
-        this.hubService =
-                new RetrofitService<>(HubService.class, "http://localhost:4001", null, true).getService();
+    @Autowired
+    public HubClient(HubServicesConfiguration.Settings settings) {
+
+        this.settings = settings;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        this.hubService = new RetrofitServiceBuilder<>(HubService.class,
+                                                       this.settings.centralLedgerEndpoint()).withHttpLogging(
+                HttpLoggingInterceptor.Level.BODY,
+                true).withConverterFactories(new NullOrEmptyConverterFactory(),
+                                             ScalarsConverterFactory.create(),
+                                             JacksonConverterFactory.create(objectMapper)).build();
+
+        this.hubErrorDecoder = new HubErrorDecoder(objectMapper);
 
     }
 
@@ -37,20 +57,16 @@ public class HubClient {
                                                                   PostParticipantBalance.Request request)
             throws HubServicesException, ConnectException {
 
-        String endpoint = String.format("/participants/%s/accounts/%s", participantId, accountId);
-
-        PostParticipantBalance postParticipantBalance =
-                new PostParticipantBalance(
-                        this.settings.hubEndpoint() + endpoint,
-                        new HubErrorDecoder(), this.hubService);
-
         PostParticipantBalance.Response response;
 
         try {
 
-            response = postParticipantBalance.invoke(request).body();
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.postParticipantBalance(participantId, accountId, request),
+                                             this.hubErrorDecoder).body();
 
-        } catch (RetrofitRestApi.RestException e) {
+        } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
 
@@ -59,7 +75,8 @@ public class HubClient {
 
             } else if (e.getCause() instanceof ConnectException) {
 
-                throw new ConnectException(e.getMessage());
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
             } else {
 
                 throw new HubServicesException(null);

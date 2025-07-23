@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
-import com.thitsaworks.operation_portal.component.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 
 public interface CreateNewParticipantUser extends
                                           UseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output> {

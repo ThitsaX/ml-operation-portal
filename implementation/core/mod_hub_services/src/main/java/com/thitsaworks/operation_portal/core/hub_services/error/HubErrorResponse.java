@@ -4,6 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public record HubErrorResponse() {
+public record HubErrorResponse(String errorCode, String errorDescription) {
 
 }
