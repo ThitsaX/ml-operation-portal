@@ -3,15 +3,20 @@ package com.thitsaworks.operation_portal.core.participant.model;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantNDCId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "tbl_participant_ndc")
@@ -40,6 +45,10 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
             scale = 4)
     protected BigDecimal ndcAmount;
 
+    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participantNDC", orphanRemoval = true, fetch = FetchType.LAZY)
+    @Getter(AccessLevel.NONE)
+    protected Set<ParticipantNDCHistory> participantNDCHistories = new HashSet<>();
+
     public ParticipantNDC(String dfspCode,
                           String currency,
                           BigDecimal ndcPercent,
@@ -53,26 +62,39 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         this.ndcAmount(ndcAmount);
     }
 
-    public void dfspCode(String dfspCode) {
+    public ParticipantNDC dfspCode(String dfspCode) {
 
         this.dfspCode = dfspCode;
+        return this;
     }
 
-    public void currency(String currency) {
+    public ParticipantNDC currency(String currency) {
 
         this.currency = currency;
+        return this;
     }
 
-    public void ndcPercent(BigDecimal ndcPercent) {
+    public ParticipantNDC ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
+        return this;
     }
 
-    public void ndcAmount(BigDecimal ndcAmount) {
+    public ParticipantNDC ndcAmount(BigDecimal ndcAmount) {
 
         this.ndcAmount = ndcAmount;
+        return this;
     }
 
+    public ParticipantNDCHistory moveParticipantNDCToHistory(ParticipantNDC participantNDC) {
+
+        ParticipantNDCHistory participantNDCHistory =
+                new ParticipantNDCHistory(participantNDC);
+
+        this.participantNDCHistories.add(participantNDCHistory);
+        return participantNDCHistory;
+
+    }
 
     @Override
     public ParticipantNDCId getId() {

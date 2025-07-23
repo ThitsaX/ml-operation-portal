@@ -7,51 +7,52 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantNDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class CreateParticipantNDCHandler
-    extends OperationPortalAuditableUseCase<CreateParticipantNDC.Input, CreateParticipantNDC.Output>
-        implements CreateParticipantNDC {
+public class ModifyParticipantNDCHandler
+        extends OperationPortalAuditableUseCase<ModifyParticipantNDC.Input, ModifyParticipantNDC.Output>
+        implements ModifyParticipantNDC {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewContactHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantNDCHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
 
-    private final CreateParticipantNDCCommand createParticipantNDCCommand;
+    private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
 
-    public CreateParticipantNDCHandler(CreateInputAuditCommand createInputAuditCommand,
+    public ModifyParticipantNDCHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
+                                       Set<UserRoleType> permittedRoles,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
-                                       CreateParticipantNDCCommand createParticipantNDCCommand) {
+                                       ModifyParticipantNDCCommand modifyParticipantNDCCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
+              permittedRoles,
               objectMapper,
               principalCache);
 
-        this.createParticipantNDCCommand = createParticipantNDCCommand;
+        this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
     }
 
     @Override
-    protected Output onExecute(Input input) throws DomainException {
+    protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         //TODO: To call mojaloop api and calculate ndcamount logic
-        CreateParticipantNDCCommand.Output output =
-                this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.dfspCode(),
-                                                                                               input.currency(),
+        ModifyParticipantNDCCommand.Output output =
+                this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(input.participantNDCId(),
                                                                                                input.ndcPercent(),
                                                                                                input.ndcAmount()));
 
