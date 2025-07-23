@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.query;
 
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
@@ -29,18 +29,17 @@ public class GetAuditByParticipantAndUserQueryUnitTest extends BaseVaultSetUpTes
 
         GetAuditByParticipantAndUserQuery.Output
             output =
-            this.getAuditByParticipantAndUserQuery.execute(new GetAuditByParticipantAndUserQuery.Input(new RealmId(
-                731090884307693568L),
-                                                                                                       null,
+            this.getAuditByParticipantAndUserQuery.execute(new GetAuditByParticipantAndUserQuery.Input(null,
+                                                                                                       new UserId(1111111111111111L),
                                                                                                        Instant.parse(
                                                                                                            "2025-02-01T00:00:00Z"),
                                                                                                        Instant.parse(
                                                                                                            "2025-08-31T23:59:59Z"),
-                                                                                                       "CreateNewParticipantUser"
+                                                                                                       null
             ));
-        for (var obj : output.getAuditInfoList())
-            LOG.info(obj.getUserName() + " , " + obj.getParticipantName() + "," + obj.getActionName());
+
+        LOG.info("[{}]", output.getAuditInfoList());
     }
 
-    }
+}
 
