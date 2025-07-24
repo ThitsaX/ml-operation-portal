@@ -20,7 +20,7 @@ public class BlockedAction extends JpaEntity<BlockedActionId> {
     protected BlockedActionId blockedActionId;
 
     @ManyToOne
-    @JoinColumn(name = "iam_user_id")
+    @JoinColumn(name = "user_id")
     protected User user;
 
     @ManyToOne
