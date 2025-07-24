@@ -9,7 +9,7 @@ public interface ModifyApprovalAction extends UseCase<ModifyApprovalAction.Input
 
     record Input(ApprovalRequestId approvalRequestId,
                  ApprovalActionType action,
-                 UserId respondedBy) { }
+                 UserId responseUserId) { }
 
     record Output(ApprovalRequestId approvalRequestId) { }
 

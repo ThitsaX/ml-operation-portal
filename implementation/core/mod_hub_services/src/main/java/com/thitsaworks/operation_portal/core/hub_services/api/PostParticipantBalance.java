@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.hub_services.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
 import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 
 public class PostParticipantBalance {
@@ -19,7 +20,10 @@ public class PostParticipantBalance {
             String reason,
 
             @JsonProperty("amount")
-            Money amount) {
+            Money amount,
+
+            ExtensionList extensionList
+    ) {
     }
 
     public record Response(

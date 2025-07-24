@@ -29,7 +29,7 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
     }
 
     @Override
-    public List<HubParticipantData> getParticipants() {
+    public List<HubParticipantData> getParticipantList() {
 
         return this.jdbcTemplate.query(
                 "SELECT participantId, name, description, isActive, createdDate, createdBy, isProxy FROM participant",

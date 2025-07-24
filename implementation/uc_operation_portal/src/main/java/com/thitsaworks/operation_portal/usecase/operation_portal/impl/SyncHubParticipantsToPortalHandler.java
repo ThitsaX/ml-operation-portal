@@ -63,7 +63,7 @@ public class SyncHubParticipantsToPortalHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        List<HubParticipantData> hubParticipantDataList = this.hubParticipantQuery.getParticipants();
+        List<HubParticipantData> hubParticipantDataList = this.hubParticipantQuery.getParticipantList();
 
         Set<String> existingParticipantNames = this.participantQuery.getParticipants().stream()
                                                                         .map(pd   -> pd.participantName().getValue())
@@ -76,6 +76,7 @@ public class SyncHubParticipantsToPortalHandler
                                                                                          hubParticipant.description(),
                                                                                          null,
                                                                                          null,
+
                                                                                          null,
                                                                                          null));
             }

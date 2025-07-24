@@ -6,12 +6,12 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.math.BigDecimal;
 
-public interface CreateApprovalRequest extends UseCase<CreateApprovalRequest
-                                                           .Input, CreateApprovalRequest.Output> {
+public interface CreateApprovalRequest extends UseCase<CreateApprovalRequest.Input, CreateApprovalRequest.Output> {
 
     record Input(String requestedAction,
-                 String dfsp,
-                 String currency,
+                 String participant,
+                 String participantCurrency,
+                 String participantCurrencyId,
                  BigDecimal amount,
                  UserId requestedBy) { }
 

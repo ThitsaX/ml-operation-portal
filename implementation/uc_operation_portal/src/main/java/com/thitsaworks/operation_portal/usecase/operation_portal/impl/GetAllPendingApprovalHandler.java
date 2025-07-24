@@ -8,10 +8,10 @@ import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllPendingApproval;
+import com.thitsaworks.operation_portal.usecase.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class GetAllPendingApprovalHandler
 
     private final ApprovalRequestQuery approvalRequestQuery;
 
-    private final HubUserQuery hubUserQuery;
+    private final Utility utility;
 
     public GetAllPendingApprovalHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
@@ -38,7 +38,8 @@ public class GetAllPendingApprovalHandler
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
                                         ApprovalRequestQuery approvalRequestQuery,
-                                        HubUserQuery hubUserQuery) {
+                                        Utility utility
+                                       ) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -48,7 +49,7 @@ public class GetAllPendingApprovalHandler
               principalCache);
 
         this.approvalRequestQuery = approvalRequestQuery;
-        this.hubUserQuery = hubUserQuery;
+        this.utility = utility;
     }
 
     @Override
@@ -59,22 +60,14 @@ public class GetAllPendingApprovalHandler
         return new Output(output.stream()
                                 .map(request -> new Output.PendingApproval(request.approvalRequestId(),
                                                                            request.requestedAction(),
-                                                                           request.dfsp(),
+                                                                           request.participantId(),
                                                                            request.currency(),
                                                                            request.amount(),
-                                                                           this.getEmail(new HubUserId(request.requestedBy()
-                                                                                                              .getId())),
+                                                                           this.utility.getEmail(new HubUserId(request.requestedBy()
+                                                                                                                      .getId())),
                                                                            request.requestedDtm(),
                                                                            request.action()))
                                 .toList());
-    }
-
-    private String getEmail(HubUserId hubUserId) {
-
-        return this.hubUserQuery.find(hubUserId)
-                                .map(user -> user.email()
-                                                 .getValue())
-                                .orElse("unknown");
     }
 
 }

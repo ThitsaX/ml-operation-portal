@@ -36,11 +36,14 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
     @Column(name = "requested_action")
     protected String requestedAction;
 
-    @Column(name = "dfsp")
-    protected String dfsp;
+    @Column(name = "participant_name")
+    protected String participantName;
 
-    @Column(name = "currency")
-    protected String currency;
+    @Column(name = "participant_currency")
+    protected String participantCurrency;
+
+    @Column(name = "participant_currency_id")
+    protected String participantCurrencyId;
 
     @Column(name = "amount")
     protected BigDecimal amount;
@@ -66,16 +69,18 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
     protected ApprovalActionType action;
 
     public ApprovalRequest(String requestedAction,
-                           String dfsp,
-                           String currency,
+                           String participantName,
+                           String participantCurrency,
+                           String participantCurrencyId,
                            BigDecimal amount,
                            UserId requestedBy) {
 
         this.approvalRequestId = new ApprovalRequestId(Snowflake.get()
                                                                 .nextId());
         this.requestedAction(requestedAction);
-        this.dfsp(dfsp);
-        this.currency(currency);
+        this.participantName(participantName);
+        this.participantCurrency(participantCurrency);
+        this.participantCurrencyId(participantCurrencyId);
         this.amount(amount);
         this.requestedBy(requestedBy);
         this.requestedDtm();
@@ -92,24 +97,34 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
         this.requestedAction = requestedAction;
     }
 
-    public void dfsp(String dfsp) {
+    public void participantName(String participantName) {
 
-        if (dfsp == null || dfsp.isBlank()) {
+        if (participantName == null || participantName.isBlank()) {
             throw new InputException(ApprovalErrors.INVALID_DFSP);
         }
 
-        this.dfsp = dfsp;
+        this.participantName = participantName;
     }
 
-    public void currency(String currency) {
+    public void participantCurrency(String participantCurrency) {
 
-        if (currency == null || currency.isBlank()) {
+        if (participantCurrency == null || participantCurrency.isBlank()) {
             throw new InputException(ApprovalErrors.INVALID_CURRENCY);
 
         }
 
-        this.currency = currency;
+        this.participantCurrency = participantCurrency;
     }
+    public void participantCurrencyId(String participantCurrencyId) {
+
+        if (participantCurrencyId == null || participantCurrencyId.isBlank()) {
+            throw new InputException(ApprovalErrors.INVALID_CURRENCY);
+
+        }
+
+        this.participantCurrencyId = participantCurrencyId;
+    }
+
 
     public void amount(BigDecimal amount) {
 
