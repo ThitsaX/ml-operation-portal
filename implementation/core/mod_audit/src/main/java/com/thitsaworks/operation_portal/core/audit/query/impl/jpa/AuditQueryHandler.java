@@ -15,21 +15,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @CoreReadTransactional
 public class AuditQueryHandler implements AuditQuery {
+
     private final AuditRepository auditRepository;
 
-    private final QAudit audit= QAudit.audit;
+    private final QAudit audit = QAudit.audit;
 
     @Override
     public List<AuditData> getAudits() {
 
+
+
         return this.auditRepository.findAll()
                                    .stream()
                                    .map(Audit -> new AuditData(Audit.getAuditId(),
-                                                                Audit.getActionId(),
-                                                                Audit.getUserId(),
-                                                              Audit.getRealmId(),
+                                                               Audit.getActionId(),
+                                                               Audit.getUserId(),
+                                                               Audit.getRealmId(),
                                                                Audit.getInputInfo(),
-                                                               Audit.getOutputInfo())).toList();
+                                                               Audit.getOutputInfo()))
+                                   .toList();
     }
 
     @Override

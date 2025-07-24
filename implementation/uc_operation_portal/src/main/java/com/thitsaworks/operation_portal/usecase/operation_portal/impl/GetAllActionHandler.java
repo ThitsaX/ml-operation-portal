@@ -14,6 +14,7 @@ import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllAction;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,11 +44,12 @@ public class GetAllActionHandler extends OperationPortalAuditableUseCase<GetAllA
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        Set<String> actionNames = this.actionQuery.getAction()
-                                                  .stream()
-                                                  .map(ActionData::name).collect(Collectors.toSet());
+        var output = this.actionQuery
+                         .getAction()
+                         .stream()
+                         .map(action -> new Output.ActionName(action.actionId(), action.name()))
+                         .collect(Collectors.toList());
 
-        return new Output(actionNames);
+        return new Output(output);
     }
-
 }

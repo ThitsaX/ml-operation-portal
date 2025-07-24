@@ -7,12 +7,15 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserDat
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ParticipantUserQuery {
 
     List<ParticipantUserData> getParticipantUsers(ParticipantId participantId);
 
     ParticipantUserData get(ParticipantUserId participantUserId) throws ParticipantException;
+
+    Optional<ParticipantUserData> find(ParticipantUserId participantUserId);
 
     ParticipantUserData get(Email email) throws ParticipantException;
 

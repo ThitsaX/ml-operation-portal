@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -23,22 +22,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllAuduitController {
+public class GetAllAuditController {
+
     private final GetAllAudit getAllAudit;
 
-    private final ObjectMapper objectMapper;
-
-    @PostMapping("/secured/get_all_audit")
+    @PostMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
         GetAllAudit.Output output = this.getAllAudit.execute(
-            new GetAllAudit.Input(new RealmId(Long.parseLong(request.participantId)),
-                                  request.participantUserId == null ? null :
-                                      new UserId(Long.parseLong(request.participantUserId)),
-                                  Instant.ofEpochSecond(request.fromDate),
-                                  Instant.ofEpochSecond(request.toDate),
-                                  request.actionName));
+            new GetAllAudit.Input(request.participantId() == null || request.participantId()
+                                                                            .isBlank() ? null :
+                                      new RealmId(Long.parseLong(request.participantId())),
+                                  request.participantUserId() == null ? null :
+                                      new UserId(Long.parseLong(request.participantUserId())),
+                                  Instant.ofEpochSecond(request.fromDate()),
+                                  Instant.ofEpochSecond(request.toDate()),
+                                  request.actionName()));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
 
@@ -48,7 +48,8 @@ public class GetAllAuduitController {
                                                      auditList.actionName(),
                                                      auditList.inputInfo(),
                                                      auditList.outputInfo(),
-                                                     auditList.actionDate().getEpochSecond()));
+                                                     auditList.actionDate()
+                                                              .getEpochSecond()));
         }
 
         var response = new Response(auditInfoList);
@@ -59,24 +60,24 @@ public class GetAllAuduitController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participant_id") String participantId,
-        @JsonProperty("participant_user_id") String participantUserId,
-        @NotNull @JsonProperty("from_date") Long fromDate,
-        @NotNull @JsonProperty("to_date") Long toDate,
-        @JsonProperty("action_name") String actionName
-    ) {}
+        @NotNull @NotNull @JsonProperty("participantId") String participantId,
+        @JsonProperty("participantUserId") String participantUserId,
+        @NotNull @JsonProperty("fromDate") Long fromDate,
+        @NotNull @JsonProperty("toDate") Long toDate,
+        @JsonProperty("actionName") String actionName
+    ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("audit_info_list") List<AuditInfo> auditInfoList) {
 
         public record AuditInfo(
-            @JsonProperty("participant_name") String participantName,
-            @JsonProperty("user_name") String userName,
-            @JsonProperty("action_name") String actionName,
-            @JsonProperty("input_info") String inputInfo,
-            @JsonProperty("output_info") String outputInfo,
-            @JsonProperty("action_date") Long actionDate
-        ) {}
+            @JsonProperty("participantName") String participantName,
+            @JsonProperty("userName") String userName,
+            @JsonProperty("actionName") String actionName,
+            @JsonProperty("inputInfo") String inputInfo,
+            @JsonProperty("outputInfo") String outputInfo,
+            @JsonProperty("actionDate") Long actionDate
+        ) { }
 
     }
 

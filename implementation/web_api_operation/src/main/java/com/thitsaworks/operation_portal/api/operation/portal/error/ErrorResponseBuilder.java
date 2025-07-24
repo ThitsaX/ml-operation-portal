@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.error;
 
 import com.thitsaworks.operation_portal.api.operation.portal.security.exception.SecurityErrors;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,22 @@ public class ErrorResponseBuilder {
 
     public ResponseEntity<ErrorResponse> convert(Exception exception) {
 
-        if (exception instanceof DomainException de) {
+        if (exception instanceof DomainException e) {
 
-            i18nErrorMessages.put("en", de.getErrorMessage().description());
+            i18nErrorMessages.put("en", e.getErrorMessage().description());
 
-            var errorResponse = new ErrorResponse(de.getErrorMessage().code(),
-                                                  de.getErrorMessage().description(), i18nErrorMessages);
+            var errorResponse = new ErrorResponse(e.getErrorMessage().code(),
+                                                  e.getErrorMessage().description(), i18nErrorMessages);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        }
+
+        if (exception instanceof InputException e) {
+
+            i18nErrorMessages.put("en", e.getErrorMessage().description());
+
+            var errorResponse = new ErrorResponse(e.getErrorMessage().code(),
+                                                  e.getErrorMessage().description(), i18nErrorMessages);
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
@@ -43,10 +54,10 @@ public class ErrorResponseBuilder {
 
         }
 
-        i18nErrorMessages.put("en", exception.getCause().getMessage());
+        i18nErrorMessages.put("en", exception.getMessage());
 
         var errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR",
-                                              exception.getCause().getMessage(),
+                                              exception.getMessage(),
                                               i18nErrorMessages);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);

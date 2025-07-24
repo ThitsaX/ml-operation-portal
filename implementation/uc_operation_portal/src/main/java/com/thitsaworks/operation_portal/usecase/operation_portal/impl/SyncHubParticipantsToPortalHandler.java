@@ -11,7 +11,6 @@ import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDat
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantCommand;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
@@ -19,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -39,6 +39,8 @@ public class SyncHubParticipantsToPortalHandler
 
     private final CreateParticipantCommand createParticipantCommand;
 
+    private final ObjectMapper objectMapper;
+
     public SyncHubParticipantsToPortalHandler(CreateInputAuditCommand createInputAuditCommand,
                                               CreateOutputAuditCommand createOutputAuditCommand,
                                               CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -58,6 +60,7 @@ public class SyncHubParticipantsToPortalHandler
         this.hubParticipantQuery = hubParticipantQuery;
         this.participantQuery = participantQuery;
         this.createParticipantCommand = createParticipantCommand;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -69,20 +72,39 @@ public class SyncHubParticipantsToPortalHandler
                                                                         .map(pd   -> pd.participantName().getValue())
                                                                         .collect(Collectors.toSet());
 
+        List<CreatedParticipantInfo> createdParticipantInfoList = new ArrayList<>();
+
         for (HubParticipantData hubParticipant : hubParticipantDataList) {
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
-                this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(hubParticipant.name()),
+                CreateParticipantCommand.Output output =
+                        this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(
+                                hubParticipant.name()),
                                                                                          hubParticipant.description(),
                                                                                          null,
                                                                                          null,
 
                                                                                          null,
                                                                                          null));
+
+                createdParticipantInfoList.add(new CreatedParticipantInfo(output.participantId().getId().toString(),
+                                                                          hubParticipant.name(),
+                                                                          hubParticipant.description()));
+
             }
+        }
+
+        try {
+            LOG.info("Created participants : {}",
+                     this.objectMapper.writeValueAsString(createdParticipantInfoList));
+
+        } catch (Exception e) {
+            LOG.info("Something went wrong: {}", e.getMessage());
         }
 
         return new Output(true);
     }
+
+    record CreatedParticipantInfo(String participantId, String name, String description) {}
 
 }

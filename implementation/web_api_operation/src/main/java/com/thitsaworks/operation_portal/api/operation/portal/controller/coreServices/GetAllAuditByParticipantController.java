@@ -33,36 +33,40 @@ public class GetAllAuditByParticipantController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/get_all_by_participant")
+    @GetMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
-            @RequestParam("fromDate") Long fromDate,
-            @RequestParam("toDate") Long toDate,
-            @RequestParam("userId")String participantuserId,
-            @RequestParam("actionName") String actionName) throws DomainException, JsonProcessingException {
+        @RequestParam("fromDate") Long fromDate,
+        @RequestParam("toDate") Long toDate,
+        @RequestParam("userId") String participantUserId,
+        @RequestParam("actionName") String actionName) throws DomainException, JsonProcessingException {
 
         LOG.info("Get all audit by participant request : fromDate = {}, toDate = {}, participantId = {}",
                  fromDate,
                  toDate,
                  participantId);
 
-
         UserContext userContext =
-                (UserContext) SecurityContextHolder.getContext().getAuthentication().getDetails();
-
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
 
         GetAllAuditByParticipant.Output output = this.getAllAuditByParticipant.execute(
-                new GetAllAuditByParticipant.Input(new RealmId(Long.parseLong(participantId)),
-                        Instant.ofEpochSecond(fromDate), Instant.ofEpochSecond(toDate)
-                    ,(participantuserId != null && !participantuserId.isEmpty())?new UserId(Long.parseLong(participantuserId)):null,
-                                                   (actionName != null && !actionName.isEmpty()) ? actionName : null));
+            new GetAllAuditByParticipant.Input(new RealmId(Long.parseLong(participantId)),
+                                               Instant.ofEpochSecond(fromDate),
+                                               Instant.ofEpochSecond(toDate)
+                ,
+                                               (participantUserId != null && !participantUserId.isEmpty()) ?
+                                                   new UserId(Long.parseLong(participantUserId)) : null,
+                                               (actionName != null && !actionName.isEmpty()) ? actionName : null));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditList : output.auditInfoList()) {
             auditInfoList.add(new Response.AuditInfo(
-                    auditList.userName(),
-                    auditList.actionName(),
-                    auditList.actionDate().getEpochSecond()));
+                auditList.userName(),
+                auditList.actionName(),
+                auditList.actionDate()
+                         .getEpochSecond()));
         }
 
         var response = new Response(auditInfoList);
@@ -74,13 +78,13 @@ public class GetAllAuditByParticipantController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("audit_info_list") List<AuditInfo> auditInfoList) {
+    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) {
 
         public record AuditInfo(
-                @JsonProperty("userName") String userName,
-                @JsonProperty("actionName") String actionName,
-                @JsonProperty("actionDate") Long actionDate
-        ) {}
+            @JsonProperty("userName") String userName,
+            @JsonProperty("actionName") String actionName,
+            @JsonProperty("actionDate") Long actionDate
+        ) { }
 
     }
 

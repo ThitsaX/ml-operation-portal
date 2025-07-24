@@ -7,17 +7,15 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.data.AuditData;
-import com.thitsaworks.operation_portal.core.audit.query.AuditQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeBy;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.Objects;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class MadeByHandler extends OperationPortalAuditableUseCase<GetMadeBy.Input, GetMadeBy.Output>
@@ -25,13 +23,14 @@ public class MadeByHandler extends OperationPortalAuditableUseCase<GetMadeBy.Inp
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final AuditQuery auditQuery;
+    private final ParticipantUserQuery participantUserQuery;
 
     public MadeByHandler(CreateInputAuditCommand createInputAuditCommand,
                          CreateOutputAuditCommand createOutputAuditCommand,
                          CreateExceptionAuditCommand createExceptionAuditCommand,
                          ObjectMapper objectMapper,
-                         PrincipalCache principalCache, AuditQuery auditQuery) {
+                         PrincipalCache principalCache,
+                         ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -39,24 +38,25 @@ public class MadeByHandler extends OperationPortalAuditableUseCase<GetMadeBy.Inp
               PERMITTED_ROLES,
               objectMapper,
               principalCache);
-        this.auditQuery = auditQuery;
+
+        this.participantUserQuery = participantUserQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        Set<UserId>
-            madeByUsers =
-            auditQuery.getAudits()
-                      .stream()
-                      .map(AuditData::userId)
-                      .filter(Objects::nonNull)
-                      .collect(Collectors.toSet());
+        var participantUsers = this.participantUserQuery.getParticipantUsers(input.participantId());
 
+        Set<User> madeByUsers = new HashSet<>();
 
-        return new Output(madeByUsers.stream()
-                                     .map(User::new)
-                                     .collect(Collectors.toSet()));
+        for (var user : participantUsers) {
+
+            madeByUsers.add(new User(new UserId(user.participantUserId()
+                                                    .getEntityId()), user.name()));
+
+        }
+
+        return new Output(madeByUsers);
     }
 
 }

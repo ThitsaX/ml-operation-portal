@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.component.common.type;
 
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
+import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,12 +13,9 @@ import java.util.regex.Pattern;
 
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@NoArgsConstructor
-public class Email implements Serializable {
+public class Email {
 
-    public static final String FORMAT = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$";
-
-    private static final Pattern PATTERN = Pattern.compile(FORMAT);
+    public static final String FORMAT = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 
     @EqualsAndHashCode.Include
     private String value;
@@ -25,13 +24,17 @@ public class Email implements Serializable {
 
         assert value != null : "Value is required.";
 
-        if (!PATTERN.matcher(value).matches() && !value.isEmpty()) {
-
-            throw new IllegalArgumentException("Value is in wrong format.");
+        if (!Pattern.matches(FORMAT, value)) {
+            throw new InputException(new ErrorMessage("FORMAT_ERROR", "Invalid email format."));
         }
 
         this.value = value;
+    }
 
+    @Override
+    public String toString() {
+
+        return this.value;
     }
 
     @Converter
