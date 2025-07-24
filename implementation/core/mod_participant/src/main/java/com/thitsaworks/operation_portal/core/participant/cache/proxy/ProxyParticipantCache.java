@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.cache.proxy;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Primary
 @Component
 @Qualifier(CacheQualifiers.PROXY)
+@CoreReadTransactional
 public class ProxyParticipantCache implements ParticipantCache {
 
     @Autowired
@@ -44,7 +46,9 @@ public class ProxyParticipantCache implements ParticipantCache {
                 return null;
             }
 
-            participantData = new ParticipantData(optionalParticipant.get());
+            Participant participant = optionalParticipant.get();
+
+            participantData = new ParticipantData(participant);
 
             this.participantCache.save(participantData);
         }
