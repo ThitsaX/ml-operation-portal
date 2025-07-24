@@ -20,6 +20,7 @@
         <module>component</module>
         <module>core</module>
         <module>uc_operation_portal</module>
+        <module>core/mod_test_iam</module>
 
 
     </modules>
