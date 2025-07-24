@@ -21,13 +21,13 @@ public class BlockedAction extends JpaEntity<BlockedActionId> {
 
     @ManyToOne
     @JoinColumn(name = "iam_user_id")
-    protected IAMuser user;
+    protected User user;
 
     @ManyToOne
     @JoinColumn(name = "action_id")
     protected Action action;
 
-    public BlockedAction(IAMuser user, Action action) {
+    public BlockedAction(User user, Action action) {
 
         assert user != null;
         assert action != null;

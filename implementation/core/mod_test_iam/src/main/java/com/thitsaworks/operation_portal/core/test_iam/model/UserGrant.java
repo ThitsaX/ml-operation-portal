@@ -22,13 +22,13 @@ public class UserGrant extends JpaEntity<GrantId> {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    protected IAMuser user;
+    protected User user;
 
     @ManyToOne
     @JoinColumn(name = "action_id")
     protected Action action;
 
-    public UserGrant(IAMuser user, Action action) {
+    public UserGrant(User user, Action action) {
 
         assert user != null;
         assert action != null;

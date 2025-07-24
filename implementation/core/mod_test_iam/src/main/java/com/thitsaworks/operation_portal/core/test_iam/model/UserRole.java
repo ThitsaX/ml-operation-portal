@@ -26,9 +26,9 @@ public class UserRole extends JpaEntity<UserRoleId> {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    protected IAMuser user;
+    protected User user;
 
-    public UserRole(Role role, IAMuser user) {
+    public UserRole(Role role, User user) {
 
         assert role != null;
         assert user != null;
