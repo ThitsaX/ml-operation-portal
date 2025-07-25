@@ -43,8 +43,10 @@ public class CreateParticipantNDCController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String dfspCode, @NotNull @NotBlank String currency,
-                          BigDecimal ndcPercent, BigDecimal ndcAmount) implements Serializable {}
+    public record Request(@NotNull @NotBlank String dfspCode,
+                          @NotNull @NotBlank String currency,
+                          BigDecimal ndcPercent,
+                          BigDecimal ndcAmount) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(String participantNDCId) implements Serializable {}

@@ -31,7 +31,7 @@ public class ModifyParticipantNDCCommandHandler implements ModifyParticipantNDCC
         existingParticipantNDC.moveParticipantNDCToHistory(existingParticipantNDC);
 
         this.participantNDCRepository.save(
-                existingParticipantNDC.ndcPercent(input.ndcPercent()).ndcAmount(input.ndcAmount()));
+                existingParticipantNDC.ndcPercent(input.ndcPercent()));
 
         return new Output(existingParticipantNDC.getParticipantNDCId());
     }

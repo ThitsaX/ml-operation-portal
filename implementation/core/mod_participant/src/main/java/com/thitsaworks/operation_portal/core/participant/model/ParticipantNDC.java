@@ -35,15 +35,10 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
 
     @Column(
         name = "ndc_percent",
-        precision = 5,
+            precision = 7,
         scale = 4)
     protected BigDecimal ndcPercent;
 
-    @Column(
-            name = "ndc_amount",
-            precision = 5,
-            scale = 4)
-    protected BigDecimal ndcAmount;
 
     @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participantNDC", orphanRemoval = true, fetch = FetchType.LAZY)
     @Getter(AccessLevel.NONE)
@@ -51,15 +46,13 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
 
     public ParticipantNDC(String dfspCode,
                           String currency,
-                          BigDecimal ndcPercent,
-                          BigDecimal ndcAmount) {
+                          BigDecimal ndcPercent ) {
 
         this.participantNDCId = new ParticipantNDCId(Snowflake.get()
                                                               .nextId());
         this.dfspCode(dfspCode);
         this.currency(currency);
         this.ndcPercent(ndcPercent);
-        this.ndcAmount(ndcAmount);
     }
 
     public ParticipantNDC dfspCode(String dfspCode) {
@@ -77,12 +70,6 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
     public ParticipantNDC ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
-        return this;
-    }
-
-    public ParticipantNDC ndcAmount(BigDecimal ndcAmount) {
-
-        this.ndcAmount = ndcAmount;
         return this;
     }
 

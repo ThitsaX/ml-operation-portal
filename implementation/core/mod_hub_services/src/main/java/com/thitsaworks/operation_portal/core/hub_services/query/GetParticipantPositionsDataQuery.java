@@ -6,7 +6,7 @@ import lombok.Value;
 
 import java.util.List;
 
-public interface GetFinancialDataQuery {
+public interface GetParticipantPositionsDataQuery {
 
     @Value
     class Input {

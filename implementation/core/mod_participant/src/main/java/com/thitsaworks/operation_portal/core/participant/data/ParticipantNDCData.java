@@ -9,15 +9,14 @@ import java.math.BigDecimal;
 public record ParticipantNDCData(ParticipantNDCId participantNDCId,
                                  String dfspCode,
                                  String currency,
-                                 BigDecimal ndcPercent, BigDecimal ndcAmount) implements Serializable {
+                                 BigDecimal ndcPercent) implements Serializable {
 
     public ParticipantNDCData(ParticipantNDC participantNDC) {
 
         this(participantNDC.getParticipantNDCId(),
              participantNDC.getDfspCode(),
              participantNDC.getCurrency(),
-             participantNDC.getNdcPercent(),
-             participantNDC.getNdcAmount());
+             participantNDC.getNdcPercent());
     }
 
 }

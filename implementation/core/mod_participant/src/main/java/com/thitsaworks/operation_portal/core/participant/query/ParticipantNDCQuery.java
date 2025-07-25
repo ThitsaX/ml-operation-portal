@@ -4,10 +4,12 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantN
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantNDCData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
 
+import java.util.Optional;
+
 public interface ParticipantNDCQuery {
 
     ParticipantNDCData get(ParticipantNDCId participantNDCId) throws ParticipantNDCException;
 
-    ParticipantNDCData get(String dfspCode, String currency) throws ParticipantNDCException;
+    Optional<ParticipantNDCData> get(String dfspCode, String currency);
 
 }

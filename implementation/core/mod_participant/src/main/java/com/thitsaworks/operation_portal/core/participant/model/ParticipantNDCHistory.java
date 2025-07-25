@@ -36,14 +36,8 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @Column(name = "currency")
     protected String currency;
 
-    @Column(
-        name = "ndc_percent",
-        precision = 5,
-        scale = 4)
+    @Column(name = "ndc_percent", precision = 7, scale = 4)
     protected BigDecimal ndcPercent;
-
-    @Column(name = "ndc_amount", precision = 5, scale = 4)
-    protected BigDecimal ndcAmount;
 
     public ParticipantNDCHistory(ParticipantNDC participantNDC) {
 
@@ -53,7 +47,6 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
         this.dfspCode(participantNDC.getDfspCode());
         this.currency(participantNDC.getCurrency());
         this.ndcPercent(participantNDC.getNdcPercent());
-        this.ndcAmount(participantNDC.getNdcAmount());
 
     }
 
@@ -75,11 +68,6 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     public void ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
-    }
-
-    public void ndcAmount(BigDecimal ndcAmount) {
-
-        this.ndcAmount = ndcAmount;
     }
 
     @Override

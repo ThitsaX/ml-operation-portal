@@ -44,19 +44,14 @@ public class ParticipantNDCJpaQueryHandler implements ParticipantNDCQuery {
     }
 
     @Override
-    public ParticipantNDCData get(String dfspCode, String currency) throws ParticipantNDCException {
+    public Optional<ParticipantNDCData> get(String dfspCode, String currency) {
 
         BooleanExpression predicate = this.participantNDC.dfspCode.eq(dfspCode).and(this.participantNDC.currency.eq(
                 currency));
 
         Optional<ParticipantNDC> optionalParticipantNDC = this.participantNDCRepository.findOne(predicate);
 
-        if (optionalParticipantNDC.isEmpty()) {
-
-            throw new ParticipantNDCException(ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND);
-        }
-
-        return new ParticipantNDCData(optionalParticipantNDC.get());
+        return optionalParticipantNDC.map(ParticipantNDCData::new);
     }
 
 }
