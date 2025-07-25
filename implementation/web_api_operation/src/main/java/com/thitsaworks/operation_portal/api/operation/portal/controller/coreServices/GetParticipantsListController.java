@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class GetParticipantsListController {
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping(value = "/secured/getParticipantsList")
+    @GetMapping(value = "/secured/getParticipantList")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
@@ -43,7 +44,11 @@ public class GetParticipantsListController {
                                                                             .getId()
                                                                             .toString(),
                                                                  participant.participantName(),
-                                                                 participant.description()));
+                                                                 participant.description(),
+                                                                 participant.logoDataType(),
+                                                                 participant.logo() == null ? null : Base64.getEncoder()
+                                                                                                           .encodeToString(
+                                                                                                               participant.logo())));
         }
 
         Response response = new Response(participantInfoList);
@@ -62,7 +67,9 @@ public class GetParticipantsListController {
         public record ParticipantInfo(
             @JsonProperty("participantId") String participantId,
             @JsonProperty("participantName") String participantName,
-            @JsonProperty("description") String description) implements Serializable {
+            @JsonProperty("description") String description,
+            @JsonProperty("logoFileType") String logoFileType,
+            @JsonProperty("logo") String logoBase64) implements Serializable {
         }
 
     }

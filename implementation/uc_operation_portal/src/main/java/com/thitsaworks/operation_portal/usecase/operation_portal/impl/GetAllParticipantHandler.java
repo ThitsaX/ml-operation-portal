@@ -66,6 +66,8 @@ public class GetAllParticipantHandler
                                                              participantData.description(),
                                                              participantData.address(),
                                                              participantData.mobile(),
+                                                             participantData.logoDataType(),
+                                                             participantData.logo(),
                                                              Instant.ofEpochSecond(participantData.createdDate())));
         }
 
