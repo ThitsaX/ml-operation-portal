@@ -6,9 +6,12 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -103,12 +106,12 @@ public class User extends JpaEntity<UserId> {
         this.principalStatus = principalStatus;
     }
 
-    public UserRole assignRole(Role role) {
+    public UserRole assignRole(Role role) throws IAMException {
 
         if (this.roles.stream()
                       .anyMatch(existing -> existing.role.equals(role))) {
 
-//            throw new IAMException(IAMException.ErrorCodes.RoleAlreadyAssignedToUser);
+            throw new IAMException(IAMErrors.ROLE_ALREADY_ASSIGN_TO_USER);
         }
 
         UserRole userRole = new UserRole(role, this);
@@ -271,6 +274,12 @@ public class User extends JpaEntity<UserId> {
 
         return new SecurityToken(this.accessKey, this.secretKey);
     }
+    public User modify(PrincipalStatus principalStatus, UserRoleType userRoleType) {
+
+        this.principalStatus = principalStatus;
+        this.userRoleType = userRoleType;
+        return this;
+
+    }
 
 }
-

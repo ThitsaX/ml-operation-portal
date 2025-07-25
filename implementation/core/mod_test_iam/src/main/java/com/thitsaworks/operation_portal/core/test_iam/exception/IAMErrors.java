@@ -10,5 +10,11 @@ public class IAMErrors {
     public static final ErrorMessage PRINCIPAL_NOT_FOUND = new ErrorMessage("PRINCIPAL_NOT_FOUND", "Principal is not found for the user.");
     public static final ErrorMessage UNAUTHORIZED_CREATION = new ErrorMessage("UNAUTHORIZED_CREATION", "Unauthorized creation for other participant's user.");
     public static final ErrorMessage PERMISSION_DENIED = new ErrorMessage("PERMISSION_DENIED", "Access denied: You do not have permission to perform this action.");
+
+    public static final ErrorMessage ROLE_ID_NOT_FOUND = new ErrorMessage("ROLE_ID_NOT_FOUND","Role id is not found");
+    public static final ErrorMessage ROLE_ALREADY_ASSIGN_TO_USER = new ErrorMessage("ROLE_ALREADY_ASSIGN_TO_USER","Role already assign to user");
+    public static final ErrorMessage ACTION_ID_NOT_FOUND = new ErrorMessage("ACTION_ID_NOT_FOUND","Action id not found");
+
+    public static final ErrorMessage DUPLICATE_ROLE_NAME = new ErrorMessage("DUPLICATE_ROLE_NAME","Duplicate role name ");
     //@@formatter:on
 }
