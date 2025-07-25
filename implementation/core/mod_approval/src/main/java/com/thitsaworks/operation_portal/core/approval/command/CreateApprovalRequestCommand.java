@@ -10,8 +10,9 @@ public interface CreateApprovalRequestCommand {
     Output execute(Input input);
 
     record Input(String requestedAction,
-                 String dfsp,
-                 String currency,
+                 String participant,
+                 String participantCurrency,
+                 String participantCurrencyId,
                  BigDecimal amount,
                  UserId requestedBy) { }
 

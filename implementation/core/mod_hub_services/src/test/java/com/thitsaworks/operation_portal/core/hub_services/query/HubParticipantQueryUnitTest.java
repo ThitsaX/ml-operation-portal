@@ -25,7 +25,7 @@ public class HubParticipantQueryUnitTest {
     @Test
     public void getByNameHubParticipants() throws Exception {
 
-        List<HubParticipantData> hubParticipantDataList = hubParticipantQuery.getParticipants();
+        List<HubParticipantData> hubParticipantDataList = hubParticipantQuery.getParticipantList();
 
         for (HubParticipantData hubParticipantData : hubParticipantDataList) {
             LOG.info("Hub Participant : {}", hubParticipantData);

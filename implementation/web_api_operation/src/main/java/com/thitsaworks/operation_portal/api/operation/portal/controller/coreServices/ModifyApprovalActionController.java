@@ -39,7 +39,8 @@ public class ModifyApprovalActionController {
 
         LOG.info("Update Approval Request : {}", this.objectMapper.writeValueAsString(request));
 
-        UserContext userContext =
+        UserContext
+            userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
                                                .getDetails();
@@ -47,9 +48,7 @@ public class ModifyApprovalActionController {
         var
             output =
             this.modifyApprovalAction.execute(new ModifyApprovalAction.Input(new ApprovalRequestId(Long.parseLong(
-                request.approvalRequestId())),
-                                                                             ApprovalActionType.valueOf(request.action()),
-                                                                             userContext.userId()));
+                request.approvalRequestId())), ApprovalActionType.valueOf(request.action()), userContext.userId()));
 
         var response = new Response(output.approvalRequestId()
                                           .getEntityId()
@@ -62,8 +61,8 @@ public class ModifyApprovalActionController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String approvalRequestId,
-                          @NotNull @NotBlank String action) implements Serializable { }
+    public record Request(@NotNull @NotBlank String approvalRequestId, @NotNull @NotBlank String action)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(String approvalRequestId) implements Serializable { }

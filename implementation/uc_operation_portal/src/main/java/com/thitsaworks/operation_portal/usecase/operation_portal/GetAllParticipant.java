@@ -20,6 +20,8 @@ public interface GetAllParticipant
                 String description,
                 String address,
                 Mobile mobile,
+                String logoDataType,
+                byte[] logo,
                 Instant createdDate
         ) implements Serializable {}
     }

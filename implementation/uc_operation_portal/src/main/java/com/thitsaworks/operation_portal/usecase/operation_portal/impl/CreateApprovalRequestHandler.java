@@ -51,8 +51,9 @@ public class CreateApprovalRequestHandler
         var
             output =
             this.createApprovalRequestCommand.execute(new CreateApprovalRequestCommand.Input(input.requestedAction(),
-                                                                                             input.dfsp(),
-                                                                                             input.currency(),
+                                                                                             input.participant(),
+                                                                                             input.participantCurrency(),
+                                                                                             input.participantCurrencyId(),
                                                                                              input.amount(),
                                                                                              input.requestedBy()));
 

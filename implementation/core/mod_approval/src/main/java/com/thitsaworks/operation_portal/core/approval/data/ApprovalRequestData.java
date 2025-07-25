@@ -10,8 +10,10 @@ import java.time.Instant;
 
 public record ApprovalRequestData(ApprovalRequestId approvalRequestId,
                                   String requestedAction,
-                                  String dfsp,
+                                  String participantId,
                                   String currency,
+                                  String participantCurrencyId,
+
                                   BigDecimal amount,
                                   UserId requestedBy,
                                   UserId respondedBy,
@@ -22,8 +24,9 @@ public record ApprovalRequestData(ApprovalRequestId approvalRequestId,
 
         this(request.getApprovalRequestId(),
              request.getRequestedAction(),
-             request.getDfsp(),
-             request.getCurrency(),
+             request.getParticipantName(),
+             request.getParticipantCurrency(),
+             request.getParticipantCurrencyId(),
              request.getAmount(),
              request.getRequestedBy(),
              request.getRespondedBy() == null ? null : request.getRespondedBy(),

@@ -38,11 +38,15 @@ public class CreateApprovalRequestController {
                                                .getAuthentication()
                                                .getDetails();
 
+
+
+
         var output = this.createApprovalRequest.execute(new CreateApprovalRequest.Input(request.requestedAction(),
-                                                                                        request.dfsp(),
-                                                                                        request.currency(),
-                                                                                        request.amount(),
-                                                                                        userContext.userId()));
+                                                                                      request.participantName(),
+                                                                                      request.participantCurrency(),
+                                                                                      request.participantCurrencyId(),
+                                                                                      request.amount(),
+                                                                                      userContext.userId()));
 
         var response = new Response(output.approvalRequestId()
                                           .getEntityId()
@@ -54,8 +58,9 @@ public class CreateApprovalRequestController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank String requestedAction,
-                          @NotNull @NotBlank String dfsp,
-                          @NotNull @NotBlank String currency,
+                          @NotNull @NotBlank String participantName,
+                          @NotNull @NotBlank String participantCurrency,
+                          @NotNull @NotBlank String participantCurrencyId,
                           BigDecimal amount) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
