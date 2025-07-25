@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+  vault:
+    image: vault:1.4.2
+    container_name: vault
+    hostname: vault
+    ports:
+      - 8200:8200
+    volumes:
+      - ./config.hcl:/vault/config/config.hcl
+      - ./vault-data:/vault/data/
+    environment:
+      - VAULT_ADDR=http://127.0.0.1:8200
+    cap_add:
+      - IPC_LOCK
+    command: server
+    restart: always
+    networks:
+      operation-portal-network:
+        aliases:
+        - vault
+
+ 
+
+networks:
+  operation-portal-network:

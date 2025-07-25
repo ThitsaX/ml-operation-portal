@@ -1,0 +1,83 @@
+version: "3.8"
+
+services:
+
+  # Redis Service
+  redis:
+    image: redis:6.2-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      operation-portal-network:
+        aliases:
+          - redis
+
+  # OPERATION Portal Application
+  operation-portal:
+    image: operation-portal
+    deploy:
+      restart_policy:
+        condition: on-failure
+    ports:
+      - 8003:8003
+    networks:
+      operation-portal-network:
+        aliases:
+          - operation-portal
+    depends_on:
+      mysql-central-ledger:
+        condition: service_started
+      mysql-operation-portal:
+        condition: service_started
+    environment:
+      VAULT_ADDR: "http://vault:8200"
+      VAULT_TOKEN: "s.FuDU0JaVytr188aSSoFgpRCZ"
+      ENGINE_PATH: "operation_portal"
+      OPERATION_PORTAL_PORT_NO: "8003"
+      CENTRAL_LEDGER_ENDPOINT: "https://google.com"
+
+  # MySQL container for central_ledger (read DB)
+  mysql-central-ledger:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - '3308:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: central_ledger
+      MYSQL_USER: central_ledger_ro
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./init_central_ledger.sql:/docker-entrypoint-initdb.d/init_central_ledger.sql
+    networks:
+      operation-portal-network:
+        aliases:
+          - mysql-central-ledger
+
+  # MySQL container for operation_portal (write DB)
+  mysql-operation-portal:
+    image: mysql:8.0
+    restart: always
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root1234
+      MYSQL_DATABASE: operation_portal
+      MYSQL_USER: dfsp_portal_jdbc
+      MYSQL_PASSWORD: password
+    volumes:
+      - ./init_operation_portal.sql:/docker-entrypoint-initdb.d/init_operation_portal.sql
+    networks:
+      operation-portal-network:
+        aliases:
+          - mysql-operation-portal
+
+volumes:
+  redis-data:
+
+networks:
+  operation-portal-network:
+

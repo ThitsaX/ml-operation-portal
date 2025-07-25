@@ -159,7 +159,7 @@
 	</profiles>
 
 	<build>
-		<finalName>hub_operator_api</finalName>
+		<finalName>operation_api</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

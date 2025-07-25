@@ -33,7 +33,7 @@ public class WebApiOperationPortalApplication {
     @Bean
     public WebConfiguration.PortalPortSetting portSetting() {
 
-        var portNo = System.getenv("HUB_OPERATOR_PORT_NO") == null ? "8003" : System.getenv("HUB_OPERATOR_PORT_NO");
+        var portNo = System.getProperty("OPERATION_PORTAL_PORT_NO");
 
         return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
 
