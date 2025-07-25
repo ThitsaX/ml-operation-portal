@@ -1,8 +1,12 @@
 package com.thitsaworks.operation_portal.core.hub_services.services;
 
+import com.thitsaworks.operation_portal.core.hub_services.HubClient;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -12,7 +16,17 @@ public interface HubService {
 
     @POST("/participants/{participantId}/accounts/{accountId}")
     Call<PostParticipantBalance.Response> postParticipantBalance(@Path("participantId") String participantId,
-                                                       @Path("accountId") String accountId,
-                                                       @Body PostParticipantBalance.Request request);
+                                                                 @Path("accountId") String accountId,
+                                                                 @Body PostParticipantBalance.Request request);
+
+    @PUT("/participants/{participantId}/accounts/{accountId}")
+    Call<PutParticipantStatus.Response> putParticipantStatus(@Path("participantId") String participantId,
+                                                             @Path("accountId") int accountId,
+                                                             @Body HubClient.RequestToHub request);
+
+    @GET("/participants/{participantId}")
+    Call<GetParticipant.Response> getParticipant(@Path("participantId") String participantId
+
+                                       );
 
 }
