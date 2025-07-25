@@ -22,11 +22,7 @@ public class CreateParticipantNDCHistoryCommandHandler implements CreateParticip
     @CoreWriteTransactional
     public Output execute(Input input) throws ParticipantException {
 
-        ParticipantNDCHistory participantNDCHistory = new ParticipantNDCHistory(input.participantNDC(),
-                                                                                input.dfspCode(),
-                                                                                input.currency(),
-                                                                                input.ndcPercent(),
-                                                                                input.ndcAmount());
+        ParticipantNDCHistory participantNDCHistory = new ParticipantNDCHistory(input.participantNDC());
 
         this.participantNDCHistoryRepository.save(participantNDCHistory);
 

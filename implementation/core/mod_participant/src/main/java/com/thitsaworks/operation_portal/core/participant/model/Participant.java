@@ -76,7 +76,7 @@ public class Participant extends JpaEntity<ParticipantId> {
         cascade = {CascadeType.ALL},
         mappedBy = "participant",
         orphanRemoval = true,
-        fetch = FetchType.LAZY)
+        fetch = FetchType.EAGER)
     protected Set<ParticipantUser> participantUsers = new HashSet<>();
 
     @OneToMany(

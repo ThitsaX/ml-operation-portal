@@ -8,14 +8,16 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCHistoryCommand;
-import com.thitsaworks.operation_portal.core.participant.command.DeleteParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantNDCData;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -30,9 +32,9 @@ public class CreateParticipantNDCHandler
 
     private final CreateParticipantNDCCommand createParticipantNDCCommand;
 
-    private final CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand;
+    private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
 
-    private final DeleteParticipantNDCCommand deleteParticipantNDCCommand;
+    private final ParticipantNDCQuery participantNDCQuery;
 
     public CreateParticipantNDCHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
@@ -40,8 +42,8 @@ public class CreateParticipantNDCHandler
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
                                        CreateParticipantNDCCommand createParticipantNDCCommand,
-                                       CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
-                                       DeleteParticipantNDCCommand deleteParticipantNDCCommand) {
+                                       ModifyParticipantNDCCommand modifyParticipantNDCCommand,
+                                       ParticipantNDCQuery participantNDCQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -51,76 +53,37 @@ public class CreateParticipantNDCHandler
               principalCache);
 
         this.createParticipantNDCCommand = createParticipantNDCCommand;
-        this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;
-        this.deleteParticipantNDCCommand = deleteParticipantNDCCommand;
-
+        this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
+        this.participantNDCQuery = participantNDCQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-//        Optional<ParticipantNDC> currencyRateData = this.currencyRateQuery.findCurrencyRate(input.getPairCode());
-//
-//        if (currencyRateData.isPresent()) {
-//
-//            CurrencyRateData existingRate = currencyRateData.get();
-//
-//            //check rate existingRate currentRate
-//
-//            if (existingRate.getRate().equals(input.getRate())) {
-//
-//                throw new CurrencyRateAlreadyExistException(
-//                        "Currency Rate [" + input.getRate() + "] is already exist." );
-//            }
-//
-//            IAddCurrencyRateHistoryCommand.Output currencyRateHistory = this.addCurrencyRateHistoryCommand.execute(new IAddCurrencyRateHistoryCommand.Input(
-//                    existingRate.getCurrencyRateId(), existingRate.getPairCode(),
-//                    existingRate.getRate(), existingRate.getRateTime(),
-//                    existingRate.getExpireAt(), existingRate.getCreatedBy(),
-//                    existingRate.getCreatedDate(), existingRate.getUpdatedDate(),
-//                    new UserId(input.getCreateBy().getId())));
-//
-//            IDeleteCurrencyRateCommand.Output deleteCurrencyRateCommand = this.deleteCurrencyRate.execute(new IDeleteCurrencyRateCommand.Input(existingRate.getPairCode()));
-//
-//            IAddCurrencyRateCommand.Output currencyRateCommand = this.addCurrencyRateCommand.execute(
-//                    new IAddCurrencyRateCommand.Input(input.getPairCode(), input.getRate(),
-//                                                      input.getRateTime(), input.getCreateBy(), input.getExpireAt()));
-//
-//            if (currencyRateCommand.getRateTime().isAfter(currencyRateCommand.getExpireAt())){
-//
-//                throw new ExpireAtShouldBeGreaterThanRateTimeException(
-//                        "Expire At should be greater than rate time.");
-//            }
-//
-//            return new Output(currencyRateCommand.getCurrencyRateId(),
-//                              currencyRateCommand.getPairCode(),
-//                              currencyRateCommand.getRate(),
-//                              currencyRateCommand.getRateTime(),
-//                              currencyRateCommand.getUserId(),
-//                              currencyRateCommand.getExpireAt());
-//
-//        }else {
-//
-//            IAddCurrencyRateCommand.Output currencyRateCommandWithNewPairCode = this.addCurrencyRateCommand
-//                    .execute(new IAddCurrencyRateCommand.Input(input.getPairCode(), input.getRate(),
-//                                                               input.getRateTime(), input.getCreateBy(), input.getExpireAt()));
-//
-//            if (currencyRateCommandWithNewPairCode.getRateTime().isAfter(currencyRateCommandWithNewPairCode.getExpireAt())){
-//
-//                throw new ExpireAtShouldBeGreaterThanRateTimeException(
-//                        "Expire At should be greater than rate time.");
-//            }
-//
-//            return new Output(currencyRateCommandWithNewPairCode.getCurrencyRateId(),
-//                              currencyRateCommandWithNewPairCode.getPairCode(),
-//                              currencyRateCommandWithNewPairCode.getRate(),
-//                              currencyRateCommandWithNewPairCode.getRateTime(),
-//                              currencyRateCommandWithNewPairCode.getUserId(),
-//                              currencyRateCommandWithNewPairCode.getExpireAt());
-//
-//        }
+        //TODO: To call mojaloop api and calculate ndcamount logic
 
-        return new Output(null);
+        Optional<ParticipantNDCData> optionalParticipantNDCData = this.participantNDCQuery.get(input.dfspCode(),
+                                                                                               input.currency());
+
+        if (optionalParticipantNDCData.isEmpty()) {
+
+            CreateParticipantNDCCommand.Output output =
+                    this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.dfspCode(),
+                                                                                                   input.currency(),
+                                                                                                   input.ndcPercent(),
+                                                                                                   input.ndcAmount()));
+
+            return new Output(output.participantNDCId());
+
+        } else {
+
+            ModifyParticipantNDCCommand.Output output =
+                    this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(
+                            optionalParticipantNDCData.get().participantNDCId(),
+                            input.ndcPercent(),
+                            input.ndcAmount()));
+
+            return new Output(output.participantNDCId());
+        }
     }
-
 }
