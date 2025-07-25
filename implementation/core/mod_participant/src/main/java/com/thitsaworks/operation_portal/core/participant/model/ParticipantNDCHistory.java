@@ -3,9 +3,11 @@ package com.thitsaworks.operation_portal.core.participant.model;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantNDCHistoryId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -24,7 +26,7 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @EmbeddedId
     protected ParticipantNDCHistoryId participantNDCHistoryId;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "participant_ndc_id")
     protected ParticipantNDC participantNDC;
 
@@ -34,28 +36,17 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @Column(name = "currency")
     protected String currency;
 
-    @Column(
-        name = "ndc_percent",
-        precision = 5,
-        scale = 4)
+    @Column(name = "ndc_percent", precision = 7, scale = 4)
     protected BigDecimal ndcPercent;
 
-    @Column(name = "ndc_amount", precision = 5, scale = 4)
-    protected BigDecimal ndcAmount;
-
-    public ParticipantNDCHistory(ParticipantNDC participantNDC,
-                                 String dfspCode,
-                                 String currency,
-                                 BigDecimal ndcPercent,
-                                 BigDecimal ndcAmount) {
+    public ParticipantNDCHistory(ParticipantNDC participantNDC) {
 
         this.participantNDCHistoryId = new ParticipantNDCHistoryId(Snowflake.get()
                                                                             .nextId());
         this.participantNDC(participantNDC);
-        this.dfspCode(dfspCode);
-        this.currency(currency);
-        this.ndcPercent(ndcPercent);
-        this.ndcAmount(ndcAmount);
+        this.dfspCode(participantNDC.getDfspCode());
+        this.currency(participantNDC.getCurrency());
+        this.ndcPercent(participantNDC.getNdcPercent());
 
     }
 
@@ -77,11 +68,6 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     public void ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
-    }
-
-    public void ndcAmount(BigDecimal ndcAmount) {
-
-        this.ndcAmount = ndcAmount;
     }
 
     @Override
