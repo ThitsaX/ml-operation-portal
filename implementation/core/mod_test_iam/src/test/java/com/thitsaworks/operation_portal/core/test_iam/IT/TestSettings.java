@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.hubuser.domain;
+package com.thitsaworks.operation_portal.core.test_iam.IT;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
