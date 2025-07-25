@@ -32,6 +32,7 @@ public class CreateApprovalRequestCommandIT extends BaseVaultSetUpTest {
                  this.createApprovalRequestCommand.execute(new CreateApprovalRequestCommand.Input("Deposit",
                                                                                                   "dfsp1",
                                                                                                   "USD",
+                                                                                                  "8",
                                                                                                   BigDecimal.valueOf(50000.00),
                                                                                                   new UserId(728941546990530560L))));
     }

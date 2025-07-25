@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface HubParticipantQuery {
 
-    List<HubParticipantData> getParticipants() throws HubServicesException;
+    List<HubParticipantData> getParticipantList() throws HubServicesException;
 
     HubParticipantData getByName(String name) throws ParticipantException, HubServicesException;
 

@@ -22,8 +22,9 @@ public class CreateApprovalRequestCommandHandler implements CreateApprovalReques
     public Output execute(Input input) {
 
         var approvalRequest = new ApprovalRequest(input.requestedAction(),
-                                           input.dfsp(),
-                                           input.currency(),
+                                           input.participant(),
+                                           input.participantCurrency(),
+                                           input.participantCurrencyId(),
                                            input.amount(),
                                            input.requestedBy());
 

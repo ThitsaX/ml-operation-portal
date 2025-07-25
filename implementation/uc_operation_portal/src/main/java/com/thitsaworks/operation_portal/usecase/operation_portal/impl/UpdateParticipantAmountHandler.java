@@ -57,7 +57,8 @@ public class UpdateParticipantAmountHandler
                                                                                     input.externalReference(),
                                                                                     input.action(),
                                                                                     input.reason(),
-                                                                                    input.amount());
+                                                                                    input.amount(),
+                                                                                    input.extensionList());
 
         PostParticipantBalance.Response response = this.hubClient.postParticipantBalance(input.participantId(),
                                                                                          input.accountId(),
