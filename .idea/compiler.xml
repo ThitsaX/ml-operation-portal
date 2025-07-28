@@ -2,6 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
@@ -15,7 +16,8 @@
         <module name="mod_fspiop" />
         <module name="mod_pending_approval" />
         <module name="mod_hub_services" />
-        <module name="uc_hub_service" />
+        <module name="uc_hub_services" />
+        <module name="mod_scheduler" />
         <module name="mod_misc" />
         <module name="mod_hub_user" />
         <module name="mod_report" />
@@ -75,6 +77,7 @@
       <module name="mod_report" options="-parameters" />
       <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" options="-parameters" />
       <module name="mod_report_querydsl" options="-parameters" />
+      <module name="mod_scheduler" options="-parameters" />
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters" />
       <module name="mojaloop-operation-portal" options="-parameters" />

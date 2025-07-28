@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfigurati
 import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.scheduler.SchedulerConfiguration;
 import com.thitsaworks.operation_portal.reporting.report.ReportConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -15,7 +16,8 @@ import org.springframework.context.annotation.Import;
 @Import(
     value = {
         ParticipantConfiguration.class, AuditConfiguration.class, IAMConfiguration.class,
-        HubServicesConfiguration.class, HubUserConfiguration.class, ApprovalConfiguration.class, ReportConfiguration.class
+        HubServicesConfiguration.class, HubUserConfiguration.class, ApprovalConfiguration.class,
+        ReportConfiguration.class, SchedulerConfiguration.class
     })
 public class OperationPortalUseCaseConfiguration {
 
