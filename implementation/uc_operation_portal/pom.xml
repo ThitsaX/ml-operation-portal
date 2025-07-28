@@ -39,6 +39,12 @@
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_report</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.thitsaworks.operation_portal.core</groupId>
+            <artifactId>mod_scheduler</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>

@@ -55,7 +55,7 @@ public class GetParticipantContactListHandler extends OperationPortalAuditableUs
             GetParticipantContactList.Output.ContactInfo contactInfo = new GetParticipantContactList.Output.ContactInfo(
                 contactData.contactId(),
                 contactData.name(),
-                contactData.title(),
+                contactData.position(),
                 contactData.email(),
                 contactData.mobile(),
                 contactData.contactType()
