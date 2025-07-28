@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettleme
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementAuditReport;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class GenerateSettlementAuditReportHandler
                                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                                 ObjectMapper objectMapper,
                                                 PrincipalCache principalCache,
+                                                ActionAuthorizationManager actionAuthorizationManager,
                                                 GenerateSettlementAuditReportCommand generateSettlementAuditReportCommand) {
 
         super(createInputAuditCommand,
@@ -40,7 +42,8 @@ public class GenerateSettlementAuditReportHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.generateSettlementAuditReportCommand = generateSettlementAuditReportCommand;
     }

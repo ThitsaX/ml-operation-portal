@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateApprovalRequest;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,14 +34,16 @@ public class CreateApprovalRequestHandler
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
-                                        CreateApprovalRequestCommand createApprovalRequestCommand) {
+                                        CreateApprovalRequestCommand createApprovalRequestCommand,
+                                        ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createApprovalRequestCommand = createApprovalRequestCommand;
     }

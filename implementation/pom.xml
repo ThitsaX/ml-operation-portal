@@ -237,6 +237,11 @@
             </dependency>
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
+                <artifactId>mod_test_iam</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_participant</artifactId>
                 <version>${project.version}</version>
             </dependency>

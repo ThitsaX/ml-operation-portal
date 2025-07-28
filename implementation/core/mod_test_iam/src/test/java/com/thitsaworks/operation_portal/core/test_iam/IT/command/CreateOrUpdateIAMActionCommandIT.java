@@ -10,5 +10,5 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {IAMTestConfiguration.class, TestSettings.class})
-public class CreateOrUpdateActionCommandIT extends BaseVaultSetUpTest {
+public class CreateOrUpdateIAMActionCommandIT extends BaseVaultSetUpTest {
 }

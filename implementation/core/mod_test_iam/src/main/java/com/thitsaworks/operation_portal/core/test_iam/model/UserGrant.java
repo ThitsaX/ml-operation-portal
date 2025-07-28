@@ -26,16 +26,16 @@ public class UserGrant extends JpaEntity<GrantId> {
 
     @ManyToOne
     @JoinColumn(name = "action_id")
-    protected Action action;
+    protected IAMAction IAMAction;
 
-    public UserGrant(User user, Action action) {
+    public UserGrant(User user, IAMAction IAMAction) {
 
         assert user != null;
-        assert action != null;
+        assert IAMAction != null;
 
         this.grantId = new GrantId(Snowflake.get().nextId());
         this.user = user;
-        this.action = action;
+        this.IAMAction = IAMAction;
     }
 
     @Override

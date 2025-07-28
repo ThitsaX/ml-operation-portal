@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.core.hubuser.command.CreateAnnouncementC
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAnnouncement;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,10 +26,12 @@ public class CreateNewAnnouncementHandler
     private final CreateAnnouncementCommand createAnnouncementCommand;
 
     public CreateNewAnnouncementHandler(PrincipalCache principalCache,
-                                        CreateAnnouncementCommand createAnnouncementCommand) {
+                                        CreateAnnouncementCommand createAnnouncementCommand,
+                                        ActionAuthorizationManager actionAuthorizationManager) {
 
         super(PERMITTED_ROLES,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createAnnouncementCommand = createAnnouncementCommand;
 

@@ -28,7 +28,7 @@ public class AssignRoleToUserCommandHandler implements AssignRoleToUserCommand {
                                        .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
 
         Role role = this.roleRepository.findById(input.roleId())
-                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_ID_NOT_FOUND));
+                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
 
         UserRole userRole = user.assignRole(role);
 

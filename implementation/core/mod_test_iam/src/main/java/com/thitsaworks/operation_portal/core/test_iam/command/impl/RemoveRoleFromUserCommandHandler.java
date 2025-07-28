@@ -28,7 +28,7 @@ public class RemoveRoleFromUserCommandHandler implements RemoveRoleFromUserComma
                                        .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
 
         Role role = this.roleRepository.findById(input.roleId())
-                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_ID_NOT_FOUND));
+                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
 
         var removed = user.removeRole(role);
 

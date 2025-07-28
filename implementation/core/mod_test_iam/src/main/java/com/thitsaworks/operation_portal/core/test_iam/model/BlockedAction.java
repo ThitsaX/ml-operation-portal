@@ -25,16 +25,16 @@ public class BlockedAction extends JpaEntity<BlockedActionId> {
 
     @ManyToOne
     @JoinColumn(name = "action_id")
-    protected Action action;
+    protected IAMAction IAMAction;
 
-    public BlockedAction(User user, Action action) {
+    public BlockedAction(User user, IAMAction IAMAction) {
 
         assert user != null;
-        assert action != null;
+        assert IAMAction != null;
 
         this.blockedActionId = new BlockedActionId(Snowflake.get().nextId());
         this.user = user;
-        this.action = action;
+        this.IAMAction = IAMAction;
     }
 
     @Override

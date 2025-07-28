@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.core.hubuser.command.RemoveGreetingComma
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.RemovePastSixMonthsGreetingMessage;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
@@ -23,10 +24,15 @@ public class RemovePastSixMonthsGreetingHandler
 
     private  final RemoveGreetingCommand removeGreetingCommand;
 
-    public RemovePastSixMonthsGreetingHandler(Set<UserRoleType> permittedRoles, PrincipalCache principalCache,
+    public RemovePastSixMonthsGreetingHandler(Set<UserRoleType> permittedRoles,
+                                              PrincipalCache principalCache,
+                                              ActionAuthorizationManager actionAuthorizationManager,
                                               RemoveGreetingCommand removeGreetingCommand) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
+
         this.removeGreetingCommand = removeGreetingCommand;
     }
 

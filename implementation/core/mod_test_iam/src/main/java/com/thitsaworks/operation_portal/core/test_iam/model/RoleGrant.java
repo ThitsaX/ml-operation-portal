@@ -25,16 +25,16 @@ public class RoleGrant extends JpaEntity<GrantId> {
 
     @ManyToOne
     @JoinColumn(name = "action_id")
-    protected Action action;
+    protected IAMAction IAMAction;
 
-    public RoleGrant(Role role, Action action) {
+    public RoleGrant(Role role, IAMAction IAMAction) {
 
         assert role != null;
-        assert action != null;
+        assert IAMAction != null;
 
         this.grantId = new GrantId(Snowflake.get().nextId());
         this.role = role;
-        this.action = action;
+        this.IAMAction = IAMAction;
     }
 
     @Override

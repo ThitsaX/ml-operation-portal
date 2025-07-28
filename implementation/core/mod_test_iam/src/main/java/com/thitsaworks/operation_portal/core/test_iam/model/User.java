@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -58,10 +57,6 @@ public class User extends JpaEntity<UserId> {
     @Column(name = "sha_256_password_hex")
     protected String sha256PasswordHex;
 
-    @Column(name = "user_role_type")
-    @Enumerated(EnumType.STRING)
-    protected UserRoleType userRoleType;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     protected PrincipalStatus principalStatus;
@@ -90,11 +85,13 @@ public class User extends JpaEntity<UserId> {
         fetch = FetchType.EAGER)
     protected Set<BlockedAction> denials = new HashSet<>();
 
-    public User(UserId userId, RealmType realmType, String sha256PasswordHex, RealmId realmId,
-                UserRoleType userRoleType, PrincipalStatus principalStatus) {
+    public User(UserId userId,
+                RealmType realmType,
+                String sha256PasswordHex,
+                RealmId realmId,
+                PrincipalStatus principalStatus) {
 
         this.userId = userId;
-
         this.accessKey = new AccessKey(Snowflake.get()
                                                 .nextId());
         this.secretKey = UUID.randomUUID()
@@ -102,7 +99,6 @@ public class User extends JpaEntity<UserId> {
         this.realmType = realmType;
         this.realmId = realmId;
         this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(sha256PasswordHex);
-        this.userRoleType = userRoleType;
         this.principalStatus = principalStatus;
     }
 
@@ -150,11 +146,11 @@ public class User extends JpaEntity<UserId> {
         return this.generate();
     }
 
-    public void blockAction(Action denying) {
+    public void blockAction(IAMAction denying) {
 
         Optional<BlockedAction> optDenials =
             this.denials.stream()
-                        .filter(denial -> denial.action.equals(denying))
+                        .filter(denial -> denial.IAMAction.equals(denying))
                         .findFirst();
 
         if (optDenials.isEmpty()) {
@@ -169,11 +165,11 @@ public class User extends JpaEntity<UserId> {
         return this.userId;
     }
 
-    public void grantAction(Action granting) {
+    public void grantAction(IAMAction granting) {
 
         Optional<UserGrant> optUserGrant =
             this.grants.stream()
-                       .filter(userGrant -> userGrant.action.equals(granting))
+                       .filter(userGrant -> userGrant.IAMAction.equals(granting))
                        .findFirst();
 
         if (optUserGrant.isEmpty()) {
@@ -182,7 +178,7 @@ public class User extends JpaEntity<UserId> {
         }
     }
 
-    public boolean isGranted(Action action) {
+    public boolean isGranted(IAMAction IAMAction) {
 
         if (!this.principalStatus.equals(PrincipalStatus.ACTIVE)) {
 
@@ -190,18 +186,18 @@ public class User extends JpaEntity<UserId> {
         }
 
         if (this.denials.stream()
-                        .anyMatch(denial -> denial.action.equals(action))) {
+                        .anyMatch(denial -> denial.IAMAction.equals(IAMAction))) {
             return false;
         }
 
         for (UserRole userRole : this.roles) {
-            if (userRole.role.isGranted(action)) {
+            if (userRole.role.isGranted(IAMAction)) {
                 return true;
             }
         }
 
         for (UserGrant grant : this.grants) {
-            if (grant.action.equals(action)) {
+            if (grant.IAMAction.equals(IAMAction)) {
                 return true;
             }
         }
@@ -233,11 +229,11 @@ public class User extends JpaEntity<UserId> {
         return this.generate();
     }
 
-    public boolean revokeAction(Action revoking) {
+    public boolean revokeAction(IAMAction revoking) {
 
         Optional<UserGrant> optUserGrant =
             this.grants.stream()
-                       .filter(userGrant -> userGrant.action.equals(revoking))
+                       .filter(userGrant -> userGrant.IAMAction.equals(revoking))
                        .findFirst();
 
         if (optUserGrant.isPresent()) {
@@ -249,11 +245,11 @@ public class User extends JpaEntity<UserId> {
         return false;
     }
 
-    public boolean unblockAction(Action removing) {
+    public boolean unblockAction(IAMAction removing) {
 
         Optional<BlockedAction> optDenial =
             this.denials.stream()
-                        .filter(userGrant -> userGrant.action.equals(removing))
+                        .filter(userGrant -> userGrant.IAMAction.equals(removing))
                         .findFirst();
 
         if (optDenial.isPresent()) {
@@ -277,7 +273,6 @@ public class User extends JpaEntity<UserId> {
     public User modify(PrincipalStatus principalStatus, UserRoleType userRoleType) {
 
         this.principalStatus = principalStatus;
-        this.userRoleType = userRoleType;
         return this;
 
     }

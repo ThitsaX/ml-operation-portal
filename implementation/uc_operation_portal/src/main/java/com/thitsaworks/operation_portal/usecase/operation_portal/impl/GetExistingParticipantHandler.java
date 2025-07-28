@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQ
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingParticipant;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class GetExistingParticipantHandler
                                          CreateExceptionAuditCommand createExceptionAuditCommand,
                                          ObjectMapper objectMapper,
                                          PrincipalCache principalCache,
+                                         ActionAuthorizationManager actionAuthorizationManager,
                                          ParticipantQuery participantQuery,
                                          ContactQuery contactQuery,
                                          LiquidityProfileQuery liquidityProfileQuery) {
@@ -54,7 +56,8 @@ public class GetExistingParticipantHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
         this.contactQuery = contactQuery;

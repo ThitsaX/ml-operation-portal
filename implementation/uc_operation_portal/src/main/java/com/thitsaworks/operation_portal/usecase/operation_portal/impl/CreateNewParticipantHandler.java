@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class CreateNewParticipantHandler
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
+                                       ActionAuthorizationManager actionAuthorizationManager,
                                        CreateParticipantCommand createParticipantCommand) {
 
         super(createInputAuditCommand,
@@ -41,7 +43,8 @@ public class CreateNewParticipantHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createParticipantCommand = createParticipantCommand;
     }

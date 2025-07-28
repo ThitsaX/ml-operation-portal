@@ -2,8 +2,7 @@ package com.thitsaworks.operation_portal.core.test_iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.test_iam.cache.UserCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.ResetPasswordCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.ResetUserPasswordCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.UserRepository;
@@ -12,11 +11,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ResetPasswordCommandHandler implements ResetPasswordCommand {
+public class ResetUserPasswordCommandHandler implements ResetUserPasswordCommand {
 
     private  final UserRepository userRepository;
 
-    private  final UserCache cache;
     @Override
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
@@ -29,7 +27,6 @@ public class ResetPasswordCommandHandler implements ResetPasswordCommand {
         user.reset(input.password());
 
         this.userRepository.save(user);
-        this.cache.delete(oldAccessKey);
 
         return new Output(user.getAccessKey(),user.getSecretKey(),true);
     }

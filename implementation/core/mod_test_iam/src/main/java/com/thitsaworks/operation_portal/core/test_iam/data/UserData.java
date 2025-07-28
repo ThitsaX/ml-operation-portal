@@ -20,8 +20,6 @@ public record UserData(UserId userId,
 
                        RealmId realmId,
 
-                       UserRoleType userRoleType,
-
                        PrincipalStatus principalStatus) implements Serializable {
 
     public UserData(User user) {
@@ -35,8 +33,6 @@ public record UserData(UserId userId,
              user.getRealmType(),
 
              user.getRealmId(),
-
-             user.getUserRoleType(),
 
              user.getPrincipalStatus());
     }

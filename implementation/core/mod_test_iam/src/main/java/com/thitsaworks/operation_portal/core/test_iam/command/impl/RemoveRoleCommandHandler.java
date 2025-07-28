@@ -19,7 +19,7 @@ public class RemoveRoleCommandHandler implements RemoveRoleCommand {
     public Output execute(Input input) throws IAMException {
 
         var role = this.roleRepository.findById(input.roleId())
-                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_ID_NOT_FOUND));
+                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
 
         this.roleRepository.delete(role);
 

@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CreateUserCommandHandler implements CreateUserCommand {
 
-    private  final UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Override
     @CoreWriteTransactional
@@ -23,15 +23,18 @@ public class CreateUserCommandHandler implements CreateUserCommand {
 
         Optional<User> optionalPrincipal = this.userRepository.findOne(
             UserRepository.Filters.withUserId(input.userId())
-                                       .and(UserRepository.Filters.withRealm(input.realmType())));
+                                  .and(UserRepository.Filters.withRealm(input.realmType())));
 
         if (optionalPrincipal.isPresent()) {
 
             throw new IAMException(IAMErrors.DUPLICATE_PRINCIPAL);
         }
 
-        var user = new User(input.userId(), input.realmType(), input.passwordPlain(),
-                                               input.realmId(), input.userRoleType(), input.principalStatus());
+        var user = new User(input.userId(),
+                            input.realmType(),
+                            input.passwordPlain(),
+                            input.realmId(),
+                            input.principalStatus());
 
         this.userRepository.save(user);
 

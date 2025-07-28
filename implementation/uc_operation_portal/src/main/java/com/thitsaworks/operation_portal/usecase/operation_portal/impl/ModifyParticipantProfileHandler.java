@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class ModifyParticipantProfileHandler
                                            CreateExceptionAuditCommand createExceptionAuditCommand,
                                            ObjectMapper objectMapper,
                                            PrincipalCache principalCache,
+                                           ActionAuthorizationManager actionAuthorizationManager,
                                            ModifyParticipantCommand modifyParticipantCommand) {
 
         super(createInputAuditCommand,
@@ -47,7 +49,8 @@ public class ModifyParticipantProfileHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyParticipantCommand = modifyParticipantCommand;
         this.principalCache = principalCache;

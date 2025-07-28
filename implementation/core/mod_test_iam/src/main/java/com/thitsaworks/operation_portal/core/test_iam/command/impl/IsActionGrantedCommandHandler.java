@@ -4,9 +4,9 @@ import com.thitsaworks.operation_portal.component.misc.persistence.transactional
 import com.thitsaworks.operation_portal.core.test_iam.command.IsActionGrantedCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.test_iam.model.Action;
+import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
 import com.thitsaworks.operation_portal.core.test_iam.model.User;
-import com.thitsaworks.operation_portal.core.test_iam.model.repository.ActionRepository;
+import com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
 
     private final UserRepository userRepository;
 
-    private final ActionRepository actionRepository;
+    private final IAMActionRepository IAMActionRepository;
     @Override
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
@@ -29,10 +29,10 @@ public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
         }
 
-        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
+        Optional<IAMAction> optAction = this.IAMActionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_ID_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
         }
 
         User user = optUser.get();

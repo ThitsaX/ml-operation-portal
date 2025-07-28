@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllOtherParticipants;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,14 @@ public class GetAllOtherParticipantsBean
 
     private final ParticipantQuery participantQuery;
 
-    public GetAllOtherParticipantsBean(PrincipalCache principalCache, ParticipantQuery participantQuery) {
+    public GetAllOtherParticipantsBean(PrincipalCache principalCache,
+                                       ActionAuthorizationManager actionAuthorizationManager,
+                                       ParticipantQuery participantQuery) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
+
         this.participantQuery = participantQuery;
     }
 

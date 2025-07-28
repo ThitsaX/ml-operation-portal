@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemovePastSixMonthsAnnouncements;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,9 +29,12 @@ public class RemovePastSixMonthsAnnouncementsHandler
 
     @Autowired
     public RemovePastSixMonthsAnnouncementsHandler(PrincipalCache principalCache,
+                                                   ActionAuthorizationManager actionAuthorizationManager,
                                                    RemoveAnnouncementsCommand removeAnnouncementsCommand) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.removeAnnouncementsCommand = removeAnnouncementsCommand;
     }

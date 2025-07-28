@@ -1,11 +1,10 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
-import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.ChangeUserPasswordCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,20 +17,21 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {IAMTestConfiguration.class, TestSettings.class})
-public class BlockUserActionCommandIT extends BaseVaultSetUpTest {
+public class ChangeUserPasswordCommandIT extends BaseVaultSetUpTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BlockUserActionCommandIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChangeUserPasswordCommandIT.class);
 
     @Autowired
-    private BlockUserActionCommand blockUserActionCommand;
+    private ChangeUserPasswordCommand changeUserPasswordCommand;
 
     @Test
     public void success() throws IAMException {
-        var result = blockUserActionCommand.execute(new BlockUserActionCommand.Input(new UserId(11L),
-                                                                                     new ActionId(111L)));
+        var change = changeUserPasswordCommand.execute(new ChangeUserPasswordCommand.Input(new UserId(11L),
+                                                                                           "oldPassword",
+                                                                                           "newPassword"));
 
-        LOGGER.info("boolean {}", result.resultCode());
+        LOGGER.info("Access Key: {}", change.accessKey());
+        LOGGER.info("Secret Key: {}", change.secretKey());
     }
-
 }
 

@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetCurrenciesQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetHubCurrencies;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,12 @@ public class GetHubCurrenciesHandler extends OperationPortalUseCase<GetHubCurren
     private final GetCurrenciesQuery getCurrenciesQuery;
 
     public GetHubCurrenciesHandler(PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
                                    GetCurrenciesQuery getCurrenciesQuery) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.getCurrenciesQuery = getCurrenciesQuery;
     }

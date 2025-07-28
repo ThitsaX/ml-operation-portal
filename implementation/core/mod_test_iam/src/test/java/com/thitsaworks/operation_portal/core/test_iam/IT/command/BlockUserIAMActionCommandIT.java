@@ -1,10 +1,11 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
-import com.thitsaworks.operation_portal.core.test_iam.command.ChangePasswordCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,21 +18,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {IAMTestConfiguration.class, TestSettings.class})
-public class ChangePasswordCommandIT extends BaseVaultSetUpTest {
+public class BlockUserIAMActionCommandIT extends BaseVaultSetUpTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChangePasswordCommandIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BlockUserIAMActionCommandIT.class);
 
     @Autowired
-    private ChangePasswordCommand changePasswordCommand;
+    private BlockUserActionCommand blockUserActionCommand;
 
     @Test
     public void success() throws IAMException {
-        var change = changePasswordCommand.execute(new ChangePasswordCommand.Input(new UserId(11L),
-                                                                                   "oldPassword",
-                                                                                   "newPassword"));
+        var result = blockUserActionCommand.execute(new BlockUserActionCommand.Input(new UserId(11L),
+                                                                                     new ActionId(111L)));
 
-        LOGGER.info("Access Key: {}", change.accessKey());
-        LOGGER.info("Secret Key: {}", change.secretKey());
+        LOGGER.info("boolean {}", result.resultCode());
     }
+
 }
 

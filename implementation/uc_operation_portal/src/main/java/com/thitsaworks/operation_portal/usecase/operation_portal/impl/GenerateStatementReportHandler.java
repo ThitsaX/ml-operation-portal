@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.participant.query.FindAccountNumber
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateStatementReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateStatementReport;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class GenerateStatementReportHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
+                                          ActionAuthorizationManager actionAuthorizationManager,
                                           GenerateStatementReportCommand generateStatementReportCommand,
                                           FindAccountNumberByParticipantNameQuery findAccountNumberByParticipantNameQuery) {
 
@@ -43,7 +45,8 @@ public class GenerateStatementReportHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.generateStatementReportCommand = generateStatementReportCommand;
         this.findAccountNumberByParticipantNameQuery = findAccountNumberByParticipantNameQuery;

@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeBy;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
@@ -30,6 +31,7 @@ public class MadeByHandler extends OperationPortalAuditableUseCase<GetMadeBy.Inp
                          CreateExceptionAuditCommand createExceptionAuditCommand,
                          ObjectMapper objectMapper,
                          PrincipalCache principalCache,
+                         ActionAuthorizationManager actionAuthorizationManager,
                          ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
@@ -37,7 +39,8 @@ public class MadeByHandler extends OperationPortalAuditableUseCase<GetMadeBy.Inp
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.participantUserQuery = participantUserQuery;
     }

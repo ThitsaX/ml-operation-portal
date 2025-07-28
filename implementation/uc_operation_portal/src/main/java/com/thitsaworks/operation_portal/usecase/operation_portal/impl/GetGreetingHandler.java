@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetGreeting;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.util.EnumSet;
@@ -28,14 +29,18 @@ public class GetGreetingHandler extends OperationPortalAuditableUseCase<GetGreet
                               CreateOutputAuditCommand createOutputAuditCommand,
                               CreateExceptionAuditCommand createExceptionAuditCommand,
                               ObjectMapper objectMapper,
-                              PrincipalCache principalCache, GreetingQuery greetingQuery) {
+                              PrincipalCache principalCache,
+                              ActionAuthorizationManager actionAuthorizationManager,
+                              GreetingQuery greetingQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
+
         this.greetingQuery = greetingQuery;
     }
 

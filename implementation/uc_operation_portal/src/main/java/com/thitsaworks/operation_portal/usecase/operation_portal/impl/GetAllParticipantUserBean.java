@@ -13,6 +13,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserDat
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllParticipantUser;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class GetAllParticipantUserBean
                                      CreateExceptionAuditCommand createExceptionAuditCommand,
                                      ObjectMapper objectMapper,
                                      PrincipalCache principalCache,
+                                     ActionAuthorizationManager actionAuthorizationManager,
                                      ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
@@ -47,7 +49,8 @@ public class GetAllParticipantUserBean
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.participantUserQuery = participantUserQuery;
         this.principalCache = principalCache;

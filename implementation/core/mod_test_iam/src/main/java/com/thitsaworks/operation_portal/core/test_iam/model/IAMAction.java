@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "iam_action")
 @NoArgsConstructor
 @Getter
-public class Action extends JpaEntity<ActionId> {
+public class IAMAction extends JpaEntity<ActionId> {
     @EmbeddedId
     protected ActionId actionId;
 
@@ -30,7 +30,7 @@ public class Action extends JpaEntity<ActionId> {
     @Column(name = "description")
     protected String description;
 
-    public Action(ActionCode actionCode, String scope, String description) {
+    public IAMAction(ActionCode actionCode, String scope, String description) {
 
         assert actionCode != null : "actionCode is required!";
         assert scope != null : "scope is required!";
@@ -41,7 +41,7 @@ public class Action extends JpaEntity<ActionId> {
         this.description = description;
     }
 
-    public Action description(String description) {
+    public IAMAction description(String description) {
 
         this.description = description;
 
@@ -54,7 +54,7 @@ public class Action extends JpaEntity<ActionId> {
         return  this.actionId;
     }
 
-    public Action scope(String scope) {
+    public IAMAction scope(String scope) {
 
         this.scope = scope;
 

@@ -67,15 +67,15 @@ public class Role extends JpaEntity<RoleId> {
         return this;
     }
 
-    public boolean isGranted(Action action) {
+    public boolean isGranted(IAMAction IAMAction) {
 
-        return this.grants.stream().anyMatch(granted -> granted.action.equals(action));
+        return this.grants.stream().anyMatch(granted -> granted.IAMAction.equals(IAMAction));
     }
 
-    public void grantAction(Action granting) {
+    public void grantAction(IAMAction granting) {
 
         Optional<RoleGrant> optRoleGrant =
-            this.grants.stream().filter(roleGrant -> roleGrant.action.equals(granting)).findFirst();
+            this.grants.stream().filter(roleGrant -> roleGrant.IAMAction.equals(granting)).findFirst();
 
         if (optRoleGrant.isEmpty()) {
 
@@ -83,10 +83,10 @@ public class Role extends JpaEntity<RoleId> {
         }
     }
 
-    public boolean revokeAction(Action revoking) {
+    public boolean revokeAction(IAMAction revoking) {
 
         Optional<RoleGrant> optRoleGrant =
-            this.grants.stream().filter(roleGrant -> roleGrant.action.equals(revoking)).findFirst();
+            this.grants.stream().filter(roleGrant -> roleGrant.IAMAction.equals(revoking)).findFirst();
 
         if (optRoleGrant.isPresent()) {
 

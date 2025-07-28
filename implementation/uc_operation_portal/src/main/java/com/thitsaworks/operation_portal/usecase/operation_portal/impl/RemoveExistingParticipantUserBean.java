@@ -20,6 +20,7 @@ import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipa
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveExistingParticipantUser;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class RemoveExistingParticipantUserBean
                                              CreateExceptionAuditCommand createExceptionAuditCommand,
                                              ObjectMapper objectMapper,
                                              PrincipalCache principalCache,
+                                             ActionAuthorizationManager actionAuthorizationManager,
                                              RemoveParticipantUserCommand removeParticipantUserCommand,
                                              ModifyPrincipalCommand modifyPrincipalCommand) {
 
@@ -54,7 +56,8 @@ public class RemoveExistingParticipantUserBean
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.removeParticipantUserCommand = removeParticipantUserCommand;
         this.modifyPrincipalCommand = modifyPrincipalCommand;

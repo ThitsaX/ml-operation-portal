@@ -13,6 +13,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserProfile;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,10 +35,13 @@ public class GetUserProfileBean extends OperationPortalUseCase<GetUserProfile.In
     private final PrincipalCache principalCache;
 
     public GetUserProfileBean(PrincipalCache principalCache,
+                              ActionAuthorizationManager actionAuthorizationManager,
                               ParticipantCache participantCache,
                               ParticipantUserCache participantUserCache) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;

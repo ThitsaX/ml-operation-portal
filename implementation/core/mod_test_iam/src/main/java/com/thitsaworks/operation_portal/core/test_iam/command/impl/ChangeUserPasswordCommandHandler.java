@@ -2,8 +2,7 @@ package com.thitsaworks.operation_portal.core.test_iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.test_iam.cache.UserCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.ChangePasswordCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.ChangeUserPasswordCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.UserRepository;
@@ -12,11 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ChangePasswordCommandHandler implements ChangePasswordCommand {
+public class ChangeUserPasswordCommandHandler implements ChangeUserPasswordCommand {
 
     private final UserRepository userRepository;
-
-    private final UserCache userCache;
 
     @Override
     @CoreWriteTransactional
@@ -29,8 +26,6 @@ public class ChangePasswordCommandHandler implements ChangePasswordCommand {
         user.change(input.currentPassword(), input.newPassword());
 
         this.userRepository.saveAndFlush(user);
-
-        this.userCache.delete(oldAccessKey);
 
 
 

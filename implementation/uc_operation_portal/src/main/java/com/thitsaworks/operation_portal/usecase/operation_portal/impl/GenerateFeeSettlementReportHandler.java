@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettl
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateFeeSettlementReport;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class GenerateFeeSettlementReportHandler
                                               CreateExceptionAuditCommand createExceptionAuditCommand,
                                               ObjectMapper objectMapper,
                                               PrincipalCache principalCache,
+                                              ActionAuthorizationManager actionAuthorizationManager,
                                               GenerateFeeSettlementReportCommand generateFeeSettlementReportCommand) {
 
         super(createInputAuditCommand,
@@ -40,7 +42,8 @@ public class GenerateFeeSettlementReportHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.generateFeeSettlementReportCommand = generateFeeSettlementReportCommand;
     }

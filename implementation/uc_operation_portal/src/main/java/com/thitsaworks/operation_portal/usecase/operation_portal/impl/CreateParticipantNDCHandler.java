@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateParticipa
 import com.thitsaworks.operation_portal.core.participant.command.DeleteParticipantNDCCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class CreateParticipantNDCHandler
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
+                                       ActionAuthorizationManager actionAuthorizationManager,
                                        CreateParticipantNDCCommand createParticipantNDCCommand,
                                        CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
                                        DeleteParticipantNDCCommand deleteParticipantNDCCommand) {
@@ -48,7 +50,8 @@ public class CreateParticipantNDCHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createParticipantNDCCommand = createParticipantNDCCommand;
         this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;

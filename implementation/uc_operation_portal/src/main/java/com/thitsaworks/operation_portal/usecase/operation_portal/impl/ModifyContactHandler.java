@@ -10,10 +10,9 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateContactHistoryCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyContactCommand;
-import com.thitsaworks.operation_portal.core.participant.model.Contact;
-import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyContact;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -39,6 +38,7 @@ public class ModifyContactHandler
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
+                                ActionAuthorizationManager actionAuthorizationManager,
                                 ModifyContactCommand modifyContactCommand,
                                 ParticipantCache participantCache,
                                 CreateContactHistoryCommand createContactHistoryCommand) {
@@ -48,7 +48,8 @@ public class ModifyContactHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyContactCommand = modifyContactCommand;
 

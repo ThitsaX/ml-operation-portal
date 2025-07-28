@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.core.hub_services.query.GetTransferState
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransferState;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,12 @@ public class GetAllTransferStateHandler
     private final GetTransferStatesQuery getTransferStatesQuery;
 
     public GetAllTransferStateHandler(PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager,
                                       GetTransferStatesQuery getTransferStatesQuery) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.getTransferStatesQuery = getTransferStatesQuery;
 

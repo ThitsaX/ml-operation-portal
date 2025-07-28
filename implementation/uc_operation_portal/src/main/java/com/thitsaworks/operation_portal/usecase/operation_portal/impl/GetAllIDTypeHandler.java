@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllIDType;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,12 @@ public class GetAllIDTypeHandler extends OperationPortalUseCase<GetAllIDType.Inp
     private final GetIDTypesQuery getIDTypesQuery;
 
     public GetAllIDTypeHandler(PrincipalCache principalCache,
+                               ActionAuthorizationManager actionAuthorizationManager,
                                GetIDTypesQuery getIDTypesQuery) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.getIDTypesQuery = getIDTypesQuery;
 

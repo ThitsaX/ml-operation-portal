@@ -14,6 +14,7 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateParticipa
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ public class SyncHubParticipantsToPortalHandler
                                               CreateExceptionAuditCommand createExceptionAuditCommand,
                                               ObjectMapper objectMapper,
                                               PrincipalCache principalCache,
+                                              ActionAuthorizationManager actionAuthorizationManager,
                                               HubParticipantQuery hubParticipantQuery,
                                               ParticipantQuery participantQuery,
                                               CreateParticipantCommand createParticipantCommand) {
@@ -55,7 +57,8 @@ public class SyncHubParticipantsToPortalHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.hubParticipantQuery = hubParticipantQuery;
         this.participantQuery = participantQuery;

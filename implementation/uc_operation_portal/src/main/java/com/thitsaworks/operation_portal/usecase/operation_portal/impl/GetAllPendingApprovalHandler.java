@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllPendingApproval;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ public class GetAllPendingApprovalHandler
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
+                                        ActionAuthorizationManager actionAuthorizationManager,
                                         ApprovalRequestQuery approvalRequestQuery,
                                         Utility utility
                                        ) {
@@ -46,7 +48,8 @@ public class GetAllPendingApprovalHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.approvalRequestQuery = approvalRequestQuery;
         this.utility = utility;

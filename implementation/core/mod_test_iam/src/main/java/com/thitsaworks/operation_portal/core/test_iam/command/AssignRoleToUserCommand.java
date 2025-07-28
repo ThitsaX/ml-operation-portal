@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.Us
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 
 public interface AssignRoleToUserCommand {
+
     Output execute(Input input) throws IAMException;
 
     record Input(UserId userId, RoleId roleId) { }

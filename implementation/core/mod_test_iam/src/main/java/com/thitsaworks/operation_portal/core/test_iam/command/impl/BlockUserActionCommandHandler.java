@@ -1,14 +1,13 @@
 package com.thitsaworks.operation_portal.core.test_iam.command.impl;
 
 
-import com.aerospike.client.ResultCode;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.test_iam.model.Action;
+import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
 import com.thitsaworks.operation_portal.core.test_iam.model.User;
-import com.thitsaworks.operation_portal.core.test_iam.model.repository.ActionRepository;
+import com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ public class BlockUserActionCommandHandler implements BlockUserActionCommand {
 
     private final UserRepository userRepository;
 
-    private final ActionRepository actionRepository;
+    private final IAMActionRepository IAMActionRepository;
 
     @Override
     @CoreWriteTransactional
@@ -33,10 +32,10 @@ public class BlockUserActionCommandHandler implements BlockUserActionCommand {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
         }
 
-        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
+        Optional<IAMAction> optAction = this.IAMActionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_ID_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
         }
 
         User user = optUser.get();

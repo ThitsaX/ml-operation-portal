@@ -11,20 +11,35 @@ import java.io.Serializable;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ActionCode implements Serializable {
 
+    @EqualsAndHashCode.Include
+    private String value;
+
+    public ActionCode(String value) {
+
+        this.value = value;
+    }
+
     @Converter
     public static class JpaConverter implements AttributeConverter<ActionCode, String> {
 
         @Override
         public String convertToDatabaseColumn(ActionCode attribute) {
 
-            return "";
+            return attribute.value;
         }
 
         @Override
         public ActionCode convertToEntityAttribute(String dbData) {
 
-            return null;
+            return new ActionCode(dbData);
         }
+
+    }
+
+    @Override
+    public String toString() {
+
+        return this.value;
     }
 
 }

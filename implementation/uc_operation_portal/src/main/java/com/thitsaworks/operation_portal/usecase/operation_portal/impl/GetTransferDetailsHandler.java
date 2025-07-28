@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.hub_services.query.GetTransferDetai
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetails;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class GetTransferDetailsHandler
                                      CreateExceptionAuditCommand createExceptionAuditCommand,
                                      ObjectMapper objectMapper,
                                      PrincipalCache principalCache,
+                                     ActionAuthorizationManager actionAuthorizationManager,
                                      GetTransferDetailQuery getTransferDetailQuery) {
 
         super(createInputAuditCommand,
@@ -40,7 +42,8 @@ public class GetTransferDetailsHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.getTransferDetailQuery = getTransferDetailQuery;
     }

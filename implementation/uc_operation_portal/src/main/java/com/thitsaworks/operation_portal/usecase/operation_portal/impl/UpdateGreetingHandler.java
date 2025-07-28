@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.hubuser.command.UpdateGreetingComma
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateGreeting;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
@@ -29,14 +30,18 @@ public class UpdateGreetingHandler extends OperationPortalAuditableUseCase<Updat
                                  CreateOutputAuditCommand createOutputAuditCommand,
                                  CreateExceptionAuditCommand createExceptionAuditCommand,
                                  ObjectMapper objectMapper,
-                                 PrincipalCache principalCache, UpdateGreetingCommand updateGreetingCommand) {
+                                 PrincipalCache principalCache,
+                                 ActionAuthorizationManager actionAuthorizationManager,
+                                 UpdateGreetingCommand updateGreetingCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
+
         this.updateGreetingCommand = updateGreetingCommand;
     }
 

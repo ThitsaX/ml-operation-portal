@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyExistingUser;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class ModifyExistingUserBean
                                   CreateExceptionAuditCommand createExceptionAuditCommand,
                                   ObjectMapper objectMapper,
                                   PrincipalCache principalCache,
+                                  ActionAuthorizationManager actionAuthorizationManager,
                                   ModifyParticipantUserCommand modifyParticipantUserCommand,
                                   ModifyPrincipalCommand modifyPrincipalCommand) {
 
@@ -44,7 +46,8 @@ public class ModifyExistingUserBean
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyParticipantUserCommand = modifyParticipantUserCommand;
         this.modifyPrincipalCommand = modifyPrincipalCommand;

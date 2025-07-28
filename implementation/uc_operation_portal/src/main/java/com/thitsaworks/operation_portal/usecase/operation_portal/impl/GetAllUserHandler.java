@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllUser;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class GetAllUserHandler extends OperationPortalAuditableUseCase<GetAllUse
                              CreateExceptionAuditCommand createExceptionAuditCommand,
                              ObjectMapper objectMapper,
                              PrincipalCache principalCache,
+                             ActionAuthorizationManager actionAuthorizationManager,
                              HubUserQuery hubUserQuery) {
 
         super(createInputAuditCommand,
@@ -42,7 +44,8 @@ public class GetAllUserHandler extends OperationPortalAuditableUseCase<GetAllUse
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.hubUserQuery = hubUserQuery;
     }

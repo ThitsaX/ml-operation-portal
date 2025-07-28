@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.query.ActionQuery;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllAuditByParticipant;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,9 +30,12 @@ public class GetAllAuditByParticipantHandler
 
 
     public GetAllAuditByParticipantHandler(PrincipalCache principalCache,
+                                           ActionAuthorizationManager actionAuthorizationManager,
                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES,
+              principalCache,
+              actionAuthorizationManager);
 
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
     }

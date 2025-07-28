@@ -18,6 +18,7 @@ import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransfer;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,7 @@ public class GetAllTransferHandler extends OperationPortalAuditableUseCase<GetAl
                                  CreateExceptionAuditCommand createExceptionAuditCommand,
                                  ObjectMapper objectMapper,
                                  PrincipalCache principalCache,
+                                 ActionAuthorizationManager actionAuthorizationManager,
                                  GetTransfersQuery getTransfersQuery,
                                  ParticipantCache participantCache,
                                  ParticipantUserCache participantUserCache) {
@@ -54,7 +56,8 @@ public class GetAllTransferHandler extends OperationPortalAuditableUseCase<GetAl
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.getTransfersQuery = getTransfersQuery;
         this.participantCache = participantCache;

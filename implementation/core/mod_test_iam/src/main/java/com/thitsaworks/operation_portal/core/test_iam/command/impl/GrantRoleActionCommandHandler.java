@@ -4,9 +4,9 @@ import com.thitsaworks.operation_portal.component.misc.persistence.transactional
 import com.thitsaworks.operation_portal.core.test_iam.command.GrantRoleActionCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.test_iam.model.Action;
+import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
 import com.thitsaworks.operation_portal.core.test_iam.model.Role;
-import com.thitsaworks.operation_portal.core.test_iam.model.repository.ActionRepository;
+import com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,7 @@ public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
 
     private final RoleRepository roleRepository;
 
-    private final ActionRepository actionRepository;
+    private final IAMActionRepository IAMActionRepository;
 
     @Override
     @CoreWriteTransactional
@@ -31,10 +31,10 @@ public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
         }
 
-        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
+        Optional<IAMAction> optAction = this.IAMActionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_ID_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
         }
 
         Role role = optRole.get();

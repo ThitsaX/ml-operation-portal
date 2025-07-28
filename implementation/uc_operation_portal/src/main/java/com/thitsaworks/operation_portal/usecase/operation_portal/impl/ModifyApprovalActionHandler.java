@@ -19,6 +19,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBal
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +51,7 @@ public class ModifyApprovalActionHandler
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
+                                       ActionAuthorizationManager actionAuthorizationManager,
                                        ModifyApprovalActionCommand modifyApprovalActionCommand,
                                        ApprovalRequestQuery approvalRequestQuery,
                                        HubClient hubClient,
@@ -60,7 +62,8 @@ public class ModifyApprovalActionHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyApprovalActionCommand = modifyApprovalActionCommand;
         this.approvalRequestQuery = approvalRequestQuery;

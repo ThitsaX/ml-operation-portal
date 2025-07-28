@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEx
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -40,6 +41,7 @@ public class ResetCurrentPasswordHandler
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
+                                       ActionAuthorizationManager actionAuthorizationManager,
                                        ResetPasswordCommand resetPasswordCommand,
                                        ParticipantUserQuery participantUserQuery) {
 
@@ -48,7 +50,8 @@ public class ResetCurrentPasswordHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.resetPasswordCommand = resetPasswordCommand;
         this.participantUserQuery = participantUserQuery;
