@@ -17,7 +17,6 @@ import java.util.concurrent.*;
 
 @Service
 @EnableAsync
-@RequiredArgsConstructor
 public class ScheduleTaskCommandHandler implements ScheduleTaskCommand {
 
     private final Map<String, ScheduledFuture<?>> scheduledTasks;
