@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementAuditReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -47,6 +46,9 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
 
         params.put("startDate", input.startDate());
         params.put("endDate", input.endDate());
+        params.put("dfspId", input.dfspId());
+        params.put("currencyId", input.currencyId());
+        params.put("timezoneoffset", input.timeZoneOffset());
 
         LOG.info("Params : {}", params);
 

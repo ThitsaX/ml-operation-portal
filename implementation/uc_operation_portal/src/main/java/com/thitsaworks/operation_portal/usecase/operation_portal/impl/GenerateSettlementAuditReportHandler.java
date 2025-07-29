@@ -51,6 +51,8 @@ public class GenerateSettlementAuditReportHandler
         GenerateSettlementAuditReportCommand.Output output =
                 this.generateSettlementAuditReportCommand.execute(new GenerateSettlementAuditReportCommand.Input(input.startDate(),
                                                                                                                  input.endDate(),
+                                                                                                                 input.dfspId(),
+                                                                                                                 input.currencyId(),
                                                                                                                  input.fileType(),
                                                                                                                  input.timezone()));
 
