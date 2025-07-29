@@ -17,25 +17,25 @@ MYSQL_PORTAL_DATA_FLYWAY_SETTINGS_DATA='{
    "locations": [
      "classpath:db/core"
    ],
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/operation_portal?createDatabaseIfNotExist=true",
-   "username": "root"
+   "url": "jdbc:mysql://mysql-operation-portal:3306/operation_portal?createDatabaseIfNotExist=true",
+   "username": "root",
+   "password": "admin"
 }'
 
 MYSQL_PORTAL_DATA_WRITE_SETTINGS_PATH="operation_portal/mysql/portal_data/write_db/settings"
 MYSQL_PORTAL_DATA_WRITE_SETTINGS_DATA='{
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/operation_portal",
-   "username": "root",
+   "url": "jdbc:mysql://mysql-operation-portal:3306/operation_portal",
+   "username": "operation_portal_jdbc",
+   "password": "password",
    "minPoolSize": 10,
    "maxPoolSize": 20
 }'
 
 MYSQL_PORTAL_DATA_READ_SETTINGS_PATH="operation_portal/mysql/portal_data/read_db/settings"
 MYSQL_PORTAL_DATA_READ_SETTINGS_DATA='{
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/operation_portal",
-   "username": "root",
+   "url": "jdbc:mysql://mysql-operation-portal:3306/operation_portal",
+   "username": "operation_portal_ro",
+   "password": "password",
    "minPoolSize": 10,
    "maxPoolSize": 20
 }'
@@ -46,29 +46,28 @@ MYSQL_HUB_DATA_FLYWAY_SETTINGS_DATA='{
    "locations": [
      "classpath:db/report"
    ],
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/central_ledger?createDatabaseIfNotExist=true",
-   "username": "root"
+   "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger?createDatabaseIfNotExist=true",
+   "username": "root",
+   "password": "admin"
 }'
 
 MYSQL_HUB_DATA_WRITE_SETTINGS_PATH="operation_portal/mysql/hub_data/write_db/settings"
 MYSQL_HUB_DATA_WRITE_SETTINGS_DATA='{
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/central_ledger",
-   "username": "root",
+   "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger",
+   "username": "central_ledger_ro",
+   "password": "password",
    "minPoolSize": 10,
    "maxPoolSize": 20
 }'
 
 MYSQL_HUB_DATA_READ_SETTINGS_PATH="operation_portal/mysql/hub_data/read_db/settings"
 MYSQL_HUB_DATA_READ_SETTINGS_DATA='{
-   "password": "root",
-   "url": "jdbc:mysql://mysql:3306/central_ledger",
-   "username": "root",
+   "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger",
+   "username": "central_ledger_ro",
+   "password": "password",
    "minPoolSize": 10,
    "maxPoolSize": 20
 }'
-
 
 echo "Adding Redis Settings to Vault at path '$REDIS_SETTINGS_PATH'..."
 vault kv put $REDIS_SETTINGS_PATH @<(echo "$REDIS_SETTINGS_DATA")
