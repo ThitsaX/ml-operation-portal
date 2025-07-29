@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorDecoder;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
@@ -43,10 +45,13 @@ public class HubClient {
 
         this.hubService = new RetrofitServiceBuilder<>(HubService.class,
                                                        this.settings.centralLedgerEndpoint()).withHttpLogging(
-                HttpLoggingInterceptor.Level.BODY,
-                true).withConverterFactories(new NullOrEmptyConverterFactory(),
-                                             ScalarsConverterFactory.create(),
-                                             JacksonConverterFactory.create(objectMapper)).build();
+                                                                                                 HttpLoggingInterceptor.Level.BODY,
+                                                                                                 true)
+                                                                                             .withConverterFactories(new NullOrEmptyConverterFactory(),
+                                                                                                                     ScalarsConverterFactory.create(),
+                                                                                                                     JacksonConverterFactory.create(
+                                                                                                                         objectMapper))
+                                                                                             .build();
 
         this.hubErrorDecoder = new HubErrorDecoder(objectMapper);
 
@@ -55,7 +60,7 @@ public class HubClient {
     public PostParticipantBalance.Response postParticipantBalance(String participantId,
                                                                   String accountId,
                                                                   PostParticipantBalance.Request request)
-            throws HubServicesException, ConnectException {
+        throws HubServicesException, ConnectException {
 
         PostParticipantBalance.Response response;
 
@@ -64,7 +69,8 @@ public class HubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.postParticipantBalance(participantId, accountId, request),
-                                             this.hubErrorDecoder).body();
+                                             this.hubErrorDecoder)
+                                     .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
@@ -84,6 +90,87 @@ public class HubClient {
             }
         }
         return response;
+    }
+
+    public PutParticipantStatus.Response putParticipantStatus(PutParticipantStatus.Request request)
+        throws HubServicesException, ConnectException {
+
+        PutParticipantStatus.Response response;
+
+        try {
+
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.putParticipantStatus(request.participantName(),
+                                                                              request.participantCurrencyId(), new RequestToHub(
+                                                     request.isActive())),
+                                             this.hubErrorDecoder)
+                                     .body();
+
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+
+                //TODO: To implement error handling with proper error response format
+                throw new HubServicesException(null);
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+
+
+    }
+
+    public GetParticipant.Response getParticipant(GetParticipant.Request request)
+        throws HubServicesException, ConnectException {
+
+        GetParticipant.Response response;
+
+        try {
+
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.getParticipant(request.participantName()
+                                                                              ),
+                                             this.hubErrorDecoder)
+                                     .body();
+
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+
+                //TODO: To implement error handling with proper error response format
+                throw new HubServicesException(null);
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+    }
+
+   public record RequestToHub(
+
+        boolean isActive
+    ) {
     }
 
 }

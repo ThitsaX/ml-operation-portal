@@ -13,8 +13,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @Import(value = {OperationPortalApiConfiguration.class})
+@EnableScheduling
 @SpringBootApplication(
     exclude = {
         HibernateJpaAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class, SecurityAutoConfiguration.class,

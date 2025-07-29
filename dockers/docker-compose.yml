@@ -1,6 +1,42 @@
-version: "3.8"
-
 services:
+
+  vault:
+    image: hashicorp/vault
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root-token  # Root token for development
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      VAULT_UI: "true"
+
+    volumes:
+      - vault-data:/vault/data  # Persistent storage for Vault data
+      - ./init-vault.sh:/init-vault.sh  # Mount the script into the container
+    networks:
+      operation-portal-network:
+        aliases:
+          - vault
+    entrypoint: [ "sh", "-c", "vault server -dev" ]
+
+  vault-client:
+    image: hashicorp/vault
+    container_name: vault-client
+    ports:
+      - "8300:8200"
+    environment:
+      VAULT_ADDR: "http://vault:8200"
+      VAULT_TOKEN: "root-token"
+      VAULT_UI: "true"
+    volumes:
+      - ./init-vault.sh:/init-vault.sh  # Ensure script exists and is executable
+    entrypoint: [ "sh", "/init-vault.sh" ]  # Run initialization script
+    depends_on:
+      - vault
+    networks:
+      operation-portal-network:
+        aliases:
+          - vault-client
 
   # Redis Service
   redis:
@@ -10,10 +46,45 @@ services:
       - "6379:6379"
     volumes:
       - redis-data:/data
+    depends_on:
+      - vault
+      - vault-client
     networks:
       operation-portal-network:
         aliases:
           - redis
+
+  mysql-operation-portal:
+    image: mysql:8.0
+    ports:
+      - '3307:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - mysql-operation-portal-data:/var/lib/mysql
+    depends_on:
+      - vault
+      - vault-client
+    networks:
+      operation-portal-network:
+        aliases:
+          - mysql-operation-portal
+
+  mysql-central-ledger:
+    image: mysql:8.0
+    ports:
+      - '3308:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+    volumes:
+      - mysql-central-ledger-data:/var/lib/mysql
+    depends_on:
+      - vault
+      - vault-client
+    networks:
+      operation-portal-network:
+        aliases:
+          - mysql-central-ledger
 
   # OPERATION Portal Application
   operation-portal:
@@ -28,56 +99,25 @@ services:
         aliases:
           - operation-portal
     depends_on:
-      mysql-central-ledger:
-        condition: service_started
-      mysql-operation-portal:
-        condition: service_started
+      - vault
+      - vault-client
+      - redis
+      - mysql-operation-portal
+      - mysql-central-ledger
     environment:
-      VAULT_ADDR: "http://vault:8200"
-      VAULT_TOKEN: "s.FuDU0JaVytr188aSSoFgpRCZ"
-      ENGINE_PATH: "operation_portal"
-      OPERATION_PORTAL_PORT_NO: "8003"
-      CENTRAL_LEDGER_ENDPOINT: "https://google.com"
-
-  # MySQL container for central_ledger (read DB)
-  mysql-central-ledger:
-    image: mysql:8.0
-    restart: always
-    ports:
-      - '3308:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: central_ledger
-      MYSQL_USER: central_ledger_ro
-      MYSQL_PASSWORD: password
-    volumes:
-      - ./init_central_ledger.sql:/docker-entrypoint-initdb.d/init_central_ledger.sql
-    networks:
-      operation-portal-network:
-        aliases:
-          - mysql-central-ledger
-
-  # MySQL container for operation_portal (write DB)
-  mysql-operation-portal:
-    image: mysql:8.0
-    restart: always
-    ports:
-      - '3307:3306'
-    environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: operation_portal
-      MYSQL_USER: dfsp_portal_jdbc
-      MYSQL_PASSWORD: password
-    volumes:
-      - ./init_operation_portal.sql:/docker-entrypoint-initdb.d/init_operation_portal.sql
-    networks:
-      operation-portal-network:
-        aliases:
-          - mysql-operation-portal
+      VAULT_ADDR: http://vault:8200
+      VAULT_TOKEN: root-token
+      ENGINE_PATH: operation_portal
+      OPERATION_PORTAL_PORT_NO: 8003
+      CENTRAL_LEDGER_ENDPOINT: https://google.com
 
 volumes:
+  vault-data:
   redis-data:
+  mysql-operation-portal-data:
+  mysql-central-ledger-data:
 
 networks:
   operation-portal-network:
+    driver: bridge
 

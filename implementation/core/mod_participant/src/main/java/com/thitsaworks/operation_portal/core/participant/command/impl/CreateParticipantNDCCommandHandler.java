@@ -34,8 +34,7 @@ public class CreateParticipantNDCCommandHandler implements CreateParticipantNDCC
 
         ParticipantNDC participantNDC = new ParticipantNDC(input.dfspCode(),
                                                            input.currency(),
-                                                           input.ndcPercent(),
-                                                           input.ndcAmount());
+                                                           input.ndcPercent());
 
         this.participantNDCRepository.save(participantNDC);
 
