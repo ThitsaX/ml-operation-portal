@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllSchedulerConfigs;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
@@ -32,47 +33,52 @@ public class GetAllSchedulerConfigsHandler
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(
         UserRoleType.OPERATION,
         UserRoleType.ADMIN
-    );
+                                                                   );
 
     private final SchedulerConfigQuery schedulerConfigQuery;
 
     /**
      * Constructs a new handler with required dependencies.
      */
-    public GetAllSchedulerConfigsHandler(
-        CreateInputAuditCommand createInputAuditCommand,
-        CreateOutputAuditCommand createOutputAuditCommand,
-        CreateExceptionAuditCommand createExceptionAuditCommand,
-        ObjectMapper objectMapper,
-        PrincipalCache principalCache,
-        SchedulerConfigQuery schedulerConfigQuery
-    ) {
-        super(
-            createInputAuditCommand,
-            createOutputAuditCommand,
-            createExceptionAuditCommand,
-            PERMITTED_ROLES,
-            objectMapper,
-            principalCache
-        );
+    public GetAllSchedulerConfigsHandler(CreateInputAuditCommand createInputAuditCommand,
+                                         CreateOutputAuditCommand createOutputAuditCommand,
+                                         CreateExceptionAuditCommand createExceptionAuditCommand,
+                                         ObjectMapper objectMapper,
+                                         PrincipalCache principalCache,
+                                         SchedulerConfigQuery schedulerConfigQuery,
+                                         ActionAuthorizationManager actionAuthorizationManager
+                                        ) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              PERMITTED_ROLES,
+              objectMapper,
+              principalCache,
+              actionAuthorizationManager);
+
         this.schedulerConfigQuery = schedulerConfigQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
+
         LOG.info("Fetching scheduler configurations with filtering and sorting");
-        
+
         // Create sort object based on input
         Sort sort = Sort.by(
-            input.sortDirection().orElse(Sort.Direction.ASC),
-            input.sortBy().orElse(DEFAULT_SORT_FIELD)
-        );
-        
+            input.sortDirection()
+                 .orElse(Sort.Direction.ASC),
+            input.sortBy()
+                 .orElse(DEFAULT_SORT_FIELD)
+                           );
+
         // Fetch filtered and sorted results
         List<SchedulerConfigData> configs = input.active()
-            .map(active -> schedulerConfigQuery.getSchedulerConfigs(active, sort))
-            .orElseGet(() -> schedulerConfigQuery.getSchedulerConfigs(sort));
-        
+                                                 .map(active -> schedulerConfigQuery.getSchedulerConfigs(active, sort))
+                                                 .orElseGet(() -> schedulerConfigQuery.getSchedulerConfigs(sort));
+
         return new Output(configs);
     }
+
 }

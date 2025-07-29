@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEx
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionsData;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class GetParticipantPositionsHandler extends OperationPortalUseCase<GetParticipantPositionsData.Input, GetParticipantPositionsData.Output>
-        implements GetParticipantPositionsData {
+public class GetParticipantPositionsHandler
+    extends OperationPortalUseCase<GetParticipantPositionsData.Input, GetParticipantPositionsData.Output>
+    implements GetParticipantPositionsData {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
 
@@ -47,9 +49,10 @@ public class GetParticipantPositionsHandler extends OperationPortalUseCase<GetPa
                                           GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
                                           ParticipantCache participantCache,
                                           ParticipantUserCache participantUserCache,
-                                          ParticipantNDCQuery participantNDCQuery) {
+                                          ParticipantNDCQuery participantNDCQuery,
+                                          ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(PERMITTED_ROLES, principalCache, actionAuthorizationManager);
 
         this.getParticipantPositionsDataQuery = getParticipantPositionsDataQuery;
         this.participantCache = participantCache;
@@ -91,8 +94,10 @@ public class GetParticipantPositionsHandler extends OperationPortalUseCase<GetPa
                                                                                            dto.currency());
 
             BigDecimal ndcPercent =
-                    participantNDCData.map(ParticipantNDCData::ndcPercent).orElse(BigDecimal.ZERO).setScale(2,
-                                                                                                            RoundingMode.HALF_UP);
+                participantNDCData.map(ParticipantNDCData::ndcPercent)
+                                  .orElse(BigDecimal.ZERO)
+                                  .setScale(2,
+                                            RoundingMode.HALF_UP);
 
             FinancialData updated = new FinancialData(dto.dfspId(),
                                                       participantData.description(),

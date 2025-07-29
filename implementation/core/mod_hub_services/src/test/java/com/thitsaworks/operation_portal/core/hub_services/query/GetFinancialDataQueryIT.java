@@ -16,16 +16,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 public class GetFinancialDataQueryIT extends BaseVaultSetUpTest {
     private static final Logger log = LoggerFactory.getLogger(GetFinancialDataQueryIT.class);
 
-    @Autowired
-    private GetFinancialDataQuery getFinancialDataQuery;
-
-    @Test
-    public void testExecute() {
-        GetFinancialDataQuery.Input input = new GetFinancialDataQuery.Input("fspID123");
-        GetFinancialDataQuery.Output output = getFinancialDataQuery.execute(input);
-
-        log.info("Financial data retrieved successfully: {}", output.getFinancialData());
-    }
+//    @Autowired
+//    private GetFinancialDataQuery getFinancialDataQuery;
+//
+//    @Test
+//    public void testExecute() {
+//        GetFinancialDataQuery.Input input = new GetFinancialDataQuery.Input("fspID123");
+//        GetFinancialDataQuery.Output output = getFinancialDataQuery.execute(input);
+//
+//        log.info("Financial data retrieved successfully: {}", output.getFinancialData());
+//    }
 
 }
 

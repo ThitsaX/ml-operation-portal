@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStat
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateParticipantStatus;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-
 
 @Service
 public class UpdateParticipantStatusHandler
@@ -41,14 +40,16 @@ public class UpdateParticipantStatusHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
-                                          HubClient hubClient) {
+                                          HubClient hubClient,
+                                          ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.hubClient = hubClient;
     }
@@ -58,12 +59,15 @@ public class UpdateParticipantStatusHandler
 
         boolean isActive = "active".equalsIgnoreCase(input.activeStatus());
 
-        PutParticipantStatus.Request request = new PutParticipantStatus.Request(input.participantName(), input.participantCurrencyId(), isActive);
+        PutParticipantStatus.Request request = new PutParticipantStatus.Request(input.participantName(),
+                                                                                input.participantCurrencyId(),
+                                                                                isActive);
 
-        PutParticipantStatus.Response response = this.hubClient.putParticipantStatus( request);
+        PutParticipantStatus.Response response = this.hubClient.putParticipantStatus(request);
 
-        GetParticipant.Response getParticipantResponse= this.hubClient.getParticipant(new GetParticipant.Request(input.participantName()));
-
+        GetParticipant.Response
+            getParticipantResponse =
+            this.hubClient.getParticipant(new GetParticipant.Request(input.participantName()));
 
         List<GetParticipant.Response.Account> accounts = getParticipantResponse.accounts();
 
@@ -73,9 +77,7 @@ public class UpdateParticipantStatusHandler
                                 .map(account -> account.isActive() == 1 ? "active" : "inActive")
                                 .orElse("Unknown");
 
-
         return new Output(request.participantName(), request.participantCurrencyId(), status);
     }
-
 
 }

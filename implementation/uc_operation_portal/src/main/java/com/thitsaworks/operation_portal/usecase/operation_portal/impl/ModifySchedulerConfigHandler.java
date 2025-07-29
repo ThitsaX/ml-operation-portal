@@ -9,8 +9,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateOrUpdateSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSchedulerConfig;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySchedulerConfig;
+import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,14 +34,16 @@ public class ModifySchedulerConfigHandler
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
-                                        CreateOrUpdateSchedulerConfigCommand updateSchedulerConfigCommand) {
+                                        CreateOrUpdateSchedulerConfigCommand updateSchedulerConfigCommand,
+                                        ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.updateSchedulerConfigCommand = updateSchedulerConfigCommand;
     }
