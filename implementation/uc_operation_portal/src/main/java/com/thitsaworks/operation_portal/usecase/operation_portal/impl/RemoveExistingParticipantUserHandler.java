@@ -28,11 +28,11 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class RemoveExistingParticipantUserBean
+public class RemoveExistingParticipantUserHandler
     extends OperationPortalAuditableUseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output>
     implements RemoveExistingParticipantUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
@@ -42,14 +42,14 @@ public class RemoveExistingParticipantUserBean
 
     private final PrincipalCache principalCache;
 
-    public RemoveExistingParticipantUserBean(CreateInputAuditCommand createInputAuditCommand,
-                                             CreateOutputAuditCommand createOutputAuditCommand,
-                                             CreateExceptionAuditCommand createExceptionAuditCommand,
-                                             ObjectMapper objectMapper,
-                                             PrincipalCache principalCache,
-                                             ActionAuthorizationManager actionAuthorizationManager,
-                                             RemoveParticipantUserCommand removeParticipantUserCommand,
-                                             ModifyPrincipalCommand modifyPrincipalCommand) {
+    public RemoveExistingParticipantUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                                CreateOutputAuditCommand createOutputAuditCommand,
+                                                CreateExceptionAuditCommand createExceptionAuditCommand,
+                                                ObjectMapper objectMapper,
+                                                PrincipalCache principalCache,
+                                                ActionAuthorizationManager actionAuthorizationManager,
+                                                RemoveParticipantUserCommand removeParticipantUserCommand,
+                                                ModifyPrincipalCommand modifyPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository.Filters.withActionCode;
+
 @Service
 @RequiredArgsConstructor
 public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
@@ -29,7 +31,7 @@ public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
         }
 
-        Optional<IAMAction> optAction = this.IAMActionRepository.findById(input.actionId());
+        Optional<IAMAction> optAction = this.IAMActionRepository.findOne(withActionCode(input.actionCode()));
 
         if (optAction.isEmpty()) {
             throw new IAMException(IAMErrors.ACTION_NOT_FOUND);

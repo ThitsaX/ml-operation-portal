@@ -18,19 +18,19 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetAllOtherParticipantsBean
+public class GetAllOtherParticipantsHandler
     extends OperationPortalUseCase<GetAllOtherParticipants.Input, GetAllOtherParticipants.Output>
     implements GetAllOtherParticipants {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllOtherParticipantsBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllOtherParticipantsHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ParticipantQuery participantQuery;
 
-    public GetAllOtherParticipantsBean(PrincipalCache principalCache,
-                                       ActionAuthorizationManager actionAuthorizationManager,
-                                       ParticipantQuery participantQuery) {
+    public GetAllOtherParticipantsHandler(PrincipalCache principalCache,
+                                          ActionAuthorizationManager actionAuthorizationManager,
+                                          ParticipantQuery participantQuery) {
 
         super(PERMITTED_ROLES,
               principalCache,

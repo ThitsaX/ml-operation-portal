@@ -27,8 +27,10 @@ public class BlockUserIAMActionCommandIT extends BaseVaultSetUpTest {
 
     @Test
     public void success() throws IAMException {
-        var result = blockUserActionCommand.execute(new BlockUserActionCommand.Input(new UserId(11L),
-                                                                                     new ActionId(111L)));
+
+        var result = this.blockUserActionCommand.execute(new BlockUserActionCommand.Input(new UserId(1111111111111111L),
+                                                                                          new ActionId(
+                                                                                              737672397218869248L)));
 
         LOGGER.info("boolean {}", result.resultCode());
     }

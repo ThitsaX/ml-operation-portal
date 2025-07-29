@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetAllParticipantUserBean
+public class GetAllParticipantUserHandler
     extends OperationPortalAuditableUseCase<GetAllParticipantUser.Input, GetAllParticipantUser.Output>
     implements GetAllParticipantUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAllParticipantUserHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
@@ -36,13 +36,13 @@ public class GetAllParticipantUserBean
 
     private final PrincipalCache principalCache;
 
-    public GetAllParticipantUserBean(CreateInputAuditCommand createInputAuditCommand,
-                                     CreateOutputAuditCommand createOutputAuditCommand,
-                                     CreateExceptionAuditCommand createExceptionAuditCommand,
-                                     ObjectMapper objectMapper,
-                                     PrincipalCache principalCache,
-                                     ActionAuthorizationManager actionAuthorizationManager,
-                                     ParticipantUserQuery participantUserQuery) {
+    public GetAllParticipantUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                        CreateOutputAuditCommand createOutputAuditCommand,
+                                        CreateExceptionAuditCommand createExceptionAuditCommand,
+                                        ObjectMapper objectMapper,
+                                        PrincipalCache principalCache,
+                                        ActionAuthorizationManager actionAuthorizationManager,
+                                        ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

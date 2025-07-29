@@ -7,7 +7,9 @@ import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
 import com.thitsaworks.operation_portal.core.test_iam.model.QIAMAction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface IAMActionRepository extends JpaRepository<IAMAction, ActionId>, QuerydslPredicateExecutor<IAMAction> {
 
     class Filters {

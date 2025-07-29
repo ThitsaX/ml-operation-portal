@@ -5,11 +5,11 @@ import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.Ro
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 
 public interface GrantRoleActionCommand {
+
     Output execute(Input input) throws IAMException;
 
-    record Input(
-        RoleId roleId,
-        ActionId actionId) { }
+    record Input(RoleId roleId,
+                 ActionId actionId) { }
 
     record Output(boolean resultCode) { }
 

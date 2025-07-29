@@ -10,9 +10,11 @@ import com.thitsaworks.operation_portal.core.test_iam.model.QUser;
 import com.thitsaworks.operation_portal.core.test_iam.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, UserId>, QuerydslPredicateExecutor<User> {
 
 

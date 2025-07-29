@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.Ro
 import com.thitsaworks.operation_portal.core.test_iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.test_iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.test_iam.data.UserData;
-
+import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 
 import java.util.List;
 
@@ -16,6 +16,6 @@ public interface IAMQuery {
 
     List<ActionData> getActions();
 
-    List<ActionData> getActionsByRole(RoleId roleId);
+    List<ActionData> getActionsByRole(String role) throws IAMException;
 
 }

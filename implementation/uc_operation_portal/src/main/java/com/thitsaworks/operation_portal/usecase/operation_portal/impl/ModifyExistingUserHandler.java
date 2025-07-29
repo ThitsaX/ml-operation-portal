@@ -20,11 +20,11 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class ModifyExistingUserBean
+public class ModifyExistingUserHandler
     extends OperationPortalAuditableUseCase<ModifyExistingUser.Input, ModifyExistingUser.Output>
     implements ModifyExistingUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingUserBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingUserHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
@@ -32,14 +32,14 @@ public class ModifyExistingUserBean
 
     private final ModifyPrincipalCommand modifyPrincipalCommand;
 
-    public ModifyExistingUserBean(CreateInputAuditCommand createInputAuditCommand,
-                                  CreateOutputAuditCommand createOutputAuditCommand,
-                                  CreateExceptionAuditCommand createExceptionAuditCommand,
-                                  ObjectMapper objectMapper,
-                                  PrincipalCache principalCache,
-                                  ActionAuthorizationManager actionAuthorizationManager,
-                                  ModifyParticipantUserCommand modifyParticipantUserCommand,
-                                  ModifyPrincipalCommand modifyPrincipalCommand) {
+    public ModifyExistingUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                     CreateOutputAuditCommand createOutputAuditCommand,
+                                     CreateExceptionAuditCommand createExceptionAuditCommand,
+                                     ObjectMapper objectMapper,
+                                     PrincipalCache principalCache,
+                                     ActionAuthorizationManager actionAuthorizationManager,
+                                     ModifyParticipantUserCommand modifyParticipantUserCommand,
+                                     ModifyPrincipalCommand modifyPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

@@ -21,12 +21,13 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 @Service
-public class GetUserProfileBean extends OperationPortalUseCase<GetUserProfile.Input, GetUserProfile.Output>
+public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile.Input, GetUserProfile.Output>
     implements GetUserProfile {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetUserProfileBean.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserProfileHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
+                                                                    UserRoleType.OPERATION);
 
     private final ParticipantCache participantCache;
 
@@ -34,10 +35,10 @@ public class GetUserProfileBean extends OperationPortalUseCase<GetUserProfile.In
 
     private final PrincipalCache principalCache;
 
-    public GetUserProfileBean(PrincipalCache principalCache,
-                              ActionAuthorizationManager actionAuthorizationManager,
-                              ParticipantCache participantCache,
-                              ParticipantUserCache participantUserCache) {
+    public GetUserProfileHandler(PrincipalCache principalCache,
+                                 ActionAuthorizationManager actionAuthorizationManager,
+                                 ParticipantCache participantCache,
+                                 ParticipantUserCache participantUserCache) {
 
         super(PERMITTED_ROLES,
               principalCache,

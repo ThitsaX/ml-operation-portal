@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
@@ -28,6 +29,6 @@ public class IsActionGrantedCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Is Granted : [{}]", this.isActionGrantedCommand.execute(new IsActionGrantedCommand.Input(new UserId(1111111111111111L), new ActionId(737672397218869248L))));
+        LOG.info("Is Granted : [{}]", this.isActionGrantedCommand.execute(new IsActionGrantedCommand.Input(new UserId(1111111111111111L), new ActionCode(""))));
     }
 }

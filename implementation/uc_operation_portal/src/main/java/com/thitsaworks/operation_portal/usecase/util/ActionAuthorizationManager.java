@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase.util;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.command.CreateOrUpdateActionCommand;
-import com.thitsaworks.operation_portal.core.test_iam.engine.IAMEngine;
+import com.thitsaworks.operation_portal.core.test_iam.command.IsActionGrantedCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,14 +13,14 @@ public class ActionAuthorizationManager {
 
     private final CreateOrUpdateActionCommand createOrUpdateActionCommand;
 
-    private final IAMEngine iamEngine;
+    private final IsActionGrantedCommand isActionGrantedCommand;
 
     @Autowired
     public ActionAuthorizationManager(CreateOrUpdateActionCommand createOrUpdateActionCommand,
-                                      IAMEngine iamEngine) {
+                                      IsActionGrantedCommand isActionGrantedCommand) {
 
         this.createOrUpdateActionCommand = createOrUpdateActionCommand;
-        this.iamEngine = iamEngine;
+        this.isActionGrantedCommand = isActionGrantedCommand;
     }
 
     public void registerAction(String actionName, String scope, String description) {
@@ -36,7 +36,7 @@ public class ActionAuthorizationManager {
 
     public boolean isAuthorizedTo(UserId userId, ActionCode actionCode) throws IAMException {
 
-        return this.iamEngine.isGranted(userId, actionCode);
+        return this.isActionGrantedCommand.execute(new IsActionGrantedCommand.Input(userId, actionCode)).granted();
     }
 
 }
