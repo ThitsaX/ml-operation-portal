@@ -3,9 +3,11 @@ package com.thitsaworks.operation_portal.core.test_iam.model;
 import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.cache.RoleCache;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -20,6 +22,7 @@ import java.util.Set;
 import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
+@EntityListeners(value = {RoleCache.Updater.class})
 @Table(name = "tbl_role")
 @NoArgsConstructor
 @Getter

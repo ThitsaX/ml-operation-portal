@@ -3,8 +3,11 @@ package com.thitsaworks.operation_portal.core.test_iam.model;
 import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.GrantId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.cache.RoleCache;
+import com.thitsaworks.operation_portal.core.test_iam.cache.RoleGrantCache;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -12,6 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@EntityListeners(value = {RoleGrantCache.Updater.class})
 @Table(name = "tbl_role_grant")
 @NoArgsConstructor
 @Getter
