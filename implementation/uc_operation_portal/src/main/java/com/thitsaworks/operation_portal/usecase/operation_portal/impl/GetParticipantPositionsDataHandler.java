@@ -28,11 +28,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class GetParticipantPositionsHandler
+public class GetParticipantPositionsDataHandler
     extends OperationPortalUseCase<GetParticipantPositionsData.Input, GetParticipantPositionsData.Output>
     implements GetParticipantPositionsData {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsDataHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
@@ -45,12 +45,12 @@ public class GetParticipantPositionsHandler
 
     private final ParticipantNDCQuery participantNDCQuery;
 
-    public GetParticipantPositionsHandler(PrincipalCache principalCache,
-                                          GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
-                                          ParticipantCache participantCache,
-                                          ParticipantUserCache participantUserCache,
-                                          ParticipantNDCQuery participantNDCQuery,
-                                          ActionAuthorizationManager actionAuthorizationManager) {
+    public GetParticipantPositionsDataHandler(PrincipalCache principalCache,
+                                              GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
+                                              ParticipantCache participantCache,
+                                              ParticipantUserCache participantUserCache,
+                                              ParticipantNDCQuery participantNDCQuery,
+                                              ActionAuthorizationManager actionAuthorizationManager) {
 
         super(PERMITTED_ROLES, principalCache, actionAuthorizationManager);
 
