@@ -15,7 +15,7 @@ import jakarta.persistence.PostUpdate;
 import java.util.List;
 import java.util.Optional;
 
-public interface IAMCache {
+public interface UserCache {
 
     void save(UserData userData);
     void delete(UserId id);
@@ -36,7 +36,7 @@ public interface IAMCache {
         @PostUpdate
         public void persistOrUpdate(User user){
 
-            IAMCache iamCache = SpringContext.getBean(IAMCache.class,CacheQualifiers.DEFAULT);
+            UserCache userCache = SpringContext.getBean(UserCache.class, CacheQualifiers.DEFAULT);
             UserData userData = new UserData(user.getUserId(),
                                              user.getAccessKey(),
                                              user.getSecretKey(),
@@ -44,15 +44,15 @@ public interface IAMCache {
                                              user.getRealmId(),
                                              user.getPrincipalStatus());
 
-            iamCache.save(userData);
+            userCache.save(userData);
         }
 
         @PostRemove
         public void postRemove(User user) {
 
-            IAMCache iamCache = SpringContext.getBean(IAMCache.class, CacheQualifiers.DEFAULT);
+            UserCache userCache = SpringContext.getBean(UserCache.class, CacheQualifiers.DEFAULT);
 
-            iamCache.delete(user.getUserId());
+            userCache.delete(user.getUserId());
 
         }
 

@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
-import com.thitsaworks.operation_portal.core.test_iam.cache.IAMCache;
+import com.thitsaworks.operation_portal.core.test_iam.cache.UserCache;
 
 import com.thitsaworks.operation_portal.core.test_iam.data.UserData;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
@@ -26,9 +26,9 @@ import java.util.Optional;
 @Component
 @Qualifier(CacheQualifiers.REDIS)
 @RequiredArgsConstructor
-public class RedisIAMCache implements IAMCache {
+public class RedisUserCache implements UserCache {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RedisIAMCache.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisUserCache.class);
 
     private static final String WITH_ID = "rd_user_with_id";
 

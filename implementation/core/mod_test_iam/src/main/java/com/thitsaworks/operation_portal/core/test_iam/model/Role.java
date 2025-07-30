@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.test_iam.model;
 import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.IAMEngine;
 import com.thitsaworks.operation_portal.core.test_iam.cache.RoleCache;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -18,15 +19,17 @@ import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
-@EntityListeners(value = {RoleCache.Updater.class})
+@EntityListeners(value = {IAMEngine.Updater.class})
 @Table(name = "tbl_role")
 @NoArgsConstructor
 @Getter
 public class Role extends JpaEntity<RoleId> {
+
     @EmbeddedId
     protected RoleId roleId;
 
@@ -48,7 +51,8 @@ public class Role extends JpaEntity<RoleId> {
 
         assert name != null : "name is required!";
 
-        this.roleId = new RoleId(Snowflake.get().nextId());
+        this.roleId = new RoleId(Snowflake.get()
+                                          .nextId());
         this.name(name);
     }
 
@@ -58,9 +62,9 @@ public class Role extends JpaEntity<RoleId> {
         return this.roleId;
     }
 
-    public Role name(String name){
+    public Role name(String name) {
 
-        if(name == null || name.isEmpty() || name.isBlank()){
+        if (name == null || name.isEmpty() || name.isBlank()) {
 
 //            throw new IAMException(IAMException.ErrorCodes.InvalidName);
         }
@@ -72,13 +76,16 @@ public class Role extends JpaEntity<RoleId> {
 
     public boolean isGranted(IAMAction IAMAction) {
 
-        return this.grants.stream().anyMatch(granted -> granted.IAMAction.equals(IAMAction));
+        return this.grants.stream()
+                          .anyMatch(granted -> granted.IAMAction.equals(IAMAction));
     }
 
     public void grantAction(IAMAction granting) {
 
         Optional<RoleGrant> optRoleGrant =
-            this.grants.stream().filter(roleGrant -> roleGrant.IAMAction.equals(granting)).findFirst();
+            this.grants.stream()
+                       .filter(roleGrant -> roleGrant.IAMAction.equals(granting))
+                       .findFirst();
 
         if (optRoleGrant.isEmpty()) {
 
@@ -86,10 +93,19 @@ public class Role extends JpaEntity<RoleId> {
         }
     }
 
+    public Set<IAMAction> getGrantedActions() {
+
+        return this.grants.stream()
+                          .map(RoleGrant::getIAMAction)
+                          .collect(Collectors.toSet());
+    }
+
     public boolean revokeAction(IAMAction revoking) {
 
         Optional<RoleGrant> optRoleGrant =
-            this.grants.stream().filter(roleGrant -> roleGrant.IAMAction.equals(revoking)).findFirst();
+            this.grants.stream()
+                       .filter(roleGrant -> roleGrant.IAMAction.equals(revoking))
+                       .findFirst();
 
         if (optRoleGrant.isPresent()) {
 
@@ -100,11 +116,10 @@ public class Role extends JpaEntity<RoleId> {
         return false;
     }
 
-    public void toggle(){
+    public void toggle() {
 
         this.active = !this.active;
     }
-
 
 }
 

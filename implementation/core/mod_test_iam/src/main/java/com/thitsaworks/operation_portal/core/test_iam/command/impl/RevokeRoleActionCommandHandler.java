@@ -37,6 +37,7 @@ public class RevokeRoleActionCommandHandler implements RevokeRoleActionCommand {
 
         Role role = optRole.get();
         var revoked = role.revokeAction(optAction.get());
+
         this.roleRepository.saveAndFlush(role);
 
         return new Output(revoked);

@@ -38,6 +38,7 @@ public class GrantUserActionCommandHandler implements GrantUserActionCommand {
 
         User user = optUser.get();
         user.grantAction(optAction.get());
+
         this.userRepository.saveAndFlush(user);
 
 

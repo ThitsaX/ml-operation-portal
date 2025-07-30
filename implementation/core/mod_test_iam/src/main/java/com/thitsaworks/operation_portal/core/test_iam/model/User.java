@@ -9,7 +9,8 @@ import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import com.thitsaworks.operation_portal.core.test_iam.cache.IAMCache;
+import com.thitsaworks.operation_portal.core.test_iam.IAMEngine;
+import com.thitsaworks.operation_portal.core.test_iam.cache.UserCache;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import jakarta.persistence.Column;
@@ -34,7 +35,7 @@ import java.util.UUID;
 import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
-@EntityListeners(value = {IAMCache.Updater.class})
+@EntityListeners(value = {IAMEngine.Updater.class})
 @Table(name = "tbl_user")
 @NoArgsConstructor
 @Getter
@@ -208,6 +209,35 @@ public class User extends JpaEntity<UserId> {
         return false;
     }
 
+    public Set<IAMAction> getGrantedActions() {
+
+        Set<IAMAction> grantedActions = new HashSet<>();
+        for (UserGrant grant : this.grants) {
+            grantedActions.add(grant.IAMAction);
+        }
+
+        return grantedActions;
+    }
+
+    public Set<IAMAction> getDeniedActions() {
+        Set<IAMAction> deniedActions = new HashSet<>();
+        for (BlockedAction denial : this.denials) {
+            deniedActions.add(denial.IAMAction);
+        }
+
+        return deniedActions;
+    }
+
+    public Set<Role> getRoles() {
+
+        Set<Role> roles = new HashSet<>();
+        for (UserRole userRole : this.roles) {
+            roles.add(userRole.role);
+        }
+
+        return roles;
+    }
+
     public boolean removeRole(Role role) {
 
         var
@@ -273,6 +303,7 @@ public class User extends JpaEntity<UserId> {
 
         return new SecurityToken(this.accessKey, this.secretKey);
     }
+
     public User modify(PrincipalStatus principalStatus, UserRoleType userRoleType) {
 
         this.principalStatus = principalStatus;

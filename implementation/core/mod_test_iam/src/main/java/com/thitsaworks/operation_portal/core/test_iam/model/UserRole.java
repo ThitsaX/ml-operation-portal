@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.test_iam.model;
 import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.UserRoleId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.IAMEngine;
 import com.thitsaworks.operation_portal.core.test_iam.cache.RoleCache;
 import com.thitsaworks.operation_portal.core.test_iam.cache.UserRoleCache;
 import jakarta.persistence.EmbeddedId;
@@ -15,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@EntityListeners(value = {UserRoleCache.Updater.class})
+@EntityListeners(value = {IAMEngine.Updater.class})
 @Table(name = "tbl_user_role")
 @NoArgsConstructor
 @Getter

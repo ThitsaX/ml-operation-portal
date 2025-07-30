@@ -4,8 +4,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
+import com.thitsaworks.operation_portal.core.test_iam.IAMEngine;
 import com.thitsaworks.operation_portal.core.test_iam.cache.IAMActionCache;
-import com.thitsaworks.operation_portal.core.test_iam.cache.IAMCache;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EmbeddedId;
@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@EntityListeners(value = {IAMActionCache.Updater.class})
+@EntityListeners(value = {IAMEngine.Updater.class})
 @Table(name = "iam_action")
 @NoArgsConstructor
 @Getter
