@@ -14,6 +14,13 @@ public class IAMErrors {
     public static final ErrorMessage ROLE_NOT_FOUND = new ErrorMessage("ROLE_NOT_FOUND","System cannot find Role.");
     public static final ErrorMessage ROLE_ALREADY_ASSIGN_TO_USER = new ErrorMessage("ROLE_ALREADY_ASSIGN_TO_USER","Role already assign to user");
     public static final ErrorMessage ACTION_NOT_FOUND = new ErrorMessage("ACTION_NOT_FOUND","System cannot find Action.");
+    public static final ErrorMessage BLOCKED_ACTION_NOT_FOUND = new ErrorMessage("BLOCKED_ACTION_NOT_FOUND","System cannot find Blocked action.");
+    public static final ErrorMessage USER_ROLE_NOT_FOUND = new ErrorMessage("USER_ROLE_NOT_FOUND","System cannot find User role.");
+    public static final ErrorMessage USER_NOT_FOUND = new ErrorMessage("USER_NOT_FOUND","System cannot find User.");
+    public static final ErrorMessage ROLE_GRANT_NOT_FOUND = new ErrorMessage("ROLE_GRANT_NOT_FOUND","System cannot find Role grant.");
+    public static final ErrorMessage USER_GRANT_NOT_FOUND = new ErrorMessage("USER_GRANT_NOT_FOUND","System cannot find User grant.");
+
+
 
     public static final ErrorMessage DUPLICATE_ROLE_NAME = new ErrorMessage("DUPLICATE_ROLE_NAME","Duplicate role name ");
     //@@formatter:on
