@@ -3,9 +3,6 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="1330" pageHeight="600" whenNoDataType="AllSectionsNoDetail" columnWidth="1270" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet=true" value="true"/>
-	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="true"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.columns" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="background"/>
@@ -24,6 +21,7 @@
 	<property name="net.sf.jasperreports.export.xlsx.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.graphics" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.cell.border" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="true"/>
 	<property name="net.sf.jasperreports.export.pdf.create.batch.mode.bookmarks" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.group.1" value="break"/>
 	<property name="net.sf.jasperreports.export.pdf.exclude.origin.band.1" value="background"/>
@@ -32,6 +30,7 @@
 	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.group.1" value="break"/>
 	<property name="net.sf.jasperreports.export.xlsx.collapse.row.span" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
@@ -39,6 +38,7 @@
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.csv.cell.locked" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="SettlementAuditReport"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="SettlementAuditReport"/>
 	<property name="net.sf.jasperreports.page.break.no.pagination" value="apply"/>
 	<property name="net.sf.jasperreports.locale" value="en_US"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
@@ -100,11 +100,11 @@
 	<subDataset name="settlementAuditDB" uuid="d44912b1-e131-4631-999f-7ae1ee4d6871">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
-		<parameter name="dfspId" class="java.lang.String"/>
 		<parameter name="startDate" class="java.lang.String"/>
 		<parameter name="endDate" class="java.lang.String"/>
-		<parameter name="timezoneoffset" class="java.lang.String"/>
+		<parameter name="dfspId" class="java.lang.String"/>
 		<parameter name="currencyId" class="java.lang.String"/>
+		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
        CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
@@ -207,11 +207,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 			<property name="com.jaspersoft.studio.field.label" value="madeBy"/>
 		</field>
 	</subDataset>
-	<parameter name="dfspId" class="java.lang.String"/>
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
-	<parameter name="timezoneoffset" class="java.lang.String"/>
+	<parameter name="dfspId" class="java.lang.String"/>
 	<parameter name="currencyId" class="java.lang.String"/>
+	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
 		<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
        CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
@@ -436,7 +436,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{dfspId}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd-MMM-yyyy">
+			<textField>
 				<reportElement x="350" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -447,10 +447,9 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse($P{startDate}))]]></textFieldExpression>
-				<patternExpression><![CDATA["dd-MMM-yyyy"]]></patternExpression>
+				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
 			</textField>
-			<textField pattern="dd-MMM-yyyy">
+			<textField>
 				<reportElement x="350" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -461,8 +460,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse($P{endDate}))]]></textFieldExpression>
-				<patternExpression><![CDATA["dd-MMM-yyyy"]]></patternExpression>
+				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="120" width="200" height="17" uuid="acaf955e-c322-44b4-b96a-d6194c159c97"/>
@@ -500,20 +498,20 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 					<datasetRun subDataset="settlementAuditDB" uuid="5dc97863-31cc-4bc9-a30e-c14e01e7cee0">
-						<datasetParameter name="dfspId">
-							<datasetParameterExpression><![CDATA[$P{dfspId}]]></datasetParameterExpression>
-						</datasetParameter>
 						<datasetParameter name="startDate">
 							<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="endDate">
 							<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
 						</datasetParameter>
-						<datasetParameter name="timezoneoffset">
-							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						<datasetParameter name="dfspId">
+							<datasetParameterExpression><![CDATA[$P{dfspId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="currencyId">
 							<datasetParameterExpression><![CDATA[$P{currencyId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="timezoneoffset">
+							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="ORACLE_REF_CURSOR">
 							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>

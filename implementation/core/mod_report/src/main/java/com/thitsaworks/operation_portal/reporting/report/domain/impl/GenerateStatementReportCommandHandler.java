@@ -61,7 +61,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
             byte[] rptBytes = new byte[0];
 
             if (input.filetype()
-                     .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+                     .equalsIgnoreCase("xlsx")) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -71,7 +71,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
                 rptBytes = xlsReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("pdf") && rptBytes.length > 0) {
+                            .equalsIgnoreCase("pdf")) {
 
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
@@ -81,7 +81,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
                 rptBytes = pdfReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("csv") && rptBytes.length > 0) {
+                            .equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();

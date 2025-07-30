@@ -44,29 +44,29 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        params.put("startDate", input.startDate());
-        params.put("endDate", input.endDate());
+        params.put("startDate", input.startDate().toString());
+        params.put("endDate", input.endDate().toString());
         params.put("dfspId", input.dfspId());
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timeZoneOffset());
 
         LOG.info("Params : {}", params);
 
-        InputStream settlementReport =
+        InputStream settlementAuditReport =
                 this.getClass()
                     .getResourceAsStream(
-                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementAudit.jasper");
+                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementAuditReport, params,
                                                                    conn);
 
             byte[] rptBytes = new byte[0];
 
             if (input.filetype()
-                     .equalsIgnoreCase("xlsx") && rptBytes.length > 0) {
+                     .equalsIgnoreCase("xlsx")) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -76,7 +76,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                 rptBytes = xlsReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("pdf") && rptBytes.length > 0) {
+                            .equalsIgnoreCase("pdf")) {
 
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
@@ -86,7 +86,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                 rptBytes = pdfReport.toByteArray();
 
             } else if (input.filetype()
-                            .equalsIgnoreCase("csv") && rptBytes.length > 0) {
+                            .equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
