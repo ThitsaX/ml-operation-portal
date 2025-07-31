@@ -19,8 +19,7 @@ public class IAMErrors {
     public static final ErrorMessage USER_NOT_FOUND = new ErrorMessage("USER_NOT_FOUND","System cannot find User.");
     public static final ErrorMessage ROLE_GRANT_NOT_FOUND = new ErrorMessage("ROLE_GRANT_NOT_FOUND","System cannot find Role grant.");
     public static final ErrorMessage USER_GRANT_NOT_FOUND = new ErrorMessage("USER_GRANT_NOT_FOUND","System cannot find User grant.");
-
-
+    public static final ErrorMessage MENU_NOT_FOUND = new ErrorMessage("MENU_NOT_FOUND","System cannot find menu .");
 
     public static final ErrorMessage DUPLICATE_ROLE_NAME = new ErrorMessage("DUPLICATE_ROLE_NAME","Duplicate role name ");
     //@@formatter:on
