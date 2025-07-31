@@ -9,8 +9,7 @@ import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import com.thitsaworks.operation_portal.core.test_iam.IAMEngine;
-import com.thitsaworks.operation_portal.core.test_iam.cache.UserCache;
+import com.thitsaworks.operation_portal.core.test_iam.listener.UserListener;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import jakarta.persistence.Column;
@@ -35,7 +34,7 @@ import java.util.UUID;
 import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
-@EntityListeners(value = {IAMEngine.Updater.class})
+@EntityListeners(UserListener.class)
 @Table(name = "tbl_user")
 @NoArgsConstructor
 @Getter

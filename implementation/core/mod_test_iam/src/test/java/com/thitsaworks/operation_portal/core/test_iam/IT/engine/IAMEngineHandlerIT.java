@@ -12,8 +12,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {IAMTestConfiguration.class, TestSettings.class})
-public class IAMEngineIT extends BaseVaultSetUpTest {
+public class IAMEngineHandlerIT extends BaseVaultSetUpTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(IAMEngineIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(IAMEngineHandlerIT.class);
 
 }
