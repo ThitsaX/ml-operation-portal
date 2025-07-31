@@ -28,15 +28,27 @@ public class IAMActionListener {
     @PostUpdate
     public void onIAMActionPersistOrUpdate(IAMAction iamAction) {
 
-        iamEngine.getActionCodesMap().put(iamAction.getActionCode(), new ActionData(iamAction));
-        iamEngine.getActionIdsMap().put(iamAction.getActionId(), new ActionData(iamAction));
+        if (IAMActionListener.iamEngine != null) {
+
+            iamEngine.getActionCodesMap()
+                     .putIfAbsent(iamAction.getActionCode(), new ActionData(iamAction));
+            iamEngine.getActionIdsMap()
+                     .putIfAbsent(iamAction.getActionId(), new ActionData(iamAction));
+        }
+
     }
 
     @PostRemove
     public void onIAMActionPostRemove(IAMAction iamAction) {
 
-       iamEngine.getActionCodesMap().remove(iamAction.getActionCode());
-       iamEngine.getActionIdsMap().remove(iamAction.getActionId());
+        if (IAMActionListener.iamEngine != null) {
+
+            iamEngine.getActionCodesMap()
+                     .remove(iamAction.getActionCode());
+            iamEngine.getActionIdsMap()
+                     .remove(iamAction.getActionId());
+        }
+
     }
 
 }

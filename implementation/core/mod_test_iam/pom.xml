@@ -10,7 +10,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-
     <artifactId>mod_test_iam</artifactId>
 
     <properties>

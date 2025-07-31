@@ -51,7 +51,6 @@ public class IAMEngineHandler implements IAMEngine {
     private final IAMActionRepository iamActionRepository;
 
     @Override
-    @PostConstruct
     public void bootstrap() {
 
         this.usersMap.clear();
@@ -63,7 +62,7 @@ public class IAMEngineHandler implements IAMEngine {
         this.roleGrantedActionsMap.clear();
 
         var users = this.userRepository.findAll();
-        users.forEach(user -> usersMap.put(user.getUserId(), new UserData(user)));
+        users.forEach(user -> this.usersMap.put(user.getUserId(), new UserData(user)));
 
         users.forEach(user -> {
             var roles = user.getRoles();
@@ -109,10 +108,11 @@ public class IAMEngineHandler implements IAMEngine {
     @Override
     public void print() {
 
-        LOG.info("usersMap : {}", this.usersMap);
-        LOG.info("userRolesMap : {}", this.userRolesMap);
-        LOG.info("userGrantedActionsMap : {}", this.userGrantedActionsMap);
-        LOG.info("userDeniedActionsMap : {}", this.userDeniedActionsMap);
+        LOG.info("usersMap : [{}]", this.usersMap);
+        LOG.info("userRolesMap : [{}]", this.userRolesMap);
+        LOG.info("userGrantedActionsMap : [{}]", this.userGrantedActionsMap);
+        LOG.info("userDeniedActionsMap : [{}]", this.userDeniedActionsMap);
+        LOG.info("actionCodesMap : [{}]", this.actionCodesMap);
     }
 
     @Override
