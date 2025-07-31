@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
@@ -27,7 +28,7 @@ public class CreateRoleCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Role : [{}]", this.createRoleCommand.execute(new CreateRoleCommand.Input("OPERATION")).roleId());
+        LOG.info("Role : [{}]", this.createRoleCommand.execute(new CreateRoleCommand.Input(new RoleId(1L), "ADMIN")).roleId());
     }
 
 }

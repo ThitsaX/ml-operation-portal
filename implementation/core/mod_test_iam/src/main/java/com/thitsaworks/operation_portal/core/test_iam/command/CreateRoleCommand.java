@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 public interface CreateRoleCommand {
     Output execute(Input input) throws IAMException;
 
-    record Input(String name){}
+    record Input(RoleId roleId, String name){}
 
     record Output(RoleId roleId){}
 }

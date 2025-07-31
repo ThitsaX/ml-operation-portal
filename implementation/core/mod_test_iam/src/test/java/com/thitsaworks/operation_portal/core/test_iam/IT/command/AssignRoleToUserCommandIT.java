@@ -33,11 +33,10 @@ public class AssignRoleToUserCommandIT extends BaseVaultSetUpTest {
     public void success() throws IAMException {
 
         var result = this.assignRoleToUserCommand.execute(new AssignRoleToUserCommand.Input(new UserId(1111111111111111L),
-                                                                                       new RoleId(738348415182843904L)));
+                                                                                       new RoleId(738795816077070336L)));
 
         LOGGER.info("Role assigned successfully: {}", result.userRoleId());
 
-       this.iamEngine.print();
     }
 
 
