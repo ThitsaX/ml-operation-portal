@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionsData;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,7 @@ public class GetParticipantPositionsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsController.class);
 
-    private final GetParticipantPositionsData getParticipantPositionsData;
+    private final GetParticipantPositions getParticipantPositions;
 
     @GetMapping("/secured/getParticipantPositionsData")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
@@ -39,8 +39,8 @@ public class GetParticipantPositionsController {
                                                .getAuthentication()
                                                .getDetails();
 
-        GetParticipantPositionsData.Output output =
-                this.getParticipantPositionsData.execute(new GetParticipantPositionsData.Input(new ParticipantUserId(
+        GetParticipantPositions.Output output =
+                this.getParticipantPositions.execute(new GetParticipantPositions.Input(new ParticipantUserId(
                         userContext.userId()
                                    .getEntityId())));
 

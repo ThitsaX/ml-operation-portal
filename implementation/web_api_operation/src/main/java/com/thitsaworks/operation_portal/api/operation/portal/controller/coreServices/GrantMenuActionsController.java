@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,37 +18,38 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GrantRoleActionsController {
+public class GrantMenuActionsController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionsController.class);
 
-    private final GrantRoleActions grantRoleActions;
+    private final GrantMenuActions grantMenuActions;
 
-    @PostMapping("/secured/grantRoleActions")
+    @PostMapping("/secured/grantMenuActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        List<GrantRoleActions.Input.SingleRoleGrant> singleRoleGrantList = new ArrayList<>();
-        for (var singleRoleGrant : request.singleRoleGrantList()) {
+        List<GrantMenuActions.Input.SingleMenuGrant> singleMenuGrantList = new ArrayList<>();
+        for (var singleMenuGrant : request.singleMenuGrantList()) {
 
             List<ActionCode> actionCodeList = new ArrayList<>();
 
-            for (var action : singleRoleGrant.actionList()) {
+            for (var action : singleMenuGrant.actionList()) {
                 actionCodeList.add(new ActionCode(action));
             }
 
-            singleRoleGrantList.add(new GrantRoleActions.Input.SingleRoleGrant(singleRoleGrant.role(), actionCodeList));
+            singleMenuGrantList.add(new GrantMenuActions.Input.SingleMenuGrant(singleMenuGrant.menu(),
+                                                                               actionCodeList));
 
         }
 
-        var output = this.grantRoleActions.execute(new GrantRoleActions.Input(singleRoleGrantList));
+        var output = this.grantMenuActions.execute(new GrantMenuActions.Input(singleMenuGrantList));
 
         return new ResponseEntity<>(new Response(output.granted()), HttpStatus.OK);
 
     }
 
-    public record Request(List<SingleRoleGrant> singleRoleGrantList) {
+    public record Request(List<SingleMenuGrant> singleMenuGrantList) {
 
-        public record SingleRoleGrant(String role,
+        public record SingleMenuGrant(String menu,
                                       List<String> actionList) { }
 
     }

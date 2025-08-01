@@ -34,6 +34,8 @@ public class GrantRoleActionsCommandHandler implements GrantRoleActionsCommand {
         Optional<Role> optRole = this.roleRepository.findOne(RoleRepository.Filters.withName(input.role()));
 
         if (optRole.isEmpty()) {
+
+            LOG.info("Role Not Found : [{}]", input.role());
             throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
         }
 

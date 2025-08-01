@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.core.test_iam.command.impl;
 
-
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
@@ -40,6 +39,7 @@ public class BlockUserActionCommandHandler implements BlockUserActionCommand {
 
         User user = optUser.get();
         user.blockAction(optAction.get());
+
         this.userRepository.saveAndFlush(user);
 
         return new Output(true);

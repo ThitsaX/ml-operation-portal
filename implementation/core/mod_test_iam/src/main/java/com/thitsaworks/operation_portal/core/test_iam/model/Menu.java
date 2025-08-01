@@ -31,8 +31,8 @@ public class Menu extends JpaEntity<MenuId> {
     @Column(name = "name")
     protected String name;
 
-    @Column(name ="parent_id")
-    protected String  parentId;
+    @Column(name = "parent_id")
+    protected String parentId;
 
     @Column(name = "is_active")
     protected boolean isActive;
@@ -60,16 +60,18 @@ public class Menu extends JpaEntity<MenuId> {
         return this.menuId;
     }
 
-
     public boolean isGranted(IAMAction IAMAction) {
 
-        return this.grants.stream().anyMatch(granted -> granted.IAMAction.equals(IAMAction));
+        return this.grants.stream()
+                          .anyMatch(granted -> granted.IAMAction.equals(IAMAction));
     }
 
     public void grantAction(IAMAction granting) {
 
         Optional<MenuGrant> optMenuGrant =
-            this.grants.stream().filter(menuGrant -> menuGrant.IAMAction.equals(granting)).findFirst();
+            this.grants.stream()
+                       .filter(menuGrant -> menuGrant.IAMAction.equals(granting))
+                       .findFirst();
 
         if (optMenuGrant.isEmpty()) {
 
@@ -80,7 +82,9 @@ public class Menu extends JpaEntity<MenuId> {
     public boolean revokeAction(IAMAction revoking) {
 
         Optional<MenuGrant> optMenuGrant =
-            this.grants.stream().filter(menuGrant -> menuGrant.IAMAction.equals(revoking)).findFirst();
+            this.grants.stream()
+                       .filter(menuGrant -> menuGrant.IAMAction.equals(revoking))
+                       .findFirst();
 
         if (optMenuGrant.isPresent()) {
 
@@ -90,6 +94,5 @@ public class Menu extends JpaEntity<MenuId> {
 
         return false;
     }
-
 
 }

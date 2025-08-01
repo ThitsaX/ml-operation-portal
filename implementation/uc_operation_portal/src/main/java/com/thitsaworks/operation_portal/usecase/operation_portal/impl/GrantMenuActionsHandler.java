@@ -3,13 +3,14 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.GrantRoleActionsCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.GrantMenuActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
 import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +20,24 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class GrantRoleActionsHandler
-    extends OperationPortalAuditableUseCase<GrantRoleActions.Input, GrantRoleActions.Output>
-    implements GrantRoleActions {
+public class GrantMenuActionsHandler
+    extends OperationPortalAuditableUseCase<GrantMenuActions.Input, GrantMenuActions.Output>
+    implements GrantMenuActions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionsHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
+                                                                    UserRoleType.OPERATION);
 
-    private final GrantRoleActionsCommand grantRoleActionsCommand;
+    private final GrantMenuActionCommand grantMenuActionCommand;
 
-    public GrantRoleActionsHandler(CreateInputAuditCommand createInputAuditCommand,
+    public GrantMenuActionsHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
                                    ActionAuthorizationManager actionAuthorizationManager,
-                                   GrantRoleActionsCommand grantRoleActionsCommand) {
+                                   GrantMenuActionCommand grantMenuActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,17 +47,19 @@ public class GrantRoleActionsHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.grantRoleActionsCommand = grantRoleActionsCommand;
+        this.grantMenuActionCommand = grantMenuActionCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        for (var singleRoleGrant : input.singleRoleGrantList()) {
+        for (var menu : input.singleMenuGrantList()) {
 
-            this.grantRoleActionsCommand.execute(new GrantRoleActionsCommand.Input(singleRoleGrant.role(),
-                                                                                   singleRoleGrant.actionList()));
+            for (var action : menu.actionList()) {
 
+                this.grantMenuActionCommand.execute(new GrantMenuActionCommand.Input(menu.menuName(),
+                                                                                     action));
+            }
         }
 
         return new Output(true);

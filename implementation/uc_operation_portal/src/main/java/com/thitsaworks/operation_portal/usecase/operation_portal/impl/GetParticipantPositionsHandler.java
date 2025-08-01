@@ -14,7 +14,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionsData;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
 import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,11 +28,11 @@ import java.util.Optional;
 import java.util.Set;
 
 @Service
-public class GetParticipantPositionsDataHandler
-    extends OperationPortalUseCase<GetParticipantPositionsData.Input, GetParticipantPositionsData.Output>
-    implements GetParticipantPositionsData {
+public class GetParticipantPositionsHandler
+    extends OperationPortalUseCase<GetParticipantPositions.Input, GetParticipantPositions.Output>
+    implements GetParticipantPositions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsDataHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
                                                                     UserRoleType.ADMIN);
@@ -45,12 +45,12 @@ public class GetParticipantPositionsDataHandler
 
     private final ParticipantNDCQuery participantNDCQuery;
 
-    public GetParticipantPositionsDataHandler(PrincipalCache principalCache,
-                                              GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
-                                              ParticipantCache participantCache,
-                                              ParticipantUserCache participantUserCache,
-                                              ParticipantNDCQuery participantNDCQuery,
-                                              ActionAuthorizationManager actionAuthorizationManager) {
+    public GetParticipantPositionsHandler(PrincipalCache principalCache,
+                                          GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
+                                          ParticipantCache participantCache,
+                                          ParticipantUserCache participantUserCache,
+                                          ParticipantNDCQuery participantNDCQuery,
+                                          ActionAuthorizationManager actionAuthorizationManager) {
 
         super(PERMITTED_ROLES, principalCache, actionAuthorizationManager);
 
@@ -113,7 +113,7 @@ public class GetParticipantPositionsDataHandler
             updatedList.add(updated);
         }
 
-        return new GetParticipantPositionsData.Output(updatedList);
+        return new GetParticipantPositions.Output(updatedList);
     }
 
 }

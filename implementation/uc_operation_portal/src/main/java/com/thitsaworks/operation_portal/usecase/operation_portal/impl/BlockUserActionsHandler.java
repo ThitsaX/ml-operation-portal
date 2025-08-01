@@ -7,9 +7,9 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.GrantRoleActionsCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
 import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +19,23 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class GrantRoleActionsHandler
-    extends OperationPortalAuditableUseCase<GrantRoleActions.Input, GrantRoleActions.Output>
-    implements GrantRoleActions {
+public class BlockUserActionsHandler
+    extends OperationPortalAuditableUseCase<BlockUserActions.Input, BlockUserActions.Output>
+    implements BlockUserActions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BlockUserActionsHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
+    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
 
-    private final GrantRoleActionsCommand grantRoleActionsCommand;
+    private final BlockUserActionCommand blockUserActionCommand;
 
-    public GrantRoleActionsHandler(CreateInputAuditCommand createInputAuditCommand,
+    public BlockUserActionsHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
                                    ActionAuthorizationManager actionAuthorizationManager,
-                                   GrantRoleActionsCommand grantRoleActionsCommand) {
+                                   BlockUserActionCommand blockUserActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,17 +45,14 @@ public class GrantRoleActionsHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.grantRoleActionsCommand = grantRoleActionsCommand;
+        this.blockUserActionCommand = blockUserActionCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        for (var singleRoleGrant : input.singleRoleGrantList()) {
-
-            this.grantRoleActionsCommand.execute(new GrantRoleActionsCommand.Input(singleRoleGrant.role(),
-                                                                                   singleRoleGrant.actionList()));
-
+        for (var actionId : input.actionIdList()) {
+            this.blockUserActionCommand.execute(new BlockUserActionCommand.Input(input.userId(), actionId));
         }
 
         return new Output(true);
