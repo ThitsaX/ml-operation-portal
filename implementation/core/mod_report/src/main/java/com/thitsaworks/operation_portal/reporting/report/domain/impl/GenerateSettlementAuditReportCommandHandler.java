@@ -12,6 +12,7 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
         params.put("startDate", input.startDate().toString());
         params.put("endDate", input.endDate().toString());
         params.put("dfspId", input.dfspId());
+        params.put("dfspName", input.dfspName());
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timeZoneOffset());
 
@@ -72,6 +74,16 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+
+                SimpleXlsxReportConfiguration config = new SimpleXlsxReportConfiguration();
+                config.setOnePagePerSheet(false);
+                config.setDetectCellType(true);
+                config.setRemoveEmptySpaceBetweenRows(true);
+                config.setIgnorePageMargins(true);
+                config.setCollapseRowSpan(false);
+
+                xlsxExporter.setConfiguration(config);
+
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 

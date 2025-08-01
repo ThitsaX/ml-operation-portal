@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="1330" pageHeight="600" whenNoDataType="AllSectionsNoDetail" columnWidth="1270" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2000" pageHeight="2000" whenNoDataType="AllSectionsNoDetail" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet" value="false"/>
+	<property name="net.sf.jasperreports.export.xlsx.repeat.column.headers" value="false"/>
+	<property name="net.sf.jasperreports.export.xlsx.repeat.headers" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.columns" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="background"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.3" value="lastPageFooter"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -13,7 +17,6 @@
 	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
 	<property name="net.sf.jasperreports.export.xls.ignore.cell.border" value="true"/>
-	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="background"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="lastPageFooter"/>
 	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.rows" value="true"/>
@@ -21,26 +24,31 @@
 	<property name="net.sf.jasperreports.export.xlsx.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.graphics" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.cell.border" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="false"/>
 	<property name="net.sf.jasperreports.export.pdf.create.batch.mode.bookmarks" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.group.1" value="break"/>
-	<property name="net.sf.jasperreports.export.pdf.exclude.origin.band.1" value="background"/>
-	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="false"/>
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.group.1" value="break"/>
-	<property name="net.sf.jasperreports.export.xlsx.collapse.row.span" value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.collapse.row.span" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.csv.cell.locked" value="false"/>
-	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="SettlementAuditReport"/>
-	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="SettlementAuditReport"/>
-	<property name="net.sf.jasperreports.page.break.no.pagination" value="apply"/>
-	<property name="net.sf.jasperreports.locale" value="en_US"/>
+	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="SettlementAudit"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="SettlementAudit"/>
+	<property name="com.jaspersoft.studio.unit." value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageHeight" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.pageWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.topMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.bottomMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.leftMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.rightMargin" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnWidth" value="pixel"/>
+	<property name="com.jaspersoft.studio.unit.columnSpacing" value="pixel"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -68,41 +76,14 @@
 			<rightPen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
-	<style name="Table 1_TH" mode="Opaque" backcolor="#F0F8FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table 1_CH" mode="Opaque" backcolor="#BFE1FF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
-	<style name="Table 1_TD" mode="Opaque" backcolor="#FFFFFF">
-		<box>
-			<pen lineWidth="0.5" lineColor="#000000"/>
-			<topPen lineWidth="0.5" lineColor="#000000"/>
-			<leftPen lineWidth="0.5" lineColor="#000000"/>
-			<bottomPen lineWidth="0.5" lineColor="#000000"/>
-			<rightPen lineWidth="0.5" lineColor="#000000"/>
-		</box>
-	</style>
 	<style name="Style1" fontName="Calibri" fontSize="11"/>
-	<style name="Style2"/>
 	<subDataset name="settlementAuditDB" uuid="d44912b1-e131-4631-999f-7ae1ee4d6871">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 		<parameter name="startDate" class="java.lang.String"/>
 		<parameter name="endDate" class="java.lang.String"/>
 		<parameter name="dfspId" class="java.lang.String"/>
+		<parameter name="dfspName" class="java.lang.String"/>
 		<parameter name="currencyId" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
@@ -116,11 +97,23 @@
 	    (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
 		 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
 		 ppc.value AS balance, 
-		 COALESCE(texNdcPercent.value, '0') AS ndcPercent,
+		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
 		 COALESCE(texNdc.value, '0') AS ndc,
 		 pc.currencyId AS currency,
 		 COALESCE(texBankAccount.value, '') AS settlementBankAccount,
-		 COALESCE(texApprovedUser.value, '') AS madeBy
+		 COALESCE(texApprovedUser.value, '') AS madeBy, CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+       CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+       ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+      END,'%Y-%m-%dT%H:%i:%s'),
+      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+         CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+       CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+       ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+      END,'%Y-%m-%dT%H:%i:%s'),
+      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
+       ,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
 FROM participant p
 INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
 INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
@@ -182,11 +175,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 			<property name="com.jaspersoft.studio.field.name" value="fundsOut"/>
 			<property name="com.jaspersoft.studio.field.label" value="fundsOut"/>
 		</field>
-		<field name="balance" class="java.lang.String">
+		<field name="balance" class="java.math.BigDecimal">
 			<property name="com.jaspersoft.studio.field.name" value="balance"/>
 			<property name="com.jaspersoft.studio.field.label" value="balance"/>
 		</field>
-		<field name="ndcPercent" class="java.math.BigDecimal">
+		<field name="ndcPercent" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="ndcPercent"/>
 			<property name="com.jaspersoft.studio.field.label" value="ndcPercent"/>
 		</field>
@@ -206,10 +199,23 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 			<property name="com.jaspersoft.studio.field.name" value="madeBy"/>
 			<property name="com.jaspersoft.studio.field.label" value="madeBy"/>
 		</field>
+		<field name="fromDate" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="fromDate"/>
+			<property name="com.jaspersoft.studio.field.label" value="fromDate"/>
+		</field>
+		<field name="toDate" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="toDate"/>
+			<property name="com.jaspersoft.studio.field.label" value="toDate"/>
+		</field>
+		<field name="timezoneoffset" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="timezoneoffset"/>
+			<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
+		</field>
 	</subDataset>
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
 	<parameter name="dfspId" class="java.lang.String"/>
+	<parameter name="dfspName" class="java.lang.String"/>
 	<parameter name="currencyId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
@@ -223,11 +229,23 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 	    (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
 		 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
 		 ppc.value AS balance, 
-		 COALESCE(texNdcPercent.value, '0') AS ndcPercent,
+		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
 		 COALESCE(texNdc.value, '0') AS ndc,
 		 pc.currencyId AS currency,
 		 COALESCE(texBankAccount.value, '') AS settlementBankAccount,
-		 COALESCE(texApprovedUser.value, '') AS madeBy
+		 COALESCE(texApprovedUser.value, '') AS madeBy, CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+       CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+       ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+      END,'%Y-%m-%dT%H:%i:%s'),
+      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+         CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+       CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+       ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+      END,'%Y-%m-%dT%H:%i:%s'),
+      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
+       ,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
 FROM participant p
 INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
 INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
@@ -289,11 +307,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 		<property name="com.jaspersoft.studio.field.name" value="fundsOut"/>
 		<property name="com.jaspersoft.studio.field.label" value="fundsOut"/>
 	</field>
-	<field name="balance" class="java.lang.String">
+	<field name="balance" class="java.math.BigDecimal">
 		<property name="com.jaspersoft.studio.field.name" value="balance"/>
 		<property name="com.jaspersoft.studio.field.label" value="balance"/>
 	</field>
-	<field name="ndcPercent" class="java.math.BigDecimal">
+	<field name="ndcPercent" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="ndcPercent"/>
 		<property name="com.jaspersoft.studio.field.label" value="ndcPercent"/>
 	</field>
@@ -313,11 +331,23 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 		<property name="com.jaspersoft.studio.field.name" value="madeBy"/>
 		<property name="com.jaspersoft.studio.field.label" value="madeBy"/>
 	</field>
+	<field name="fromDate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fromDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="fromDate"/>
+	</field>
+	<field name="toDate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="toDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="toDate"/>
+	</field>
+	<field name="timezoneoffset" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="timezoneoffset"/>
+		<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
+	</field>
 	<background>
-		<band splitType="Stretch"/>
+		<band splitType="Prevent"/>
 	</background>
 	<title>
-		<band height="276">
+		<band height="300" splitType="Prevent">
 			<staticText>
 				<reportElement x="0" y="0" width="350" height="17" uuid="c6a46694-b85a-471f-920d-c69d331dfce2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -408,6 +438,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				</textElement>
 				<text><![CDATA[TimeZoneOffSet]]></text>
 			</staticText>
+			<staticText>
+				<reportElement x="0" y="180" width="350" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+			</staticText>
 			<textField>
 				<reportElement x="350" y="0" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -434,7 +469,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{dfspId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{dfspName}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
@@ -447,7 +482,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fromDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
@@ -460,7 +495,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{toDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="350" y="120" width="200" height="17" uuid="acaf955e-c322-44b4-b96a-d6194c159c97"/>
@@ -486,15 +521,20 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{timezoneoffset}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{timezoneoffset}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="170" width="1230" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
+				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="210" width="1960" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
 					<property name="com.jaspersoft.studio.table.style.detail" value="Table_TD"/>
 					<property name="com.jaspersoft.studio.unit.y" value="px"/>
+					<property name="net.sf.jasperreports.export.xlsx.repeat.column.headers" value="false"/>
+					<property name="net.sf.jasperreports.export.xls.repeat.column.headers" value="false"/>
+					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.1" value="columnHeader"/>
+					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageHeader"/>
+					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="pageFooter"/>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
 					<datasetRun subDataset="settlementAuditDB" uuid="5dc97863-31cc-4bc9-a30e-c14e01e7cee0">
@@ -518,11 +558,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="200" uuid="7be88b7d-b36b-4854-a45b-58b244b4eb60">
+					<jr:column width="180" uuid="7be88b7d-b36b-4854-a45b-58b244b4eb60">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="17" backcolor="#FFFFFF" uuid="6d973096-2317-403e-a815-b4635562b487"/>
+								<reportElement mode="Opaque" x="0" y="0" width="180" height="17" backcolor="#FFFFFF" uuid="6d973096-2317-403e-a815-b4635562b487"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -538,7 +578,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField pattern="d-MMM- yyyy">
-								<reportElement x="0" y="0" width="200" height="17" uuid="685b91fe-1171-4110-b294-883517c783b4"/>
+								<reportElement x="0" y="0" width="180" height="17" uuid="685b91fe-1171-4110-b294-883517c783b4"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -546,12 +586,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
+					<jr:column width="200" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="200" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -568,7 +608,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+								<reportElement x="0" y="0" width="200" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
 								<textElement>
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -576,12 +616,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
+					<jr:column width="151" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="151" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -598,7 +638,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+								<reportElement x="0" y="0" width="151" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
 								<textElement>
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -723,12 +763,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -742,10 +781,10 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+							<textField pattern="#,##0.00#">
+								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
+									<printWhenExpression><![CDATA[$F{ndcPercent}!=null]]></printWhenExpression>
+								</reportElement>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -753,12 +792,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
-						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
+					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
+						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -772,10 +810,10 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+							<textField pattern="#,##0.00#">
+								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
+									<printWhenExpression><![CDATA[$F{ndc}!=null]]></printWhenExpression>
+								</reportElement>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -783,12 +821,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
+					<jr:column width="93" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -805,7 +843,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+								<reportElement x="0" y="0" width="93" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
 								<textElement>
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -843,12 +881,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
+					<jr:column width="300" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
 						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+								<reportElement mode="Opaque" x="0" y="0" width="300" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -865,7 +903,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
-								<reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
 								<textElement>
 									<font fontName="Calibri" size="11"/>
 								</textElement>
@@ -877,7 +915,4 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 			</componentElement>
 		</band>
 	</title>
-	<summary>
-		<band height="70" splitType="Stretch"/>
-	</summary>
 </jasperReport>

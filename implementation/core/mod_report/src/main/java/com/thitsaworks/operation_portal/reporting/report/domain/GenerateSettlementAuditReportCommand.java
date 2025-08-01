@@ -11,6 +11,8 @@ public interface GenerateSettlementAuditReportCommand {
 
                  String dfspId,
 
+                 String dfspName,
+
                  String currencyId,
                  String filetype,
                  String timeZoneOffset) {}
