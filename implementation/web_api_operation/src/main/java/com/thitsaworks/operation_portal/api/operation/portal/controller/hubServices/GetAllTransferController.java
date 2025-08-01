@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransfer;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class GetAllTransferController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferController.class);
 
-    private final GetAllTransfer getAllTransfer;
+    private final GetTransferList getTransferList;
 
     @GetMapping("/secured/getAllTransfer")
     public ResponseEntity<Response> execute(
@@ -57,8 +57,8 @@ public class GetAllTransferController {
             showTimezone = timezone.replaceFirst(".", "-");
         }
 
-        GetAllTransfer.Output output = this.getAllTransfer.execute(
-            new GetAllTransfer.Input(
+        GetTransferList.Output output = this.getTransferList.execute(
+            new GetTransferList.Input(
                 localFromDate,
                 localToDate,
                 transferId,

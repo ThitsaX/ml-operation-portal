@@ -8,8 +8,6 @@ import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
 @Service
 public class ActionAuthorizationManager {
 
@@ -37,10 +35,6 @@ public class ActionAuthorizationManager {
     }
 
     public boolean isAuthorizedTo(UserId userId, ActionCode actionCode) throws IAMException {
-
-        if(Objects.equals(userId, new UserId(1111111111111111L))) {
-            return true;
-        }
 
         return this.iamEngine.isGrantedAction(userId, actionCode);
     }
