@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementI
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIdsQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementId;
-import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

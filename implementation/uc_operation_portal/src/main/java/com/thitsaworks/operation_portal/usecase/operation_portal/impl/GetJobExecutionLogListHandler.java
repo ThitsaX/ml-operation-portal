@@ -11,7 +11,7 @@ import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
 import com.thitsaworks.operation_portal.core.scheduler.query.JobExecutionLogQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetJobExecutionLogList;
-import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;

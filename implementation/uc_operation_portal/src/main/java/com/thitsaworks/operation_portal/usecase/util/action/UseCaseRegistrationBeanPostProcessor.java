@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.usecase.util;
+package com.thitsaworks.operation_portal.usecase.util.action;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;

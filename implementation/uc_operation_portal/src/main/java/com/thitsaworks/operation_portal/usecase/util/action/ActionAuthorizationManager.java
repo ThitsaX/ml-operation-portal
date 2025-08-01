@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.usecase.util;
+package com.thitsaworks.operation_portal.usecase.util.action;
 
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;

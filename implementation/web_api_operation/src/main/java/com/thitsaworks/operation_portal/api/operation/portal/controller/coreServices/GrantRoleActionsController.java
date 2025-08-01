@@ -24,7 +24,7 @@ public class GrantRoleActionsController {
     private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsController.class);
 
     private final GrantRoleActions grantRoleActions;
-    
+
     @PostMapping("/secured/grantRoleActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
