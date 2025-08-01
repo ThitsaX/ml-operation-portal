@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.test_iam.data.UserData;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.RoleRepository;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

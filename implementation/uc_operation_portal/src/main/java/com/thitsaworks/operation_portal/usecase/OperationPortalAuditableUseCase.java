@@ -78,17 +78,17 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
     @Override
     public void onConstruct() throws SystemException {
 
-        try {
-            String actionName = this.getName();
-            String scope = "OPERATION_PORTAL";
-            String description = "Auto-registered action for use case: " + actionName;
-
-            this.actionAuthorizationManager.registerAction(actionName, scope, description);
-
-        } catch (Exception e) {
-            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
-            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
-        }
+//        try {
+//            String actionName = this.getName();
+//            String scope = "OPERATION_PORTAL";
+//            String description = "Auto-registered action for use case: " + actionName;
+//
+//            this.actionAuthorizationManager.registerAction(actionName, scope, description);
+//
+//        } catch (Exception e) {
+//            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
+//            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
+//        }
     }
 
     @Override
