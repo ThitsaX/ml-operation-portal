@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class GetParticipantsListController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantsListController.class);
 
-    private final GetAllParticipant getAllParticipant;
+    private final GetParticipantList getParticipantList;
 
     private final ObjectMapper objectMapper;
 
@@ -33,8 +33,8 @@ public class GetParticipantsListController {
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        GetAllParticipant.Output output = this.getAllParticipant.execute(
-            new GetAllParticipant.Input());
+        GetParticipantList.Output output = this.getParticipantList.execute(
+            new GetParticipantList.Input());
 
         List<Response.ParticipantInfo> participantInfoList = new ArrayList<>();
 

@@ -51,11 +51,9 @@ public class UserListener {
         iamEngine.getUsersMap()
                  .put(user.getUserId(), userData);
 
-        // Update user roles
         iamEngine.getUserRolesMap()
                  .put(user.getUserId(), userRoles);
 
-        // Update user granted actions
         iamEngine.getUserGrantedActionsMap()
                  .put(user.getUserId(), userGrants);
     }

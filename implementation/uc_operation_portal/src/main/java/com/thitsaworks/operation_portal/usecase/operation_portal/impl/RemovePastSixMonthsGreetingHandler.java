@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.hubuser.command.RemoveGreetingComma
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.RemovePastSixMonthsGreetingMessage;
-import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;

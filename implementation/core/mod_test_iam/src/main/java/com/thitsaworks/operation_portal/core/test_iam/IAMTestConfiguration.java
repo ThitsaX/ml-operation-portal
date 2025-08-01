@@ -8,14 +8,14 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @ComponentScan("com.thitsaworks.operation_portal.core.test_iam")
-@Import(value = {
-    MiscConfiguration.class, RedisConfiguration.class, CorePersistenceConfiguration.class
-})
+@Import(
+    value = {
+        MiscConfiguration.class, RedisConfiguration.class, CorePersistenceConfiguration.class
+    })
 @RequiredArgsConstructor
 public class IAMTestConfiguration {
 
@@ -25,6 +25,7 @@ public class IAMTestConfiguration {
 
     @PostConstruct
     public void bootstrapIAMEngine() {
+
         try {
 
             LOG.info("Starting IAMEngine bootstrap...");
@@ -37,4 +38,5 @@ public class IAMTestConfiguration {
             throw new IllegalStateException("Failed to bootstrap IAMEngine", e);
         }
     }
+
 }

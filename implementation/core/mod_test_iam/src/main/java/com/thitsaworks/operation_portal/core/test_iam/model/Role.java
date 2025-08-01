@@ -46,12 +46,11 @@ public class Role extends JpaEntity<RoleId> {
         fetch = FetchType.EAGER)
     protected Set<RoleGrant> grants = new HashSet<>();
 
-    public Role(String name) {
+    public Role(RoleId roleId, String name) {
 
         assert name != null : "name is required!";
 
-        this.roleId = new RoleId(Snowflake.get()
-                                          .nextId());
+        this.roleId = roleId;
         this.name(name);
     }
 

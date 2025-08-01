@@ -10,7 +10,7 @@ public interface GrantRoleActions extends UseCase<GrantRoleActions.Input, GrantR
     record Input(List<SingleRoleGrant> singleRoleGrantList) {
 
         public record SingleRoleGrant(String role,
-                                      List<ActionCode> actions) { }
+                                      List<ActionCode> actionList) { }
 
     }
 

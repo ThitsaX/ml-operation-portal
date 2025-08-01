@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransferState;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferStateList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,13 +22,13 @@ public class GetAllTransferStateController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferStateController.class);
 
-    private final GetAllTransferState getAllTransferState;
+    private final GetTransferStateList getTransferStateList;
 
     @GetMapping("/secured/getAllTransferState")
     public ResponseEntity<Response> execute() throws DomainException,
                                                      JsonProcessingException {
 
-        GetAllTransferState.Output output = this.getAllTransferState.execute(new GetAllTransferState.Input());
+        GetTransferStateList.Output output = this.getTransferStateList.execute(new GetTransferStateList.Input());
 
         List<Response.TransferStateInfo> transferStateInfoList = new ArrayList<>();
 

@@ -1,0 +1,32 @@
+package com.thitsaworks.operation_portal.usecase.operation_portal;
+
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
+
+public interface GetAuditList extends UseCase<GetAuditList.Input, GetAuditList.Output> {
+
+    record Input(RealmId realmId,
+                 UserId userId,
+                 Instant fromDate,
+                 Instant toDate,
+                 String actionName) { }
+
+    record Output(List<AuditInfo> auditInfoList) {
+
+        public record AuditInfo(String participantName,
+                                String userName,
+                                String actionName,
+                                String inputInfo,
+                                String outputInfo,
+                                Instant actionDate) implements Serializable {
+
+        }
+
+    }
+
+}

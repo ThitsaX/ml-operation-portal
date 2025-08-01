@@ -21,7 +21,7 @@ import com.thitsaworks.operation_portal.core.audit.exception.AuditException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
-import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,17 +78,17 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
     @Override
     public void onConstruct() throws SystemException {
 
-        try {
-            String actionName = this.getName();
-            String scope = "OPERATION_PORTAL";
-            String description = "Auto-registered action for use case: " + actionName;
-
-            this.actionAuthorizationManager.registerAction(actionName, scope, description);
-
-        } catch (Exception e) {
-            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
-            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
-        }
+//        try {
+//            String actionName = this.getName();
+//            String scope = "OPERATION_PORTAL";
+//            String description = "Auto-registered action for use case: " + actionName;
+//
+//            this.actionAuthorizationManager.registerAction(actionName, scope, description);
+//
+//        } catch (Exception e) {
+//            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
+//            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
+//        }
     }
 
     @Override

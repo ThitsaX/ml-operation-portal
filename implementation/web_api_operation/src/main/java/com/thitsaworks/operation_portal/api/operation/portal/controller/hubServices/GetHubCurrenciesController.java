@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetHubCurrencies;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetHubCurrencyList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,12 +21,12 @@ public class GetHubCurrenciesController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetHubCurrenciesController.class);
 
-    private final GetHubCurrencies getHubCurrencies;
+    private final GetHubCurrencyList getHubCurrencyList;
 
     @GetMapping("/secured/getHubCurrency")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        var output = this.getHubCurrencies.execute(new GetHubCurrencies.Input());
+        var output = this.getHubCurrencyList.execute(new GetHubCurrencyList.Input());
 
         List<CurrencyInfo>
             currencyInfoList =

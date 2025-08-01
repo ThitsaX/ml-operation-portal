@@ -24,7 +24,7 @@ public class GrantRoleActionsController {
     private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsController.class);
 
     private final GrantRoleActions grantRoleActions;
-    
+
     @PostMapping("/secured/grantRoleActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
@@ -33,7 +33,7 @@ public class GrantRoleActionsController {
 
             List<ActionCode> actionCodeList = new ArrayList<>();
 
-            for (var action : singleRoleGrant.actions()) {
+            for (var action : singleRoleGrant.actionList()) {
                 actionCodeList.add(new ActionCode(action));
             }
 
@@ -50,10 +50,10 @@ public class GrantRoleActionsController {
     public record Request(List<SingleRoleGrant> singleRoleGrantList) {
 
         public record SingleRoleGrant(String role,
-                                      List<String> actions) { }
+                                      List<String> actionList) { }
 
     }
 
-    public record Response(boolean result) { }
+    public record Response(boolean granted) { }
 
 }

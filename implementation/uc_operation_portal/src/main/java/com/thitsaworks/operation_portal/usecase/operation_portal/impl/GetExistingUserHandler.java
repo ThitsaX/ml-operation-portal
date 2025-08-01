@@ -13,7 +13,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserDat
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingUser;
-import com.thitsaworks.operation_portal.usecase.util.ActionAuthorizationManager;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

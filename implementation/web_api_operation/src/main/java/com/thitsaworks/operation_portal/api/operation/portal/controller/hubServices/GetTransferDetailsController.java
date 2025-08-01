@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetails;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetail;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,13 +25,13 @@ public class GetTransferDetailsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferDetailsController.class);
 
-    private final GetTransferDetails getTransferDetails;
+    private final GetTransferDetail getTransferDetail;
 
     @GetMapping("/secured/getTransferDetail")
     public ResponseEntity<Response> execute(@Valid @RequestParam String transferId, String timezone)
         throws DomainException, ParseException, JsonProcessingException {
 
-        GetTransferDetails.Output output = this.getTransferDetails.execute(new GetTransferDetails.Input(transferId));
+        GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(transferId));
 
         TransferDetailData transferDetailData = output.transferDetailData();
 

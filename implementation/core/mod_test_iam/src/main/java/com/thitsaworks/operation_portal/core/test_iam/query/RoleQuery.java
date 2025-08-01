@@ -10,4 +10,6 @@ import java.util.List;
 public interface RoleQuery {
 
     RoleData get(String name) throws IAMException;
+
+    List<RoleData> getAll() throws IAMException;
 }

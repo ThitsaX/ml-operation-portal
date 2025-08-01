@@ -5,12 +5,15 @@ import com.thitsaworks.operation_portal.core.test_iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.test_iam.model.QRole;
+import com.thitsaworks.operation_portal.core.test_iam.model.Role;
 import com.thitsaworks.operation_portal.core.test_iam.model.repository.RoleRepository;
 import com.thitsaworks.operation_portal.core.test_iam.query.RoleQuery;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,15 +29,25 @@ public class RoleJpaQueryHandler implements RoleQuery {
     public RoleData get(String name) throws IAMException {
 
         BooleanExpression predicate = this.role.name.eq(name);
-
         var role = this.roleRepository.findOne(predicate);
 
         if (role.isEmpty()) {
-
             throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
         }
 
         return new RoleData(role.get());
+    }
+
+    @Override
+    public List<RoleData> getAll() throws IAMException {
+
+        BooleanExpression predicate = this.role.isNotNull();
+
+        var roles = (List<Role>) this.roleRepository.findAll(predicate);
+
+        return roles.stream()
+                    .map(RoleData::new)
+                    .toList();
     }
 
 }
