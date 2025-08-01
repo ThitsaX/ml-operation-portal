@@ -11,14 +11,7 @@ public interface ModifyUserCommand {
 
     record Input(UserId userId,
                  UserRoleType userRoleType,
-                 PrincipalStatus principalStatus) {
-
-        public Input(UserId userId, PrincipalStatus principalStatus) {
-
-            this(userId, null, principalStatus);
-        }
-
-    }
+                 PrincipalStatus principalStatus) { }
 
     record Output(UserId userId,
                   boolean modified) {

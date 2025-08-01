@@ -18,15 +18,9 @@ public interface CreateUserCommand {
         String passwordPlain,
         RealmId realmId,
         UserRoleType userRoleType,
+        PrincipalStatus principalStatus) { }
 
-        PrincipalStatus principalStatus) {
-
-
-    }
-
-    record Output(AccessKey accessKey, String secretKey) {
-
-    }
+    record Output(AccessKey accessKey, String secretKey) { }
 
 }
 

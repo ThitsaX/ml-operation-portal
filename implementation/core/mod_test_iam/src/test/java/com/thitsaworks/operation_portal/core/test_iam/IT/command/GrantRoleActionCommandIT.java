@@ -29,6 +29,6 @@ public class GrantRoleActionCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Grant Role Action : [{}]", this.grantRoleActionCommand.execute(new GrantRoleActionCommand.Input(new RoleId(737674297532182528L), new ActionId(737672399961944064L))));
+        LOG.info("Grant Role Action : [{}]", this.grantRoleActionCommand.execute(new GrantRoleActionCommand.Input(new RoleId(739079062484398080L), new ActionId(739084478182305792L))));
     }
 }
