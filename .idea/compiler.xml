@@ -17,7 +17,6 @@
         <module name="mod_fspiop" />
         <module name="mod_pending_approval" />
         <module name="mod_hub_services" />
-        <module name="uc_hub_services" />
         <module name="mod_scheduler" />
         <module name="mod_misc" />
         <module name="mod_hub_user" />
