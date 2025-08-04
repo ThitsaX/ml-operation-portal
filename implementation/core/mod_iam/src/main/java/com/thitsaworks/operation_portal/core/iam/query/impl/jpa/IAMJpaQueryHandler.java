@@ -4,8 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
@@ -13,7 +12,6 @@ import com.thitsaworks.operation_portal.core.iam.model.QPrincipal;
 import com.thitsaworks.operation_portal.core.iam.model.QRole;
 import com.thitsaworks.operation_portal.core.iam.model.QRoleGrant;
 import com.thitsaworks.operation_portal.core.iam.model.Role;
-import com.thitsaworks.operation_portal.core.iam.model.RoleGrant;
 import com.thitsaworks.operation_portal.core.iam.model.repository.ActionRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.PrincipalRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.RoleGrantRepository;
@@ -24,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -48,6 +47,8 @@ public class IAMJpaQueryHandler implements IAMQuery {
 
     private final RoleGrantRepository roleGrantRepository;
 
+    private final IAMEngine iamEngine;
+
     @Override
     public List<RoleData> getRoles() {
 
@@ -67,54 +68,37 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var principals = (List<Principal>) this.principalRepository.findAll(predicate);
 
         return principals.stream()
-                    .map(PrincipalData::new)
-                    .toList();
+                         .map(PrincipalData::new)
+                         .toList();
     }
 
     @Override
     public List<ActionData> getActions() {
 
-        BooleanExpression predicate = this.iamAction.isNotNull();
+        List<ActionData> availableActions = this.iamEngine.getActions();
 
-        var iamActions = (List<Action>) this.actionRepository.findAll(predicate);
-
-        return iamActions.stream()
-                         .map(ActionData::new)
-                         .toList();
-    }
-
-    @Override
-    public List<ActionData> getActionsByRole(String role) throws IAMException {
-
-        BooleanExpression predicate1 = this.role.name.eq(role);
-
-        var optRole = this.roleRepository.findOne(predicate1);
-
-        if (optRole.isEmpty()) {
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
+        if (availableActions != null) {
+            return availableActions;
         }
 
-        var roleId = optRole.get()
-                            .getRoleId();
+        BooleanExpression filter = this.iamAction.isNotNull();
+        List<Action> fetchedActions = (List<Action>) this.actionRepository.findAll(filter);
 
-        BooleanExpression predicate2 = this.roleGrant.role.roleId.eq(roleId);
+        if (fetchedActions.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        var roleGrants = (List<RoleGrant>) this.roleGrantRepository.findAll(predicate2);
+        List<ActionData> actionDataList = fetchedActions.stream()
+                                                        .map(ActionData::new)
+                                                        .toList();
 
-        var
-            actionIds =
-            roleGrants.stream()
-                      .map(roleGrant -> roleGrant.getAction()
-                                                 .getActionId())
-                      .toList();
+        actionDataList.forEach(action -> this.iamEngine.addAction(action.actionId(),
+                                                                  action.actionCode(),
+                                                                  action));
 
-        BooleanExpression predicate3 = this.iamAction.actionId.in(actionIds);
-
-        var actions = (List<Action>) this.actionRepository.findAll(predicate3);
-
-        return actions.stream()
-                      .map(ActionData::new)
-                      .toList();
+        return fetchedActions.stream()
+                             .map(ActionData::new)
+                             .toList();
 
     }
 

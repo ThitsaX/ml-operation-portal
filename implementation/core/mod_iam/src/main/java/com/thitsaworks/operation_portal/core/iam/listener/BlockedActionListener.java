@@ -36,9 +36,7 @@ public class BlockedActionListener {
                          .getPrincipalId();
         var actionData = new ActionData(blockedAction.getAction());
 
-        iamEngine.getPrincipalDeniedActionsMap()
-                 .computeIfAbsent(principalId, k -> new HashSet<>())
-                 .add(actionData);
+        iamEngine.addPrincipalDeniedAction(principalId, actionData);
     }
 
     @PostRemove
@@ -50,9 +48,7 @@ public class BlockedActionListener {
                          .getPrincipalId();
         var actionData = new ActionData(blockedAction.getAction());
 
-        iamEngine.getPrincipalDeniedActionsMap()
-                 .computeIfAbsent(principalId, k -> new HashSet<>())
-                 .remove(actionData);
+        iamEngine.removePrincipalDeniedAction(principalId, actionData);
     }
 
 }

@@ -45,30 +45,50 @@ public class PrincipalListener {
                                        .map(ActionData::new)
                                        .collect(Collectors.toSet());
 
+        Set<ActionData>
+            principalDenies = principal.getDeniedActions()
+                                       .stream()
+                                       .map(ActionData::new)
+                                       .collect(Collectors.toSet());
+
         var principalData = new PrincipalData(principal);
-        iamEngine.getPrincipalsMap()
-                 .put(principal.getPrincipalId(), principalData);
 
-        iamEngine.getPrincipalRolesMap()
-                 .put(principal.getPrincipalId(), principalRoles);
-
-        iamEngine.getPrincipalGrantedActionsMap()
-                 .put(principal.getPrincipalId(), principalGrants);
+        iamEngine.addPrincipal(principal.getPrincipalId(), principalData);
+        principalRoles.forEach(role -> iamEngine.addPrincipalRole(principal.getPrincipalId(), role));
+        principalGrants.forEach(action -> iamEngine.addPrincipalGrantedAction(principal.getPrincipalId(), action));
+        principalDenies.forEach(action -> iamEngine.addPrincipalDeniedAction(principal.getPrincipalId(), action));
     }
 
     @PostRemove
     public void onUserPostRemove(Principal principal) {
 
-        var userId = principal.getPrincipalId();
+        var principalId = principal.getPrincipalId();
 
-        iamEngine.getPrincipalsMap()
-                 .remove(userId);
-        iamEngine.getPrincipalRolesMap()
-                 .remove(userId);
-        iamEngine.getPrincipalGrantedActionsMap()
-                 .remove(userId);
-        iamEngine.getPrincipalDeniedActionsMap()
-                 .remove(userId);
+        Set<RoleData>
+            principalRoles = principal.getRoles()
+                                      .stream()
+                                      .map(RoleData::new)
+                                      .collect(Collectors.toSet());
+
+        Set<ActionData>
+            principalGrants = principal.getGrantedActions()
+                                       .stream()
+                                       .map(ActionData::new)
+                                       .collect(Collectors.toSet());
+
+        Set<ActionData>
+            principalDenies = principal.getDeniedActions()
+                                       .stream()
+                                       .map(ActionData::new)
+                                       .collect(Collectors.toSet());
+
+        var principalData = new PrincipalData(principal);
+
+        iamEngine.removePrincipal(principalId, principalData);
+        principalRoles.forEach(role -> iamEngine.removePrincipalRole(principalId, role));
+        principalGrants.forEach(action -> iamEngine.removePrincipalGrantedAction(principalId, action));
+        principalDenies.forEach(action -> iamEngine.removePrincipalDeniedAction(principalId, action));
+
     }
 
 }

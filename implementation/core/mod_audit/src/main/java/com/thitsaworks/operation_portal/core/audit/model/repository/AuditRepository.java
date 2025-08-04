@@ -7,6 +7,5 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuditRepository  extends JpaRepository<Audit, AuditId>,
-        QuerydslPredicateExecutor<Audit>  {
+public interface AuditRepository extends JpaRepository<Audit, AuditId>, QuerydslPredicateExecutor<Audit> {
 }

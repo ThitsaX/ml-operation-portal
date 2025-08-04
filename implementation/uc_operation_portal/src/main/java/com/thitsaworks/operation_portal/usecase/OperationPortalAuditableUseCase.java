@@ -133,8 +133,10 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
         var principalId = principalData.principalId();
 
+        var action = this.actionAuthorizationManager.getAction(new ActionCode(this.getName()));
+
         OperationPortalAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                                                            this.getName(),
+                                                            action.actionId(),
                                                             new UserId(
                                                                 principalId.getId()),
                                                             principalData.realmId(),

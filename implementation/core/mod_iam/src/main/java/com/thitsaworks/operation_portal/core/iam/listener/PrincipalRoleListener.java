@@ -46,12 +46,12 @@ public class PrincipalRoleListener {
 
         var roleData = new RoleData(principalRole.getRole());
         var
-            userId =
+            principalId =
             principalRole.getPrincipal()
                          .getPrincipalId();
 
         iamEngine.getPrincipalRolesMap()
-                 .computeIfAbsent(userId, k -> new HashSet<>())
+                 .computeIfAbsent(principalId, k -> new HashSet<>())
                  .remove(roleData);
     }
 

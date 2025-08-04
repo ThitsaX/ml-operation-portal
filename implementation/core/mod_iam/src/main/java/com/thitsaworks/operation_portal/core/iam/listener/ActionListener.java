@@ -30,10 +30,7 @@ public class ActionListener {
 
         if (ActionListener.iamEngine != null) {
 
-            iamEngine.getActionCodesMap()
-                     .putIfAbsent(action.getActionCode(), new ActionData(action));
-            iamEngine.getActionIdsMap()
-                     .putIfAbsent(action.getActionId(), new ActionData(action));
+            iamEngine.addAction(action.getActionId(), action.getActionCode(), new ActionData(action));
         }
 
     }
@@ -43,10 +40,7 @@ public class ActionListener {
 
         if (ActionListener.iamEngine != null) {
 
-            iamEngine.getActionCodesMap()
-                     .remove(action.getActionCode());
-            iamEngine.getActionIdsMap()
-                     .remove(action.getActionId());
+            iamEngine.removeAction(action.getActionId(), action.getActionCode(), new ActionData(action));
         }
 
     }

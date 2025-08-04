@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.iam.query.impl.jpa;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
@@ -23,18 +24,36 @@ public class ActionJpaQueryHandler implements ActionQuery {
 
     private final ActionRepository actionRepository;
 
+    private final IAMEngine iamEngine;
+
     @Override
     public ActionData get(ActionCode actionCode) throws IAMException {
 
         BooleanExpression predicate = this.iamAction.actionCode.eq(actionCode);
 
-        var action = this.actionRepository.findOne(predicate);
+        var actionAvailable = this.iamEngine.getAction(actionCode);
 
-        if (action.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+        if (actionAvailable == null) {
+
+            var optFetchAction = this.actionRepository.findOne(predicate);
+
+            if (optFetchAction.isEmpty()) {
+                throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+
+            } else {
+
+                var fetchAction = optFetchAction.get();
+
+                this.iamEngine.addAction(fetchAction.getActionId(), fetchAction.getActionCode(), new ActionData(fetchAction));
+
+                return new ActionData(fetchAction);
+
+            }
+
         }
 
-        return new ActionData(action.get());
+        return actionAvailable;
+
     }
 
 }

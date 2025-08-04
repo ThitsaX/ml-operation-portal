@@ -36,9 +36,7 @@ public class PrincipalGrantListener {
                           .getPrincipalId();
         var actionData = new ActionData(principalGrant.getAction());
 
-        iamEngine.getPrincipalGrantedActionsMap()
-                 .computeIfAbsent(principalId, k -> new HashSet<>())
-                 .add(actionData);
+        iamEngine.addPrincipalGrantedAction(principalId, actionData);
     }
 
     @PostRemove
@@ -50,9 +48,7 @@ public class PrincipalGrantListener {
                           .getPrincipalId();
         var actionData = new ActionData(principalGrant.getAction());
 
-        iamEngine.getPrincipalGrantedActionsMap()
-                 .computeIfAbsent(principalId, k -> new HashSet<>())
-                 .remove(actionData);
+        iamEngine.removePrincipalGrantedAction(principalId, actionData);
     }
 
 }

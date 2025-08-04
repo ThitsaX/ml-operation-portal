@@ -17,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -116,6 +118,12 @@ public class IAMEngineHandler implements IAMEngine {
     }
 
     @Override
+    public List<ActionData> getActions() {
+
+        return new ArrayList<>(this.actionCodesMap.values());
+    }
+
+    @Override
     public boolean isGrantedAction(PrincipalId principalId, ActionCode actionCode) {
 
         var principal = this.principalsMap.get(principalId);
@@ -166,46 +174,148 @@ public class IAMEngineHandler implements IAMEngine {
     }
 
     @Override
+    public void addPrincipal(PrincipalId principalId, PrincipalData principalData) {
+
+        this.principalsMap.putIfAbsent(principalId, principalData);
+
+    }
+
+    @Override
+    public void removePrincipal(PrincipalId principalId, PrincipalData principalData) {
+
+        this.principalsMap.remove(principalId);
+    }
+
+    @Override
+    public void addPrincipalRole(PrincipalId principalId, RoleData roleData) {
+
+        this.principalRolesMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                              .add(roleData);
+
+    }
+
+    @Override
+    public void removePrincipalRole(PrincipalId principalId, RoleData roleData) {
+
+        this.principalRolesMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                              .remove(roleData);
+
+    }
+
+    @Override
+    public void addAction(ActionId actionId, ActionCode actionCode, ActionData actionData) {
+
+        this.actionCodesMap.putIfAbsent(actionCode, actionData);
+        this.actionIdsMap.putIfAbsent(actionId, actionData);
+    }
+
+    @Override
+    public void removeAction(ActionId actionId, ActionCode actionCode, ActionData actionData) {
+
+        this.actionCodesMap.remove(actionCode);
+        this.actionIdsMap.remove(actionId);
+
+    }
+
+    @Override
+    public void addRoleGrantedAction(RoleId roleId, ActionData actionData) {
+
+        this.roleGrantedActionsMap.computeIfAbsent(roleId, k -> new HashSet<>())
+                                  .add(actionData);
+    }
+
+    @Override
+    public void removeRoleGrantedAction(RoleId roleId, ActionData actionData) {
+
+        if (actionData == null) {
+            this.roleGrantedActionsMap.remove(roleId);
+
+        } else {
+            this.roleGrantedActionsMap.computeIfAbsent(roleId, k -> new HashSet<>())
+                                      .remove(actionData);
+        }
+
+    }
+
+    @Override
+    public void addPrincipalGrantedAction(PrincipalId principalId, ActionData actionData) {
+
+        this.principalGrantedActionsMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                                       .add(actionData);
+    }
+
+    @Override
+    public void removePrincipalGrantedAction(PrincipalId principalId, ActionData actionData) {
+
+        this.principalGrantedActionsMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                                       .remove(actionData);
+    }
+
+    @Override
+    public void addPrincipalDeniedAction(PrincipalId principalId, ActionData actionData) {
+
+        this.principalDeniedActionsMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                                      .add(actionData);
+    }
+
+    @Override
+    public void removePrincipalDeniedAction(PrincipalId principalId, ActionData actionData) {
+
+        this.principalDeniedActionsMap.computeIfAbsent(principalId, k -> new HashSet<>())
+                                      .remove(actionData);
+    }
+
+    @Override
     public Map<PrincipalId, PrincipalData> getPrincipalsMap() {
 
-        return this.principalsMap;
+        return Collections.unmodifiableMap((this.principalsMap));
     }
 
     @Override
     public Map<PrincipalId, Set<RoleData>> getPrincipalRolesMap() {
 
-        return this.principalRolesMap;
+        return Collections.unmodifiableMap(this.principalRolesMap);
     }
 
     @Override
     public Map<ActionCode, ActionData> getActionCodesMap() {
 
-        return this.actionCodesMap;
+        return Collections.unmodifiableMap(this.actionCodesMap);
     }
 
     @Override
     public Map<ActionId, ActionData> getActionIdsMap() {
 
-        return this.actionIdsMap;
+        return Collections.unmodifiableMap(this.actionIdsMap);
     }
 
     @Override
     public Map<RoleId, Set<ActionData>> getRoleGrantedActionsMap() {
 
-        return this.roleGrantedActionsMap;
+        return Collections.unmodifiableMap(this.roleGrantedActionsMap);
     }
 
     @Override
     public Map<PrincipalId, Set<ActionData>> getPrincipalGrantedActionsMap() {
 
-        return this.principalGrantedActionsMap;
+        return Collections.unmodifiableMap(this.principalGrantedActionsMap);
     }
 
     @Override
 
     public Map<PrincipalId, Set<ActionData>> getPrincipalDeniedActionsMap() {
 
-        return this.principalDeniedActionsMap;
+        return Collections.unmodifiableMap(this.principalDeniedActionsMap);
+    }
+
+    @Override
+    public ActionData getAction(ActionCode actionCode) {
+
+        if (this.actionCodesMap.containsKey(actionCode)) {
+            return this.actionCodesMap.get(actionCode);
+        }
+
+        return null;
     }
 
 }

@@ -33,9 +33,7 @@ public class RoleGrantListener {
         var role = roleGrant.getRole();
         var actionData = new ActionData(roleGrant.getAction());
 
-        iamEngine.getRoleGrantedActionsMap()
-                 .computeIfAbsent(role.getRoleId(), k -> new HashSet<>())
-                 .add(actionData);
+        iamEngine.addRoleGrantedAction(role.getRoleId(), actionData);
     }
 
     @PostRemove
@@ -44,9 +42,7 @@ public class RoleGrantListener {
         var role = roleGrant.getRole();
         var actionData = new ActionData(roleGrant.getAction());
 
-        iamEngine.getRoleGrantedActionsMap()
-                 .computeIfAbsent(role.getRoleId(), k -> new HashSet<>())
-                 .remove(actionData);
+        iamEngine.removeRoleGrantedAction(role.getRoleId(), actionData);
     }
 
 }

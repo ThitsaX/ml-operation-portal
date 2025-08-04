@@ -15,6 +15,4 @@ public interface IAMQuery {
 
     List<ActionData> getActions();
 
-    List<ActionData> getActionsByRole(String role) throws IAMException;
-
 }

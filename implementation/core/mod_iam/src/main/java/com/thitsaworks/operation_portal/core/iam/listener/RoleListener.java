@@ -11,7 +11,6 @@ import jakarta.persistence.PostUpdate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,9 +40,10 @@ public class RoleListener {
                 .map(ActionData::new)
                 .collect(Collectors.toSet());
 
-        iamEngine.getRoleGrantedActionsMap()
-                 .computeIfAbsent(role.getRoleId(), k -> new HashSet<>())
-                 .addAll(roleGrants);
+        roleGrants.forEach(action -> {
+            iamEngine.addRoleGrantedAction(role.getRoleId(), action);
+        });
+
     }
 
     @PostRemove
@@ -61,13 +61,11 @@ public class RoleListener {
                      .map(Map.Entry::getKey)
                      .collect(Collectors.toSet());
 
-        iamEngine.getRoleGrantedActionsMap()
-                 .remove(role.getRoleId());
 
-        for (var userId : principalIdList) {
-            iamEngine.getPrincipalRolesMap()
-                     .get(userId)
-                     .remove(roleData);
+        iamEngine.removeRoleGrantedAction(role.getRoleId(), null);
+
+        for (var principalId : principalIdList) {
+            iamEngine.removePrincipalRole(principalId, roleData);
         }
     }
 
