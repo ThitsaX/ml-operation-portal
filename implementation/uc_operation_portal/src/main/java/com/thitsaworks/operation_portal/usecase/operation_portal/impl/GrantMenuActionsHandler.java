@@ -14,6 +14,7 @@ import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuAction
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,7 +26,8 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class GrantMenuActionsHandler extends OperationPortalAuditableUseCase<GrantMenuActions.Input, GrantMenuActions.Output>
+public class GrantMenuActionsHandler
+    extends OperationPortalAuditableUseCase<GrantMenuActions.Input, GrantMenuActions.Output>
     implements GrantMenuActions {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionsHandler.class);
@@ -34,7 +36,7 @@ public class GrantMenuActionsHandler extends OperationPortalAuditableUseCase<Gra
 
     private final GrantMenuActionCommand grantMenuActionCommand;
 
-    private PlatformTransactionManager transactionManager;
+    private final PlatformTransactionManager transactionManager;
 
     public GrantMenuActionsHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
@@ -55,6 +57,7 @@ public class GrantMenuActionsHandler extends OperationPortalAuditableUseCase<Gra
               actionAuthorizationManager);
 
         this.grantMenuActionCommand = grantMenuActionCommand;
+        this.transactionManager = transactionManager;
     }
 
     @Override
@@ -70,7 +73,6 @@ public class GrantMenuActionsHandler extends OperationPortalAuditableUseCase<Gra
             for (var menu : input.singleMenuGrantList()) {
 
                 for (var action : menu.actionList()) {
-
                     this.grantMenuActionCommand.execute(new GrantMenuActionCommand.Input(menu.menuName(), action));
                 }
             }

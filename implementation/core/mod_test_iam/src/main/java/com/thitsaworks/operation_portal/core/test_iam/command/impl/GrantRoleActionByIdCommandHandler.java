@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.test_iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.test_iam.command.GrantRoleActionsCommand;
+import com.thitsaworks.operation_portal.core.test_iam.command.GrantRoleActionByIdCommand;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
@@ -15,13 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.thitsaworks.operation_portal.core.test_iam.model.repository.IAMActionRepository.Filters.withActionCode;
-
 @Service
 @RequiredArgsConstructor
-public class GrantRoleActionsCommandHandler implements GrantRoleActionsCommand {
+public class GrantRoleActionByIdCommandHandler implements GrantRoleActionByIdCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionsCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionByIdCommandHandler.class);
 
     private final RoleRepository roleRepository;
 
@@ -31,27 +29,25 @@ public class GrantRoleActionsCommandHandler implements GrantRoleActionsCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Role> optRole = this.roleRepository.findOne(RoleRepository.Filters.withName(input.role()));
+        Optional<Role> optRole = this.roleRepository.findById(input.roleId());
 
         if (optRole.isEmpty()) {
 
-            LOG.info("Role Not Found : [{}]", input.role());
+            LOG.info("Role Not Found : [{}]", input.roleId());
             throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
         }
 
         var role = optRole.get();
 
-        for (var action : input.actionCodeList()) {
-            Optional<IAMAction> optAction = this.IAMActionRepository.findOne(withActionCode(action));
+        Optional<IAMAction> optAction = this.IAMActionRepository.findById(input.actionId());
 
-            if (optAction.isEmpty()) {
+        if (optAction.isEmpty()) {
 
-                LOG.info("Action Not Found : [{}]", action);
-                throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
-            }
-
-            role.grantAction(optAction.get());
+            LOG.info("Action Not Found : [{}]", input.actionId());
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
         }
+
+        role.grantAction(optAction.get());
 
         this.roleRepository.saveAndFlush(role);
 

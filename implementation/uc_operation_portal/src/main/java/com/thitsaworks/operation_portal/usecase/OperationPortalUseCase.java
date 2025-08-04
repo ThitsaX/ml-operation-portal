@@ -51,17 +51,6 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
     @Override
     public void onConstruct() throws SystemException {
 
-//        try {
-//            String actionName = this.getName();
-//            String scope = "OPERATION_PORTAL";
-//            String description = "Auto-registered action for use case: " + actionName;
-//
-//            this.actionAuthorizationManager.registerAction(actionName, scope, description);
-//
-//        } catch (Exception e) {
-//            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
-//            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
-//        }
     }
 
     @Override
@@ -76,14 +65,6 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
 
         PrincipalData principalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-//        var userRole = principalData.userRoleType();
-//
-//        if (!PERMITTED_ROLES.contains(userRole)) {
-//
-//            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-//            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
-//        }
 
         if (!this.actionAuthorizationManager.isAuthorizedTo(new UserId(principalData.principalId()
                                                                                     .getEntityId()),
