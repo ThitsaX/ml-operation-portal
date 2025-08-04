@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
@@ -29,6 +28,9 @@ public class GrantRoleActionCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Grant Role Action : [{}]", this.grantRoleActionCommand.execute(new GrantRoleActionCommand.Input(new RoleId(739079062484398080L), new ActionId(739084478182305792L))));
+        LOG.info("Grant Role Action : [{}]",
+                 this.grantRoleActionCommand.execute(new GrantRoleActionCommand.Input("HUB-ADMIN",
+                                                                                      new ActionCode(""))));
     }
+
 }

@@ -18,13 +18,13 @@
 	<parameter name="userId" class="java.lang.String">
 		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 	</parameter>
-	<parameter name="IAMAction" class="java.lang.String">
+	<parameter name="Action" class="java.lang.String">
 		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT
     participant_user.name AS user_name,
-    IAMAction.name AS action_name,
+    Action.name AS action_name,
     DATE_FORMAT(
         CASE
             WHEN TIMEDIFF(NOW(), UTC_TIMESTAMP()) = CONCAT(SUBSTRING($P{timezoneoffset}, 2), ':00') THEN
@@ -37,7 +37,7 @@
 FROM tbl_audit AS audit
 JOIN tbl_participant AS participant ON participant.participant_id = audit.participant_id
 LEFT JOIN tbl_participant_user AS participant_user ON participant_user.user_id = audit.user_id
-JOIN tbl_action AS IAMAction ON IAMAction.action_id = audit.action_id
+JOIN tbl_action AS Action ON Action.action_id = audit.action_id
 WHERE
     ($P{realmId} IS NULL OR $P{realmId} = '' OR audit.participant_id = $P{realmId})
     AND (
@@ -55,7 +55,7 @@ WHERE
         )
     )
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR audit.user_id = $P{userId})
-    AND ($P{IAMAction} IS NULL OR   $P{IAMAction} = '' OR IAMAction.name = $P{IAMAction})
+    AND ($P{Action} IS NULL OR   $P{Action} = '' OR Action.name = $P{Action})
 ORDER BY audit.created_date DESC]]>
 	</queryString>
 	<field name="date" class="java.lang.String"/>

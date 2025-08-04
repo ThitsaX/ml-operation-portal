@@ -7,8 +7,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.data.RoleData;
-import com.thitsaworks.operation_portal.core.test_iam.query.RoleQuery;
+import com.thitsaworks.operation_portal.core.iam.data.RoleData;
+import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;

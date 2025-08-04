@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.test_iam.model.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.test_iam.model.QRole;
 import com.thitsaworks.operation_portal.core.test_iam.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;

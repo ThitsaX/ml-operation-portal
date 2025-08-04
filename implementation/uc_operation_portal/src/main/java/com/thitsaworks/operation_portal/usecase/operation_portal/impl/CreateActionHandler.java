@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.CreateOrUpdateActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.CreateOrUpdateActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAction;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;

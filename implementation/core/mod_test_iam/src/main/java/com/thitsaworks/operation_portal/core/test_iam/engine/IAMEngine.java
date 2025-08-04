@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.core.test_iam.engine;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.test_iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.test_iam.data.UserData;

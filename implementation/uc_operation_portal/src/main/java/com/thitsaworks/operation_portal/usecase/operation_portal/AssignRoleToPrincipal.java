@@ -1,0 +1,15 @@
+package com.thitsaworks.operation_portal.usecase.operation_portal;
+
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+
+public interface AssignRoleToPrincipal extends UseCase<AssignRoleToPrincipal.Input, AssignRoleToPrincipal.Output> {
+
+    record Input(PrincipalId principalId, RoleId roleId) { }
+
+    record Output(PrincipalRoleId principalRoleId) { }
+
+}

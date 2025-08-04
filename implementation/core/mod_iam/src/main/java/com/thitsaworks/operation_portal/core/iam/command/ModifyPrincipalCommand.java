@@ -7,6 +7,8 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 public interface ModifyPrincipalCommand {
 
+    Output execute(Input input) throws IAMException;
+
     record Input(PrincipalId principalId,
                  UserRoleType userRoleType,
                  PrincipalStatus principalStatus) {
@@ -21,7 +23,5 @@ public interface ModifyPrincipalCommand {
     record Output(PrincipalId principalId,
                   boolean modified) {
     }
-
-    ModifyPrincipalCommand.Output execute(ModifyPrincipalCommand.Input input) throws IAMException;
 
 }
