@@ -1,0 +1,17 @@
+package com.thitsaworks.operation_portal.core.iam.command;
+
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
+
+public interface CreateOrUpdateActionCommand {
+
+    Output execute(Input input);
+
+    record Input(ActionCode actionCode,
+                 String scope,
+                 String description) { }
+
+    record Output(ActionId actionId) { }
+
+}
+

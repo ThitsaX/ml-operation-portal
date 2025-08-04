@@ -13,7 +13,6 @@
         <module name="mod_iam" />
         <module name="mod_approval" />
         <module name="app_report_downloader" />
-        <module name="mod_test_iam" />
         <module name="mod_fspiop" />
         <module name="mod_pending_approval" />
         <module name="mod_hub_services" />
@@ -36,6 +35,7 @@
       <module name="mod_querydsl" target="21" />
       <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" target="21" />
       <module name="mod_report_querydsl" target="21" />
+      <module name="mod_test_iam" target="21" />
       <module name="mod_vault" target="21" />
       <module name="mojaloop_operation_portal" target="11" />
       <module name="Report" target="21" />

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
 import lombok.RequiredArgsConstructor;

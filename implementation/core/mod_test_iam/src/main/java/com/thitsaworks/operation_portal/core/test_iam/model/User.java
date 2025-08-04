@@ -9,9 +9,9 @@ import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import com.thitsaworks.operation_portal.core.test_iam.listener.UserListener;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.test_iam.listener.UserListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
@@ -219,6 +219,7 @@ public class User extends JpaEntity<UserId> {
     }
 
     public Set<IAMAction> getDeniedActions() {
+
         Set<IAMAction> deniedActions = new HashSet<>();
         for (BlockedAction denial : this.denials) {
             deniedActions.add(denial.IAMAction);

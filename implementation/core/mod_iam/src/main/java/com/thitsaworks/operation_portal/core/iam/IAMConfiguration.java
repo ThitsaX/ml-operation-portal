@@ -3,6 +3,11 @@ package com.thitsaworks.operation_portal.core.iam;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CorePersistenceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.MiscConfiguration;
+import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
@@ -10,6 +15,27 @@ import org.springframework.context.annotation.Import;
 @Import(value = {
         MiscConfiguration.class, RedisConfiguration.class, CorePersistenceConfiguration.class
 })
+@RequiredArgsConstructor
 public class IAMConfiguration {
+
+    private static final Logger LOG = LoggerFactory.getLogger(IAMConfiguration.class);
+
+    private final IAMEngine iamEngine;
+
+    @PostConstruct
+    public void bootstrapIAMEngine() {
+
+        try {
+
+            LOG.info("Starting IAMEngine bootstrap...");
+            this.iamEngine.bootstrap();
+            LOG.info("IAMEngine bootstrap completed successfully");
+
+        } catch (Exception e) {
+
+            LOG.error("Failed to bootstrap IAMEngine", e);
+            throw new IllegalStateException("Failed to bootstrap IAMEngine", e);
+        }
+    }
 
 }

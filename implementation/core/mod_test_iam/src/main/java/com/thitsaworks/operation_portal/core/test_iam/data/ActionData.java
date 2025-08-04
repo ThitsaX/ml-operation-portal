@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.test_iam.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.model.IAMAction;
 
 import java.io.Serializable;

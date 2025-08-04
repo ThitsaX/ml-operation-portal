@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.test_iam.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.UserRoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
 
 public interface AssignRoleToUserCommand {
@@ -11,7 +11,7 @@ public interface AssignRoleToUserCommand {
 
     record Input(UserId userId, RoleId roleId) { }
 
-    record Output(UserRoleId userRoleId) { }
+    record Output(PrincipalRoleId principalRoleId) { }
 
 }
 

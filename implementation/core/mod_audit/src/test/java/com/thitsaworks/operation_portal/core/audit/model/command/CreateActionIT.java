@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.command;
 
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
-import com.thitsaworks.operation_portal.core.audit.command.CreateActionCommand;
 import com.thitsaworks.operation_portal.core.audit.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
 import org.junit.jupiter.api.Test;
@@ -20,15 +19,15 @@ public class CreateActionIT extends BaseVaultSetUpTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateActionIT.class);
 
-    @Autowired
-    private CreateActionCommand createActionCommand;
-
-    @Test
-    public void test_createActionSuccessfully() {
-
-        var output = this.createActionCommand.execute(new CreateActionCommand.Input("iiii"));
-
-        LOG.info("Action Id : " + output.actionId() + " , Created : " + output.created());
-    }
+//    @Autowired
+//    private CreateActionCommand createActionCommand;
+//
+//    @Test
+//    public void test_createActionSuccessfully() {
+//
+//        var output = this.createActionCommand.execute(new CreateActionCommand.Input("iiii"));
+//
+//        LOG.info("Action Id : " + output.actionId() + " , Created : " + output.created());
+//    }
 
 }

@@ -77,8 +77,7 @@ public class GetParticipantUserListHandler
                                                                  participantUserData.firstName(),
                                                                  participantUserData.lastName(),
                                                                  participantUserData.jobTitle(),
-                                                                 principalData.userRoleType()
-                                                                             .toString(),
+                                                                 null,
                                                                  principalData.principalStatus()
                                                                              .toString(),
                                                                  Instant.ofEpochSecond(participantUserData.createdDate())));

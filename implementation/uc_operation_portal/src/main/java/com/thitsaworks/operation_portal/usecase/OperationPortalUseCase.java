@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
@@ -66,8 +66,7 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
         PrincipalData principalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (!this.actionAuthorizationManager.isAuthorizedTo(new UserId(principalData.principalId()
-                                                                                    .getEntityId()),
+        if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
                                                             new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());

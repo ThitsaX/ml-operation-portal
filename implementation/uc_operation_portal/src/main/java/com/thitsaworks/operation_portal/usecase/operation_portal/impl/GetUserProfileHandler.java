@@ -80,8 +80,7 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                           participantData.participantName()
                                          .getValue(),
                           participantData.description(),
-                          principalData.userRoleType()
-                                       .toString());
+                          null);
 
     }
 

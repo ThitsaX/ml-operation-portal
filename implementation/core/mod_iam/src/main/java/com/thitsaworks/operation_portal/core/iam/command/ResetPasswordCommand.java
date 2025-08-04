@@ -6,19 +6,12 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 public interface ResetPasswordCommand {
 
-    record Input(
-            PrincipalId principalId,
-            String password) {
+    record Input(PrincipalId principalId,
+                 String password) { }
 
-
-    }
-
-    record Output(            AccessKey accessKey,
-            String secretKey,
-            boolean updated) {
-
-
-    }
+    record Output(AccessKey accessKey,
+                  String secretKey,
+                  boolean updated) { }
 
     Output execute(Input input) throws IAMException;
 

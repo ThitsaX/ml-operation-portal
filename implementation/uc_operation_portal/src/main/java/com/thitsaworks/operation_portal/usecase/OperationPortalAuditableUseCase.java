@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
@@ -114,7 +114,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         PrincipalData principalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if(!this.actionAuthorizationManager.isAuthorizedTo(new UserId(principalData.principalId().getEntityId()), new ActionCode(this.getName()))){
+        if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
+                                                            new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
             throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
