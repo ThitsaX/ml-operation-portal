@@ -13,6 +13,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementById;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,14 +39,16 @@ public class GetAnnouncementByIdHandler
                                       CreateExceptionAuditCommand createExceptionAuditCommand,
                                       AnnouncementQuery announcementQuery,
                                       ObjectMapper objectMapper,
-                                      PrincipalCache principalCache) {
+                                      PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.announcementQuery = announcementQuery;
     }

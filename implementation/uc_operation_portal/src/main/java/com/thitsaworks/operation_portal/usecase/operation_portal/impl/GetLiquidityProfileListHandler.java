@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQ
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetLiquidityProfileList;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ public class GetLiquidityProfileListHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
+                                          ActionAuthorizationManager actionAuthorizationManager,
                                           LiquidityProfileQuery liquidityProfileQuery,
                                           ParticipantQuery participantQuery) {
 
@@ -47,7 +49,8 @@ public class GetLiquidityProfileListHandler
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.liquidityProfileQuery = liquidityProfileQuery;
         this.participantQuery = participantQuery;

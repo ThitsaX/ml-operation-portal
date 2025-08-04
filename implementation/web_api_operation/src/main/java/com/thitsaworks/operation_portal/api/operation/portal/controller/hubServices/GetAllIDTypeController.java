@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllIDType;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetIDTypeList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +24,14 @@ public class GetAllIDTypeController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllIDTypeController.class);
 
-    private final GetAllIDType getAllIDType;
+    private final GetIDTypeList getIDTypeList;
 
     private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getAllIdType")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        GetAllIDType.Output output = this.getAllIDType.execute(new GetAllIDType.Input());
+        GetIDTypeList.Output output = this.getIDTypeList.execute(new GetIDTypeList.Input());
 
         List<Response.IDTypeInfo> idTypeInfoList = new ArrayList<>();
 

@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateContactHi
 import com.thitsaworks.operation_portal.core.participant.command.RemoveContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveContact;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,7 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
+                                ActionAuthorizationManager actionAuthorizationManager,
                                 RemoveContactCommand removeContactCommand,
                                 CreateContactHistoryCommand createContactHistoryCommand) {
 
@@ -43,7 +45,8 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
               createExceptionAuditCommand,
               PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.removeContactCommand = removeContactCommand;
         this.createContactHistoryCommand = createContactHistoryCommand;

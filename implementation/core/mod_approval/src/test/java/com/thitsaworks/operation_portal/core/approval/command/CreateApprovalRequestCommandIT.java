@@ -30,7 +30,7 @@ public class CreateApprovalRequestCommandIT extends BaseVaultSetUpTest {
 
         LOG.info("Approval Request : [{}]",
                  this.createApprovalRequestCommand.execute(new CreateApprovalRequestCommand.Input("Deposit",
-                                                                                                  "dfsp1",
+                                                                                                  "wallet2",
                                                                                                   "USD",
                                                                                                   "8",
                                                                                                   BigDecimal.valueOf(50000.00),

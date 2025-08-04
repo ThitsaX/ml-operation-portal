@@ -16,12 +16,10 @@
     <packaging>pom</packaging>
     <name>Mojaloop-Operation-Portal - Parent</name>
     <modules>
-       <module>web_api_operation</module>
         <module>component</module>
         <module>core</module>
         <module>uc_operation_portal</module>
-
-
+       <module>web_api_operation</module>
     </modules>
 
     <properties>
@@ -232,6 +230,11 @@
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_iam</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal.core</groupId>
+                <artifactId>mod_test_iam</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
