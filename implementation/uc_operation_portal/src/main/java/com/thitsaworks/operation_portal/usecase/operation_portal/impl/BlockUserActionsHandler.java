@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.BlockUserActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.BlockPrincipalActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -27,7 +27,7 @@ public class BlockUserActionsHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
 
-    private final BlockUserActionCommand blockUserActionCommand;
+    private final BlockPrincipalActionCommand blockPrincipalActionCommand;
 
     public BlockUserActionsHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
@@ -35,7 +35,7 @@ public class BlockUserActionsHandler
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
                                    ActionAuthorizationManager actionAuthorizationManager,
-                                   BlockUserActionCommand blockUserActionCommand) {
+                                   BlockPrincipalActionCommand blockprincipalActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,14 +45,15 @@ public class BlockUserActionsHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.blockUserActionCommand = blockUserActionCommand;
+        this.blockPrincipalActionCommand = blockprincipalActionCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         for (var actionId : input.actionIdList()) {
-            this.blockUserActionCommand.execute(new BlockUserActionCommand.Input(input.userId(), actionId));
+            this.blockPrincipalActionCommand.execute(new BlockPrincipalActionCommand.Input(input.principalId(),
+                                                                                           actionId));
         }
 
         return new Output(true);

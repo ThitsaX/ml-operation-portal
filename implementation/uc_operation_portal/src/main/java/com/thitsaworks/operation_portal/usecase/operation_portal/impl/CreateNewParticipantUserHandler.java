@@ -97,7 +97,6 @@ public class CreateNewParticipantUserHandler
                                                                              input.password(),
                                                                              new RealmId(input.participantId()
                                                                                 .getId()),
-                                                                             input.userRoleType(),
                                                                              input.activeStatus()));
 
         return new Output(output.created());

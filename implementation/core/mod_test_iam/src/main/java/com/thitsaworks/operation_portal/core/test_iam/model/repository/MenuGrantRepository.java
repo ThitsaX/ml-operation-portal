@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.model.repository;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.MenuId;
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.core.test_iam.model.MenuGrant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;

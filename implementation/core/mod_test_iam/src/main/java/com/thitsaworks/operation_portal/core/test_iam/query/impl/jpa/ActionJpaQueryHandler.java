@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.test_iam.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.test_iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;

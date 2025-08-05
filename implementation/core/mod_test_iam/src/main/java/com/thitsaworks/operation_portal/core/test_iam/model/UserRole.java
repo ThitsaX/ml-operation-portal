@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.model;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.UserRoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.test_iam.listener.UserRoleListener;
@@ -18,10 +18,10 @@ import lombok.NoArgsConstructor;
 @Table(name = "tbl_user_role")
 @NoArgsConstructor
 @Getter
-public class UserRole extends JpaEntity<UserRoleId> {
+public class UserRole extends JpaEntity<PrincipalRoleId> {
 
     @EmbeddedId
-    protected UserRoleId userRoleId;
+    protected PrincipalRoleId principalRoleId;
 
     @ManyToOne
     @JoinColumn(name = "role_id")
@@ -36,16 +36,16 @@ public class UserRole extends JpaEntity<UserRoleId> {
         assert role != null;
         assert user != null;
 
-        this.userRoleId = new UserRoleId(Snowflake.get().nextId());
+        this.principalRoleId = new PrincipalRoleId(Snowflake.get().nextId());
         this.role = role;
         this.user = user;
     }
 
 
     @Override
-    public UserRoleId getId() {
+    public PrincipalRoleId getId() {
 
-        return this.userRoleId;
+        return this.principalRoleId;
     }
 }
 

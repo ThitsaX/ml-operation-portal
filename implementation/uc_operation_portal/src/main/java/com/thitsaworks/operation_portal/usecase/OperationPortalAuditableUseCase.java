@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
@@ -34,8 +34,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
     private static final ThreadLocal<AuditId> auditId = new InheritableThreadLocal<>();
 
-    private final Set<UserRoleType> PERMITTED_ROLES;
-
     private final ObjectMapper objectMapper;
 
     private final CreateInputAuditCommand createInputAuditCommand;
@@ -59,7 +57,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         this.createInputAuditCommand = createInputAuditCommand;
         this.createOutputAuditCommand = createOutputAuditCommand;
         this.createExceptionAuditCommand = createExceptionAuditCommand;
-        this.PERMITTED_ROLES = permittedRoles;
         this.objectMapper = objectMapper;
         this.principalCache = principalCache;
         this.actionAuthorizationManager = actionAuthorizationManager;
@@ -78,17 +75,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
     @Override
     public void onConstruct() throws SystemException {
 
-//        try {
-//            String actionName = this.getName();
-//            String scope = "OPERATION_PORTAL";
-//            String description = "Auto-registered action for use case: " + actionName;
-//
-//            this.actionAuthorizationManager.registerAction(actionName, scope, description);
-//
-//        } catch (Exception e) {
-//            LOGGER.error("Failed to register action [{}]: {}", getName(), e.getMessage());
-//            throw new SystemException(new ErrorMessage("ACTION_REGISTRATION_FAILED", e.getMessage()));
-//        }
     }
 
     @Override
@@ -96,10 +82,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
         var auditId = OperationPortalAuditableUseCase.auditId.get();
 
-        /*
-         * Audit Logging:
-         * Logs input parameters and output results for auditing and traceability.
-         */
         String outputJson, outputInfo;
 
         try {
@@ -129,14 +111,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         PrincipalData principalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-//        var userRole = principalData.userRoleType();
-//        if (!PERMITTED_ROLES.contains(userRole)) {
-//
-//            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-//            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
-//        }
-
-        if(!this.actionAuthorizationManager.isAuthorizedTo(new UserId(principalData.principalId().getEntityId()), new ActionCode(this.getName()))){
+        if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
+                                                            new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
             throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
@@ -154,8 +130,10 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
         var principalId = principalData.principalId();
 
+        var action = this.actionAuthorizationManager.getAction(new ActionCode(this.getName()));
+
         OperationPortalAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                                                            this.getName(),
+                                                            action.actionId(),
                                                             new UserId(
                                                                 principalId.getId()),
                                                             principalData.realmId(),

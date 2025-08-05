@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.UserRoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
 import jakarta.validation.Valid;
@@ -31,10 +31,10 @@ public class AssignRoleToUserController {
 
         var
             output =
-            this.assignRoleToUser.execute(new AssignRoleToUser.Input(new UserId(Long.parseLong(request.userId())),
+            this.assignRoleToUser.execute(new AssignRoleToUser.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                      new RoleId(Long.parseLong(request.roleId()))));
 
-        var response = new Response(output.userRoleId());
+        var response = new Response(output.principalRoleId());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -43,6 +43,6 @@ public class AssignRoleToUserController {
     public record Request(@NotNull @NotBlank String userId,
                           @NotNull @NotBlank String roleId) { }
 
-    public record Response(UserRoleId userRoleId) { }
+    public record Response(PrincipalRoleId principalRoleId) { }
 
 }

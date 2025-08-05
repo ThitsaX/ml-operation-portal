@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.model;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.MenuId;
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import jakarta.persistence.Column;

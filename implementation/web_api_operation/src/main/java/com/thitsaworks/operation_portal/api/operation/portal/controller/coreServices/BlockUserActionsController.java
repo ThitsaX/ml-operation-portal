@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public class BlockUserActionsController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
 
-        var output = blockUserActions.execute(new BlockUserActions.Input(new UserId(Long.parseLong(request.userId())),
+        var output = blockUserActions.execute(new BlockUserActions.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                          request.actionIdList()
                                                                                 .stream()
                                                                                 .map(id -> new ActionId(Long.parseLong(

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.model;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.BlockedActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.BlockedActionId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.test_iam.listener.BlockedActionListener;

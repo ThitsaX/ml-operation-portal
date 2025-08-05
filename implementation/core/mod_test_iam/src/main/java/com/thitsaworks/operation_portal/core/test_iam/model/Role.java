@@ -1,8 +1,7 @@
 package com.thitsaworks.operation_portal.core.test_iam.model;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.test_iam.listener.RoleListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;

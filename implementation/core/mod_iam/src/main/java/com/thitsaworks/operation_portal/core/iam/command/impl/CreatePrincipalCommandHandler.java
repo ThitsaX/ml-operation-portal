@@ -34,8 +34,11 @@ public class CreatePrincipalCommandHandler implements CreatePrincipalCommand {
             throw new IAMException(IAMErrors.DUPLICATE_PRINCIPAL);
         }
 
-        Principal newPrincipal = new Principal(input.principalId(), input.realmType(), input.passwordPlain(),
-                                               input.realmId(), input.userRoleType(), input.principalStatus());
+        Principal newPrincipal = new Principal(input.principalId(),
+                                               input.realmType(),
+                                               input.passwordPlain(),
+                                               input.realmId(),
+                                               input.principalStatus());
 
         this.principalRepository.save(newPrincipal);
 

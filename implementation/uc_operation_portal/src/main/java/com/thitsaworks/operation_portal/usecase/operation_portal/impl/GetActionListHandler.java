@@ -6,10 +6,9 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.query.ActionQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class GetActionListHandler extends OperationPortalAuditableUseCase<GetAct
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final ActionQuery actionQuery;
+    private final IAMQuery iamQuery;
 
     public GetActionListHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
@@ -31,7 +30,7 @@ public class GetActionListHandler extends OperationPortalAuditableUseCase<GetAct
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
                                 ActionAuthorizationManager actionAuthorizationManager,
-                                ActionQuery actionQuery) {
+                                IAMQuery iamQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -41,18 +40,20 @@ public class GetActionListHandler extends OperationPortalAuditableUseCase<GetAct
               principalCache,
               actionAuthorizationManager);
 
-        this.actionQuery = actionQuery;
+        this.iamQuery = iamQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var output = this.actionQuery
-                         .getAction()
+        var output = this.iamQuery
+                         .getActions()
                          .stream()
-                         .map(action -> new Output.ActionName(action.actionId(), action.name()))
+                         .map(action -> new Output.ActionName(action.actionId(), action.actionCode()
+                                                                                       .getValue()))
                          .collect(Collectors.toList());
 
         return new Output(output);
     }
+
 }

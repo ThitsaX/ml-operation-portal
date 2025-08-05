@@ -1,10 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.util.action;
 
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.type.iamtesttype.ActionCode;
-import com.thitsaworks.operation_portal.core.test_iam.command.CreateOrUpdateActionCommand;
-import com.thitsaworks.operation_portal.core.test_iam.engine.IAMEngine;
-import com.thitsaworks.operation_portal.core.test_iam.exception.IAMException;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
+import com.thitsaworks.operation_portal.core.iam.command.CreateOrUpdateActionCommand;
+import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.query.ActionQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,28 +17,35 @@ public class ActionAuthorizationManager {
 
     private final IAMEngine iamEngine;
 
+    private final ActionQuery actionQuery;
+
     @Autowired
     public ActionAuthorizationManager(CreateOrUpdateActionCommand createOrUpdateActionCommand,
-                                      IAMEngine iamEngine) {
+                                      IAMEngine iamEngine,
+                                      ActionQuery actionQuery) {
 
         this.createOrUpdateActionCommand = createOrUpdateActionCommand;
         this.iamEngine = iamEngine;
+        this.actionQuery = actionQuery;
     }
 
     public void registerAction(String actionName, String scope, String description) {
 
-        var input = new CreateOrUpdateActionCommand.Input(
-            new ActionCode(actionName),
-            scope,
-            description
-        );
+        var input = new CreateOrUpdateActionCommand.Input(new ActionCode(actionName),
+                                                          scope,
+                                                          description);
 
         this.createOrUpdateActionCommand.execute(input);
     }
 
-    public boolean isAuthorizedTo(UserId userId, ActionCode actionCode) throws IAMException {
+    public boolean isAuthorizedTo(PrincipalId principalId, ActionCode actionCode) throws IAMException {
 
-        return this.iamEngine.isGrantedAction(userId, actionCode);
+        return this.iamEngine.isGrantedAction(principalId, actionCode);
+    }
+
+    public ActionData getAction(ActionCode actionCode) throws IAMException {
+
+        return this.actionQuery.get(actionCode);
     }
 
 }

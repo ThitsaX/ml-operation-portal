@@ -1,9 +1,8 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.test_iam.engine.IAMEngine;
-import com.thitsaworks.operation_portal.core.test_iam.engine.IAMEngineHandler;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;
@@ -35,7 +34,7 @@ public class AssignRoleToUserCommandIT extends BaseVaultSetUpTest {
         var result = this.assignRoleToUserCommand.execute(new AssignRoleToUserCommand.Input(new UserId(1111111111111111L),
                                                                                        new RoleId(738795816077070336L)));
 
-        LOGGER.info("Role assigned successfully: {}", result.userRoleId());
+        LOGGER.info("Role assigned successfully: {}", result.principalRoleId());
 
     }
 

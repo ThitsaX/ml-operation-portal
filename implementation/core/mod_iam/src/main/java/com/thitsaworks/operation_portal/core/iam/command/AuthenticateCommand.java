@@ -7,13 +7,9 @@ import com.thitsaworks.operation_portal.core.iam.model.SecurityToken;
 
 public interface AuthenticateCommand {
 
-    record Input(PrincipalId principalId, String passwordPlain) {
+    record Input(PrincipalId principalId, String passwordPlain) { }
 
-    }
-
-    record Output(SecurityToken securityToken) {
-
-    }
+    record Output(SecurityToken securityToken) { }
 
     Output execute(Input input) throws IAMException, IAMIgnorableException;
 

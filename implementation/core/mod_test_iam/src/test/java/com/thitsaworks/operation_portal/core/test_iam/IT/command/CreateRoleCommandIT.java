@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.test_iam.IT.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.iamtestid.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.test_iam.IAMTestConfiguration;
 import com.thitsaworks.operation_portal.core.test_iam.IT.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.test_iam.IT.TestSettings;

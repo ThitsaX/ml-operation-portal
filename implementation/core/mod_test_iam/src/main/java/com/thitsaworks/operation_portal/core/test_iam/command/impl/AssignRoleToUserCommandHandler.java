@@ -34,7 +34,7 @@ public class AssignRoleToUserCommandHandler implements AssignRoleToUserCommand {
 
         this.userRepository.save(user);
 
-        return new Output(userRole.getUserRoleId());
+        return new Output(userRole.getPrincipalRoleId());
     }
 
 }

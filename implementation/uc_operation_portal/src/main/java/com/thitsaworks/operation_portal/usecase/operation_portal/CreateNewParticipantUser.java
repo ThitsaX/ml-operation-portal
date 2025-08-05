@@ -17,7 +17,6 @@ public interface CreateNewParticipantUser extends
                  String lastName,
                  String jobTitle,
                  ParticipantId participantId,
-                 UserRoleType userRoleType,
                  RealmType realmType,
                  PrincipalStatus activeStatus) { }
 

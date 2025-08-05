@@ -49,7 +49,6 @@ public class CreateNewUserController {
                                                request.lastName,
                                                request.jobTitle,
                                                new ParticipantId(Long.parseLong(request.participantId)),
-                                               request.userRoleType,
                                                RealmType.PARTICIPANT,
                                                request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
                                                    PrincipalStatus.INACTIVE));
@@ -73,7 +72,6 @@ public class CreateNewUserController {
         @NotNull @JsonProperty("lastName") String lastName,
         @NotNull @JsonProperty("jobTitle") String jobTitle,
         @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("userRoleType") UserRoleType userRoleType,
         @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 
     }

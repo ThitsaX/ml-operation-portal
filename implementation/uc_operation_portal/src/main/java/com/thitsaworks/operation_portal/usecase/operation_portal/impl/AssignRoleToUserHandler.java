@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.test_iam.command.AssignRoleToUserCommand;
+import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -27,7 +27,7 @@ public class AssignRoleToUserHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
-    private final AssignRoleToUserCommand assignRoleToUserCommand;
+    private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
 
     public AssignRoleToUserHandler(CreateInputAuditCommand createInputAuditCommand,
                                    CreateOutputAuditCommand createOutputAuditCommand,
@@ -35,7 +35,7 @@ public class AssignRoleToUserHandler
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
                                    ActionAuthorizationManager actionAuthorizationManager,
-                                   AssignRoleToUserCommand assignRoleToUserCommand) {
+                                   AssignRoleToPrincipalCommand assignRoleToPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,16 +45,16 @@ public class AssignRoleToUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.assignRoleToUserCommand = assignRoleToUserCommand;
+        this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.assignRoleToUserCommand.execute(new AssignRoleToUserCommand.Input(input.userId(),
+        var output = this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(input.principalId(),
                                                                                             input.roleId()));
 
-        return new Output(output.userRoleId());
+        return new Output(output.principalRoleId());
     }
 
 }
