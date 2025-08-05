@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hub_services.HubClient;
+import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -27,7 +27,7 @@ public class UpdateParticipantStatusHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateParticipantStatusHandler.class);
 
-    private final HubClient hubClient;
+    private final ParticipantHubClient participantHubClient;
 
     @Autowired
     public UpdateParticipantStatusHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -35,8 +35,8 @@ public class UpdateParticipantStatusHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
-                                          HubClient hubClient,
-                                          ActionAuthorizationManager actionAuthorizationManager) {
+                                          ActionAuthorizationManager actionAuthorizationManager,
+                                          ParticipantHubClient participantHubClient) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,7 +45,7 @@ public class UpdateParticipantStatusHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.hubClient = hubClient;
+        this.participantHubClient = participantHubClient;
     }
 
     @Override
@@ -57,11 +57,11 @@ public class UpdateParticipantStatusHandler
                                                                                 input.participantCurrencyId(),
                                                                                 isActive);
 
-        PutParticipantStatus.Response response = this.hubClient.putParticipantStatus(request);
+        PutParticipantStatus.Response response = this.participantHubClient.putParticipantStatus(request);
 
         GetParticipant.Response
             getParticipantResponse =
-            this.hubClient.getParticipant(new GetParticipant.Request(input.participantName()));
+            this.participantHubClient.getParticipant(new GetParticipant.Request(input.participantName()));
 
         List<GetParticipant.Response.Account> accounts = getParticipantResponse.accounts();
 

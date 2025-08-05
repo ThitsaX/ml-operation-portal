@@ -1,0 +1,56 @@
+package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
+
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTransferAmountByWindowIdQuery {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdJdbcQueryHandler.class);
+
+    private final JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public GetNetTransferAmountByWindowIdJdbcQueryHandler(
+        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public Output execute(Input input) throws HubServicesException {
+
+        List<TransferData> results =null;
+
+        try {
+
+            //@@Formatter:off
+         //   results = this.jdbcTemplate.query();
+
+        //@@Formatter:on
+        } catch (Exception e) {
+
+            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+        }
+
+        if (results == null || results.isEmpty()) {
+
+            return new Output(new ArrayList<>());
+        }
+
+        return new Output(null);
+    }
+
+}

@@ -13,7 +13,7 @@ import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hub_services.HubClient;
+import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -37,7 +37,7 @@ public class ModifyApprovalActionHandler
 
     private final ApprovalRequestQuery approvalRequestQuery;
 
-    private final HubClient hubClient;
+    private final ParticipantHubClient participantHubClient;
 
     private final Utility utility;
 
@@ -49,7 +49,7 @@ public class ModifyApprovalActionHandler
                                        ActionAuthorizationManager actionAuthorizationManager,
                                        ModifyApprovalActionCommand modifyApprovalActionCommand,
                                        ApprovalRequestQuery approvalRequestQuery,
-                                       HubClient hubClient,
+                                       ParticipantHubClient participantHubClient,
                                        Utility utility) {
 
         super(createInputAuditCommand,
@@ -61,7 +61,7 @@ public class ModifyApprovalActionHandler
 
         this.modifyApprovalActionCommand = modifyApprovalActionCommand;
         this.approvalRequestQuery = approvalRequestQuery;
-        this.hubClient = hubClient;
+        this.participantHubClient = participantHubClient;
         this.utility = utility;
     }
 
@@ -104,9 +104,9 @@ public class ModifyApprovalActionHandler
 
         PostParticipantBalance.Response
             response =
-            this.hubClient.postParticipantBalance(approvalRequestData.participantId(),
-                                                  approvalRequestData.participantCurrencyId(),
-                                                  request);
+            this.participantHubClient.postParticipantBalance(approvalRequestData.participantId(),
+                                                             approvalRequestData.participantCurrencyId(),
+                                                             request);
 
         var
             output =

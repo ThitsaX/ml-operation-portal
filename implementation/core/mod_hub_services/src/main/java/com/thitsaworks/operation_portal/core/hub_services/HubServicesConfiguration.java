@@ -13,10 +13,12 @@ public class HubServicesConfiguration {
     @Bean
     public HubServicesConfiguration.Settings hubServiceConfigurationSettings() {
 
-        return new HubServicesConfiguration.Settings(System.getProperty("CENTRAL_LEDGER_ENDPOINT"));
+        return new HubServicesConfiguration.Settings(System.getProperty("central_ledger_end_point"),
+                                                     System.getProperty("settlement_end_point"
+                                                                            ));
 
     }
 
-    public record Settings(String centralLedgerEndpoint) {}
+    public record Settings(String centralLedgerEndpoint, String settlementEndpoint) {}
 
 }
