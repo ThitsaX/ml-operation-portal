@@ -5,13 +5,14 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.DomainUseCase;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -22,13 +23,16 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.Set;
+import java.net.ConnectException;
 
-public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCase<I, O> {
+public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I, O> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationPortalAuditableUseCase.class);
 
@@ -49,7 +53,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
     public OperationPortalAuditableUseCase(CreateInputAuditCommand createInputAuditCommand,
                                            CreateOutputAuditCommand createOutputAuditCommand,
                                            CreateExceptionAuditCommand createExceptionAuditCommand,
-                                           Set<UserRoleType> permittedRoles,
                                            ObjectMapper objectMapper,
                                            PrincipalCache principalCache,
                                            ActionAuthorizationManager actionAuthorizationManager) {
@@ -63,7 +66,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
     }
 
-    @Override
     public String getName() {
 
         return this.getClass()
@@ -71,39 +73,43 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
                    .replaceFirst("Handler", "");
     }
 
-    @PostConstruct
     @Override
-    public void onConstruct() throws SystemException {
+    public O execute(I input) throws DomainException {
 
-    }
+        O output;
 
-    @Override
-    protected void afterExecute(O output) throws DomainException {
+        var transactionManager = SpringContext.getBean(PlatformTransactionManager.class,
+                                                       PersistenceQualifiers.Core.TRANSACTION_MANAGER);
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(def);
 
-        var auditId = OperationPortalAuditableUseCase.auditId.get();
-
-        String outputJson, outputInfo;
+        this.beforeExecute(input);
 
         try {
 
-            outputJson = this.objectMapper.writeValueAsString(output);
-            outputInfo = MaskPassword.maskPassword(this.objectMapper, outputJson);
+            output = this.onExecute(input);
 
-        } catch (Exception e) {
+            transactionManager.commit(status);
 
-            throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
+            this.afterExecute(output);
+
+        } catch (RuntimeException exception) {
+
+            transactionManager.rollback(status);
+
+            throw exception;
+
+        } catch (Exception exception) {
+
+            transactionManager.rollback(status);
+
+            throw this.onException(exception);
         }
 
-        if (auditId != null) {
-
-            this.createOutputAuditCommand.execute(new CreateOutputAuditCommand.Input(auditId,
-                                                                                     outputInfo));
-
-        }
-
+        return output;
     }
 
-    @Override
     protected void beforeExecute(I input) throws DomainException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
@@ -141,7 +147,31 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
                                                                                 .auditId());
     }
 
-    @Override
+    protected void afterExecute(O output) throws DomainException {
+
+        var auditId = OperationPortalAuditableUseCase.auditId.get();
+
+        String outputJson, outputInfo;
+
+        try {
+
+            outputJson = this.objectMapper.writeValueAsString(output);
+            outputInfo = MaskPassword.maskPassword(this.objectMapper, outputJson);
+
+        } catch (Exception e) {
+
+            throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
+        }
+
+        if (auditId != null) {
+
+            this.createOutputAuditCommand.execute(new CreateOutputAuditCommand.Input(auditId,
+                                                                                     outputInfo));
+
+        }
+
+    }
+
     protected DomainException onException(Exception exception) {
 
         String exceptionMessage = (exception instanceof DomainException e)
@@ -153,15 +183,16 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         var auditId = OperationPortalAuditableUseCase.auditId.get();
 
         if (auditId != null) {
+
             try {
 
                 var input = new CreateExceptionAuditCommand.Input(auditId, exceptionMessage);
                 this.createExceptionAuditCommand.execute(input);
 
             } catch (AuditException e) {
-                LOGGER.info("Audit Exception: [{}]",
-                            e.getErrorMessage()
-                             .description());
+
+                LOGGER.info("Audit Exception: [{}]", e.getErrorMessage()
+                                                      .description());
             }
         }
 
@@ -171,5 +202,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
         throw new RuntimeException(exception);
     }
+
+    protected abstract O onExecute(I input) throws DomainException, ConnectException;
 
 }

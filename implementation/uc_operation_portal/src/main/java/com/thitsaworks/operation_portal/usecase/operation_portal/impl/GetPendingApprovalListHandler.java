@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -11,14 +10,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetPendingApprovalList;
-import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 @Service
 public class GetPendingApprovalListHandler
@@ -26,8 +22,6 @@ public class GetPendingApprovalListHandler
     implements GetPendingApprovalList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetPendingApprovalListHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ApprovalRequestQuery approvalRequestQuery;
 
@@ -46,7 +40,6 @@ public class GetPendingApprovalListHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
@@ -17,7 +16,6 @@ import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUserCommand;
-
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveExistingParticipantUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -25,16 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class RemoveExistingParticipantUserHandler
     extends OperationPortalAuditableUseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output>
     implements RemoveExistingParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
     private final RemoveParticipantUserCommand removeParticipantUserCommand;
 
@@ -54,7 +48,6 @@ public class RemoveExistingParticipantUserHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

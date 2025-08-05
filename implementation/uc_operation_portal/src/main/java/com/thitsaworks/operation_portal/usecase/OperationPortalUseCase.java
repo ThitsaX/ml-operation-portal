@@ -1,45 +1,42 @@
 package com.thitsaworks.operation_portal.usecase;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.DomainUseCase;
+import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
-import java.util.Set;
+import java.net.ConnectException;
 
-public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
+public abstract class OperationPortalUseCase<I, O> implements UseCase<I, O> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationPortalUseCase.class);
-
-    private final Set<UserRoleType> PERMITTED_ROLES;
 
     private final PrincipalCache principalCache;
 
     private final ActionAuthorizationManager actionAuthorizationManager;
 
-    public OperationPortalUseCase(Set<UserRoleType> permittedRoles,
-                                  PrincipalCache principalCache,
+    public OperationPortalUseCase(PrincipalCache principalCache,
                                   ActionAuthorizationManager actionAuthorizationManager) {
 
-        this.PERMITTED_ROLES = permittedRoles;
         this.principalCache = principalCache;
         this.actionAuthorizationManager = actionAuthorizationManager;
     }
 
-    @Override
     public String getName() {
 
         return this.getClass()
@@ -47,18 +44,43 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
                    .replaceFirst("Handler", "");
     }
 
-    @PostConstruct
     @Override
-    public void onConstruct() throws SystemException {
+    public O execute(I input) throws DomainException {
 
+        O output;
+
+        var transactionManager = SpringContext.getBean(PlatformTransactionManager.class,
+                                                       PersistenceQualifiers.Core.TRANSACTION_MANAGER);
+        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        TransactionStatus status = transactionManager.getTransaction(def);
+
+        this.beforeExecute(input);
+
+        try {
+
+            output = this.onExecute(input);
+
+            transactionManager.commit(status);
+
+            this.afterExecute(output);
+
+        } catch (RuntimeException exception) {
+
+            transactionManager.rollback(status);
+
+            throw exception;
+
+        } catch (Exception exception) {
+
+            transactionManager.rollback(status);
+
+            throw this.onException(exception);
+        }
+
+        return output;
     }
 
-    @Override
-    protected void afterExecute(O output) throws DomainException {
-        // PLease Do Something
-    }
-
-    @Override
     protected void beforeExecute(I input) throws DomainException {
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
@@ -75,7 +97,8 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
 
     }
 
-    @Override
+    protected void afterExecute(O output) throws DomainException { }
+
     protected DomainException onException(Exception exception) {
 
         if (exception instanceof DomainException) {
@@ -84,5 +107,7 @@ public abstract class OperationPortalUseCase<I, O> extends DomainUseCase<I, O> {
 
         throw new RuntimeException(exception);
     }
+
+    protected abstract O onExecute(I input) throws DomainException, ConnectException;
 
 }

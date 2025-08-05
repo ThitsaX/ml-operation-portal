@@ -24,9 +24,6 @@ public class CreateNewContactHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewContactHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final CreateContactCommand createContactCommand;
 
     public CreateNewContactHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -40,7 +37,6 @@ public class CreateNewContactHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

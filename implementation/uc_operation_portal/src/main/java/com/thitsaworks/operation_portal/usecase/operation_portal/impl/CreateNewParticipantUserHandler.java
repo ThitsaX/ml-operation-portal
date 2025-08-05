@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
@@ -24,16 +23,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class CreateNewParticipantUserHandler
     extends OperationPortalAuditableUseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output>
     implements CreateNewParticipantUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantUserHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
     private final CreateParticipantUserCommand createParticipantUserCommand;
 
@@ -53,7 +48,6 @@ public class CreateNewParticipantUserHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -96,7 +90,7 @@ public class CreateNewParticipantUserHandler
                                                                              input.realmType(),
                                                                              input.password(),
                                                                              new RealmId(input.participantId()
-                                                                                .getId()),
+                                                                                              .getId()),
                                                                              input.activeStatus()));
 
         return new Output(output.created());

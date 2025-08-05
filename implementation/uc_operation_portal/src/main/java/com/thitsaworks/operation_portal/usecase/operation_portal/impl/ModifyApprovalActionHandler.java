@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Currency;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
@@ -19,15 +18,13 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBal
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
-import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.EnumSet;
-import java.util.Set;
 
 @Service
 public class ModifyApprovalActionHandler
@@ -35,8 +32,6 @@ public class ModifyApprovalActionHandler
     implements ModifyApprovalAction {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyApprovalActionHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ModifyApprovalActionCommand modifyApprovalActionCommand;
 
@@ -60,7 +55,6 @@ public class ModifyApprovalActionHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -76,11 +70,10 @@ public class ModifyApprovalActionHandler
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
 
-                String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ? "recordFundsIn" :
-                    "Withdraw".equalsIgnoreCase(approvalRequestData.requestedAction()) ? "recordFundsOutPrepareReserve" :
-                        approvalRequestData.requestedAction();
-
-
+        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ? "recordFundsIn" :
+                            "Withdraw".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
+                                "recordFundsOutPrepareReserve" :
+                                approvalRequestData.requestedAction();
 
         Money
             money =
@@ -88,27 +81,26 @@ public class ModifyApprovalActionHandler
                        .amount(approvalRequestData.amount()
                                                   .toString());
 
-        ExtensionList extensionList= new ExtensionList();
-        Extension extension= new Extension();
+        ExtensionList extensionList = new ExtensionList();
+        Extension extension = new Extension();
         extension.setKey("requestUser");
-        extension.setValue(this.utility.getEmail(new HubUserId(approvalRequestData.requestedBy().getId())));
+        extension.setValue(this.utility.getEmail(new HubUserId(approvalRequestData.requestedBy()
+                                                                                  .getId())));
         extension.setKey("approveUser");
-        extension.setValue(this.utility.getEmail(new HubUserId(approvalRequestData.requestedBy().getId())));
+        extension.setValue(this.utility.getEmail(new HubUserId(approvalRequestData.requestedBy()
+                                                                                  .getId())));
         extensionList.addExtensionItem(extension);
-
-
-
 
         PostParticipantBalance.Request
             request =
             new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
                                                this.utility.getEmail(new HubUserId(approvalRequestData.requestedBy()
-                                                                                          .getId())),
+                                                                                                      .getId())),
                                                action,
                                                "Admin portal funds in request",
                                                money,
                                                extensionList
-                                               );
+            );
 
         PostParticipantBalance.Response
             response =

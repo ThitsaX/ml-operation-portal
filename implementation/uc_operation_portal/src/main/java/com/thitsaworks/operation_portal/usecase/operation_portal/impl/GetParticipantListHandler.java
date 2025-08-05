@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -9,7 +8,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -19,9 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class GetParticipantListHandler
@@ -29,8 +25,6 @@ public class GetParticipantListHandler
     implements GetParticipantList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantListHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ParticipantQuery participantQuery;
 
@@ -45,7 +39,6 @@ public class GetParticipantListHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -65,7 +58,7 @@ public class GetParticipantListHandler
             participantInfoList.add(
                 new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
                                                               participantData.participantName()
-                                                                            .getValue(),
+                                                                             .getValue(),
                                                               participantData.description(),
                                                               participantData.address(),
                                                               participantData.mobile(),

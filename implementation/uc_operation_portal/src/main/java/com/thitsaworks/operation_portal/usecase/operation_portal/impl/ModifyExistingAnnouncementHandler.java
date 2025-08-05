@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -16,17 +15,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 @Service
 public class ModifyExistingAnnouncementHandler
     extends OperationPortalAuditableUseCase<ModifyAnnouncement.Input, ModifyAnnouncement.Output>
     implements ModifyAnnouncement {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingAnnouncementHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final ModifyAnnouncementCommand modifyAnnouncementCommand;
 
@@ -42,7 +36,6 @@ public class ModifyExistingAnnouncementHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -52,11 +45,14 @@ public class ModifyExistingAnnouncementHandler
 
     @Override
     public ModifyAnnouncement.Output onExecute(ModifyAnnouncement.Input input) throws
-                                                                                               DomainException {
+                                                                               DomainException {
 
         ModifyAnnouncementCommand.Output output = this.modifyAnnouncementCommand.execute(
-            new ModifyAnnouncementCommand.Input(input.announcementId(), input.announcementTitle(),
-                                                input.announcementDetail(), input.announcementDate(), input.isDeleted()));
+            new ModifyAnnouncementCommand.Input(input.announcementId(),
+                                                input.announcementTitle(),
+                                                input.announcementDetail(),
+                                                input.announcementDate(),
+                                                input.isDeleted()));
 
         return new ModifyAnnouncement.Output(output.announcementId(), output.modified());
     }

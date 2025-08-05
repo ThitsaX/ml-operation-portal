@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.Set;
 
 @Service
 public class AssignRoleToUserHandler
@@ -24,8 +22,6 @@ public class AssignRoleToUserHandler
     implements AssignRoleToUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(AssignRoleToUserHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
     private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
 
@@ -40,7 +36,6 @@ public class AssignRoleToUserHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -51,8 +46,10 @@ public class AssignRoleToUserHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(input.principalId(),
-                                                                                            input.roleId()));
+        var
+            output =
+            this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(input.principalId(),
+                                                                                             input.roleId()));
 
         return new Output(output.principalRoleId());
     }

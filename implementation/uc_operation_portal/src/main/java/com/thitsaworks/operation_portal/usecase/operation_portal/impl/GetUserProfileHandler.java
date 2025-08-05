@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -18,16 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile.Input, GetUserProfile.Output>
     implements GetUserProfile {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserProfileHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
-                                                                    UserRoleType.OPERATION);
 
     private final ParticipantCache participantCache;
 
@@ -40,9 +34,7 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                                  ParticipantCache participantCache,
                                  ParticipantUserCache participantUserCache) {
 
-        super(PERMITTED_ROLES,
-              principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;
