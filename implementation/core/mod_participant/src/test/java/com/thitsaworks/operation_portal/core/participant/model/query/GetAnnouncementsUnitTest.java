@@ -1,10 +1,10 @@
-package com.thitsaworks.operation_portal.hubuser.domain.query;
+package com.thitsaworks.operation_portal.core.participant.model.query;
 
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
-import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
-import com.thitsaworks.operation_portal.hubuser.domain.TestSettings;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
+import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import java.util.List;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HubUserConfiguration.class, TestSettings.class, RedisConfiguration.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class, RedisConfiguration.class})
 
 public class GetAnnouncementsUnitTest {
 

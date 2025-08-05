@@ -5,11 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewParticipantUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -49,7 +47,6 @@ public class CreateNewUserController {
                                                request.lastName,
                                                request.jobTitle,
                                                new ParticipantId(Long.parseLong(request.participantId)),
-                                               RealmType.PARTICIPANT,
                                                request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
                                                    PrincipalStatus.INACTIVE));
 

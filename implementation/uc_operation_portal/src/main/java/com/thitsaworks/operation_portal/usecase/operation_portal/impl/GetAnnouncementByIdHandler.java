@@ -5,8 +5,8 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
+import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementById;

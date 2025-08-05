@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -59,8 +59,9 @@ public class GetPendingApprovalListHandler
                                                                            request.participantId(),
                                                                            request.currency(),
                                                                            request.amount(),
-                                                                           this.utility.getEmail(new HubUserId(request.requestedBy()
-                                                                                                                      .getId())),
+                                                                           this.utility.getEmail(new ParticipantUserId(
+                                                                                   request.requestedBy()
+                                                                                          .getId())),
                                                                            request.requestedDtm(),
                                                                            request.action()))
                                 .toList());

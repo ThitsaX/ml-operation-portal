@@ -1,15 +1,15 @@
-package com.thitsaworks.operation_portal.core.hubuser.query.impl.jpa;
+package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
-import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
-import com.thitsaworks.operation_portal.core.hubuser.model.QAnnouncement;
-import com.thitsaworks.operation_portal.core.hubuser.model.repository.AnnouncementRepository;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
+import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.Announcement;
+import com.thitsaworks.operation_portal.core.participant.model.QAnnouncement;
+import com.thitsaworks.operation_portal.core.participant.model.repository.AnnouncementRepository;
+import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +36,7 @@ public class AnnouncementJpaQueryHandler implements AnnouncementQuery {
     }
 
     @Override
-    public AnnouncementData get(AnnouncementId announcementId) throws HubUserException {
+    public AnnouncementData get(AnnouncementId announcementId) throws ParticipantException {
 
         BooleanExpression predicate = this.announcement.announcementId.eq(announcementId);
 
@@ -44,7 +44,7 @@ public class AnnouncementJpaQueryHandler implements AnnouncementQuery {
 
         if (optionalAnnouncement.isEmpty()) {
 
-            throw new HubUserException(HubUserErrors.ANNOUNCEMENT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.ANNOUNCEMENT_NOT_FOUND);
         }
 
         return new AnnouncementData(optionalAnnouncement.get());

@@ -1,11 +1,11 @@
-package com.thitsaworks.operation_portal.core.hubuser.command.impl;
+package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.command.CreateGreetingMessageCommand;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
-import com.thitsaworks.operation_portal.core.hubuser.model.GreetingMessage;
-import com.thitsaworks.operation_portal.core.hubuser.model.repository.GreetingRepository;
+import com.thitsaworks.operation_portal.core.participant.command.CreateGreetingMessageCommand;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.GreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.repository.GreetingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +19,13 @@ public class CreateGreetingMessageCommandHandler implements CreateGreetingMessag
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Input input) throws HubUserException {
+    public Output execute(Input input) throws ParticipantException {
         Optional<GreetingMessage> optionalGreetingMessage = this.greetingRepository.findOne(
             GreetingRepository.Filters.findByGreetingTitle(input.greetingTitle()));
 
         if (optionalGreetingMessage.isPresent()) {
 
-            throw new HubUserException(HubUserErrors.ALREADY_GREETING);
+            throw new ParticipantException(ParticipantErrors.ALREADY_GREETING);
         }
 
         var greeting = new GreetingMessage(input.greetingTitle(),

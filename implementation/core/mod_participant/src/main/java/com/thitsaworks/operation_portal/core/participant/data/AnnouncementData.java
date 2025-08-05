@@ -1,7 +1,7 @@
-package com.thitsaworks.operation_portal.core.hubuser.data;
+package com.thitsaworks.operation_portal.core.participant.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
-import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
+import com.thitsaworks.operation_portal.core.participant.model.Announcement;
 
 import java.time.Instant;
 

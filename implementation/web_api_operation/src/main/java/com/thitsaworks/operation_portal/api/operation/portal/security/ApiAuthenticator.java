@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.exception.
 import com.thitsaworks.operation_portal.api.operation.portal.security.exception.SecurityErrors;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.http.CachedBodyHttpServletRequest;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;

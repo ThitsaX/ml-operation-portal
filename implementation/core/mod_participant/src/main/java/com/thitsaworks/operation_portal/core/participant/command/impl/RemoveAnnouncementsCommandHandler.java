@@ -1,14 +1,14 @@
-package com.thitsaworks.operation_portal.core.hubuser.command.impl;
+package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
-import com.thitsaworks.operation_portal.core.hubuser.model.Announcement;
-import com.thitsaworks.operation_portal.core.hubuser.model.QAnnouncement;
-import com.thitsaworks.operation_portal.core.hubuser.model.repository.AnnouncementRepository;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveAnnouncementsCommand;
+import com.thitsaworks.operation_portal.core.participant.model.Announcement;
+import com.thitsaworks.operation_portal.core.participant.model.QAnnouncement;
+import com.thitsaworks.operation_portal.core.participant.model.repository.AnnouncementRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

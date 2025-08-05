@@ -239,11 +239,6 @@
             </dependency>
             <dependency>
                 <groupId>com.thitsaworks.operation_portal.core</groupId>
-                <artifactId>mod_hub_user</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.thitsaworks.operation_portal.core</groupId>
                 <artifactId>mod_audit</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.hubuser.model;
+package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaInstantConverter;

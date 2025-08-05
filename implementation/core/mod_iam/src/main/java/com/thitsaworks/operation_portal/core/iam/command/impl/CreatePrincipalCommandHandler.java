@@ -25,9 +25,7 @@ public class CreatePrincipalCommandHandler implements CreatePrincipalCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Principal> optionalPrincipal = this.principalRepository.findOne(
-                PrincipalRepository.Filters.withPrincipalId(input.principalId())
-                                           .and(PrincipalRepository.Filters.withRealm(input.realmType())));
+        Optional<Principal> optionalPrincipal = this.principalRepository.findByPrincipalId(input.principalId());
 
         if (optionalPrincipal.isPresent()) {
 
@@ -35,7 +33,6 @@ public class CreatePrincipalCommandHandler implements CreatePrincipalCommand {
         }
 
         Principal newPrincipal = new Principal(input.principalId(),
-                                               input.realmType(),
                                                input.passwordPlain(),
                                                input.realmId(),
                                                input.principalStatus());
