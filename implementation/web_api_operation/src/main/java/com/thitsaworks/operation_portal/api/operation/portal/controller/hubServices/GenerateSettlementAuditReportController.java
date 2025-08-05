@@ -31,29 +31,22 @@ public class GenerateSettlementAuditReportController {
     @PostMapping("/secured/generateSettlementAuditReport")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
+                                            @RequestParam("dfspId") String dfspId,
+                                            @RequestParam("currencyId") String currencyId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Settlement audit report filters : startDate = {}, endDate = {}, fileType ={}, timezoneOffset = {}",
-                 startDate,
-                 endDate,
-                 fileType,
-                 timezoneOffset);
-
         GenerateSettlementAuditReport.Output output =
                 this.generateSettlementAuditReport.execute(new GenerateSettlementAuditReport.Input(Instant.parse(
-                        startDate), Instant.parse(endDate), fileType, timezoneOffset));
+                        startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezoneOffset));
 
         var response = new Response(output.reportData());
-
-        LOG.info("Settlement audit report response : {}", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-    // Request and Response records
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable {}
 
