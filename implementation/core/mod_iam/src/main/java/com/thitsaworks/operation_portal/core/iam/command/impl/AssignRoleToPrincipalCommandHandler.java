@@ -32,7 +32,7 @@ public class AssignRoleToPrincipalCommandHandler implements AssignRoleToPrincipa
 
         PrincipalRole principalRole = principal.assignRole(role);
 
-        this.principalRepository.save(principal);
+        this.principalRepository.saveAndFlush(principal);
 
         return new Output(principalRole.getPrincipalRoleId());
     }

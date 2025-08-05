@@ -34,7 +34,7 @@ public class AssignRoleToUserController {
             this.assignRoleToUser.execute(new AssignRoleToUser.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                      new RoleId(Long.parseLong(request.roleId()))));
 
-        var response = new Response(output.principalRoleId());
+        var response = new Response(output.principalRoleId().getId().toString());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -43,6 +43,6 @@ public class AssignRoleToUserController {
     public record Request(@NotNull @NotBlank String userId,
                           @NotNull @NotBlank String roleId) { }
 
-    public record Response(PrincipalRoleId principalRoleId) { }
+    public record Response(String principalRoleId) { }
 
 }

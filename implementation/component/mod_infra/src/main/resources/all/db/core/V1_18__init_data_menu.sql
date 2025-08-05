@@ -1,10 +1,4 @@
-INSERT INTO tbl_menu (
-menu_id,
-name,
-parent_id,
-is_active,
-created_date,
-updated_date) VALUES
+INSERT INTO tbl_menu (menu_id, name, parent_id, is_active, created_date, updated_date) VALUES
 (1, 'Operational Portal', 0, 1, 1722306068000, 1722306068000),
 (2, 'Home', 1, 1, 1722306068000, 1722306068000),
 (3, 'Participants', 1, 1, 1722306068000, 1722306068000),

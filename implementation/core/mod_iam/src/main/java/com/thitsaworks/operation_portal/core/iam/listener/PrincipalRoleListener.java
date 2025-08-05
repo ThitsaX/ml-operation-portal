@@ -32,13 +32,12 @@ public class PrincipalRoleListener {
 
         var roleData = new RoleData(principalRole.getRole());
         var
-            userId =
+            principalId =
             principalRole.getPrincipal()
                          .getPrincipalId();
 
-        iamEngine.getPrincipalRolesMap()
-                 .computeIfAbsent(userId, k -> new HashSet<>())
-                 .add(roleData);
+        iamEngine.addPrincipalRole(principalId, roleData);
+
     }
 
     @PostRemove
@@ -50,9 +49,7 @@ public class PrincipalRoleListener {
             principalRole.getPrincipal()
                          .getPrincipalId();
 
-        iamEngine.getPrincipalRolesMap()
-                 .computeIfAbsent(principalId, k -> new HashSet<>())
-                 .remove(roleData);
+        iamEngine.removePrincipalRole(principalId, roleData);
     }
 
 }
