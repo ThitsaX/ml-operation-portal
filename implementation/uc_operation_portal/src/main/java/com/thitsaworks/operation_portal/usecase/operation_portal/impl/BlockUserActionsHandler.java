@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.BlockPrincipalActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.BlockPrincipalActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +19,23 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class BlockPrincipalActionsHandler
-    extends OperationPortalAuditableUseCase<BlockPrincipalActions.Input, BlockPrincipalActions.Output>
-    implements BlockPrincipalActions {
+public class BlockUserActionsHandler
+    extends OperationPortalAuditableUseCase<BlockUserActions.Input, BlockUserActions.Output>
+    implements BlockUserActions {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BlockPrincipalActionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BlockUserActionsHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN, UserRoleType.OPERATION);
 
     private final BlockPrincipalActionCommand blockPrincipalActionCommand;
 
-    public BlockPrincipalActionsHandler(CreateInputAuditCommand createInputAuditCommand,
-                                        CreateOutputAuditCommand createOutputAuditCommand,
-                                        CreateExceptionAuditCommand createExceptionAuditCommand,
-                                        ObjectMapper objectMapper,
-                                        PrincipalCache principalCache,
-                                        ActionAuthorizationManager actionAuthorizationManager,
-                                        BlockPrincipalActionCommand blockprincipalActionCommand) {
+    public BlockUserActionsHandler(CreateInputAuditCommand createInputAuditCommand,
+                                   CreateOutputAuditCommand createOutputAuditCommand,
+                                   CreateExceptionAuditCommand createExceptionAuditCommand,
+                                   ObjectMapper objectMapper,
+                                   PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
+                                   BlockPrincipalActionCommand blockprincipalActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

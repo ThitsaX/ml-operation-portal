@@ -2,9 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.BlockPrincipalActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -25,14 +24,14 @@ public class BlockUserActionsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(BlockUserActionsController.class);
 
-    private final BlockPrincipalActions blockPrincipalActions;
+    private final BlockUserActions blockUserActions;
 
     @PostMapping("/secured/blockUserActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
 
-        var output = blockPrincipalActions.execute(new BlockPrincipalActions.Input(new PrincipalId(Long.parseLong(request.userId())),
-                                                                                   request.actionIdList()
+        var output = blockUserActions.execute(new BlockUserActions.Input(new PrincipalId(Long.parseLong(request.userId())),
+                                                                         request.actionIdList()
                                                                                 .stream()
                                                                                 .map(id -> new ActionId(Long.parseLong(
                                                                                     id)))

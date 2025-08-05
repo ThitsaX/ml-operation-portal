@@ -1,11 +1,10 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToPrincipal;
+import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,15 +24,15 @@ public class AssignRoleToUserController {
 
     private static final Logger LOG = LoggerFactory.getLogger(AssignRoleToUserController.class);
 
-    private final AssignRoleToPrincipal assignRoleToPrincipal;
+    private final AssignRoleToUser assignRoleToUser;
 
     @PostMapping("/secured/assignRoleToUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
         var
             output =
-            this.assignRoleToPrincipal.execute(new AssignRoleToPrincipal.Input(new PrincipalId(Long.parseLong(request.userId())),
-                                                                               new RoleId(Long.parseLong(request.roleId()))));
+            this.assignRoleToUser.execute(new AssignRoleToUser.Input(new PrincipalId(Long.parseLong(request.userId())),
+                                                                     new RoleId(Long.parseLong(request.roleId()))));
 
         var response = new Response(output.principalRoleId());
 

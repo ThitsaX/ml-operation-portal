@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToPrincipal;
+import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,23 +19,23 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
-public class AssignRoleToPrincipalHandler
-    extends OperationPortalAuditableUseCase<AssignRoleToPrincipal.Input, AssignRoleToPrincipal.Output>
-    implements AssignRoleToPrincipal {
+public class AssignRoleToUserHandler
+    extends OperationPortalAuditableUseCase<AssignRoleToUser.Input, AssignRoleToUser.Output>
+    implements AssignRoleToUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AssignRoleToPrincipalHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AssignRoleToUserHandler.class);
 
     private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
     private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
 
-    public AssignRoleToPrincipalHandler(CreateInputAuditCommand createInputAuditCommand,
-                                        CreateOutputAuditCommand createOutputAuditCommand,
-                                        CreateExceptionAuditCommand createExceptionAuditCommand,
-                                        ObjectMapper objectMapper,
-                                        PrincipalCache principalCache,
-                                        ActionAuthorizationManager actionAuthorizationManager,
-                                        AssignRoleToPrincipalCommand assignRoleToPrincipalCommand) {
+    public AssignRoleToUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                   CreateOutputAuditCommand createOutputAuditCommand,
+                                   CreateExceptionAuditCommand createExceptionAuditCommand,
+                                   ObjectMapper objectMapper,
+                                   PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
+                                   AssignRoleToPrincipalCommand assignRoleToPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
