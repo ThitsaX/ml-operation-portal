@@ -24,9 +24,9 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 import java.net.ConnectException;
 
 @Component
-public class HubClient {
+public class ParticipantHubClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HubClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ParticipantHubClient.class);
 
     private final HubServicesConfiguration.Settings settings;
 
@@ -35,7 +35,7 @@ public class HubClient {
     private final HubErrorDecoder hubErrorDecoder;
 
     @Autowired
-    public HubClient(HubServicesConfiguration.Settings settings) {
+    public ParticipantHubClient(HubServicesConfiguration.Settings settings) {
 
         this.settings = settings;
 

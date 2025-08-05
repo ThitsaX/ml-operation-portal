@@ -1,31 +1,35 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hub_services.HubClient;
+import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateParticipantAmount;
-import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
+import java.util.EnumSet;
+import java.util.Set;
 
 @Service
 public class UpdateParticipantAmountHandler
     extends OperationPortalAuditableUseCase<UpdateParticipantAmount.Input, UpdateParticipantAmount.Output>
-    implements UpdateParticipantAmount {
+        implements UpdateParticipantAmount {
 
     private static final Logger LOG = LoggerFactory.getLogger(UpdateParticipantAmountHandler.class);
 
-    private final HubClient hubClient;
+    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
+
+    private final ParticipantHubClient participantHubClient;
 
     @Autowired
     public UpdateParticipantAmountHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -33,21 +37,21 @@ public class UpdateParticipantAmountHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
-                                          ActionAuthorizationManager actionAuthorizationManager,
-                                          HubClient hubClient) {
+                                          ParticipantHubClient participantHubClient) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
+              PERMITTED_ROLES,
               objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+              principalCache);
 
-        this.hubClient = hubClient;
+        this.participantHubClient = participantHubClient;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
+
 
         PostParticipantBalance.Request request = new PostParticipantBalance.Request(input.transferId(),
                                                                                     input.externalReference(),
@@ -56,9 +60,9 @@ public class UpdateParticipantAmountHandler
                                                                                     input.amount(),
                                                                                     input.extensionList());
 
-        PostParticipantBalance.Response response = this.hubClient.postParticipantBalance(input.participantId(),
-                                                                                         input.accountId(),
-                                                                                         request);
+        PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(input.participantId(),
+                                                                                                    input.accountId(),
+                                                                                                    request);
 
         return new Output(response.accessKey(), response.secretKey());
     }
