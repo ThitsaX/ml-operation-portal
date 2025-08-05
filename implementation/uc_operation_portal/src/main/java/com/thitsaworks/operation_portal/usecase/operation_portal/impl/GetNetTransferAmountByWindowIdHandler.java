@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,47 +21,42 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetNetTransferAmountByWindowIdHandler extends OperationPortalAuditableUseCase<GetNetTransferAmountByWindowId.Input, GetNetTransferAmountByWindowId.Output>
+public class GetNetTransferAmountByWindowIdHandler
+    extends OperationPortalAuditableUseCase<GetNetTransferAmountByWindowId.Input, GetNetTransferAmountByWindowId.Output>
     implements GetNetTransferAmountByWindowId {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
-
     private final GetNetTransferAmountByWindowIdQuery getNetTrasferAmountByWindowIdQuery;
-
 
     public GetNetTransferAmountByWindowIdHandler(CreateInputAuditCommand createInputAuditCommand,
                                                  CreateOutputAuditCommand createOutputAuditCommand,
                                                  CreateExceptionAuditCommand createExceptionAuditCommand,
                                                  ObjectMapper objectMapper,
                                                  PrincipalCache principalCache,
+                                                 ActionAuthorizationManager actionAuthorizationManager,
                                                  GetNetTransferAmountByWindowIdQuery getNetTransferAmountByWindowIdQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.getNetTrasferAmountByWindowIdQuery = getNetTransferAmountByWindowIdQuery;
-
 
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-
-    //    GetNetTransferAmountByWindowId.Output output = this.getNetTransferAmountByWindowIdQuery.execute(new GetNetTransferAmountByWindowId.Input());
+        //    GetNetTransferAmountByWindowId.Output output = this.getNetTransferAmountByWindowIdQuery.execute(new GetNetTransferAmountByWindowId.Input());
 
         GetNetTransferAmountByWindowId.Output output = null;
         List<TransferData> transferDataList = new ArrayList<>();
 
-
-
-        return new Output(0,null,null,null);
+        return new Output(0, null, null, null);
 
     }
 
