@@ -16,7 +16,6 @@ public interface CreatePrincipalCommand {
                  RealmType realmType,
                  String passwordPlain,
                  RealmId realmId,
-                 UserRoleType userRoleType,
                  PrincipalStatus principalStatus) { }
 
     record Output(AccessKey accessKey, String secretKey) { }

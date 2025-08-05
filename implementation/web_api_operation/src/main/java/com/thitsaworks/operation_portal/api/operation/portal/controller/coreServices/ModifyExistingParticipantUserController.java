@@ -42,8 +42,7 @@ public class ModifyExistingParticipantUserController {
                                                                                   request.firstName(),
                                                                                   request.lastName(),
                                                                                   request.jobTitle(),
-                                                                                  request.userRoleType,
-                                                                                  request.isActive.equalsIgnoreCase(
+                                                                                  request.isActive().equalsIgnoreCase(
                                                                                           "ACTIVE") ?
                                                                                           PrincipalStatus.ACTIVE :
                                                                                           PrincipalStatus.INACTIVE));
@@ -61,7 +60,6 @@ public class ModifyExistingParticipantUserController {
                           @NotNull @JsonProperty("firstName") String firstName,
                           @NotNull @JsonProperty("lastName") String lastName,
                           @NotNull @JsonProperty("jobTitle") String jobTitle,
-                          @NotNull @JsonProperty("userRoleType") UserRoleType userRoleType,
                           @NotNull @JsonProperty("status") String isActive) {
 
     }

@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyExistingUser;
@@ -30,7 +30,7 @@ public class ModifyExistingUserHandler
 
     private final ModifyParticipantUserCommand modifyParticipantUserCommand;
 
-    private final ModifyPrincipalCommand modifyPrincipalCommand;
+    private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
 
     public ModifyExistingUserHandler(CreateInputAuditCommand createInputAuditCommand,
                                      CreateOutputAuditCommand createOutputAuditCommand,
@@ -39,7 +39,7 @@ public class ModifyExistingUserHandler
                                      PrincipalCache principalCache,
                                      ActionAuthorizationManager actionAuthorizationManager,
                                      ModifyParticipantUserCommand modifyParticipantUserCommand,
-                                     ModifyPrincipalCommand modifyPrincipalCommand) {
+                                     ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -50,7 +50,7 @@ public class ModifyExistingUserHandler
               actionAuthorizationManager);
 
         this.modifyParticipantUserCommand = modifyParticipantUserCommand;
-        this.modifyPrincipalCommand = modifyPrincipalCommand;
+        this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
     }
 
     @Override
@@ -63,10 +63,9 @@ public class ModifyExistingUserHandler
                         null,
                         input.firstName(), input.lastName(), input.jobTitle(), null));
 
-        this.modifyPrincipalCommand.execute(
-                new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId().getId()),
-                                                 input.userRoleType(),
-                                                 input.principalStatus()));
+        this.modifyPrincipalStatusCommand.execute(
+                new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.participantUserId().getId()),
+                                                       input.principalStatus()));
 
         return new Output(output.modified(), output.participantUserId());
 

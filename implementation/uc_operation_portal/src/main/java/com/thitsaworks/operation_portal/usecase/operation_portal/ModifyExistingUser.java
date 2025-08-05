@@ -14,7 +14,6 @@ public interface ModifyExistingUser
             String firstName,
             String lastName,
             String jobTitle,
-            UserRoleType userRoleType,
             PrincipalStatus principalStatus
     ) {}
 

@@ -5,7 +5,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -96,8 +95,11 @@ public class Principal extends JpaEntity<AccessKey> {
         return this.accessKey;
     }
 
-    public Principal(PrincipalId principalId, RealmType realmType, String sha256PasswordHex, RealmId realmId,
-                     UserRoleType userRoleType, PrincipalStatus principalStatus) {
+    public Principal(PrincipalId principalId,
+                     RealmType realmType,
+                     String sha256PasswordHex,
+                     RealmId realmId,
+                     PrincipalStatus principalStatus) {
 
         this.principalId = principalId;
         this.accessKey = new AccessKey(Snowflake.get()
@@ -309,7 +311,7 @@ public class Principal extends JpaEntity<AccessKey> {
         return new SecurityToken(this.accessKey, this.secretKey);
     }
 
-    public Principal modify(PrincipalStatus principalStatus, UserRoleType userRoleType) {
+    public Principal principalStatus(PrincipalStatus principalStatus) {
 
         this.principalStatus = principalStatus;
         return this;

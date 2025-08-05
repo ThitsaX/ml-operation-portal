@@ -5,23 +5,14 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
-public interface ModifyPrincipalCommand {
+public interface ModifyPrincipalStatusCommand {
 
     Output execute(Input input) throws IAMException;
 
     record Input(PrincipalId principalId,
-                 UserRoleType userRoleType,
-                 PrincipalStatus principalStatus) {
-
-        public Input(PrincipalId principalId, PrincipalStatus principalStatus) {
-
-            this(principalId, null, principalStatus);
-        }
-
-    }
+                 PrincipalStatus principalStatus) { }
 
     record Output(PrincipalId principalId,
-                  boolean modified) {
-    }
+                  boolean modified) { }
 
 }

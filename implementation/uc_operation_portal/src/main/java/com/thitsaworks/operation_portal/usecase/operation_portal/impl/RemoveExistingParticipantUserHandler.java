@@ -12,7 +12,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
@@ -38,7 +38,7 @@ public class RemoveExistingParticipantUserHandler
 
     private final RemoveParticipantUserCommand removeParticipantUserCommand;
 
-    private final ModifyPrincipalCommand modifyPrincipalCommand;
+    private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
 
     private final PrincipalCache principalCache;
 
@@ -49,7 +49,7 @@ public class RemoveExistingParticipantUserHandler
                                                 PrincipalCache principalCache,
                                                 ActionAuthorizationManager actionAuthorizationManager,
                                                 RemoveParticipantUserCommand removeParticipantUserCommand,
-                                                ModifyPrincipalCommand modifyPrincipalCommand) {
+                                                ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -60,7 +60,7 @@ public class RemoveExistingParticipantUserHandler
               actionAuthorizationManager);
 
         this.removeParticipantUserCommand = removeParticipantUserCommand;
-        this.modifyPrincipalCommand = modifyPrincipalCommand;
+        this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
         this.principalCache = principalCache;
     }
 
@@ -91,10 +91,10 @@ public class RemoveExistingParticipantUserHandler
         RemoveParticipantUserCommand.Output output = this.removeParticipantUserCommand.execute(
             new RemoveParticipantUserCommand.Input(input.participantId(), input.participantUserId()));
 
-        this.modifyPrincipalCommand.execute(
-            new ModifyPrincipalCommand.Input(new PrincipalId(output.participantUserId()
-                                                                   .getId()),
-                                             PrincipalStatus.INACTIVE));
+        this.modifyPrincipalStatusCommand.execute(
+            new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.participantUserId()
+                                                                         .getId()),
+                                                   PrincipalStatus.INACTIVE));
 
         return new RemoveExistingParticipantUser.Output(output.removed(), output.participantUserId());
 

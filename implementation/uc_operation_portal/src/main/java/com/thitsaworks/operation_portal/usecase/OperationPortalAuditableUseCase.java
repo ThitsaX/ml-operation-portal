@@ -34,8 +34,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
 
     private static final ThreadLocal<AuditId> auditId = new InheritableThreadLocal<>();
 
-    private final Set<UserRoleType> PERMITTED_ROLES;
-
     private final ObjectMapper objectMapper;
 
     private final CreateInputAuditCommand createInputAuditCommand;
@@ -59,7 +57,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> extends DomainUseCas
         this.createInputAuditCommand = createInputAuditCommand;
         this.createOutputAuditCommand = createOutputAuditCommand;
         this.createExceptionAuditCommand = createExceptionAuditCommand;
-        this.PERMITTED_ROLES = permittedRoles;
         this.objectMapper = objectMapper;
         this.principalCache = principalCache;
         this.actionAuthorizationManager = actionAuthorizationManager;

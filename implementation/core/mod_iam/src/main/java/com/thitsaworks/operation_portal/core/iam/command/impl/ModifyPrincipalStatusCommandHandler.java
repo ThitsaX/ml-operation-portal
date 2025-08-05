@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalCommand;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
@@ -13,22 +13,22 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ModifyPrincipalCommandHandler implements ModifyPrincipalCommand {
+public class ModifyPrincipalStatusCommandHandler implements ModifyPrincipalStatusCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyPrincipalCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyPrincipalStatusCommandHandler.class);
 
     private final PrincipalRepository principalRepository;
 
     @Override
     @CoreWriteTransactional
-    public ModifyPrincipalCommand.Output execute(Input input) throws IAMException {
+    public ModifyPrincipalStatusCommand.Output execute(Input input) throws IAMException {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
                                                       .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
 
-        this.principalRepository.save(principal.modify(input.principalStatus(), input.userRoleType()));
+        this.principalRepository.save(principal.principalStatus(input.principalStatus()));
 
-        return new ModifyPrincipalCommand.Output(principal.getPrincipalId(), true);
+        return new ModifyPrincipalStatusCommand.Output(principal.getPrincipalId(), true);
     }
 
 }
