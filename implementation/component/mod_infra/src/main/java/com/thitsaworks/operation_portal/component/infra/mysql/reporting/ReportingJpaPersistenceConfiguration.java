@@ -52,7 +52,7 @@ public class ReportingJpaPersistenceConfiguration {
         jpaProperties.put("hibernate.flushMode", FlushMode.MANUAL.name());
 
         entityManagerFactoryBean.setJpaProperties(jpaProperties);
-        entityManagerFactoryBean.setPersistenceUnitName("DFSP_portal");
+        entityManagerFactoryBean.setPersistenceUnitName("reporting");
 
         return entityManagerFactoryBean;
 

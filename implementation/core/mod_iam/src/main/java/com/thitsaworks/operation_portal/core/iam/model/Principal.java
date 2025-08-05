@@ -39,7 +39,7 @@ import static jakarta.persistence.CascadeType.ALL;
 @Table(name = "tbl_principal")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Principal extends JpaEntity<AccessKey> {
+public class Principal extends JpaEntity<PrincipalId> {
 
     @EmbeddedId
     protected PrincipalId principalId;
@@ -90,9 +90,9 @@ public class Principal extends JpaEntity<AccessKey> {
     protected Set<BlockedAction> denials = new HashSet<>();
 
     @Override
-    public AccessKey getId() {
+    public PrincipalId getId() {
 
-        return this.accessKey;
+        return this.principalId;
     }
 
     public Principal(PrincipalId principalId,

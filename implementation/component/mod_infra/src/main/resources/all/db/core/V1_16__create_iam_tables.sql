@@ -1,15 +1,8 @@
 ALTER TABLE tbl_principal DROP COLUMN user_role_type;
 
+ALTER TABLE tbl_action CHANGE COLUMN name action_code VARCHAR(255) NOT NULL;
 
-
--- Rename 'name' to 'action_code' if you want to repurpose it
-ALTER TABLE tbl_action
-CHANGE COLUMN name action_code VARCHAR(255) NOT NULL;
-
--- Add new required columns
-ALTER TABLE tbl_action
-ADD COLUMN scope VARCHAR(255) NOT NULL,
-ADD COLUMN description VARCHAR(255) DEFAULT NULL;
+ALTER TABLE tbl_action ADD COLUMN scope VARCHAR(255) NOT NULL, ADD COLUMN description VARCHAR(255) DEFAULT NULL;
 
 
 -- tbl_role definition
