@@ -13,7 +13,7 @@ ON DUPLICATE KEY UPDATE
     updated_date = UNIX_TIMESTAMP() * 1000;
 
 -- Add grantRoleActions action
-INSERT INTO iam_action (action_id, action_code, scope, description, created_date, updated_date) VALUES
+INSERT INTO tbl_action (action_id, action_code, scope, description, created_date, updated_date) VALUES
     (1, 'GrantRoleActions', 'OPERATION_PORTAL', 'Auto-registered action for use case: GrantRoleActions', UNIX_TIMESTAMP() * 1000, UNIX_TIMESTAMP() * 1000)
 AS new_actions
 ON DUPLICATE KEY UPDATE

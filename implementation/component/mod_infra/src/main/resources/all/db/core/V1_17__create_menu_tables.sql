@@ -19,9 +19,9 @@ CREATE TABLE `tbl_menu_grant` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`grant_id`),
-  KEY `tbl_menu_grant_iam_action_FK` (`action_id`),
+  KEY `tbl_menu_grant_tbl_action_FK` (`action_id`),
   KEY `tbl_menu_grant_tbl_menu_FK` (`menu_id`),
-  CONSTRAINT `tbl_menu_grant_iam_action_FK` FOREIGN KEY (`action_id`) REFERENCES `iam_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tbl_menu_grant_tbl_action_FK` FOREIGN KEY (`action_id`) REFERENCES `tbl_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_menu_grant_tbl_menu_FK` FOREIGN KEY (`menu_id`) REFERENCES `tbl_menu` (`menu_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
