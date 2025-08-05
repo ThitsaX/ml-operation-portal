@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.iam.command.GrantMenuActionByIdCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
@@ -25,6 +26,7 @@ public class GrantMenuActionByIdCommandHandler implements GrantMenuActionByIdCom
     private final ActionRepository actionRepository;
 
     @Override
+    @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
         Optional<Menu> optMenu = this.menuRepository.findById(input.menuId());

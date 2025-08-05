@@ -1,8 +1,9 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.core.iam.command.EditRoleCommand;
+import com.thitsaworks.operation_portal.core.iam.command.RevokeMenuActionCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
@@ -16,18 +17,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    classes = {
-        IAMConfiguration.class, TestSettings.class})
-public class EditRoleCommandIT extends BaseVaultSetUpTest {
-    private static  final Logger LOGGER= LoggerFactory.getLogger(EditRoleCommandIT.class);
+    classes = {IAMConfiguration.class, TestSettings.class})
+public class RevokeMenuActionCommandIT extends BaseVaultSetUpTest {
+
+    private final Logger LOGGER = LoggerFactory.getLogger(RevokeMenuActionCommandIT.class);
 
     @Autowired
-    private EditRoleCommand editCommand;
+    private RevokeMenuActionCommand revokeMenuActionCommand;
 
     @Test
     public void success() throws IAMException {
-        var success = this.editCommand.execute(new EditRoleCommand.Input(new RoleId(4L),"hi-User"));
+        var result = this.revokeMenuActionCommand.execute(new RevokeMenuActionCommand.Input(new MenuId(2L),
+                                                                                            new ActionId(740551762750976000L)));
 
-        LOGGER.info("Boolean {}", success.resultCode());
+        LOGGER.info("Boolean{}",result.revoked());
     }
 }

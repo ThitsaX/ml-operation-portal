@@ -1,10 +1,9 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
-import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.core.iam.command.GrantPrincipalActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.RemoveRoleCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
@@ -18,19 +17,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    classes = {
-        IAMConfiguration.class, TestSettings.class})
-public class GrantUserActionCommandIT extends BaseVaultSetUpTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(GrantUserActionCommandIT.class);
+    classes = {IAMConfiguration.class, TestSettings.class})
+public class RemoveRoleCommandIT extends BaseVaultSetUpTest {
+    private final Logger LOGGER= LoggerFactory.getLogger(RemoveRoleCommandIT.class);
 
     @Autowired
-    private GrantPrincipalActionCommand grantUserActionCommand;
+    private RemoveRoleCommand removeRoleCommand;
 
     @Test
     public void success() throws IAMException {
+        var Result = this.removeRoleCommand.execute(new RemoveRoleCommand.Input(new RoleId(3L)));
 
-        LOG.info("Grant User Action : [{}]", this.grantUserActionCommand.execute(new GrantPrincipalActionCommand.Input(new PrincipalId(1111111111111111L), new ActionId(1L))));
+        LOGGER.info("Boolean {}",Result.resultCode());
     }
-
 }

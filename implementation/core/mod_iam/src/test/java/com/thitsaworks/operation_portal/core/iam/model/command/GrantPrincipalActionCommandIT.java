@@ -1,8 +1,9 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
-import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.core.iam.command.EditRoleCommand;
+import com.thitsaworks.operation_portal.core.iam.command.GrantPrincipalActionCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
@@ -18,16 +19,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(
     classes = {
         IAMConfiguration.class, TestSettings.class})
-public class EditRoleCommandIT extends BaseVaultSetUpTest {
-    private static  final Logger LOGGER= LoggerFactory.getLogger(EditRoleCommandIT.class);
+public class GrantPrincipalActionCommandIT extends BaseVaultSetUpTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GrantPrincipalActionCommandIT.class);
 
     @Autowired
-    private EditRoleCommand editCommand;
+    private GrantPrincipalActionCommand grantUserActionCommand;
 
     @Test
     public void success() throws IAMException {
-        var success = this.editCommand.execute(new EditRoleCommand.Input(new RoleId(4L),"hi-User"));
 
-        LOGGER.info("Boolean {}", success.resultCode());
+        LOG.info("Grant User Action : [{}]", this.grantUserActionCommand.execute(new GrantPrincipalActionCommand.Input(new PrincipalId(1111111111111111L), new ActionId(740551758871244800L))));
     }
+
 }

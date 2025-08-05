@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CreateMenuCommandHandler implements CreateMenuCommand {
 
-    private MenuRepository menuRepository;
+    private final MenuRepository menuRepository;
 
     @Override
     @CoreWriteTransactional

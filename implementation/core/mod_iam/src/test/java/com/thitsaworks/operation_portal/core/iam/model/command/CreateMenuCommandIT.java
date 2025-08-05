@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
-import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.core.iam.command.CreateOrUpdateActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.CreateMenuCommand;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
 import org.junit.jupiter.api.Test;
@@ -16,17 +16,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
     classes = {IAMConfiguration.class, TestSettings.class})
-public class CreateOrUpdateIAMActionCommandIT extends BaseVaultSetUpTest {
+public class CreateMenuCommandIT extends BaseVaultSetUpTest {
 
-    public static  final Logger LOGGER = LoggerFactory.getLogger(CreateOrUpdateIAMActionCommandIT.class);
+    private final Logger LOGGER = LoggerFactory.getLogger(CreateMenuCommandIT.class);
 
     @Autowired
-    private CreateOrUpdateActionCommand createOrUpdateActionCommand;
+    private CreateMenuCommand createMenuCommand;
 
     @Test
-    public void success(){
-        var success= this.createOrUpdateActionCommand.execute(new CreateOrUpdateActionCommand.Input(new ActionCode("UpdateParticipantAmount"), "hi", "Automatically registered action for use case: UpdateParticipantAmountHandler"));
+    public void success() throws IAMException {
+        var result = this.createMenuCommand.execute(new CreateMenuCommand.Input("hi",
+                                                                                "1",
+                                                                                true));
 
-            LOGGER.info("ActionId {}",success.actionId());
+        LOGGER.info("Boolean{}",result.menuId());
     }
 }

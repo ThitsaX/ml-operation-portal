@@ -1,8 +1,11 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
-import com.thitsaworks.operation_portal.core.iam.command.EditRoleCommand;
+import com.thitsaworks.operation_portal.core.iam.command.GrantMenuActionByIdCommand;
+import com.thitsaworks.operation_portal.core.iam.command.GrantRoleActionByIdCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.iam.model.TestSettings;
@@ -18,16 +21,18 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ContextConfiguration(
     classes = {
         IAMConfiguration.class, TestSettings.class})
-public class EditRoleCommandIT extends BaseVaultSetUpTest {
-    private static  final Logger LOGGER= LoggerFactory.getLogger(EditRoleCommandIT.class);
+public class GrantMenuActionByIdCommandIT extends BaseVaultSetUpTest {
+
+    private static final Logger LOGGER= LoggerFactory.getLogger(GrantMenuActionByIdCommandIT.class);
 
     @Autowired
-    private EditRoleCommand editCommand;
+    private GrantMenuActionByIdCommand grantMenuActionByIdCommand;
 
     @Test
     public void success() throws IAMException {
-        var success = this.editCommand.execute(new EditRoleCommand.Input(new RoleId(4L),"hi-User"));
+        var success = this.grantMenuActionByIdCommand.execute(new GrantMenuActionByIdCommand.Input(new MenuId(2L),
+                                                                                                   new ActionId(740551759743660032L)));
 
-        LOGGER.info("Boolean {}", success.resultCode());
+        LOGGER.info("Boolean {}",success.resultCode());
     }
 }
