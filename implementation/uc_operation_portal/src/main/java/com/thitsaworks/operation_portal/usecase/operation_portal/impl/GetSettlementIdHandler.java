@@ -1,9 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIdsQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -15,9 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class GetSettlementIdHandler extends OperationPortalUseCase<GetSettlementId.Input, GetSettlementId.Output>
@@ -25,17 +21,13 @@ public class GetSettlementIdHandler extends OperationPortalUseCase<GetSettlement
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementIdHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
-
     private final GetSettlementIdsQuery getSettlementIdsQuery;
 
     public GetSettlementIdHandler(PrincipalCache principalCache,
                                   ActionAuthorizationManager actionAuthorizationManager,
                                   GetSettlementIdsQuery getSettlementIdsQuery) {
 
-        super(PERMITTED_ROLES,
-              principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getSettlementIdsQuery = getSettlementIdsQuery;
     }

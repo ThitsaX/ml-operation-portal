@@ -25,8 +25,6 @@ public class CreateApprovalRequestHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateApprovalRequestHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
-
     private final CreateApprovalRequestCommand createApprovalRequestCommand;
 
     public CreateApprovalRequestHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -40,7 +38,6 @@ public class CreateApprovalRequestHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

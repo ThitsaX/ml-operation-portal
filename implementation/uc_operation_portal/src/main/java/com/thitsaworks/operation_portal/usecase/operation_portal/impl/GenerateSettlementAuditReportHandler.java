@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -18,16 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class GenerateSettlementAuditReportHandler
-        extends OperationPortalAuditableUseCase<GenerateSettlementAuditReport.Input, GenerateSettlementAuditReport.Output>
-        implements GenerateSettlementAuditReport {
+    extends OperationPortalAuditableUseCase<GenerateSettlementAuditReport.Input, GenerateSettlementAuditReport.Output>
+    implements GenerateSettlementAuditReport {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementAuditReportHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
 
     private final GenerateSettlementAuditReportCommand generateSettlementAuditReportCommand;
 
@@ -45,7 +41,6 @@ public class GenerateSettlementAuditReportHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -57,25 +52,29 @@ public class GenerateSettlementAuditReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        String dfspName = input.dfspId().equalsIgnoreCase("all") ? input.dfspId() : "";
+        String
+            dfspName =
+            input.dfspId()
+                 .equalsIgnoreCase("all") ? input.dfspId() : "";
 
-        if (!input.dfspId().equalsIgnoreCase("all")) {
+        if (!input.dfspId()
+                  .equalsIgnoreCase("all")) {
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.dfspId());
 
-            dfspName = optionalParticipantData.isEmpty() ? input.dfspId() : optionalParticipantData.get().description();
+            dfspName =
+                optionalParticipantData.isEmpty() ? input.dfspId() : optionalParticipantData.get()
+                                                                                            .description();
         }
 
-
-
         GenerateSettlementAuditReportCommand.Output output =
-                this.generateSettlementAuditReportCommand.execute(new GenerateSettlementAuditReportCommand.Input(input.startDate(),
-                                                                                                                 input.endDate(),
-                                                                                                                 input.dfspId(),
-                                                                                                                 dfspName,
-                                                                                                                 input.currencyId(),
-                                                                                                                 input.fileType(),
-                                                                                                                 input.timezone()));
+            this.generateSettlementAuditReportCommand.execute(new GenerateSettlementAuditReportCommand.Input(input.startDate(),
+                                                                                                             input.endDate(),
+                                                                                                             input.dfspId(),
+                                                                                                             dfspName,
+                                                                                                             input.currencyId(),
+                                                                                                             input.fileType(),
+                                                                                                             input.timezone()));
 
         return new Output(output.reportData());
     }

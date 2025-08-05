@@ -26,8 +26,6 @@ public class ModifyExistingUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingUserHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
-
     private final ModifyParticipantUserCommand modifyParticipantUserCommand;
 
     private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
@@ -44,7 +42,6 @@ public class ModifyExistingUserHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

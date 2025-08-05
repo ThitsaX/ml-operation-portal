@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -17,17 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class ModifyContactHandler
     extends OperationPortalAuditableUseCase<ModifyContact.Input, ModifyContact.Output>
     implements ModifyContact {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyContactHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
 
     private final ModifyContactCommand modifyContactCommand;
 
@@ -46,7 +40,6 @@ public class ModifyContactHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -58,11 +51,10 @@ public class ModifyContactHandler
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
-        
-         this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
+
+        this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
             input.contactId(),
             input.participantId()));
-
 
         var output = this.modifyContactCommand.execute(new ModifyContactCommand.Input(input.participantId(),
                                                                                       input.contactId(),

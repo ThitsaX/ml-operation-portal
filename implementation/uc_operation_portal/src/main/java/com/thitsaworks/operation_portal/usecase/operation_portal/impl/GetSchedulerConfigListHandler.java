@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Handler for retrieving all scheduler configurations with optional filtering and sorting.
@@ -29,11 +27,6 @@ public class GetSchedulerConfigListHandler
     implements GetSchedulerConfigList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSchedulerConfigListHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(
-        UserRoleType.OPERATION,
-        UserRoleType.ADMIN
-                                                                   );
 
     private final SchedulerConfigQuery schedulerConfigQuery;
 
@@ -52,7 +45,6 @@ public class GetSchedulerConfigListHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

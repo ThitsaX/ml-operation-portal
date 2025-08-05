@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
@@ -25,7 +24,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class GetParticipantPositionsHandler
@@ -33,9 +31,6 @@ public class GetParticipantPositionsHandler
     implements GetParticipantPositions {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
 
     private final GetParticipantPositionsDataQuery getParticipantPositionsDataQuery;
 
@@ -52,7 +47,7 @@ public class GetParticipantPositionsHandler
                                           ParticipantNDCQuery participantNDCQuery,
                                           ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(PERMITTED_ROLES, principalCache, actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getParticipantPositionsDataQuery = getParticipantPositionsDataQuery;
         this.participantCache = participantCache;

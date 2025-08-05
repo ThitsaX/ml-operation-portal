@@ -34,10 +34,10 @@ public class GetAnnouncementInfoListHandler implements GetAnnouncementInfoList {
         for (AnnouncementData announcementData : announcementDataList) {
 
             announcementInfoList.add(
-                    new Output.AnnouncementInfo(announcementData.announcementId(),
-                                                               announcementData.announcementTitle(),
-                                                               announcementData.announcementDetail(),
-                                                               announcementData.announcementDate()));
+                new Output.AnnouncementInfo(announcementData.announcementId(),
+                                            announcementData.announcementTitle(),
+                                            announcementData.announcementDetail(),
+                                            announcementData.announcementDate()));
         }
 
         return new Output(announcementInfoList);

@@ -25,9 +25,6 @@ public class ChangeCurrentPasswordHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ChangeCurrentPasswordHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final ChangePasswordCommand changePasswordCommand;
 
     @Autowired
@@ -42,7 +39,6 @@ public class ChangeCurrentPasswordHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
