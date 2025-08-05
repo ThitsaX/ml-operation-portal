@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
-import com.thitsaworks.operation_portal.component.common.identifier.PrincipalRoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
 import jakarta.validation.Valid;
@@ -29,12 +28,18 @@ public class AssignRoleToUserController {
     @PostMapping("/secured/assignRoleToUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Assign Role To User Request : [{}]", request);
+
         var
             output =
             this.assignRoleToUser.execute(new AssignRoleToUser.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                      new RoleId(Long.parseLong(request.roleId()))));
 
-        var response = new Response(output.principalRoleId().getId().toString());
+        var response = new Response(output.principalRoleId()
+                                          .getId()
+                                          .toString());
+
+        LOG.info("Assign Role To User Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
