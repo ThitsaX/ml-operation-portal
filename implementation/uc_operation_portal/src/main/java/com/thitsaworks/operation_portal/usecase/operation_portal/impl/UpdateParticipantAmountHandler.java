@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hub_services.HubClient;
+import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -29,7 +29,7 @@ public class UpdateParticipantAmountHandler
 
     private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
-    private final HubClient hubClient;
+    private final ParticipantHubClient participantHubClient;
 
     @Autowired
     public UpdateParticipantAmountHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -37,7 +37,7 @@ public class UpdateParticipantAmountHandler
                                           CreateExceptionAuditCommand createExceptionAuditCommand,
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
-                                          HubClient hubClient) {
+                                          ParticipantHubClient participantHubClient) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,7 +46,7 @@ public class UpdateParticipantAmountHandler
               objectMapper,
               principalCache);
 
-        this.hubClient = hubClient;
+        this.participantHubClient = participantHubClient;
     }
 
     @Override
@@ -60,9 +60,9 @@ public class UpdateParticipantAmountHandler
                                                                                     input.amount(),
                                                                                     input.extensionList());
 
-        PostParticipantBalance.Response response = this.hubClient.postParticipantBalance(input.participantId(),
-                                                                                         input.accountId(),
-                                                                                         request);
+        PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(input.participantId(),
+                                                                                                    input.accountId(),
+                                                                                                    request);
 
         return new Output(response.accessKey(), response.secretKey());
     }

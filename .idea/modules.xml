@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ml-operation-portal.iml" filepath="$PROJECT_DIR$/.idea/ml-operation-portal.iml" />
       <module fileurl="file://$PROJECT_DIR$/implementation/reporting/mod_central_ledger/mod_central_ledger.iml" filepath="$PROJECT_DIR$/implementation/reporting/mod_central_ledger/mod_central_ledger.iml" />
+      <module fileurl="file://$PROJECT_DIR$/implementation/core/mod_home_message/mod_home_message.iml" filepath="$PROJECT_DIR$/implementation/core/mod_home_message/mod_home_message.iml" />
       <module fileurl="file://$PROJECT_DIR$/implementation/core/mod_hubuser/mod_hubuser.iml" filepath="$PROJECT_DIR$/implementation/core/mod_hubuser/mod_hubuser.iml" />
       <module fileurl="file://$PROJECT_DIR$/implementation/reporting/reporting.iml" filepath="$PROJECT_DIR$/implementation/reporting/reporting.iml" />
       <module fileurl="file://$PROJECT_DIR$/implementation/uc_central_ledger/uc_central_ledger.iml" filepath="$PROJECT_DIR$/implementation/uc_central_ledger/uc_central_ledger.iml" />
