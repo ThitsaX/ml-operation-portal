@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.Set;
 
 @Service
 public class ModifyParticipantNDCHandler
@@ -25,15 +23,11 @@ public class ModifyParticipantNDCHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantNDCHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
 
     public ModifyParticipantNDCHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
-                                       Set<UserRoleType> permittedRoles,
                                        ObjectMapper objectMapper,
                                        PrincipalCache principalCache,
                                        ModifyParticipantNDCCommand modifyParticipantNDCCommand,
@@ -42,7 +36,6 @@ public class ModifyParticipantNDCHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              permittedRoles,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

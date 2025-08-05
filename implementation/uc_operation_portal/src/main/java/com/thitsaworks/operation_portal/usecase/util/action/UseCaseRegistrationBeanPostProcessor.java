@@ -40,8 +40,7 @@ public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
                     manager.registerAction(
                         actionName,
                         "OPERATION_PORTAL",
-                        "Automatically registered action for use case: " + simpleName
-                                          );
+                        "Automatically registered action for use case: " + simpleName);
                 } else {
                     LOG.warn("ActionAuthorizationManager not available when registering action: {}", actionName);
                 }

@@ -24,9 +24,6 @@ public class CreateNewLiquidityProfileHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewLiquidityProfileHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final CreateLiquidityProfileCommand createLiquidityProfileCommand;
 
     public CreateNewLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -40,7 +37,6 @@ public class CreateNewLiquidityProfileHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

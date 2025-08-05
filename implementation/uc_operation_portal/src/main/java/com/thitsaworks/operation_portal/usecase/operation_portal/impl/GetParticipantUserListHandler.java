@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class GetParticipantUserListHandler
@@ -29,8 +27,6 @@ public class GetParticipantUserListHandler
     implements GetParticipantUserList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN);
 
     private final ParticipantUserQuery participantUserQuery;
 
@@ -47,7 +43,6 @@ public class GetParticipantUserListHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -79,7 +74,7 @@ public class GetParticipantUserListHandler
                                                                  participantUserData.jobTitle(),
                                                                  null,
                                                                  principalData.principalStatus()
-                                                                             .toString(),
+                                                                              .toString(),
                                                                  Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 

@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -15,17 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
 public class CreateSchedulerConfigHandler
     extends OperationPortalAuditableUseCase<CreateSchedulerConfig.Input, CreateSchedulerConfig.Output>
     implements CreateSchedulerConfig {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSchedulerConfigHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
 
     private final CreateOrUpdateSchedulerConfigCommand createSchedulerConfigCommand;
 
@@ -40,7 +34,6 @@ public class CreateSchedulerConfigHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

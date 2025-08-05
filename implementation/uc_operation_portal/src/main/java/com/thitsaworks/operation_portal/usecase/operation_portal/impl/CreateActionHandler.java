@@ -24,9 +24,6 @@ public class CreateActionHandler extends OperationPortalAuditableUseCase<CreateA
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateActionHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final CreateOrUpdateActionCommand createOrUpdateActionCommand;
 
     public CreateActionHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -40,7 +37,6 @@ public class CreateActionHandler extends OperationPortalAuditableUseCase<CreateA
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);

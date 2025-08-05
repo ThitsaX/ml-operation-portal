@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -13,18 +12,11 @@ import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateGreeting;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
-public class UpdateGreetingHandler extends OperationPortalAuditableUseCase<UpdateGreeting.Input,UpdateGreeting.Output>
+public class UpdateGreetingHandler extends OperationPortalAuditableUseCase<UpdateGreeting.Input, UpdateGreeting.Output>
     implements UpdateGreeting {
 
     private final UpdateGreetingCommand updateGreetingCommand;
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.ADMIN,
-                                                                    UserRoleType.OPERATION,
-                                                                    UserRoleType.REPORTING,
-                                                                    UserRoleType.SUPERUSER);
 
     public UpdateGreetingHandler(CreateInputAuditCommand createInputAuditCommand,
                                  CreateOutputAuditCommand createOutputAuditCommand,
@@ -37,7 +29,6 @@ public class UpdateGreetingHandler extends OperationPortalAuditableUseCase<Updat
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
               principalCache,
               actionAuthorizationManager);
@@ -54,7 +45,7 @@ public class UpdateGreetingHandler extends OperationPortalAuditableUseCase<Updat
                                                                                         input.isDeleted(),
                                                                                         input.greetingDate()));
 
-        return  new Output(output.greetingId());
+        return new Output(output.greetingId());
     }
 
 }

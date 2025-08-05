@@ -16,16 +16,14 @@ public class GenerateAuditReportHandler implements GenerateAuditReport {
     public Output execute(Input input) throws ReportException {
 
         var
-            realmId =
-            input.realmId() == null ? null : input.realmId()
-                                                  .getEntityId()
-                                                  .toString();
-
-        var
-            userId =
-            input.participantUserId() == null ? null : input.participantUserId()
+            realmId = input.realmId() == null ? null : input.realmId()
                                                             .getEntityId()
                                                             .toString();
+
+        var
+            userId = input.participantUserId() == null ? null : input.participantUserId()
+                                                                     .getEntityId()
+                                                                     .toString();
 
         var output = this.generateAuditReportCommand.execute(new GenerateAuditReportCommand.Input(realmId,
                                                                                                   input.fromDate(),

@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hubuser.command.CreateGreetingMessageCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -11,9 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.EnumSet;
-import java.util.Set;
-
 @Service
 public class CreateGreetingMessageHandler
     extends OperationPortalUseCase<CreateGreetingMessage.Input, CreateGreetingMessage.Output>
@@ -21,15 +17,14 @@ public class CreateGreetingMessageHandler
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateGreetingMessageHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
-
     private final CreateGreetingMessageCommand createGreetingMessageCommand;
 
     public CreateGreetingMessageHandler(PrincipalCache principalCache,
                                         CreateGreetingMessageCommand createGreetingMessageCommand,
                                         ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(PERMITTED_ROLES, principalCache, actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
+
         this.createGreetingMessageCommand = createGreetingMessageCommand;
     }
 
