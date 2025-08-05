@@ -1,14 +1,14 @@
-package com.thitsaworks.operation_portal.core.hubuser.query.impl.jpa;
+package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.data.GreetingData;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserErrors;
-import com.thitsaworks.operation_portal.core.hubuser.exception.HubUserException;
-import com.thitsaworks.operation_portal.core.hubuser.model.QGreetingMessage;
-import com.thitsaworks.operation_portal.core.hubuser.model.repository.GreetingRepository;
-import com.thitsaworks.operation_portal.core.hubuser.query.GreetingQuery;
+import com.thitsaworks.operation_portal.core.participant.data.GreetingData;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.QGreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.repository.GreetingRepository;
+import com.thitsaworks.operation_portal.core.participant.query.GreetingQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +39,7 @@ public class GreetingQueryHandler implements GreetingQuery {
 
 
     @Override
-    public GreetingData get(GreetingId greetingId) throws HubUserException {
+    public GreetingData get(GreetingId greetingId) throws ParticipantException {
         BooleanExpression predicate = this.greeting.greetingId.eq(greetingId);
 
 
@@ -48,7 +48,7 @@ public class GreetingQueryHandler implements GreetingQuery {
                                                                         Greeting.getGreetingTitle(),
                                                                         Greeting.getGreetingDetail(),
                                                                         Greeting.isDeleted()))
-                                      .orElseThrow(() -> new HubUserException(HubUserErrors.GREETING_NOT_FOUND));
+                                      .orElseThrow(() -> new ParticipantException(ParticipantErrors.GREETING_NOT_FOUND));
 
     }
 }

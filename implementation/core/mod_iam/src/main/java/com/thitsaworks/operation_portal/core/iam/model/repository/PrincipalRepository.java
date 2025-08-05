@@ -4,7 +4,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import com.thitsaworks.operation_portal.core.iam.model.QPrincipal;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,11 +23,6 @@ public interface PrincipalRepository
         public static BooleanExpression withPrincipalId(PrincipalId principalId) {
 
             return QPrincipal.principal.principalId.eq(principalId);
-        }
-
-        public static BooleanExpression withRealm(RealmType realmType) {
-
-            return QPrincipal.principal.realmType.eq(realmType);
         }
 
         public static BooleanExpression withAccessKey(AccessKey accessKey) {

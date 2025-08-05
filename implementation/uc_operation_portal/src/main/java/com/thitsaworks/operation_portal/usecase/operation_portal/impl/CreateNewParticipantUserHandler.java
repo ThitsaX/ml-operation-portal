@@ -69,17 +69,18 @@ public class CreateNewParticipantUserHandler
 
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
-        } else {
-
-            if (principalData.realmId() != null &&
-                    !principalData.realmId()
-                                  .getId()
-                                  .equals(input.participantId()
-                                               .getId())) {
-
-                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
-            }
         }
+//        else {
+//
+//            if (principalData.realmId() != null &&
+//                    !principalData.realmId()
+//                                  .getId()
+//                                  .equals(input.participantId()
+//                                               .getId())) {
+//
+//                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
+//            }
+//        }
 
         CreateParticipantUserCommand.Output output = this.createParticipantUserCommand.execute(
             new CreateParticipantUserCommand.Input(input.name(), input.email(), input.participantId(),
@@ -87,7 +88,6 @@ public class CreateNewParticipantUserHandler
 
         this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.participantUserId()
                                                                                                    .getId()),
-                                                                             input.realmType(),
                                                                              input.password(),
                                                                              new RealmId(input.participantId()
                                                                                               .getId()),

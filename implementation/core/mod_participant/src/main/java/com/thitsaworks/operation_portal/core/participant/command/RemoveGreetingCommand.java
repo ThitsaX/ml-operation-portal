@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.hubuser.command;
+package com.thitsaworks.operation_portal.core.participant.command;
 
 public interface RemoveGreetingCommand {
 

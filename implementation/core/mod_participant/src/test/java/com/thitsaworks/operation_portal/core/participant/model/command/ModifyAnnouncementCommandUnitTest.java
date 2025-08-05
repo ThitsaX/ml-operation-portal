@@ -1,9 +1,9 @@
-package com.thitsaworks.operation_portal.hubuser.domain.command;
+package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.operation_portal.core.hubuser.command.ModifyAnnouncementCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyAnnouncementCommand;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.hubuser.data;
+package com.thitsaworks.operation_portal.core.participant.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 

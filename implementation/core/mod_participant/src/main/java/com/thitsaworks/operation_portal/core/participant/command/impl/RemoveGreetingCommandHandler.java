@@ -1,16 +1,17 @@
-package com.thitsaworks.operation_portal.core.hubuser.command.impl;
+package com.thitsaworks.operation_portal.core.participant.command.impl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveGreetingCommand;
-import com.thitsaworks.operation_portal.core.hubuser.model.GreetingMessage;
-import com.thitsaworks.operation_portal.core.hubuser.model.QGreetingMessage;
-import com.thitsaworks.operation_portal.core.hubuser.model.repository.GreetingRepository;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveGreetingCommand;
+import com.thitsaworks.operation_portal.core.participant.model.GreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.QGreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.repository.GreetingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;

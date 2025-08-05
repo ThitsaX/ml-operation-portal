@@ -1,7 +1,7 @@
-package com.thitsaworks.operation_portal.hubuser.domain.command;
+package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveAnnouncementsCommand;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

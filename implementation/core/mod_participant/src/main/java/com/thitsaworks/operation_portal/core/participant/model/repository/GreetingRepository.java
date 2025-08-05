@@ -1,9 +1,9 @@
-package com.thitsaworks.operation_portal.core.hubuser.model.repository;
+package com.thitsaworks.operation_portal.core.participant.model.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
-import com.thitsaworks.operation_portal.core.hubuser.model.GreetingMessage;
-import com.thitsaworks.operation_portal.core.hubuser.model.QGreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.GreetingMessage;
+import com.thitsaworks.operation_portal.core.participant.model.QGreetingMessage;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 

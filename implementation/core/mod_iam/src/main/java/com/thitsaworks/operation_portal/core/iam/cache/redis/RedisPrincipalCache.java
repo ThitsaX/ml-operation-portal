@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.core.iam.cache.redis;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -68,22 +67,6 @@ public class RedisPrincipalCache implements PrincipalCache {
         RMapCache<Long, PrincipalData> withId = this.redissonClient.getMapCache(WITH_ID);
 
         return withId.get(principalId.getId());
-
-    }
-
-    @Override
-    public PrincipalData get(AccessKey accessKey, RealmType realmType) {
-
-        RMapCache<Long, PrincipalData> withAccessKey = this.redissonClient.getMapCache(WITH_ACCESS_KEY);
-
-        var data = withAccessKey.get(accessKey.getId());
-
-        if (data == null) {
-            return null;
-        }
-
-        return data.realmType()
-                   .equals(realmType) ? data : null;
 
     }
 

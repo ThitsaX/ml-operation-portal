@@ -4,7 +4,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 
 import java.io.Serializable;
@@ -15,8 +14,6 @@ public record PrincipalData(PrincipalId principalId,
 
                             String secretKey,
 
-                            RealmType realmType,
-
                             RealmId realmId,
 
                             PrincipalStatus principalStatus) implements Serializable {
@@ -26,7 +23,6 @@ public record PrincipalData(PrincipalId principalId,
         this(principal.getPrincipalId(),
              principal.getAccessKey(),
              principal.getSecretKey(),
-             principal.getRealmType(),
              principal.getRealmId(),
              principal.getPrincipalStatus());
     }

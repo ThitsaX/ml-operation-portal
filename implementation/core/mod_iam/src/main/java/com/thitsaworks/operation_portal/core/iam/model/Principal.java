@@ -4,7 +4,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.security.OperationPortalCrypto;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -50,10 +49,6 @@ public class Principal extends JpaEntity<PrincipalId> {
     @Column(name = "secret_key")
     protected String secretKey;
 
-    @Column(name = "realm")
-    @Enumerated(EnumType.STRING)
-    protected RealmType realmType;
-
     @Embedded
     protected RealmId realmId;
 
@@ -96,7 +91,6 @@ public class Principal extends JpaEntity<PrincipalId> {
     }
 
     public Principal(PrincipalId principalId,
-                     RealmType realmType,
                      String sha256PasswordHex,
                      RealmId realmId,
                      PrincipalStatus principalStatus) {
@@ -107,7 +101,6 @@ public class Principal extends JpaEntity<PrincipalId> {
         this.secretKey =
             UUID.randomUUID()
                 .toString();
-        this.realmType = realmType;
         this.realmId = realmId;
         this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(sha256PasswordHex);
         this.principalStatus = principalStatus;

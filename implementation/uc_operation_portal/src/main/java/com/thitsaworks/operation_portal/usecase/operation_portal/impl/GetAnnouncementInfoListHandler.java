@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.core.hubuser.data.AnnouncementData;
-import com.thitsaworks.operation_portal.core.hubuser.query.AnnouncementQuery;
+import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
+import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementInfoList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

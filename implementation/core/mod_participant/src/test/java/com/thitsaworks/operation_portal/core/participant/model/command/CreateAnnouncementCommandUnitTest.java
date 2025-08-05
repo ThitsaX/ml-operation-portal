@@ -1,9 +1,9 @@
-package com.thitsaworks.operation_portal.hubuser.domain.command;
+package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
-import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
-import com.thitsaworks.operation_portal.core.hubuser.command.CreateAnnouncementCommand;
-import com.thitsaworks.operation_portal.hubuser.domain.TestSettings;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
+import com.thitsaworks.operation_portal.core.participant.command.CreateAnnouncementCommand;
+import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.time.Instant;
 import java.util.Calendar;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {HubUserConfiguration.class, TestSettings.class})
+@ContextConfiguration(classes = {ParticipantConfiguration.class, TestSettings.class})
 public class CreateAnnouncementCommandUnitTest extends EnvAwareUnitTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateAnnouncementCommandUnitTest.class);
