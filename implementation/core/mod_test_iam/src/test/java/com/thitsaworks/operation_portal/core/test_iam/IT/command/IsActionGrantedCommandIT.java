@@ -28,6 +28,6 @@ public class IsActionGrantedCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Is Granted : [{}]", this.isActionGrantedCommand.execute(new IsActionGrantedCommand.Input(new UserId(1111111111111111L), new ActionCode(""))));
+        LOG.info("Is Granted : [{}]", this.isActionGrantedCommand.execute(new IsActionGrantedCommand.Input(new UserId(1111111111111111L), new ActionCode("CreateNewParticipant"))));
     }
 }
