@@ -6,14 +6,11 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public interface GrantUserAction extends UseCase<GrantUserAction.Input,GrantUserAction.Output> {
+public interface GrantUserActions extends UseCase<GrantUserActions.Input, GrantUserActions.Output> {
 
-
-    record Input(List<UserGrant> userGrantList) {
-        public record UserGrant(PrincipalId principalId, ActionId actionId){}
-    }
+    record Input(PrincipalId principalId,
+                 List<ActionId> actionIdList) { }
 
     record Output(boolean resultCode) { }
-
 
 }

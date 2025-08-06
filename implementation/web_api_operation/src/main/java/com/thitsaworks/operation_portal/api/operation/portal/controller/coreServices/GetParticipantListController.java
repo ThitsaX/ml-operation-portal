@@ -21,9 +21,9 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetParticipantsListController {
+public class GetParticipantListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantsListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantListController.class);
 
     private final GetParticipantList getParticipantList;
 
