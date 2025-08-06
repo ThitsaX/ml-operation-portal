@@ -13,7 +13,7 @@ import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipant;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetExistingParticipantHandler
-    extends OperationPortalAuditableUseCase<GetExistingParticipant.Input, GetExistingParticipant.Output>
-    implements GetExistingParticipant {
+public class GetParticipantHandler
+    extends OperationPortalAuditableUseCase<GetParticipant.Input, GetParticipant.Output>
+        implements GetParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantHandler.class);
 
     private final ParticipantQuery participantQuery;
 
@@ -36,15 +36,15 @@ public class GetExistingParticipantHandler
 
     private final LiquidityProfileQuery liquidityProfileQuery;
 
-    public GetExistingParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
-                                         ActionAuthorizationManager actionAuthorizationManager,
-                                         ParticipantQuery participantQuery,
-                                         ContactQuery contactQuery,
-                                         LiquidityProfileQuery liquidityProfileQuery) {
+    public GetParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
+                                 CreateOutputAuditCommand createOutputAuditCommand,
+                                 CreateExceptionAuditCommand createExceptionAuditCommand,
+                                 ObjectMapper objectMapper,
+                                 PrincipalCache principalCache,
+                                 ActionAuthorizationManager actionAuthorizationManager,
+                                 ParticipantQuery participantQuery,
+                                 ContactQuery contactQuery,
+                                 LiquidityProfileQuery liquidityProfileQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

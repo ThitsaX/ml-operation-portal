@@ -5,8 +5,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 
-public interface GetExistingUser extends
-                                            UseCase<GetExistingUser.Input, GetExistingUser.Output> {
+public interface GetUser extends
+                                            UseCase<GetUser.Input, GetUser.Output> {
 
     record Input(UserId userId) {}
 

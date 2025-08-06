@@ -17,18 +17,18 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveExistingParticipantUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RemoveExistingParticipantUserHandler
-    extends OperationPortalAuditableUseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output>
-    implements RemoveExistingParticipantUser {
+public class RemoveUserHandler
+    extends OperationPortalAuditableUseCase<RemoveUser.Input, RemoveUser.Output>
+        implements RemoveUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveUserHandler.class);
 
     private final RemoveParticipantUserCommand removeParticipantUserCommand;
 
@@ -36,14 +36,14 @@ public class RemoveExistingParticipantUserHandler
 
     private final PrincipalCache principalCache;
 
-    public RemoveExistingParticipantUserHandler(CreateInputAuditCommand createInputAuditCommand,
-                                                CreateOutputAuditCommand createOutputAuditCommand,
-                                                CreateExceptionAuditCommand createExceptionAuditCommand,
-                                                ObjectMapper objectMapper,
-                                                PrincipalCache principalCache,
-                                                ActionAuthorizationManager actionAuthorizationManager,
-                                                RemoveParticipantUserCommand removeParticipantUserCommand,
-                                                ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
+    public RemoveUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                             CreateOutputAuditCommand createOutputAuditCommand,
+                             CreateExceptionAuditCommand createExceptionAuditCommand,
+                             ObjectMapper objectMapper,
+                             PrincipalCache principalCache,
+                             ActionAuthorizationManager actionAuthorizationManager,
+                             RemoveParticipantUserCommand removeParticipantUserCommand,
+                             ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -89,7 +89,7 @@ public class RemoveExistingParticipantUserHandler
                                                                          .getId()),
                                                    PrincipalStatus.INACTIVE));
 
-        return new RemoveExistingParticipantUser.Output(output.removed(), output.participantUserId());
+        return new RemoveUser.Output(output.removed(), output.participantUserId());
 
     }
 

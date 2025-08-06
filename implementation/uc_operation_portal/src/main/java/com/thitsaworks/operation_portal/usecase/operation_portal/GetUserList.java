@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetParticipantUserList extends
-                                       UseCase<GetParticipantUserList.Input, GetParticipantUserList.Output> {
+public interface GetUserList extends
+                                       UseCase<GetUserList.Input, GetUserList.Output> {
 
      record Input(ParticipantId participantId) {}
 

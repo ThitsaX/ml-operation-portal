@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -17,18 +18,18 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewParticipantUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CreateNewParticipantUserHandler
-    extends OperationPortalAuditableUseCase<CreateNewParticipantUser.Input, CreateNewParticipantUser.Output>
-    implements CreateNewParticipantUser {
+public class CreateUserHandler
+        extends OperationPortalAuditableUseCase<CreateUser.Input, CreateUser.Output>
+        implements CreateUser {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantUserHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateUserHandler.class);
 
     private final CreateParticipantUserCommand createParticipantUserCommand;
 
@@ -36,14 +37,14 @@ public class CreateNewParticipantUserHandler
 
     private final PrincipalCache principalCache;
 
-    public CreateNewParticipantUserHandler(CreateInputAuditCommand createInputAuditCommand,
-                                           CreateOutputAuditCommand createOutputAuditCommand,
-                                           CreateExceptionAuditCommand createExceptionAuditCommand,
-                                           ObjectMapper objectMapper,
-                                           PrincipalCache principalCache,
-                                           ActionAuthorizationManager actionAuthorizationManager,
-                                           CreateParticipantUserCommand createParticipantUserCommand,
-                                           CreatePrincipalCommand createPrincipalCommand) {
+    public CreateUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                             CreateOutputAuditCommand createOutputAuditCommand,
+                             CreateExceptionAuditCommand createExceptionAuditCommand,
+                             ObjectMapper objectMapper,
+                             PrincipalCache principalCache,
+                             ActionAuthorizationManager actionAuthorizationManager,
+                             CreateParticipantUserCommand createParticipantUserCommand,
+                             CreatePrincipalCommand createPrincipalCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -70,27 +71,19 @@ public class CreateNewParticipantUserHandler
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         }
-//        else {
-//
-//            if (principalData.realmId() != null &&
-//                    !principalData.realmId()
-//                                  .getId()
-//                                  .equals(input.participantId()
-//                                               .getId())) {
-//
-//                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
-//            }
-//        }
 
         CreateParticipantUserCommand.Output output = this.createParticipantUserCommand.execute(
-            new CreateParticipantUserCommand.Input(input.name(), input.email(), input.participantId(),
+                new CreateParticipantUserCommand.Input(input.name(),
+                                                       input.email(),
+                                                       new ParticipantId(principalData.realmId()
+                                                                                      .getId()),
                                                    input.firstName(), input.lastName(), input.jobTitle()));
 
         this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.participantUserId()
                                                                                                    .getId()),
                                                                              input.password(),
-                                                                             new RealmId(input.participantId()
-                                                                                              .getId()),
+                                                                             new RealmId(principalData.realmId()
+                                                                                                      .getId()),
                                                                              input.activeStatus()));
 
         return new Output(output.created());

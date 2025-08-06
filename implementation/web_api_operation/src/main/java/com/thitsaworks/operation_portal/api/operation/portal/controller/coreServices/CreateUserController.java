@@ -4,11 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewParticipantUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -25,34 +24,33 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateNewUserController {
+public class CreateUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateUserController.class);
 
-    private final CreateNewParticipantUser createNewParticipantUser;
+    private final CreateUser createUser;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping(value = "/secured/createNewUser")
+    @PostMapping(value = "/secured/createUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Create new participant user request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Create user request: {}", objectMapper.writeValueAsString(request));
 
-        CreateNewParticipantUser.Output output = this.createNewParticipantUser.execute(
-            new CreateNewParticipantUser.Input(request.name,
-                                               new Email(request.email),
-                                               request.password,
-                                               request.firstName,
-                                               request.lastName,
-                                               request.jobTitle,
-                                               new ParticipantId(Long.parseLong(request.participantId)),
-                                               request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
+        CreateUser.Output output = this.createUser.execute(
+                new CreateUser.Input(request.name,
+                                     new Email(request.email),
+                                     request.password,
+                                     request.firstName,
+                                     request.lastName,
+                                     request.jobTitle,
+                                     request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
                                                    PrincipalStatus.INACTIVE));
 
         Response response = new Response(output.created());
 
-        LOG.info("Create new  user response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Create user response: {}", objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -68,7 +66,6 @@ public class CreateNewUserController {
         @NotNull @JsonProperty("firstName") String firstName,
         @NotNull @JsonProperty("lastName") String lastName,
         @NotNull @JsonProperty("jobTitle") String jobTitle,
-        @NotNull @JsonProperty("participantId") String participantId,
         @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 
     }

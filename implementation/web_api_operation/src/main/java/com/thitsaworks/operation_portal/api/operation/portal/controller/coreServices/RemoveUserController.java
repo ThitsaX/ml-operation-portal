@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveExistingParticipantUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,26 +23,26 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class RemoveExistingParticipantUserController {
+public class RemoveUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveUserController.class);
 
-    private final RemoveExistingParticipantUser removeExistingParticipantUser;
+    private final RemoveUser removeUser;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/removeParticipantUser")
+    @PostMapping("/secured/removeUser")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove participant user request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Remove user request : {}", this.objectMapper.writeValueAsString(request));
 
-        RemoveExistingParticipantUser.Output output = this.removeExistingParticipantUser.execute(
-            new RemoveExistingParticipantUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                                    new ParticipantUserId(Long.parseLong(request.participantUserId()))));
+        RemoveUser.Output output = this.removeUser.execute(
+                new RemoveUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
+                                     new ParticipantUserId(Long.parseLong(request.participantUserId()))));
         var response = new Response(output.removed());
 
-        LOG.info("Remove participant user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Remove user response : {}", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

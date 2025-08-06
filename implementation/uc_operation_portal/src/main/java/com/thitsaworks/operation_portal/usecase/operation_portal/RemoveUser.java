@@ -4,8 +4,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface RemoveExistingParticipantUser extends
-                                               UseCase<RemoveExistingParticipantUser.Input, RemoveExistingParticipantUser.Output> {
+public interface RemoveUser extends
+                                               UseCase<RemoveUser.Input, RemoveUser.Output> {
 
     record Input(ParticipantId participantId,
                  ParticipantUserId participantUserId) { }

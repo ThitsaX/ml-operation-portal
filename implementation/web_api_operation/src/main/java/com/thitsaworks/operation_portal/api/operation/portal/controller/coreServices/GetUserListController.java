@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +21,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetParticipantUserListController {
+public class GetUserListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserListController.class);
 
-    private final GetParticipantUserList getParticipantUserList;
+    private final GetUserList getUserList;
 
-    @GetMapping(value = "/secured/getParticipantUserList")
+    @GetMapping(value = "/secured/getUserList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException, JsonProcessingException {
 
-        GetParticipantUserList.Output output = this.getParticipantUserList.execute(
-            new GetParticipantUserList.Input(new ParticipantId(Long.parseLong(participantId))));
+        GetUserList.Output output = this.getUserList.execute(
+            new GetUserList.Input(new ParticipantId(Long.parseLong(participantId))));
 
         List<Response.UserInfo> userInfoList = new ArrayList<>();
 
@@ -52,7 +52,7 @@ public class GetParticipantUserListController {
                                                                   .getEpochSecond()));
         }
 
-        var response = new GetParticipantUserListController.Response(userInfoList);
+        var response = new GetUserListController.Response(userInfoList);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

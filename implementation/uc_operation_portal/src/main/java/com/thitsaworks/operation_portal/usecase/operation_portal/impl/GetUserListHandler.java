@@ -11,7 +11,7 @@ import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,23 +22,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetParticipantUserListHandler
-    extends OperationPortalAuditableUseCase<GetParticipantUserList.Input, GetParticipantUserList.Output>
-    implements GetParticipantUserList {
+public class GetUserListHandler
+    extends OperationPortalAuditableUseCase<GetUserList.Input, GetUserList.Output>
+        implements GetUserList {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserListHandler.class);
 
     private final ParticipantUserQuery participantUserQuery;
 
     private final PrincipalCache principalCache;
 
-    public GetParticipantUserListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
-                                         ActionAuthorizationManager actionAuthorizationManager,
-                                         ParticipantUserQuery participantUserQuery) {
+    public GetUserListHandler(CreateInputAuditCommand createInputAuditCommand,
+                              CreateOutputAuditCommand createOutputAuditCommand,
+                              CreateExceptionAuditCommand createExceptionAuditCommand,
+                              ObjectMapper objectMapper,
+                              PrincipalCache principalCache,
+                              ActionAuthorizationManager actionAuthorizationManager,
+                              ParticipantUserQuery participantUserQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -57,7 +57,7 @@ public class GetParticipantUserListHandler
         List<ParticipantUserData> participantUserDataList =
             this.participantUserQuery.getParticipantUsers(null);
 
-        List<GetParticipantUserList.UserInfo> userInfoList = new ArrayList<>();
+        List<GetUserList.UserInfo> userInfoList = new ArrayList<>();
 
         for (ParticipantUserData participantUserData : participantUserDataList) {
 
@@ -66,16 +66,16 @@ public class GetParticipantUserListHandler
                 this.principalCache.get(new PrincipalId(participantUserData.participantUserId()
                                                                            .getId()));
 
-            userInfoList.add(new GetParticipantUserList.UserInfo(participantUserData.participantUserId(),
-                                                                 participantUserData.name(),
-                                                                 participantUserData.email(),
-                                                                 participantUserData.firstName(),
-                                                                 participantUserData.lastName(),
-                                                                 participantUserData.jobTitle(),
-                                                                 null,
-                                                                 principalData.principalStatus()
+            userInfoList.add(new GetUserList.UserInfo(participantUserData.participantUserId(),
+                                                      participantUserData.name(),
+                                                      participantUserData.email(),
+                                                      participantUserData.firstName(),
+                                                      participantUserData.lastName(),
+                                                      participantUserData.jobTitle(),
+                                                      null,
+                                                      principalData.principalStatus()
                                                                               .toString(),
-                                                                 Instant.ofEpochSecond(participantUserData.createdDate())));
+                                                      Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 
         return new Output(null);

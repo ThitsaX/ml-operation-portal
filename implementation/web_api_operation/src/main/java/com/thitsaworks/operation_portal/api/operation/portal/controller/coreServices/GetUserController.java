@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,22 +20,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class GetExitingParticipantUserController {
+public class GetUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetExitingParticipantUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserController.class);
 
-    private final GetExistingUser getExistingUser;
+    private final GetUser getUser;
 
     private final ObjectMapper objectMapper;
 
-    @GetMapping("/secured/getExitingParticipantUser")
+    @GetMapping("/secured/getUser")
     public ResponseEntity<Response> execute(@Valid @RequestParam String participantUserId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get participant user request : participantUserId = {}", participantUserId);
+        LOG.info("Get user request : participantUserId = {}", participantUserId);
 
-        var output = this.getExistingUser.execute(
-            new GetExistingUser.Input(new UserId(Long.parseLong(participantUserId))));
+        var output = this.getUser.execute(
+                new GetUser.Input(new UserId(Long.parseLong(participantUserId))));
 
         var response = new Response(output.userId()
                                           .getId()
@@ -47,7 +47,7 @@ public class GetExitingParticipantUserController {
                                     output.lastName(),
                                     output.jobTitle(),
                                     output.createdDate());
-        LOG.info("Get participant user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get user response : {}", this.objectMapper.writeValueAsString(response));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

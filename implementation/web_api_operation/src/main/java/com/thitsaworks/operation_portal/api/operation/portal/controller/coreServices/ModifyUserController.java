@@ -6,9 +6,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyExistingUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -22,34 +21,34 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class ModifyExistingParticipantUserController {
+public class ModifyUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyExistingParticipantUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyUserController.class);
 
-    private final ModifyExistingUser modifyExistingUser;
+    private final ModifyUser modifyUser;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/modifyParticipantUser")
+    @PostMapping("/secured/modifyUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify participant user request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Modify user request : {}", this.objectMapper.writeValueAsString(request));
 
-        var output = this.modifyExistingUser.execute(new ModifyExistingUser.Input(new ParticipantUserId(Long.parseLong(
+        var output = this.modifyUser.execute(new ModifyUser.Input(new ParticipantUserId(Long.parseLong(
                 request.participantUserId())),
-                                                                                  request.name(),
-                                                                                  request.firstName(),
-                                                                                  request.lastName(),
-                                                                                  request.jobTitle(),
-                                                                                  request.isActive().equalsIgnoreCase(
+                                                                  request.name(),
+                                                                  request.firstName(),
+                                                                  request.lastName(),
+                                                                  request.jobTitle(),
+                                                                  request.isActive().equalsIgnoreCase(
                                                                                           "ACTIVE") ?
                                                                                           PrincipalStatus.ACTIVE :
                                                                                           PrincipalStatus.INACTIVE));
 
         var response = new Response(output.participantUserId().getId().toString(), output.modified());
 
-        LOG.info("Modify existing participant user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Modify user response : {}", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

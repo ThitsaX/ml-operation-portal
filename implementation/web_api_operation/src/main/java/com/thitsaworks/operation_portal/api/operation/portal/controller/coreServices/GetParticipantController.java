@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingParticipant;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +22,11 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetExistingParticipantController {
+public class GetParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetExistingParticipantController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantController.class);
 
-    private final GetExistingParticipant getExistingParticipant;
+    private final GetParticipant getParticipant;
 
     private final ObjectMapper objectMapper;
 
@@ -36,8 +36,8 @@ public class GetExistingParticipantController {
 
         LOG.info("Get participant request : participantId = {}", participantId);
 
-        GetExistingParticipant.Output output = this.getExistingParticipant.execute(
-            new GetExistingParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
+        GetParticipant.Output output = this.getParticipant.execute(
+            new GetParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
 
         List<Response.ContactInfo> contactInfoList = new ArrayList<>();
 
