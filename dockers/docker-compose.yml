@@ -110,6 +110,7 @@ services:
       ENGINE_PATH: operation_portal
       OPERATION_PORTAL_PORT_NO: 8003
       CENTRAL_LEDGER_ENDPOINT: https://google.com
+      SETTLEMENT_END_POINT: https://google.com
 
 volumes:
   vault-data:

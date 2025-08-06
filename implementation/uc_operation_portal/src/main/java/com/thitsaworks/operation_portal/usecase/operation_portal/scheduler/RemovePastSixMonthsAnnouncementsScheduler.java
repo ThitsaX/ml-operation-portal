@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler;
 
 
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveAnnouncementsCommand;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

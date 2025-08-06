@@ -1,0 +1,35 @@
+package com.thitsaworks.operation_portal.core.participant.data;
+
+import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
+import com.thitsaworks.operation_portal.core.participant.model.Announcement;
+
+import java.time.Instant;
+
+public record AnnouncementData(AnnouncementId announcementId,
+
+                               String announcementTitle,
+
+                               String announcementDetail,
+
+                               Instant announcementDate,
+
+                               boolean isDeleted,
+
+                               Instant createdDate) {
+
+    public AnnouncementData(Announcement announcement) {
+
+        this(announcement.getAnnouncementId(),
+
+             announcement.getAnnouncementTitle(),
+
+             announcement.getAnnouncementDetail(),
+
+             announcement.getAnnouncementDate(),
+
+             announcement.isDeleted(),
+
+             announcement.getCreatedAt());
+    }
+
+}

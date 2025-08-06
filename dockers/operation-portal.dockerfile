@@ -41,7 +41,8 @@ ENTRYPOINT ["sh", "-c", "java \
                -DVAULT_TOKEN=${VAULT_TOKEN} \
                -DENGINE_PATH=${ENGINE_PATH} \
                -DOPERATION_PORTAL_PORT_NO=${OPERATION_PORTAL_PORT_NO} \
-               -DCENTRAL_LEDGER_ENDPOINT=${CENTRAL_LEDGER_ENDPOINT} \
+               -Dcentral_ledger_end_point=${CENTRAL_LEDGER_ENDPOINT} \
+               -Dsettlement_end_point=${SETTLEMENT_END_POINT} \
                -cp operation_api.jar:lib/* \
                com.thitsaworks.operation_portal.api.operation.portal.WebApiOperationPortalApplication"]
 
