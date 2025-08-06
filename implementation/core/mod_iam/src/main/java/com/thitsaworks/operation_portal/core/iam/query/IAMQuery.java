@@ -1,11 +1,15 @@
 package com.thitsaworks.operation_portal.core.iam.query;
 
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.data.MenuData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IAMQuery {
 
@@ -15,4 +19,5 @@ public interface IAMQuery {
 
     List<ActionData> getActions();
 
+    Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId);
 }
