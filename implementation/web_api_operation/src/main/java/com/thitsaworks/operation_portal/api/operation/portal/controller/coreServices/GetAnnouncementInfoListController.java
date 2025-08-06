@@ -30,8 +30,6 @@ public class GetAnnouncementInfoListController {
 
     private final GetAnnouncementInfoList getAnnouncementInfoList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping(value = "/public/getAnnouncements")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
@@ -59,7 +57,7 @@ public class GetAnnouncementInfoListController {
         }
         Response response = new Response(announcementInfoList);
 
-        LOG.info("Get announcements response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Get Announcement Info List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

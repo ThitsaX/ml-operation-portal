@@ -31,13 +31,11 @@ public class ModifyApprovalActionController {
 
     private final ModifyApprovalAction modifyApprovalAction;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/modifyApprovalAction")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Update Approval Request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Update Approval Request : [{}]", request);
 
         UserContext
             userContext =
@@ -54,7 +52,7 @@ public class ModifyApprovalActionController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Update Approval Response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Update Approval Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

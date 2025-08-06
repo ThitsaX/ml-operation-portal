@@ -32,6 +32,8 @@ public class ModifyLiquidityProfileController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
+        LOG.info("Modify Liquidity Profile Request: [{}]", request);
+
         ModifyLiquidityProfile.Output output = this.modifyLiquidityProfile.execute(
             new ModifyLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                              new LiquidityProfileId(Long.parseLong(request.liquidityProfileId())),
@@ -41,6 +43,8 @@ public class ModifyLiquidityProfileController {
                                              request.currency()));
 
         Response response = new Response(output.modified());
+
+        LOG.info("Modify Liquidity Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

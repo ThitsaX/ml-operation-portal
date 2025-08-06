@@ -26,13 +26,11 @@ public class GetExitingParticipantUserController {
 
     private final GetExistingUser getExistingUser;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getExitingParticipantUser")
     public ResponseEntity<Response> execute(@Valid @RequestParam String participantUserId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get participant user request : participantUserId = {}", participantUserId);
+        LOG.info("Get Existing Participant User Request: [{}]", participantUserId);
 
         var output = this.getExistingUser.execute(
             new GetExistingUser.Input(new UserId(Long.parseLong(participantUserId))));
@@ -47,7 +45,9 @@ public class GetExitingParticipantUserController {
                                     output.lastName(),
                                     output.jobTitle(),
                                     output.createdDate());
-        LOG.info("Get participant user response : {}", this.objectMapper.writeValueAsString(response));
+
+        LOG.info("Get Existing Participant User Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

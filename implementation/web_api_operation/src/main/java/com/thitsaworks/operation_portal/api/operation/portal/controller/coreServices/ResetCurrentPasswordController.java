@@ -28,19 +28,17 @@ public class ResetCurrentPasswordController {
 
     private final ResetCurrentPassword resetCurrentPassword;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/resetPassword")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Reset password request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Reset Current Password Request: [{}]", request);
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
                 new ResetCurrentPassword.Input(new Email(request.email()), request.password()));
         var response = new Response(output.updated());
 
-        LOG.info("Reset password response : {}", this.objectMapper.writeValueAsString(response));
+       LOG.info("Reset Current Password Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

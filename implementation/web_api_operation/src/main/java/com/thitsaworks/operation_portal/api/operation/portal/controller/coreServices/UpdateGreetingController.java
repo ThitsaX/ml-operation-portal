@@ -30,6 +30,9 @@ public class UpdateGreetingController {
     @PostMapping(value = "/secured/updateGreeting")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
+
+        LOGGER.info("Update Greeting Request: [{}]", request);
+
         var input = new UpdateGreeting.Input(
             new GreetingId(Long.parseLong(request.greetingId())),
             request.greetingTitle(),
@@ -41,6 +44,7 @@ public class UpdateGreetingController {
 
         var response = new Response(output.greetingId().toString());
 
+        LOGGER.info("Update Greeting Response: [{}]", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
     @JsonIgnoreProperties(ignoreUnknown = true)

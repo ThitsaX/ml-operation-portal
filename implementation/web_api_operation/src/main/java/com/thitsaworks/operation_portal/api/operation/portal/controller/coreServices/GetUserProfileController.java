@@ -25,13 +25,9 @@ public class GetUserProfileController {
 
     private final GetUserProfile getUserProfile;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getUserProfile")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
-
-        LOG.info("Get user profile request : {}", "");
 
         UserContext
             userContext =
@@ -60,7 +56,7 @@ public class GetUserProfileController {
                                           .toString(),
                                     output.createdDate());
 
-        LOG.info("Get user profile response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get User Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

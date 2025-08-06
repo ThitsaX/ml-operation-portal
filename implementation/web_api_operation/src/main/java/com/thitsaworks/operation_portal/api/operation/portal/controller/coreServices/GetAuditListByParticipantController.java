@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
@@ -31,8 +30,6 @@ public class GetAuditListByParticipantController {
 
     private final GetAuditByParticipantList getAuditByParticipantList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
@@ -41,11 +38,8 @@ public class GetAuditListByParticipantController {
         @RequestParam("userId") String participantUserId,
         @RequestParam("actionName") String actionName) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get all audit by participant request : fromDate = {}, toDate = {}, participantId = {}",
-                 fromDate,
-                 toDate,
-                 participantId);
-
+        LOG.info("Get Audit List Request: ParticipantId = [{}], FromDate = [{}], ToDate = [{}], UserId = [{}], ActionName = [{}]",
+                 participantId, fromDate, toDate, participantUserId, actionName);
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
@@ -71,7 +65,7 @@ public class GetAuditListByParticipantController {
 
         var response = new Response(auditInfoList);
 
-        LOG.info("Get all audit by participant response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get Audit List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

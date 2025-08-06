@@ -27,8 +27,6 @@ public class GetParticipantsListController {
 
     private final GetParticipantList getParticipantList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping(value = "/secured/getParticipantList")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
@@ -53,7 +51,7 @@ public class GetParticipantsListController {
 
         Response response = new Response(participantInfoList);
 
-        LOG.info("Get participants list response : {}", objectMapper.writeValueAsString(response));
+        LOG.info("Get Participants List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -28,20 +28,18 @@ public class LoginUserAccountController {
 
     private final LoginUserAccount loginUserAccount;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/public/loginUserAccount")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Login user account request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Login User Account Request: [{}]", request);
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
                 new LoginUserAccount.Input(new Email(request.email), request.password));
 
         var response = new Response(output.accessKey().getId().toString(), output.secretKey());
 
-        LOG.info("Login user account response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Login User Account Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

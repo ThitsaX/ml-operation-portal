@@ -47,6 +47,10 @@ public class GenerateAuditReportController {
                                             @RequestParam("fileType") String fileType)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Generate Audit Report Request : participantId = {}, fromDate = {}, toDate = {}, " +
+                 "timezoneOffset = {}, participantUserId = {}, action = {}, fileType = {}",
+                 participantId, fromDate, toDate, timezoneOffset, participantUserId, action, fileType);
+
         String showTimezone = timezoneOffset;
 
         if (!timezoneOffset.startsWith("-")) {
@@ -68,6 +72,8 @@ public class GenerateAuditReportController {
             ));
 
         var response = new Response(output.rptBytes());
+
+        LOG.info("Generate Audit Report Response : [{}]", objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

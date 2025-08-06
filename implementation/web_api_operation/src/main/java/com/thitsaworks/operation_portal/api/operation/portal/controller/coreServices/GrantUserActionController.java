@@ -28,6 +28,8 @@ public class GrantUserActionController {
     @PostMapping("/secured/grantUserActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Grant User Actions Request: [{}]", request);
+
         List<GrantUserAction.Input.UserGrant> userGrantList = new ArrayList<>();
         for (var userGrant : request.userGrantList()) {
             userGrantList.add(new GrantUserAction.Input.UserGrant(
@@ -36,6 +38,8 @@ public class GrantUserActionController {
         }
 
         var output = this.grantUserAction.execute(new GrantUserAction.Input(userGrantList));
+
+        LOG.info("Grant User Actions Response: [{}]", output.resultCode());
 
         return new ResponseEntity<>(new Response(output.resultCode()), HttpStatus.OK);
     }

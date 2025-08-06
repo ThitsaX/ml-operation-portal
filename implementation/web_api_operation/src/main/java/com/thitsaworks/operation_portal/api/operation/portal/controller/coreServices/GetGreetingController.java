@@ -23,11 +23,15 @@ import java.io.Serializable;
 public class GetGreetingController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetGreetingController.class);
+
     private final GetGreeting getGreeting;
 
     @PostMapping(value = "/public/getGreeting")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
+
+        LOGGER.info("Get Greeting Request: [{}]", request);
+
         var input = new GetGreeting.Input(
             new GreetingId(Long.parseLong(request.greetingId()))
         );
@@ -39,6 +43,8 @@ public class GetGreetingController {
             output.greetingDetail(),
             output.isDeleted()
         );
+
+        LOGGER.info("Get Greeting Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -29,13 +29,11 @@ public class ModifyAnnouncementController {
 
     private final ModifyAnnouncement modifyExistingAnnouncement;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/modifyAnnouncement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify announcement request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Modify Announcement Request: [{}]", request);
 
         ModifyAnnouncement.Output output = this.modifyExistingAnnouncement.execute(
                 new ModifyAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId)),
@@ -44,7 +42,7 @@ public class ModifyAnnouncementController {
 
         Response response = new Response(output.modified());
 
-        LOG.info("Modify announcement response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Modify Announcement Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

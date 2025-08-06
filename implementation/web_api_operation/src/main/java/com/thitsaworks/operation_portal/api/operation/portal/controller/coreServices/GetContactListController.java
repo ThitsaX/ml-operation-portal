@@ -29,6 +29,8 @@ public class GetContactListController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
+        LOG.info("Get Contact List Request For : [{}]", participantId);
+
         var
             output =
             this.getContactList.execute(new GetContactList.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -46,6 +48,8 @@ public class GetContactListController {
                                                                                           .getValue(),
                                                                                    contact.contactType()))
                                           .toList());
+
+        LOG.info("Get Contact List Response : [{}]", response.contactInfoList().size());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

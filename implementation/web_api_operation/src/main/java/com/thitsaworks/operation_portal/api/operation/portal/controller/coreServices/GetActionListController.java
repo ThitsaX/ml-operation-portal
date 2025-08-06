@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionList;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,12 +17,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GetActionListController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GetActionListController.class);
+
     private final GetActionList getActionList;
 
     private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/secured/getActionList")
     public ResponseEntity<Response> execute() throws DomainException {
+
         var input = new GetActionList.Input();
         var output = this.getActionList.execute(input);
 
@@ -28,6 +33,8 @@ public class GetActionListController {
                                                       .map(actionName -> new Response.ActionName(String.valueOf(actionName.actionId().getId()),
                                                                                                  actionName.actionName()))
                                                       .collect(Collectors.toList());
+
+        LOG.info("Get Action List Response : [{}]", actionNames);
 
         return ResponseEntity.ok(new Response(actionNames));
 

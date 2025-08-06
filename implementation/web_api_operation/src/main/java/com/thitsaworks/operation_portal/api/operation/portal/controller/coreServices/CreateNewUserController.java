@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.common.type.RealmType;
@@ -33,13 +32,11 @@ public class CreateNewUserController {
 
     private final CreateNewParticipantUser createNewParticipantUser;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/createNewUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Create new participant user request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Create New User Request: [{}]", request);
 
         CreateNewParticipantUser.Output output = this.createNewParticipantUser.execute(
             new CreateNewParticipantUser.Input(request.name,
@@ -55,7 +52,7 @@ public class CreateNewUserController {
 
         Response response = new Response(output.created());
 
-        LOG.info("Create new  user response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Create New User Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

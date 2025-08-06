@@ -31,6 +31,8 @@ public class GetParticipantUserListController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Participant User List Request: ParticipantId = [{}]", participantId);
+
         GetParticipantUserList.Output output = this.getParticipantUserList.execute(
             new GetParticipantUserList.Input(new ParticipantId(Long.parseLong(participantId))));
 
@@ -53,6 +55,8 @@ public class GetParticipantUserListController {
         }
 
         var response = new GetParticipantUserListController.Response(userInfoList);
+
+        LOG.info("Get Participant User List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
