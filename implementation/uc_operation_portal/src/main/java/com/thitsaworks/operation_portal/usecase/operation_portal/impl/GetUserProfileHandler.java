@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
@@ -29,16 +30,19 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
     private final PrincipalCache principalCache;
 
+    private final IAMQuery iamQuery;
+
     public GetUserProfileHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  ParticipantCache participantCache,
-                                 ParticipantUserCache participantUserCache) {
+                                 ParticipantUserCache participantUserCache, IAMQuery iamQuery) {
 
         super(principalCache, actionAuthorizationManager);
 
         this.participantCache = participantCache;
         this.participantUserCache = participantUserCache;
         this.principalCache = principalCache;
+        this.iamQuery = iamQuery;
     }
 
     @Override
@@ -61,6 +65,9 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
         }
 
+        var permittedMenuAndActionList =
+                this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
+
         return new Output(participantUserData.participantUserId(),
                           participantUserData.name(),
                           participantUserData.email(),
@@ -72,7 +79,8 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                           participantData.participantName()
                                          .getValue(),
                           participantData.description(),
-                          null);
+                          null,
+                          permittedMenuAndActionList);
 
     }
 

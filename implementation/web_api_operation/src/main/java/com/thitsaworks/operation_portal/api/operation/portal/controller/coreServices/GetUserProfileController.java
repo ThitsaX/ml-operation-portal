@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class GetUserProfileController {
@@ -43,6 +45,23 @@ public class GetUserProfileController {
             new GetUserProfile.Input(new ParticipantUserId(userContext.userId()
                                                                       .getId())));
 
+        List<Long> menuIds = output.permittedMenuAndActionList()
+                                   .entrySet()
+                                   .stream()
+                                   .flatMap(entry -> entry.getKey()
+                                                          .stream())
+                                   .map(menu -> menu.menuId().getId())
+                                   .sorted()
+                                   .toList();
+
+        List<String> actionCodes = output.permittedMenuAndActionList()
+                                         .entrySet()
+                                         .stream()
+                                         .flatMap(entry -> entry.getValue().stream())
+                                         .map(action -> action.actionCode().getValue())
+                                         .sorted()
+                                         .toList();
+
         var response = new Response(output.participantUserId()
                                           .getId()
                                           .toString(),
@@ -55,10 +74,10 @@ public class GetUserProfileController {
                                     output.participantName(),
                                     output.description(),
                                     output.roleType(),
-                                    output.participantId()
-                                          .getId()
-                                          .toString(),
-                                    output.createdDate());
+                                    output.participantId().getId().toString(),
+                                    output.createdDate(),
+                                    menuIds,
+                                    actionCodes);
 
         LOG.info("Get user profile response : {}", this.objectMapper.writeValueAsString(response));
 
@@ -77,7 +96,12 @@ public class GetUserProfileController {
         @JsonProperty("description") String description,
         @JsonProperty("userRoleType") String roleType,
         @JsonProperty("participantId") String participantId,
-        @JsonProperty("createdDate") Long createdDate
+
+        @JsonProperty("createdDate") Long createdDate,
+        @JsonProperty("accessMenuList") List<Long> menuList,
+
+        @JsonProperty("accessActionList") List<String> actionList
+
     ) {
 
     }

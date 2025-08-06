@@ -2,8 +2,13 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.data.MenuData;
+
+import java.util.List;
+import java.util.Map;
 
 public interface GetUserProfile extends
                                 UseCase<GetUserProfile.Input, GetUserProfile.Output> {
@@ -21,7 +26,8 @@ public interface GetUserProfile extends
             Long createdDate,
             String participantName,
             String description,
-            String roleType
+            String roleType,
+            Map<List<MenuData>, List<ActionData>> permittedMenuAndActionList
     ) {}
 
 }

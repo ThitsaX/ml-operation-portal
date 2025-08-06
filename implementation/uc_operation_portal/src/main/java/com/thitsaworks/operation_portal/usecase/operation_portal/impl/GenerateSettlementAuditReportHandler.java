@@ -34,9 +34,9 @@ public class GenerateSettlementAuditReportHandler
                                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                                 ObjectMapper objectMapper,
                                                 PrincipalCache principalCache,
-                                                ActionAuthorizationManager actionAuthorizationManager,
                                                 GenerateSettlementAuditReportCommand generateSettlementAuditReportCommand,
-                                                ParticipantQuery participantQuery) {
+                                                ParticipantQuery participantQuery,
+                                                ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
