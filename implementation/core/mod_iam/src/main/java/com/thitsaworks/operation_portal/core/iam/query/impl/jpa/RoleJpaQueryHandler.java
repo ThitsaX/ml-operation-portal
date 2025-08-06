@@ -41,7 +41,7 @@ public class RoleJpaQueryHandler implements RoleQuery {
     @Override
     public List<RoleData> getAll() throws IAMException {
 
-        BooleanExpression predicate = this.role.isNotNull();
+        BooleanExpression predicate = this.role.active.isTrue();
 
         var roles = (List<Role>) this.roleRepository.findAll(predicate);
 
