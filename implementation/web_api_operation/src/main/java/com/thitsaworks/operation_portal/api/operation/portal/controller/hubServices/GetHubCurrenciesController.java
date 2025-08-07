@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -26,6 +27,8 @@ public class GetHubCurrenciesController {
     @GetMapping("/secured/getHubCurrency")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Hub Currencies Request : [{}]", "");
+
         var output = this.getHubCurrencyList.execute(new GetHubCurrencyList.Input());
 
         List<CurrencyInfo>
@@ -37,17 +40,16 @@ public class GetHubCurrenciesController {
 
         var response = new Response(currencyInfoList);
 
+        LOG.info("Get Hub Currencies Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        @JsonProperty("currencyInfoList") List<CurrencyInfo> currencyInfoList
-    ) { }
+    public record Response(@JsonProperty("currencyInfoList") List<CurrencyInfo> currencyInfoList)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record CurrencyInfo(
-        @JsonProperty("currency") String currency
-    ) { }
+    public record CurrencyInfo(@JsonProperty("currency") String currency) implements Serializable { }
 
 }

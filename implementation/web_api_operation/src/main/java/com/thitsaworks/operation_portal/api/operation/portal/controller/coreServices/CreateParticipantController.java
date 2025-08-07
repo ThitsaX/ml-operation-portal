@@ -3,12 +3,11 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.Email;
-import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,19 +26,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateParticipantController {
+public class CreateNewParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateParticipantController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantController.class);
 
-    private final CreateParticipant createParticipant;
+    private final CreateParticipant createNewParticipant;
 
-    private final ObjectMapper objectMapper;
-
-    @PostMapping(value = "/secured/createParticipant")
+    @PostMapping(value = "/secured/createNewParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create participant request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Create New Participant Request: [{}]", request);
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -74,7 +71,7 @@ public class CreateParticipantController {
             }
         }
 
-        CreateParticipant.Output output = this.createParticipant.execute(
+        CreateParticipant.Output output = this.createNewParticipant.execute(
             new CreateParticipant.Input(new ParticipantName(request.participantName()),
                                         request.description(),
                                         request.address(),
@@ -86,7 +83,7 @@ public class CreateParticipantController {
                                                .getId()
                                                .toString(), output.created());
 
-        LOG.info("Create participant response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Create New Participant Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -33,6 +33,8 @@ public class CreateApprovalRequestController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
+        LOG.info("Create Approval Request : [{}]", request);
+
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
@@ -51,6 +53,8 @@ public class CreateApprovalRequestController {
         var response = new Response(output.approvalRequestId()
                                           .getEntityId()
                                           .toString());
+
+        LOG.info("Create Approval Request Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

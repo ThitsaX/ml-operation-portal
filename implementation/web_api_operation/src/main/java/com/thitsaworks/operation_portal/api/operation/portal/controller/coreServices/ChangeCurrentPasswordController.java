@@ -33,6 +33,8 @@ public class ChangeCurrentPasswordController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Change Current Password Request : [{}]", request);
+
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
@@ -48,6 +50,8 @@ public class ChangeCurrentPasswordController {
                                           .getId()
                                           .toString(),
                                     output.secretKey());
+
+        LOG.info("Change Current Password Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

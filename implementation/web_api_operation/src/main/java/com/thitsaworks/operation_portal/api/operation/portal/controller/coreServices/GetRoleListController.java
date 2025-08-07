@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleList;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,8 @@ public class GetRoleListController {
     @GetMapping("/secured/getRoleList")
     public ResponseEntity<Response> execute() throws DomainException {
 
+        LOG.info("Get Role List Request : [{}]", "");
+
         var output = this.getRoleList.execute(new GetRoleList.Input());
 
         var response = new Response(output.roleList()
@@ -33,14 +37,17 @@ public class GetRoleListController {
                                                                          role.active()))
                                           .toList());
 
+        LOG.info("Get Role List Response: [{}]", response);
+
         return ResponseEntity.ok(response);
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(List<Role> roleList) {
 
         public record Role(String roleId,
                            String name,
-                           boolean active) { }
+                           boolean active) implements Serializable { }
 
     }
 

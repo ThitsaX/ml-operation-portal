@@ -31,6 +31,8 @@ public class CreateNewLiquidityProfileController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
+        LOG.info("Create New Liquidity Profile Request : [{}]", request);
+
         CreateNewLiquidityProfile.Output output = this.createNewLiquidityProfile.execute(
             new CreateNewLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                                 request.bankName(),
@@ -42,6 +44,8 @@ public class CreateNewLiquidityProfileController {
                                          output.liquidityProfileId()
                                                .getEntityId()
                                                .toString());
+
+        LOG.info("Create New Liquidity Profile Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

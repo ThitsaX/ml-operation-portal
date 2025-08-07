@@ -2,10 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CloseSettlementWindows;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +32,7 @@ public class GetNetTransferAmountByWindowIdController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Net Transfer Amount By Window Id request : {}", (request));
+        LOG.info("Get Net Transfer Amount By Window Id Request : [{}]", request);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -45,43 +43,40 @@ public class GetNetTransferAmountByWindowIdController {
             this.getNetTransferAmountByWindowId.execute(new GetNetTransferAmountByWindowId.Input(
                 request.settlementWindowId));
 
-        var response = new Response(
-            output.settlementWindowId(),
-            output.windowOpenedDate(),
-            output.windowClosedDate(),
-            output.details()
-                  .stream()
-                  .map(detail -> new Detail(
-                      detail.participantName(),
-                      detail.debitAmount(),
-                      detail.creditAmount(),
-                      detail.currency()
-                  ))
-                  .toList()
+        var response = new Response(output.settlementWindowId(),
+                                    output.windowOpenedDate(),
+                                    output.windowClosedDate(),
+                                    output.details()
+                                          .stream()
+                                          .map(detail -> new Detail(
+                                              detail.participantName(),
+                                              detail.debitAmount(),
+                                              detail.creditAmount(),
+                                              detail.currency()
+                                          ))
+                                          .toList()
         );
+
+        LOG.info("Get Net Transfer Amount By Window Id Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        int settlementWindowId
+    public record Request(int settlementWindowId
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        int settlementWindowId,
-        String windowOpenedDate,
-        String windowClosedDate,
-        List<Detail> details
+    public record Response(int settlementWindowId,
+                           String windowOpenedDate,
+                           String windowClosedDate,
+                           List<Detail> details
     ) implements Serializable { }
 
-    public record Detail(
-        String participantName,
-        BigDecimal debitAmount,
-        BigDecimal creditAmount,
-        String currency
-    ) implements Serializable { }
+    public record Detail(String participantName,
+                         BigDecimal debitAmount,
+                         BigDecimal creditAmount,
+                         String currency) implements Serializable { }
 
 }

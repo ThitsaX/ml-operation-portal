@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,9 +47,10 @@ public class AssignRoleToUserController {
 
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank String userId,
-                          @NotNull @NotBlank String roleId) { }
+                          @NotNull @NotBlank String roleId) implements Serializable { }
 
-    public record Response(String principalRoleId) { }
+    public record Response(String principalRoleId) implements Serializable { }
 
 }

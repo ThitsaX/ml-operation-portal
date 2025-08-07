@@ -18,11 +18,19 @@ public interface IAMEngine {
 
     void print();
 
+
     List<ActionData> getActions();
+
+    ActionData getAction(ActionCode actionCode);
 
     boolean isGrantedAction(PrincipalId principalId, ActionCode actionCode);
 
     boolean isGrantedAction(PrincipalId principalId, ActionId actionId);
+
+    List<RoleData> getRolesByPrincipal(PrincipalId principalId);
+
+    PrincipalData getPrincipal(PrincipalId principalId);
+
 
     void addPrincipal(PrincipalId principalId, PrincipalData principalData);
 
@@ -48,6 +56,7 @@ public interface IAMEngine {
 
     void removePrincipalDeniedAction(PrincipalId principalId, ActionData actionData);
 
+
     Map<PrincipalId, PrincipalData> getPrincipalsMap();
 
     Map<PrincipalId, Set<RoleData>> getPrincipalRolesMap();
@@ -61,7 +70,5 @@ public interface IAMEngine {
     Map<PrincipalId, Set<ActionData>> getPrincipalGrantedActionsMap();
 
     Map<PrincipalId, Set<ActionData>> getPrincipalDeniedActionsMap();
-
-    ActionData getAction(ActionCode actionCode);
 
 }

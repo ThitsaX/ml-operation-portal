@@ -3,11 +3,10 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveExistingParticipantUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -23,41 +22,35 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class RemoveUserController {
+public class RemoveExistingParticipantUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RemoveExistingParticipantUserController.class);
 
-    private final RemoveUser removeUser;
+    private final RemoveExistingParticipantUser removeExistingParticipantUser;
 
-    private final ObjectMapper objectMapper;
-
-    @PostMapping("/secured/removeUser")
+    @PostMapping("/secured/removeParticipantUser")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove user request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Remove Existing Participant User Request: [{}]", request);
 
-        RemoveUser.Output output = this.removeUser.execute(
-                new RemoveUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                     new ParticipantUserId(Long.parseLong(request.participantUserId()))));
+        RemoveExistingParticipantUser.Output output = this.removeExistingParticipantUser.execute(
+            new RemoveExistingParticipantUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
+                                                    new ParticipantUserId(Long.parseLong(request.participantUserId()))));
         var response = new Response(output.removed());
 
-        LOG.info("Remove user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Remove Existing Participant User Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("participantUserId") String participantUserId
-    ) implements Serializable {
-
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("participantUserId") String participantUserId)
+        implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable {
-
-    }
+    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable { }
 
 }

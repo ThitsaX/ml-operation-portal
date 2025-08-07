@@ -22,48 +22,40 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 public class GetGreetingController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetGreetingController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetGreetingController.class);
+
     private final GetGreeting getGreeting;
 
     @PostMapping(value = "/public/getGreeting")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
-        var input = new GetGreeting.Input(
-            new GreetingId(Long.parseLong(request.greetingId()))
-        );
+
+        LOG.info("Get Greeting Request: [{}]", request);
+
+        var input = new GetGreeting.Input(new GreetingId(Long.parseLong(request.greetingId())));
+
         var output = this.getGreeting.execute(input);
 
-        var response = new Response(
-            output.greetingId().toString(),
-            output.greetingTitle(),
-            output.greetingDetail(),
-            output.isDeleted()
-        );
+        var response = new Response(output.greetingId()
+                                          .toString(),
+                                    output.greetingTitle(),
+                                    output.greetingDetail(),
+                                    output.isDeleted());
+
+        LOG.info("Get Greeting Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull
-        @JsonProperty("greetingId")
-        String greetingId) implements Serializable {
+    public record Request(@NotNull @JsonProperty("greetingId") String greetingId) implements Serializable {
     }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response( @NotNull
-                                @JsonProperty("greetingId")
-                                String greetingId,
-
-                            @NotNull
-                                @JsonProperty("greetingTitle")
-                                String greetingTitle,
-
-                            @NotNull
-                                @JsonProperty("greetingDetail")
-                                String greetingDetail,
-
-                            @NotNull @JsonProperty("isDeleted") boolean isDeleted
-                            ) implements Serializable {}
-
+    public record Response(@NotNull @JsonProperty("greetingId") String greetingId,
+                           @NotNull @JsonProperty("greetingTitle") String greetingTitle,
+                           @NotNull @JsonProperty("greetingDetail") String greetingDetail,
+                           @NotNull @JsonProperty("isDeleted") boolean isDeleted
+    ) implements Serializable { }
 
 }

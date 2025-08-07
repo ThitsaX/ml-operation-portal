@@ -29,6 +29,8 @@ public class GetContactListController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
+        LOG.info("Get Contact List Request For : [{}]", participantId);
+
         var
             output =
             this.getContactList.execute(new GetContactList.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -47,6 +49,10 @@ public class GetContactListController {
                                                                                    contact.contactType()))
                                           .toList());
 
+        LOG.info("Get Contact List Response : [{}]",
+                 response.contactInfoList()
+                         .size());
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -59,7 +65,7 @@ public class GetContactListController {
             @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
-            @JsonProperty("contactType") String contactType) {
+            @JsonProperty("contactType") String contactType) implements Serializable {
         }
 
     }

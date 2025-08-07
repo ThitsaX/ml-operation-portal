@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetOtherParticipantList;
@@ -28,13 +27,11 @@ public class GetOtherParticipantListController {
 
     private final GetOtherParticipantList getOtherParticipantList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getOtherParticipantList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get all participants request : participantId = {}", participantId);
+        LOG.info("Get All Participants Request : participantId = [{}]", participantId);
 
         GetOtherParticipantList.Output output = this.getOtherParticipantList.execute(
             new GetOtherParticipantList.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -52,21 +49,18 @@ public class GetOtherParticipantListController {
 
         var response = new Response(participantInfoList);
 
-        LOG.info("Get all participants response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get All Participants List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        @JsonProperty("participantInfoList") List<ParticipantInfo> participantInfoList
-    ) implements Serializable {
+    public record Response(@JsonProperty("participantInfoList") List<ParticipantInfo> participantInfoList)
+        implements Serializable {
 
-        @JsonIgnoreProperties(ignoreUnknown = true)
-        public record ParticipantInfo(
-            @JsonProperty("participantId") String participantId,
-            @JsonProperty("participantName") String participantName,
-            @JsonProperty("description") String description
+        public record ParticipantInfo(@JsonProperty("participantId") String participantId,
+                                      @JsonProperty("participantName") String participantName,
+                                      @JsonProperty("description") String description
         ) implements Serializable { }
 
     }

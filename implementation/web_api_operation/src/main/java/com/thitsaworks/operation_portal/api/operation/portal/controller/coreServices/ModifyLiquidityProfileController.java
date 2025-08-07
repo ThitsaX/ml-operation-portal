@@ -32,6 +32,8 @@ public class ModifyLiquidityProfileController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
+        LOG.info("Modify Liquidity Profile Request: [{}]", request);
+
         ModifyLiquidityProfile.Output output = this.modifyLiquidityProfile.execute(
             new ModifyLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                              new LiquidityProfileId(Long.parseLong(request.liquidityProfileId())),
@@ -42,21 +44,22 @@ public class ModifyLiquidityProfileController {
 
         Response response = new Response(output.modified());
 
+        LOG.info("Modify Liquidity Profile Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId,
-        @NotNull @JsonProperty("bankName") String bankName,
-        @NotNull @JsonProperty("accountName") String accountName,
-        @NotNull @JsonProperty("accountNumber") String accountNumber,
-        @NotNull @JsonProperty("currency") String currency) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId,
+                          @NotNull @JsonProperty("bankName") String bankName,
+                          @NotNull @JsonProperty("accountName") String accountName,
+                          @NotNull @JsonProperty("accountNumber") String accountNumber,
+                          @NotNull @JsonProperty("currency") String currency) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isModified") boolean isModified) implements Serializable {
+    public record Response(@JsonProperty("modified") boolean modified) implements Serializable {
     }
 
 }

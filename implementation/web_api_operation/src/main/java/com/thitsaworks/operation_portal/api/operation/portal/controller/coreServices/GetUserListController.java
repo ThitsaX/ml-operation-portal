@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,18 +21,20 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetUserListController {
+public class GetParticipantUserListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetUserListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListController.class);
 
-    private final GetUserList getUserList;
+    private final GetParticipantUserList getParticipantUserList;
 
-    @GetMapping(value = "/secured/getUserList")
+    @GetMapping(value = "/secured/getParticipantUserList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException, JsonProcessingException {
 
-        GetUserList.Output output = this.getUserList.execute(
-            new GetUserList.Input(new ParticipantId(Long.parseLong(participantId))));
+        LOG.info("Get Participant User List Request: ParticipantId = [{}]", participantId);
+
+        GetParticipantUserList.Output output = this.getParticipantUserList.execute(
+            new GetParticipantUserList.Input(new ParticipantId(Long.parseLong(participantId))));
 
         List<Response.UserInfo> userInfoList = new ArrayList<>();
 
@@ -46,13 +48,15 @@ public class GetUserListController {
                                                    participantUser.firstName(),
                                                    participantUser.lastName(),
                                                    participantUser.jobTitle(),
-                                                   participantUser.roleType(),
+                                                   participantUser.roleList(),
                                                    participantUser.status(),
                                                    participantUser.createdDate()
                                                                   .getEpochSecond()));
         }
 
-        var response = new GetUserListController.Response(userInfoList);
+        var response = new GetParticipantUserListController.Response(userInfoList);
+
+        LOG.info("Get Participant User List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -67,7 +71,7 @@ public class GetUserListController {
                                @JsonProperty("firstName") String firstName,
                                @JsonProperty("lastName") String lastName,
                                @JsonProperty("jobTitle") String jobTitle,
-                               @JsonProperty("userRoleType") String roleType,
+                               @JsonProperty("roleList") List<String> roleList,
                                @JsonProperty("status") String status,
                                @JsonProperty("createdDate") Long createdDate) implements Serializable { }
 

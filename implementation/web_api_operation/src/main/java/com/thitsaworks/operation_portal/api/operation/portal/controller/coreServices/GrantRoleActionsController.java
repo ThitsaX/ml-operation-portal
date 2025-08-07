@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActions;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +28,8 @@ public class GrantRoleActionsController {
 
     @PostMapping("/secured/grantRoleActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+
+        LOG.info("Grant role actions request: [{}]", request);
 
         List<GrantRoleActions.Input.SingleRoleGrant> singleRoleGrantList = new ArrayList<>();
         for (var singleRoleGrant : request.singleRoleGrantList()) {
@@ -42,17 +46,23 @@ public class GrantRoleActionsController {
 
         var output = this.grantRoleActions.execute(new GrantRoleActions.Input(singleRoleGrantList));
 
-        return new ResponseEntity<>(new Response(output.granted()), HttpStatus.OK);
+        var response = new Response(output.granted());
+
+        LOG.info("Grant Role Actions Response: [{}]", response);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-    public record Request(List<SingleRoleGrant> singleRoleGrantList) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Request(List<SingleRoleGrant> singleRoleGrantList) implements Serializable {
 
         public record SingleRoleGrant(String role,
-                                      List<String> actionList) { }
+                                      List<String> actionList) implements Serializable { }
 
     }
 
-    public record Response(boolean granted) { }
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Response(boolean granted) implements Serializable { }
 
 }

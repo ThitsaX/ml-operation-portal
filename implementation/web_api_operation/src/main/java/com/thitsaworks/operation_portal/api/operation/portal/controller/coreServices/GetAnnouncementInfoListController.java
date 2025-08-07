@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementInfoList;
 import lombok.RequiredArgsConstructor;
@@ -30,13 +29,14 @@ public class GetAnnouncementInfoListController {
 
     private final GetAnnouncementInfoList getAnnouncementInfoList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping(value = "/public/getAnnouncements")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Announcement Info List Request : [{}]", "");
 
-        GetAnnouncementInfoList.Output output = this.getAnnouncementInfoList.execute(new GetAnnouncementInfoList.Input());
+        GetAnnouncementInfoList.Output
+            output =
+            this.getAnnouncementInfoList.execute(new GetAnnouncementInfoList.Input());
 
         List<Response.AnnouncementInfo> announcementInfoList = new ArrayList<>();
 
@@ -44,9 +44,12 @@ public class GetAnnouncementInfoListController {
 
         for (var announcement : output.announcementInfoList()) {
 
-            LocalDateTime announcementDateTime = LocalDateTime.ofInstant(announcement.announcementDate(), ZoneId.systemDefault());
+            LocalDateTime announcementDateTime = LocalDateTime.ofInstant(announcement.announcementDate(),
+                                                                         ZoneId.systemDefault());
 
-            announcementInfoList.add(new Response.AnnouncementInfo(announcement.announcementId().getId().toString(),
+            announcementInfoList.add(new Response.AnnouncementInfo(announcement.announcementId()
+                                                                               .getId()
+                                                                               .toString(),
                                                                    announcement.announcementTitle(),
                                                                    announcement.announcementDetail(),
                                                                    announcementDateTime.format(formatter)));
@@ -54,27 +57,28 @@ public class GetAnnouncementInfoListController {
 
         if (!announcementInfoList.isEmpty()) {
 
-            announcementInfoList.sort(Comparator.comparing(Response.AnnouncementInfo::announcementDate).reversed());
+            announcementInfoList.sort(Comparator.comparing(Response.AnnouncementInfo::announcementDate)
+                                                .reversed());
 
         }
         Response response = new Response(announcementInfoList);
 
-        LOG.info("Get announcements response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Get Announcement Info List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("announcementInfoList") List<AnnouncementInfo> announcementInfoList)
-            implements Serializable {
+    public record Response(@JsonProperty("announcementInfoList") List<AnnouncementInfo> announcementInfoList)
+        implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public record AnnouncementInfo(
-                @JsonProperty("id") String announcementId,
-                @JsonProperty("title") String announcementTitle,
-                @JsonProperty("detail") String announcementDetail,
-                @JsonProperty("date") String announcementDate) implements Serializable {
+        public record AnnouncementInfo(@JsonProperty("id") String announcementId,
+                                       @JsonProperty("title") String announcementTitle,
+                                       @JsonProperty("detail") String announcementDetail,
+                                       @JsonProperty("date") String announcementDate) implements Serializable {
         }
+
     }
+
 }

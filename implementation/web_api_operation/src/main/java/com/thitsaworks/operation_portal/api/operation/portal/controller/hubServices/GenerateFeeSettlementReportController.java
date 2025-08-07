@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateFeeSettlementReport;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @RestController
@@ -25,15 +25,17 @@ public class GenerateFeeSettlementReportController {
 
     private final GenerateFeeSettlementReport generateFeeSettlementReport;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/generateFeeReport")
     public ResponseEntity<Response> execute(
-            @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
-            @RequestParam("fromFspId") String fromFspId, @RequestParam("toFspId") String toFspId,
+        @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+        @RequestParam("fromFspId") String fromFspId, @RequestParam("toFspId") String toFspId,
         @RequestParam("currency") String currency,
-            @RequestParam("timezoneOffset") String timezoneOffset,
-            @RequestParam("fileType") String fileType) throws DomainException, JsonProcessingException {
+        @RequestParam("timezoneOffset") String timezoneOffset,
+        @RequestParam("fileType") String fileType) throws DomainException, JsonProcessingException {
+
+        LOG.info("Generate Fee Report Request : startDate = [{}], endDate = [{}], fromFspId = [{}], " +
+                     "toFspId = [{}], currency = [{}], timezoneOffset = [{}], fileType = [{}]",
+                 startDate, endDate, fromFspId, toFspId, currency, timezoneOffset, fileType);
 
         GenerateFeeSettlementReport.Output output = this.generateFeeSettlementReport.execute(
             new GenerateFeeSettlementReport.Input(Instant.parse(startDate), Instant.parse(endDate), fromFspId,
@@ -44,12 +46,13 @@ public class GenerateFeeSettlementReportController {
 
         var response = new Response(output.rptData());
 
+        LOG.info("Generate Fee Report Response : response = [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] feeReportByte) {
-    }
+    public record Response(@JsonProperty("rptByte") byte[] feeReportByte) implements Serializable { }
 
 }

@@ -3,10 +3,9 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -18,24 +17,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @RestController
 @RequiredArgsConstructor
-public class GetUserController {
+public class GetExitingParticipantUserController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetExitingParticipantUserController.class);
 
-    private final GetUser getUser;
+    private final GetExistingUser getExistingUser;
 
-    private final ObjectMapper objectMapper;
-
-    @GetMapping("/secured/getUser")
+    @GetMapping("/secured/getExitingParticipantUser")
     public ResponseEntity<Response> execute(@Valid @RequestParam String participantUserId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get user request : participantUserId = {}", participantUserId);
+        LOG.info("Get Existing Participant User Request: [{}]", participantUserId);
 
-        var output = this.getUser.execute(
-                new GetUser.Input(new UserId(Long.parseLong(participantUserId))));
+        var output = this.getExistingUser.execute(
+            new GetExistingUser.Input(new UserId(Long.parseLong(participantUserId))));
 
         var response = new Response(output.userId()
                                           .getId()
@@ -47,24 +46,24 @@ public class GetUserController {
                                     output.lastName(),
                                     output.jobTitle(),
                                     output.createdDate());
-        LOG.info("Get user response : {}", this.objectMapper.writeValueAsString(response));
+
+        LOG.info("Get Existing Participant User Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-            @NotNull @JsonProperty("participantUserId") String participantUserId
-    ) { }
+    public record Request(@NotNull @JsonProperty("participantUserId") String participantUserId
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("participantUserId") String participantUserId,
-        @JsonProperty("name") String name,
-        @JsonProperty("email") String email,
-            @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName,
-            @JsonProperty("jobTitle") String jobTitle,
-            @JsonProperty("createdDate") Long createdDate
-    ) { }
+    public record Response(@JsonProperty("participantUserId") String participantUserId,
+                           @JsonProperty("name") String name,
+                           @JsonProperty("email") String email,
+                           @JsonProperty("firstName") String firstName,
+                           @JsonProperty("lastName") String lastName,
+                           @JsonProperty("jobTitle") String jobTitle,
+                           @JsonProperty("createdDate") Long createdDate
+    ) implements Serializable { }
 
 }

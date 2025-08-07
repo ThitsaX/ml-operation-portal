@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
@@ -65,6 +66,8 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
         }
 
+        var roleList = this.iamQuery.getRolesByPrincipal(principalData.principalId()).stream().map(RoleData::name).toList();
+
         var permittedMenuAndActionList =
                 this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
 
@@ -79,7 +82,7 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                           participantData.participantName()
                                          .getValue(),
                           participantData.description(),
-                          null,
+                          roleList,
                           permittedMenuAndActionList);
 
     }

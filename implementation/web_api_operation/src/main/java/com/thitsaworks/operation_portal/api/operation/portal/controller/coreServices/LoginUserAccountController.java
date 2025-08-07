@@ -3,9 +3,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.LoginUserAccount;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @RestController
 @RequiredArgsConstructor
 public class LoginUserAccountController {
@@ -28,20 +29,20 @@ public class LoginUserAccountController {
 
     private final LoginUserAccount loginUserAccount;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/public/loginUserAccount")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
-        LOG.info("Login user account request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Login User Account Request: [{}]", request);
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
-                new LoginUserAccount.Input(new Email(request.email), request.password));
+            new LoginUserAccount.Input(new Email(request.email), request.password));
 
-        var response = new Response(output.accessKey().getId().toString(), output.secretKey());
+        var response = new Response(output.accessKey()
+                                          .getId()
+                                          .toString(), output.secretKey());
 
-        LOG.info("Login user account response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Login User Account Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -49,26 +50,22 @@ public class LoginUserAccountController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull
-            @Pattern(regexp = Email.FORMAT, message = "Email must be with valid format.")
-            @JsonProperty("email")
-            String email,
+        @NotNull
+        @Pattern(
+            regexp = Email.FORMAT,
+            message = "Email must be with valid format.")
+        @JsonProperty("email")
+        String email,
 
-            @NotBlank
-            @JsonProperty("password")
-            String password
-    ) {
+        @NotBlank
+        @JsonProperty("password")
+        String password) implements Serializable {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("accessKey")
-            String accessKey,
-
-            @JsonProperty("secretKey")
-            String secretKey
-    ) {
+    public record Response(@JsonProperty("accessKey") String accessKey,
+                           @JsonProperty("secretKey") String secretKey) implements Serializable {
 
     }
 

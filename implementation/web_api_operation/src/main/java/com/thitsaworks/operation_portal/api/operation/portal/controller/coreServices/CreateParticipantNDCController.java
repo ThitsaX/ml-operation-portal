@@ -31,12 +31,16 @@ public class CreateParticipantNDCController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws JsonProcessingException, DomainException {
 
+        LOG.info("Create Participant NDC Request : [{}]", request);
+
         var output = this.createParticipantNDC.execute(new CreateParticipantNDC.Input(request.dfspCode,
                                                                                       request.currency,
                                                                                       request.ndcPercent,
                                                                                       request.ndcAmount));
 
         var response = new Response(output.participantNDCId().getEntityId().toString());
+
+        LOG.info("Create Participant NDC Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
