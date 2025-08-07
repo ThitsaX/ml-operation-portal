@@ -49,7 +49,7 @@ public class GetUserProfileController {
                                    .flatMap(entry -> entry.getKey()
                                                           .stream())
                                    .map(menu -> menu.menuId()
-                                                    .getId())
+                                                    .getId()).distinct()
                                    .sorted()
                                    .toList();
 
@@ -59,7 +59,7 @@ public class GetUserProfileController {
                                          .flatMap(entry -> entry.getValue()
                                                                 .stream())
                                          .map(action -> action.actionCode()
-                                                              .getValue())
+                                                              .getValue()).distinct()
                                          .sorted()
                                          .toList();
 
