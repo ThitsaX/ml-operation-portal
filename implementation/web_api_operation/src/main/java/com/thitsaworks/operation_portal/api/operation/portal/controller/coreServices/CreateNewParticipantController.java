@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -33,13 +32,11 @@ public class CreateNewParticipantController {
 
     private final CreateParticipant createNewParticipant;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/createNewParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create new participant request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Create New Participant Request: [{}]", request);
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -86,7 +83,7 @@ public class CreateNewParticipantController {
                                                .getId()
                                                .toString(), output.created());
 
-        LOG.info("Create new participant response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Create New Participant Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

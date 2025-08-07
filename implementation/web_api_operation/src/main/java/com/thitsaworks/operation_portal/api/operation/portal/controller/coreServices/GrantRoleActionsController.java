@@ -27,6 +27,8 @@ public class GrantRoleActionsController {
     @PostMapping("/secured/grantRoleActions")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Grant role actions request: [{}]", request);
+
         List<GrantRoleActions.Input.SingleRoleGrant> singleRoleGrantList = new ArrayList<>();
         for (var singleRoleGrant : request.singleRoleGrantList()) {
 
@@ -41,6 +43,8 @@ public class GrantRoleActionsController {
         }
 
         var output = this.grantRoleActions.execute(new GrantRoleActions.Input(singleRoleGrantList));
+
+        LOG.info("Grant Role Actions Response: [{}]", output.granted());
 
         return new ResponseEntity<>(new Response(output.granted()), HttpStatus.OK);
 

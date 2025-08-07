@@ -28,13 +28,11 @@ public class GetOtherParticipantListController {
 
     private final GetOtherParticipantList getOtherParticipantList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getOtherParticipantList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get all participants request : participantId = {}", participantId);
+        LOG.info("Get All Participants Request : participantId = {}", participantId);
 
         GetOtherParticipantList.Output output = this.getOtherParticipantList.execute(
             new GetOtherParticipantList.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -52,7 +50,7 @@ public class GetOtherParticipantListController {
 
         var response = new Response(participantInfoList);
 
-        LOG.info("Get all participants response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get All Participants List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

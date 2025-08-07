@@ -28,13 +28,11 @@ public class ModifyExistingParticipantUserController {
 
     private final ModifyExistingUser modifyExistingUser;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/modifyParticipantUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify participant user request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Modify Existing Participant User Request: [{}]", request);
 
         var output = this.modifyExistingUser.execute(new ModifyExistingUser.Input(new ParticipantUserId(Long.parseLong(
                 request.participantUserId())),
@@ -49,7 +47,7 @@ public class ModifyExistingParticipantUserController {
 
         var response = new Response(output.participantUserId().getId().toString(), output.modified());
 
-        LOG.info("Modify existing participant user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Modify Existing Participant User Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

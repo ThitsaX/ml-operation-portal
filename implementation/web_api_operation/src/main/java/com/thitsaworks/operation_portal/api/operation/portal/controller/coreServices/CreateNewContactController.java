@@ -33,6 +33,8 @@ public class CreateNewContactController {
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
+        LOG.info("Create New Contact Request: [{}]", request);
+
         CreateNewContact.Output output = this.createNewContact.execute(
             new CreateNewContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                        request.name(),
@@ -46,6 +48,8 @@ public class CreateNewContactController {
                                     output.contactId()
                                           .getEntityId()
                                           .toString());
+
+        LOG.info("Create New Contact Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

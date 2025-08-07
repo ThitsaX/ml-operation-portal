@@ -30,6 +30,8 @@ public class RemoveLiquidityProfileController {
     @PostMapping(value = "/secured/removeLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Remove Liquidity Profile Request: [{}]", request);
+
         var
             output =
             this.removeLiquidityProfile.execute(new RemoveLiquidityProfile.Input(new ParticipantId(Long.parseLong(
@@ -38,6 +40,8 @@ public class RemoveLiquidityProfileController {
                                                                                      request.liquidityProfileId()))));
 
         var response = new Response(output.removed());
+
+        LOG.info("Remove Liquidity Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

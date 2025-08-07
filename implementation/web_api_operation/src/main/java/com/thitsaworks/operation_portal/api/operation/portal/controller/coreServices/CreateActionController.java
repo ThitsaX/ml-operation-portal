@@ -27,12 +27,16 @@ public class CreateActionController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException {
 
+        LOG.info("Create Action Request : [{}]", request);
+
         var output = this.createAction.execute(new CreateAction.Input(new ActionCode(request.name()),
                                                                       request.description(),
                                                                       request.scope()));
 
         var response = new Response(output.actionId()
                                           .toString());
+
+        LOG.info("Create Action Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

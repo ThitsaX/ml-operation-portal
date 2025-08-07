@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingParticipant;
@@ -28,13 +27,12 @@ public class GetExistingParticipantController {
 
     private final GetExistingParticipant getExistingParticipant;
 
-    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getParticipant")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get participant request : participantId = {}", participantId);
+        LOG.info("Get Existing Participant Request: ParticipantId = [{}]", participantId);
 
         GetExistingParticipant.Output output = this.getExistingParticipant.execute(
             new GetExistingParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -86,7 +84,7 @@ public class GetExistingParticipantController {
                                     contactInfoList,
                                     liquidityProfileInfoList);
 
-        LOG.info("Get participant response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get Existing Participant Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

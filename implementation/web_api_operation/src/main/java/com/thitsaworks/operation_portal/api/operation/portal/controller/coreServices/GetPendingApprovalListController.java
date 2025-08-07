@@ -23,8 +23,6 @@ public class GetPendingApprovalListController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetPendingApprovalListController.class);
 
-    private final ObjectMapper objectMapper;
-
     private final GetPendingApprovalList getPendingApprovalList;
 
     @GetMapping(value = "/secured/getPendingApprovalList")
@@ -48,7 +46,7 @@ public class GetPendingApprovalListController {
                                                                                               .name()))
                                           .toList());
 
-        LOG.info("Get Pending Approvals Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get Pending Approval List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

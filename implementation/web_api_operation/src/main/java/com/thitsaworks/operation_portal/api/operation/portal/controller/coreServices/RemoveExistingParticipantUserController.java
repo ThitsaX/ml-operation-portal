@@ -29,20 +29,18 @@ public class RemoveExistingParticipantUserController {
 
     private final RemoveExistingParticipantUser removeExistingParticipantUser;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/removeParticipantUser")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove participant user request : {}", this.objectMapper.writeValueAsString(request));
+        LOG.info("Remove Existing Participant User Request: [{}]", request);
 
         RemoveExistingParticipantUser.Output output = this.removeExistingParticipantUser.execute(
             new RemoveExistingParticipantUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                                     new ParticipantUserId(Long.parseLong(request.participantUserId()))));
         var response = new Response(output.removed());
 
-        LOG.info("Remove participant user response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Remove Existing Participant User Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

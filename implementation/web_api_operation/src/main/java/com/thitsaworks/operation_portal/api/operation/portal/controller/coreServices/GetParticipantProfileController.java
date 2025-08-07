@@ -29,6 +29,8 @@ public class GetParticipantProfileController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
+        LOG.info("Get Participant Profile Request: ParticipantId = [{}]", participantId);
+
         var
             output =
             this.getParticipantProfile.execute(new GetParticipantProfile.Input(new ParticipantId(Long.parseLong(
@@ -47,6 +49,8 @@ public class GetParticipantProfileController {
                                                                          .encodeToString(output.logo()),
                                     output.createdDate()
                                           .getEpochSecond());
+
+        LOG.info("Get Participant Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

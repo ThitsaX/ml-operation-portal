@@ -34,6 +34,8 @@ public class ModifyParticipantProfileController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Modify Participant Profile Request: [{}]", request);
+
         UserContext
             userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -53,6 +55,8 @@ public class ModifyParticipantProfileController {
         var response = new Response(output.participantId()
                                           .getId()
                                           .toString(), output.modified());
+
+        LOG.info("Modify Participant Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

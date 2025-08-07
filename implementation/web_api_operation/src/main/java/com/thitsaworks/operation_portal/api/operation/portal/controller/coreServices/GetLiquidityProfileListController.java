@@ -29,6 +29,8 @@ public class GetLiquidityProfileListController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
+        LOG.info("Get Liquidity Profile List Request: ParticipantId = [{}]", participantId);
+
         var
             output =
             this.getLiquidityProfileList.execute(new GetLiquidityProfileList.Input(new ParticipantId(Long.parseLong(
@@ -46,6 +48,8 @@ public class GetLiquidityProfileListController {
                                                                                             profile.currency(),
                                                                                             profile.isActive()))
                                           .toList());
+
+        LOG.info("Get Liquidity Profile List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditList;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +26,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetAuditListController {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListController.class);
+
     private final GetAuditList getAuditList;
 
     @PostMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
+
+        LOG.info("Get Audit List Request: [{}]", request);
 
         GetAuditList.Output output = this.getAuditList.execute(
             new GetAuditList.Input(request.participantId() == null || request.participantId()
@@ -53,6 +59,8 @@ public class GetAuditListController {
         }
 
         var response = new Response(auditInfoList);
+
+        LOG.info("Get Audit List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

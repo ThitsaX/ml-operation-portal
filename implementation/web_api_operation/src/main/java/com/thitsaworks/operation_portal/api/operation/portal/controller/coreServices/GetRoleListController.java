@@ -33,6 +33,8 @@ public class GetRoleListController {
                                                                          role.active()))
                                           .toList());
 
+        LOG.info("Get Role List Response: [{}]", response);
+
         return ResponseEntity.ok(response);
     }
 
