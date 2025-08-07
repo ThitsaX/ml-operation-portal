@@ -56,7 +56,7 @@ public class ModifyLiquidityProfileController {
         @NotNull @JsonProperty("currency") String currency) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isModified") boolean isModified) implements Serializable {
+    public record Response(@JsonProperty("modified") boolean modified) implements Serializable {
     }
 
 }
