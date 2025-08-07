@@ -23,7 +23,7 @@ public interface GetParticipantUserList extends
             String firstName,
             String lastName,
             String jobTitle,
-            String roleType,
+            List<String> roleList,
             String status,
             Instant createdDate
     ) implements Serializable {}

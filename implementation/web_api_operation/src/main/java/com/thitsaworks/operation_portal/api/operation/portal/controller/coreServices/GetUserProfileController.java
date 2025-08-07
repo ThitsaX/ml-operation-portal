@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -27,13 +26,11 @@ public class GetUserProfileController {
 
     private final GetUserProfile getUserProfile;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getUserProfile")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get user profile request : {}", "");
+        LOG.info("Get user profile request : [{}]", "");
 
         UserContext
             userContext =
@@ -73,13 +70,13 @@ public class GetUserProfileController {
                                     output.jobTitle(),
                                     output.participantName(),
                                     output.description(),
-                                    output.roleType(),
+                                    output.roleList(),
                                     output.participantId().getId().toString(),
                                     output.createdDate(),
                                     menuIds,
                                     actionCodes);
 
-        LOG.info("Get user profile response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get User Profile Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -94,12 +91,10 @@ public class GetUserProfileController {
         @JsonProperty("jobTitle") String jobTitle,
         @JsonProperty("participantName") String participantName,
         @JsonProperty("description") String description,
-        @JsonProperty("userRoleType") String roleType,
+        @JsonProperty("roleList") List<String> roleList,
         @JsonProperty("participantId") String participantId,
-
         @JsonProperty("createdDate") Long createdDate,
         @JsonProperty("accessMenuList") List<Long> menuList,
-
         @JsonProperty("accessActionList") List<String> actionList
 
     ) {

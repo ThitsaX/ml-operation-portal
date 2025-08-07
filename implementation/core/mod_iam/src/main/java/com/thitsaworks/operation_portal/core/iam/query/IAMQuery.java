@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.iam.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.data.MenuData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -19,5 +18,8 @@ public interface IAMQuery {
 
     List<ActionData> getActions();
 
+    List<RoleData> getRolesByPrincipal(PrincipalId principalId) throws IAMException;
+
     Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId);
+
 }
