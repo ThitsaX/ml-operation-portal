@@ -8,6 +8,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.data.RoleData;
+import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -32,13 +34,16 @@ public class GetParticipantUserListHandler
 
     private final PrincipalCache principalCache;
 
+    private final IAMQuery iamQuery;
+
     public GetParticipantUserListHandler(CreateInputAuditCommand createInputAuditCommand,
                                          CreateOutputAuditCommand createOutputAuditCommand,
                                          CreateExceptionAuditCommand createExceptionAuditCommand,
                                          ObjectMapper objectMapper,
                                          PrincipalCache principalCache,
                                          ActionAuthorizationManager actionAuthorizationManager,
-                                         ParticipantUserQuery participantUserQuery) {
+                                         ParticipantUserQuery participantUserQuery,
+                                         IAMQuery iamQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -49,13 +54,14 @@ public class GetParticipantUserListHandler
 
         this.participantUserQuery = participantUserQuery;
         this.principalCache = principalCache;
+        this.iamQuery = iamQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
         List<ParticipantUserData> participantUserDataList =
-            this.participantUserQuery.getParticipantUsers(null);
+            this.participantUserQuery.getParticipantUsers(input.participantId());
 
         List<GetParticipantUserList.UserInfo> userInfoList = new ArrayList<>();
 
@@ -66,19 +72,26 @@ public class GetParticipantUserListHandler
                 this.principalCache.get(new PrincipalId(participantUserData.participantUserId()
                                                                            .getId()));
 
+            var
+                roleList =
+                this.iamQuery.getRolesByPrincipal(principalData.principalId())
+                             .stream()
+                             .map(RoleData::name)
+                             .toList();
+
             userInfoList.add(new GetParticipantUserList.UserInfo(participantUserData.participantUserId(),
                                                                  participantUserData.name(),
                                                                  participantUserData.email(),
                                                                  participantUserData.firstName(),
                                                                  participantUserData.lastName(),
                                                                  participantUserData.jobTitle(),
-                                                                 null,
+                                                                 roleList,
                                                                  principalData.principalStatus()
                                                                               .toString(),
                                                                  Instant.ofEpochSecond(participantUserData.createdDate())));
         }
 
-        return new Output(null);
+        return new Output(userInfoList);
     }
 
 }

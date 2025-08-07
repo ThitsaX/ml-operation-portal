@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -129,7 +130,11 @@ public class IAMEngineHandler implements IAMEngine {
         var principal = this.principalsMap.get(principalId);
         var denialActions = this.principalDeniedActionsMap.get(principalId);
         var grantedActions = this.principalGrantedActionsMap.get(principalId);
-        var principalRoles = this.principalRolesMap.get(principalId);
+        var principalRoles = Optional.ofNullable(this.principalRolesMap.get(principalId))
+                                     .orElse(Set.of())
+                                     .stream()
+                                     .filter(RoleData::active)
+                                     .toList();
 
         List<ActionData> roleGrantedActions = new ArrayList<>();
         for (var userRole : principalRoles) {
@@ -171,6 +176,29 @@ public class IAMEngineHandler implements IAMEngine {
     public boolean isGrantedAction(PrincipalId principalId, ActionId actionId) {
 
         return false;
+    }
+
+    @Override
+    public List<RoleData> getRolesByPrincipal(PrincipalId principalId) {
+
+        var roleSet = this.principalRolesMap.get(principalId);
+
+        var roleList = new ArrayList<RoleData>();
+
+        for (var role : roleSet) {
+
+            if (role.active()) {
+                roleList.add(role);
+            }
+        }
+
+        return roleList;
+    }
+
+    @Override
+    public PrincipalData getPrincipal(PrincipalId principalId) {
+
+        return this.principalsMap.get(principalId);
     }
 
     @Override

@@ -26,7 +26,7 @@ public interface GetUserProfile extends
             Long createdDate,
             String participantName,
             String description,
-            String roleType,
+            List<String> roleList,
             Map<List<MenuData>, List<ActionData>> permittedMenuAndActionList
     ) {}
 

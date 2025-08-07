@@ -13,6 +13,8 @@ import com.thitsaworks.operation_portal.core.iam.data.MenuData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
@@ -125,6 +127,32 @@ public class IAMJpaQueryHandler implements IAMQuery {
     }
 
     @Override
+    public List<RoleData> getRolesByPrincipal(PrincipalId principalId) throws IAMException {
+
+        var availablePrincipal = this.iamEngine.getPrincipal(principalId);
+
+        if (availablePrincipal != null) {
+            return this.iamEngine.getRolesByPrincipal(principalId);
+        }
+
+        var principal = this.principalRepository.findById(principalId)
+                                                .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+
+        var roles = principal.getRoles();
+
+        this.iamEngine.addPrincipal(principalId, new PrincipalData(principal));
+
+        List<RoleData> roleDataList = roles.stream()
+                                           .map(RoleData::new)
+                                           .collect(Collectors.toList());
+
+        roleDataList.forEach(roleData -> this.iamEngine.addPrincipalRole(principalId, roleData));
+
+        return roleDataList;
+
+    }
+
+    @Override
     public Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId) {
 
         QPrincipalRole qPrincipalRole = QPrincipalRole.principalRole;
@@ -137,8 +165,13 @@ public class IAMJpaQueryHandler implements IAMQuery {
         QRole qRole = QRole.role;
         QBlockedAction qBlockedAction = QBlockedAction.blockedAction;
 
-        List<RoleId> roleIds = this.readQueryFactory.select(qPrincipalRole.role.roleId).from(qPrincipalRole).where(
-                qPrincipalRole.principal.principalId.eq(principalId)).fetch();
+        List<RoleId>
+            roleIds =
+            this.readQueryFactory.select(qPrincipalRole.role.roleId)
+                                 .from(qPrincipalRole)
+                                 .where(
+                                     qPrincipalRole.principal.principalId.eq(principalId))
+                                 .fetch();
 
         List<Tuple> roleGrants = this.readQueryFactory.select(qRoleGrant.Action.actionId,
                                                               Expressions.constant(principalId),
@@ -170,38 +203,43 @@ public class IAMJpaQueryHandler implements IAMQuery {
                                                .join(qMenuGrant)
                                                .on(qMenuGrant.Action.actionId.eq(qAction.actionId))
                                                .join(qMenu)
-                                               .on(qMenu.menuId.eq(qMenuGrant.menu.menuId).and(qMenu.isActive.eq(true)))
+                                               .on(qMenu.menuId.eq(qMenuGrant.menu.menuId)
+                                                               .and(qMenu.isActive.eq(true)))
                                                .join(qUr)
                                                .on(qUr.principal.principalId.eq(principalId))
                                                .join(qRole)
-                                               .on(qRole.roleId.eq(qUr.role.roleId).and(qRole.roleId.eq(roleId)))
+                                               .on(qRole.roleId.eq(qUr.role.roleId)
+                                                               .and(qRole.roleId.eq(roleId)))
                                                .where(qAction.actionId.eq(actionId)
                                                                       .and(qAction.actionId.notIn(JPAExpressions.select(
-                                                                                                                        qBlockedAction.Action.actionId)
-                                                                                                                .from(qBlockedAction)
-                                                                                                                .where(qBlockedAction.principal.principalId.eq(
+                                                                                                                    qBlockedAction.Action.actionId)
+                                                                                                                .from(
+                                                                                                                    qBlockedAction)
+                                                                                                                .where(
+                                                                                                                    qBlockedAction.principal.principalId.eq(
                                                                                                                         principalId)))))
                                                .fetch();
 
             Map<List<MenuData>, List<ActionData>> partialMap =
-                    rows.stream().collect(Collectors.groupingBy(
-                            row -> List.of(new MenuData(row.get(qMenu.menuId),
-                                                        row.get(qMenu.name),
-                                                        "0",
-                                                        true)),
-                            Collectors.mapping(row -> new ActionData(row.get(qAction.actionId),
-                                                                     row.get(qAction.actionCode),
-                                                                     "",
-                                                                     ""),
-                                               Collectors.toList())
-                                                               ));
+                rows.stream()
+                    .collect(Collectors.groupingBy(
+                        row -> List.of(new MenuData(row.get(qMenu.menuId),
+                                                    row.get(qMenu.name),
+                                                    "0",
+                                                    true)),
+                        Collectors.mapping(row -> new ActionData(row.get(qAction.actionId),
+                                                                 row.get(qAction.actionCode),
+                                                                 "",
+                                                                 ""),
+                                           Collectors.toList())
+                                                  ));
 
             partialMap.forEach((menuList, actionList) ->
-                                       resultMap.merge(menuList, actionList, (oldList, newList) -> {
-                                           Set<ActionData> merged = new LinkedHashSet<>(oldList);
-                                           merged.addAll(newList);
-                                           return new ArrayList<>(merged);
-                                       })
+                                   resultMap.merge(menuList, actionList, (oldList, newList) -> {
+                                       Set<ActionData> merged = new LinkedHashSet<>(oldList);
+                                       merged.addAll(newList);
+                                       return new ArrayList<>(merged);
+                                   })
                               );
 
         }

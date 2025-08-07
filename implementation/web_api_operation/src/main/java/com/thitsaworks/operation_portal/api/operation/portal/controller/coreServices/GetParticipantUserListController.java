@@ -48,7 +48,7 @@ public class GetParticipantUserListController {
                                                    participantUser.firstName(),
                                                    participantUser.lastName(),
                                                    participantUser.jobTitle(),
-                                                   participantUser.roleType(),
+                                                   participantUser.roleList(),
                                                    participantUser.status(),
                                                    participantUser.createdDate()
                                                                   .getEpochSecond()));
@@ -71,7 +71,7 @@ public class GetParticipantUserListController {
                                @JsonProperty("firstName") String firstName,
                                @JsonProperty("lastName") String lastName,
                                @JsonProperty("jobTitle") String jobTitle,
-                               @JsonProperty("userRoleType") String roleType,
+                               @JsonProperty("roleList") List<String> roleList,
                                @JsonProperty("status") String status,
                                @JsonProperty("createdDate") Long createdDate) implements Serializable { }
 
