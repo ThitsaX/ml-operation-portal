@@ -2,11 +2,9 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CloseSettlementWindows;
-import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateParticipantStatus;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,13 +26,11 @@ public class CloseSettlementWindowsController {
 
     private final CloseSettlementWindows closeSettlementWindows;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/closeSettlementWindow")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Close Settlement Window request : {}", objectMapper.writeValueAsString(request));
+        LOG.info("Close Settlement Window request : [{}]", request);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -47,29 +42,27 @@ public class CloseSettlementWindowsController {
                                                                                  request.reason,
                                                                                  request.settlementWindowId));
 
-       var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(),
-                                   output.changedDate());
+        var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(),
+                                    output.changedDate());
 
-        LOG.info("Update Approval Response : {}", this.objectMapper.writeValueAsString(null));
+        LOG.info("Update Approval Response : {}", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        String state,
-        String reason,
-        int settlementWindowId
+    public record Request(String state,
+                          String reason,
+                          int settlementWindowId
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        int settlementWindowId,
-        String state,
-        String reason,
-        String createdDate,
-        String changedDate
+    public record Response(int settlementWindowId,
+                           String state,
+                           String reason,
+                           String createdDate,
+                           String changedDate
     ) implements Serializable { }
 
 }

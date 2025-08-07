@@ -28,6 +28,8 @@ public class GetParticipantCurrenciesController {
     public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Participant Currencies Request for dfspId = [{}]", dfspId);
+
         var output = this.getParticipantCurrencies.execute(new GetParticipantCurrencies.Input(dfspId));
 
         List<CurrencyInfo>
@@ -39,17 +41,17 @@ public class GetParticipantCurrenciesController {
 
         var response = new Response(currencyInfoList);
 
+        LOG.info("Get Participant Currencies Response : [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        @JsonProperty("hubCurrencyList") List<CurrencyInfo> currencyInfoList
+    public record Response(@JsonProperty("hubCurrencyList") List<CurrencyInfo> currencyInfoList
     ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record CurrencyInfo(
-        @JsonProperty("currency") String currency
+    public record CurrencyInfo(@JsonProperty("currency") String currency
     ) { }
 
 }

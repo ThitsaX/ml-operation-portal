@@ -33,45 +33,30 @@ public class UpdateGreetingController {
 
         LOGGER.info("Update Greeting Request: [{}]", request);
 
-        var input = new UpdateGreeting.Input(
-            new GreetingId(Long.parseLong(request.greetingId())),
-            request.greetingTitle(),
-            request.greetingDetail(),
-            request.isDeleted(),
-            Instant.parse(request.greetingDate())
-                         );
+        var input = new UpdateGreeting.Input(new GreetingId(Long.parseLong(request.greetingId())),
+                                             request.greetingTitle(),
+                                             request.greetingDetail(),
+                                             request.isDeleted(),
+                                             Instant.parse(request.greetingDate()));
+
         var output = this.updateGreeting.execute(input);
 
-        var response = new Response(output.greetingId().toString());
+        var response = new Response(output.greetingId()
+                                          .toString());
 
         LOGGER.info("Update Greeting Response: [{}]", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull
-        @JsonProperty("greetingId")
-        String greetingId,
+    public record Request(@NotNull @JsonProperty("greetingId") String greetingId,
+                          @NotNull @JsonProperty("greetingTitle") String greetingTitle,
+                          @NotNull @JsonProperty("greetingDetail") String greetingDetail,
+                          @NotNull @JsonProperty("isDeleted") boolean isDeleted,
+                          @NotNull @JsonProperty("greetingDate") String greetingDate) implements Serializable { }
 
-        @NotNull
-        @JsonProperty("greetingTitle")
-        String greetingTitle,
-
-        @NotNull
-        @JsonProperty("greetingDetail")
-        String greetingDetail,
-
-        @NotNull @JsonProperty("isDeleted") boolean isDeleted,
-
-        @NotNull @JsonProperty("greetingDate") String greetingDate
-    ) implements Serializable {
-    }
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-        @JsonProperty("greetingId")
-        String greetingId) implements Serializable {
-    }
-
+    public record Response(@JsonProperty("greetingId") String greetingId) implements Serializable { }
 
 }
 

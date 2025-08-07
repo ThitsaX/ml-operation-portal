@@ -47,9 +47,9 @@ public class RemoveLiquidityProfileController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable { }

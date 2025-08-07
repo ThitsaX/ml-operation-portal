@@ -49,7 +49,9 @@ public class GetContactListController {
                                                                                    contact.contactType()))
                                           .toList());
 
-        LOG.info("Get Contact List Response : [{}]", response.contactInfoList().size());
+        LOG.info("Get Contact List Response : [{}]",
+                 response.contactInfoList()
+                         .size());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -63,7 +65,7 @@ public class GetContactListController {
             @JsonProperty("position") String position,
             @JsonProperty("email") String email,
             @JsonProperty("mobile") String mobile,
-            @JsonProperty("contactType") String contactType) {
+            @JsonProperty("contactType") String contactType) implements Serializable {
         }
 
     }

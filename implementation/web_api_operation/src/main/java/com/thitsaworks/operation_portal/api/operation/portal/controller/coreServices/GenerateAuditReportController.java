@@ -29,8 +29,6 @@ public class GenerateAuditReportController {
 
     private final GenerateAuditReport generateAuditReport;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/generateAuditReport")
     public ResponseEntity<Response> execute(@RequestParam(
                                                 value = "participantId",
@@ -47,8 +45,8 @@ public class GenerateAuditReportController {
                                             @RequestParam("fileType") String fileType)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Generate Audit Report Request : participantId = {}, fromDate = {}, toDate = {}, " +
-                 "timezoneOffset = {}, participantUserId = {}, action = {}, fileType = {}",
+        LOG.info("Generate Audit Report Request : participantId = [{}], fromDate = [{}], toDate = [{}], " +
+                 "timezoneOffset = [{}], participantUserId = [{}], action = [{}], fileType = [{}]",
                  participantId, fromDate, toDate, timezoneOffset, participantUserId, action, fileType);
 
         String showTimezone = timezoneOffset;
@@ -73,7 +71,7 @@ public class GenerateAuditReportController {
 
         var response = new Response(output.rptBytes());
 
-        LOG.info("Generate Audit Report Response : [{}]", objectMapper.writeValueAsString(response));
+        LOG.info("Generate Audit Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

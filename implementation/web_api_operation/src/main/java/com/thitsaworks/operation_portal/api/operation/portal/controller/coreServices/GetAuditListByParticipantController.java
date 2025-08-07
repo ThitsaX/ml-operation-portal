@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,14 @@ public class GetAuditListByParticipantController {
         @RequestParam("userId") String participantUserId,
         @RequestParam("actionName") String actionName) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Audit List Request: ParticipantId = [{}], FromDate = [{}], ToDate = [{}], UserId = [{}], ActionName = [{}]",
-                 participantId, fromDate, toDate, participantUserId, actionName);
+        LOG.info(
+            "Get Audit List Request: ParticipantId = [{}], FromDate = [{}], ToDate = [{}], UserId = [{}], ActionName = [{}]",
+            participantId,
+            fromDate,
+            toDate,
+            participantUserId,
+            actionName);
+
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
@@ -51,7 +58,7 @@ public class GetAuditListByParticipantController {
                                                 Instant.ofEpochSecond(toDate)
                 ,
                                                 (participantUserId != null && !participantUserId.isEmpty()) ?
-                                                   new UserId(Long.parseLong(participantUserId)) : null,
+                                                    new UserId(Long.parseLong(participantUserId)) : null,
                                                 (actionName != null && !actionName.isEmpty()) ? actionName : null));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
@@ -72,13 +79,13 @@ public class GetAuditListByParticipantController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) {
+    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) implements Serializable {
 
         public record AuditInfo(
             @JsonProperty("userName") String userName,
             @JsonProperty("actionName") String actionName,
             @JsonProperty("actionDate") Long actionDate
-        ) { }
+        ) implements Serializable { }
 
     }
 

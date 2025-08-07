@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementAuditReport;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +25,6 @@ public class GenerateSettlementAuditReportController {
 
     private final GenerateSettlementAuditReport generateSettlementAuditReport;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping("/secured/generateSettlementAuditReport")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
@@ -35,19 +32,25 @@ public class GenerateSettlementAuditReportController {
                                             @RequestParam("currencyId") String currencyId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Generate Settlement Audit Report Request : startDate = [{}], endDate = [{}], dfspId = [{}], " +
+                     "currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
+                 startDate, endDate, dfspId, currencyId, fileType, timezoneOffset);
 
         GenerateSettlementAuditReport.Output output =
-                this.generateSettlementAuditReport.execute(new GenerateSettlementAuditReport.Input(Instant.parse(
-                        startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezoneOffset));
+            this.generateSettlementAuditReport.execute(new GenerateSettlementAuditReport.Input(Instant.parse(
+                startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezoneOffset));
 
         var response = new Response(output.reportData());
+
+        LOG.info("Generate Settlement Audit Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable {}
+    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
 
 }

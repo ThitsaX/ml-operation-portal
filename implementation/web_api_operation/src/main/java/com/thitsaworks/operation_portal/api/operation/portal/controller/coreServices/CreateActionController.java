@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAction;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,10 +44,11 @@ public class CreateActionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank String name,
                           @NotNull @NotBlank String description,
-                          @NotNull @NotBlank String scope) { }
+                          @NotNull @NotBlank String scope) implements Serializable { }
 
-    public record Response(String actionId) { }
+    public record Response(String actionId) implements Serializable { }
 
 }

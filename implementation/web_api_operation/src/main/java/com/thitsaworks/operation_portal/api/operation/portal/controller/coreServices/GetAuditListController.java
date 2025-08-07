@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +40,9 @@ public class GetAuditListController {
         GetAuditList.Output output = this.getAuditList.execute(
             new GetAuditList.Input(request.participantId() == null || request.participantId()
                                                                              .isBlank() ? null :
-                                      new RealmId(Long.parseLong(request.participantId())),
+                                       new RealmId(Long.parseLong(request.participantId())),
                                    request.participantUserId() == null ? null :
-                                      new UserId(Long.parseLong(request.participantUserId())),
+                                       new UserId(Long.parseLong(request.participantUserId())),
                                    Instant.ofEpochSecond(request.fromDate()),
                                    Instant.ofEpochSecond(request.toDate()),
                                    request.actionName()));
@@ -67,25 +68,23 @@ public class GetAuditListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @NotNull @JsonProperty("participantId") String participantId,
-        @JsonProperty("participantUserId") String participantUserId,
-        @NotNull @JsonProperty("fromDate") Long fromDate,
-        @NotNull @JsonProperty("toDate") Long toDate,
-        @JsonProperty("actionName") String actionName
-    ) { }
+    public record Request(@NotNull @NotNull @JsonProperty("participantId") String participantId,
+                          @JsonProperty("participantUserId") String participantUserId,
+                          @NotNull @JsonProperty("fromDate") Long fromDate,
+                          @NotNull @JsonProperty("toDate") Long toDate,
+                          @JsonProperty("actionName") String actionName
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("audit_info_list") List<AuditInfo> auditInfoList) {
+    public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList) implements Serializable {
 
-        public record AuditInfo(
-            @JsonProperty("participantName") String participantName,
-            @JsonProperty("userName") String userName,
-            @JsonProperty("actionName") String actionName,
-            @JsonProperty("inputInfo") String inputInfo,
-            @JsonProperty("outputInfo") String outputInfo,
-            @JsonProperty("actionDate") Long actionDate
-        ) { }
+        public record AuditInfo(@JsonProperty("participantName") String participantName,
+                                @JsonProperty("userName") String userName,
+                                @JsonProperty("actionName") String actionName,
+                                @JsonProperty("inputInfo") String inputInfo,
+                                @JsonProperty("outputInfo") String outputInfo,
+                                @JsonProperty("actionDate") Long actionDate
+        ) implements Serializable { }
 
     }
 

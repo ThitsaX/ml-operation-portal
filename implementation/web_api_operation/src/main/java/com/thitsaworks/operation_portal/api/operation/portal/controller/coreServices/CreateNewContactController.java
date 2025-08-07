@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewContact;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,13 +65,13 @@ public class CreateNewContactController {
                               regexp = Email.FORMAT,
                               message = "Email must be with valid format.") String email,
                           @NotNull @JsonProperty("mobile") String mobile,
-                          @NotNull @JsonProperty("contactType") String contactType) {
+                          @NotNull @JsonProperty("contactType") String contactType) implements Serializable {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("isCreated") boolean isCreated,
-                           @JsonProperty("contactId") String contactId) {
+                           @JsonProperty("contactId") String contactId) implements Serializable {
     }
 
 }

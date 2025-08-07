@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequestId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
@@ -59,7 +58,8 @@ public class ModifyApprovalActionController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String approvalRequestId, @NotNull @NotBlank String action)
+    public record Request(@NotNull @NotBlank String approvalRequestId,
+                          @NotNull @NotBlank String action)
         implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

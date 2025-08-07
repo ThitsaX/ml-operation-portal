@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.List;
 
 @RestController
@@ -30,7 +31,7 @@ public class GetUserProfileController {
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get user profile request : [{}]", "");
+        LOG.info("Get User Profile Request : [{}]", "");
 
         UserContext
             userContext =
@@ -47,15 +48,18 @@ public class GetUserProfileController {
                                    .stream()
                                    .flatMap(entry -> entry.getKey()
                                                           .stream())
-                                   .map(menu -> menu.menuId().getId())
+                                   .map(menu -> menu.menuId()
+                                                    .getId())
                                    .sorted()
                                    .toList();
 
         List<String> actionCodes = output.permittedMenuAndActionList()
                                          .entrySet()
                                          .stream()
-                                         .flatMap(entry -> entry.getValue().stream())
-                                         .map(action -> action.actionCode().getValue())
+                                         .flatMap(entry -> entry.getValue()
+                                                                .stream())
+                                         .map(action -> action.actionCode()
+                                                              .getValue())
                                          .sorted()
                                          .toList();
 
@@ -71,7 +75,9 @@ public class GetUserProfileController {
                                     output.participantName(),
                                     output.description(),
                                     output.roleList(),
-                                    output.participantId().getId().toString(),
+                                    output.participantId()
+                                          .getId()
+                                          .toString(),
                                     output.createdDate(),
                                     menuIds,
                                     actionCodes);
@@ -96,9 +102,6 @@ public class GetUserProfileController {
         @JsonProperty("createdDate") Long createdDate,
         @JsonProperty("accessMenuList") List<Long> menuList,
         @JsonProperty("accessActionList") List<String> actionList
-
-    ) {
-
-    }
+    ) implements Serializable { }
 
 }

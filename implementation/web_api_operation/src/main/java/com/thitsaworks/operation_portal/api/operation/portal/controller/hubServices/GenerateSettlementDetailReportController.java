@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @RestController
 @RequiredArgsConstructor
 public class GenerateSettlementDetailReportController {
@@ -28,17 +30,20 @@ public class GenerateSettlementDetailReportController {
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
+        LOG.info("Generate detail report : settlementId = [{}], fspId = [{}], fileType = [{}], timezoneOffset = [{}]",
+                 settlementId, fspId, fileType, timezoneOffset);
+
         GenerateDetailReport.Output output = this.generateDetailReport.execute(
             new GenerateDetailReport.Input(fspId, settlementId, fileType, timezoneOffset));
 
         var response = new Response(output.detailReportData());
 
+        LOG.info("Generate detail report Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-    public record Response(
-        @JsonProperty("rptByte") byte[] detailReportByte
-    ) { }
+    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable { }
 
 }

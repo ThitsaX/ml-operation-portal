@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeByList;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -46,10 +48,11 @@ public class GetMadeByListController {
         return ResponseEntity.ok(new Response(users));
     }
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(Set<User> madeByList) {
 
         public record User(String userId,
-                           String name) { }
+                           String name) implements Serializable { }
 
     }
 

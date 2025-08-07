@@ -26,11 +26,16 @@ public class GenerateStatementReportController {
 
     @PostMapping("/secured/generateStatementReport")
     public ResponseEntity<Response> execute(
-        @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
+        @RequestParam("startDate") String startDate,
+        @RequestParam("endDate") String endDate,
         @RequestParam("fspId") String fspId,
         @RequestParam("fileType") String fileType,
         @RequestParam("timeZoneOffset") String timeZoneOffset,
         @RequestParam("currencyId") String currencyId) throws DomainException, JsonProcessingException {
+
+        LOG.info(
+            "Generate Statement Report : startDate = [{}], endDate = [{}], fsp = [{}], fileType = [{}], timezoneOffset = [{}], currencyId = [{}]",
+            startDate, endDate, fspId, fileType, timeZoneOffset, currencyId);
 
         GenerateStatementReport.Output output = this.generateStatementReport.execute(
             new GenerateStatementReport.Input(Instant.parse(startDate),
@@ -41,6 +46,8 @@ public class GenerateStatementReportController {
                                               currencyId));
 
         var response = new Response(output.statementData());
+
+        LOG.info("Generate Statement Report response = [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

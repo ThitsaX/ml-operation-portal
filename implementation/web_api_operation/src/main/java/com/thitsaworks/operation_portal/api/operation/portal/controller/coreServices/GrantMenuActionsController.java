@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,19 +47,22 @@ public class GrantMenuActionsController {
 
         var output = this.grantMenuActions.execute(new GrantMenuActions.Input(singleMenuGrantList));
 
-        LOG.info("Grant Menu Actions Response: [{}]", output.granted());
+        var response = new Response(output.granted());
 
-        return new ResponseEntity<>(new Response(output.granted()), HttpStatus.OK);
+        LOG.info("Grant Menu Actions Response: [{}]", response);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-    public record Request(List<SingleMenuGrant> singleMenuGrantList) {
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Request(List<SingleMenuGrant> singleMenuGrantList) implements Serializable {
 
         public record SingleMenuGrant(String menu,
-                                      List<String> actionList) { }
+                                      List<String> actionList) implements Serializable { }
 
     }
 
-    public record Response(boolean granted) { }
+    public record Response(boolean granted) implements Serializable { }
 
 }

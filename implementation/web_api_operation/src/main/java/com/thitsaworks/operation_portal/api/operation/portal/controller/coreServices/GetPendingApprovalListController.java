@@ -28,6 +28,8 @@ public class GetPendingApprovalListController {
     @GetMapping(value = "/secured/getPendingApprovalList")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Pending Approval List Request : [{}}", "");
+
         var output = this.getPendingApprovalList.execute(new GetPendingApprovalList.Input());
 
         var response = new Response(output.pendingApprovalList()

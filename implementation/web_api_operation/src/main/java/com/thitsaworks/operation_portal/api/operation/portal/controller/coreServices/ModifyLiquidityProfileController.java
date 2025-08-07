@@ -51,13 +51,12 @@ public class ModifyLiquidityProfileController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId,
-        @NotNull @JsonProperty("bankName") String bankName,
-        @NotNull @JsonProperty("accountName") String accountName,
-        @NotNull @JsonProperty("accountNumber") String accountNumber,
-        @NotNull @JsonProperty("currency") String currency) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId,
+                          @NotNull @JsonProperty("bankName") String bankName,
+                          @NotNull @JsonProperty("accountName") String accountName,
+                          @NotNull @JsonProperty("accountNumber") String accountNumber,
+                          @NotNull @JsonProperty("currency") String currency) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("modified") boolean modified) implements Serializable {

@@ -57,13 +57,12 @@ public class GetLiquidityProfileListController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(List<LiquidityProfileInfo> liquidityProfileInfoList) implements Serializable {
 
-        public record LiquidityProfileInfo(
-            @JsonProperty("liquidityProfileId") String liquidityProfileId,
-            @JsonProperty("bankName") String bankName,
-            @JsonProperty("accountName") String accountName,
-            @JsonProperty("accountNumber") String accountNumber,
-            @JsonProperty("currency") String currency,
-            @JsonProperty("isActive") Boolean isActive) {
+        public record LiquidityProfileInfo(@JsonProperty("liquidityProfileId") String liquidityProfileId,
+                                           @JsonProperty("bankName") String bankName,
+                                           @JsonProperty("accountName") String accountName,
+                                           @JsonProperty("accountNumber") String accountNumber,
+                                           @JsonProperty("currency") String currency,
+                                           @JsonProperty("isActive") Boolean isActive) implements Serializable {
         }
 
     }

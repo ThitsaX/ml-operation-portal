@@ -41,6 +41,13 @@ public class GetAllTransferController {
         String transferStateId,
         String timezone) throws DomainException, ParseException, JsonProcessingException {
 
+        LOG.info("Get All Transfer Request for fromDate = [{}], toDate = [{}], transferId = [{}], " +
+                     "payerFspId = [{}], payeeFspId = [{}], payerIdentifierTypeId = [{}], " +
+                     "payeeIdentifierTypeId = [{}], " + "payerIdentifierValue = [{}], " +
+                     "payeeIdentifierValue = [{}], currencyId = [{}], transferStateId = [{}], timezone = [{}]",
+                 fromDate, toDate, transferId, payerFspId, payeeFspId, payerIdentifierTypeId, payeeIdentifierTypeId,
+                 payerIdentifierValue, payeeIdentifierValue, currencyId, transferStateId, timezone);
+
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
                                                .getAuthentication()
@@ -96,6 +103,8 @@ public class GetAllTransferController {
         }
 
         var response = new Response(transferInfoList);
+
+        LOG.info("Get All Transfer Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

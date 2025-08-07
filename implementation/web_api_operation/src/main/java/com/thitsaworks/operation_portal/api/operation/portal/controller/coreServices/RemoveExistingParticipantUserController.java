@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -46,16 +45,12 @@ public class RemoveExistingParticipantUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("participantUserId") String participantUserId
-    ) implements Serializable {
-
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("participantUserId") String participantUserId)
+        implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable {
-
-    }
+    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable { }
 
 }

@@ -26,11 +26,13 @@ public class GetSettlementIdController {
     private final GetSettlementId getSettlementId;
 
     @GetMapping("/secured/getSettlementId")
-    public ResponseEntity<Response> execute(
-            @RequestParam("startDate") String startDate,
-            @RequestParam("endDate") String endDate,
-        @RequestParam("timezoneOffset") String timezoneOffset)
+    public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
+                                            @RequestParam("endDate") String endDate,
+                                            @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
+
+        LOG.info("Get SettlementId Request : startDate = [{}], endDate = [{}], timezoneOffset = [{}]",
+                 startDate, endDate, timezoneOffset);
 
         GetSettlementId.Output output = this.getSettlementId.execute(
             new GetSettlementId.Input(Instant.parse(startDate), Instant.parse(endDate), timezoneOffset));
@@ -44,19 +46,21 @@ public class GetSettlementIdController {
                   .toList();
         var response = new Response(settlementIdInfoList);
 
+        LOG.info("Get SettlementId Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("settlementIdDataList") List<SettlementIdInfo> settlementIdDataList
+        @JsonProperty("settlementIdDataList") List<SettlementIdInfo> settlementIdDataList
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record SettlementIdInfo(
-            @JsonProperty("settlementId") String settlementId
+        @JsonProperty("settlementId") String settlementId
     ) {
 
     }

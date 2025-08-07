@@ -45,9 +45,8 @@ public class RemoveContactController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("contactId") String contactId) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("contactId") String contactId) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("removed") boolean removed) implements Serializable { }

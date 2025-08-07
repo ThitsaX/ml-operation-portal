@@ -3,10 +3,11 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @RestController
@@ -30,32 +29,25 @@ public class ResetCurrentPasswordController {
 
     @PostMapping("/secured/resetPassword")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Reset Current Password Request: [{}]", request);
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
-                new ResetCurrentPassword.Input(new Email(request.email()), request.password()));
+            new ResetCurrentPassword.Input(new Email(request.email()), request.password()));
+
         var response = new Response(output.updated());
 
-       LOG.info("Reset Current Password Response: [{}]", response);
+        LOG.info("Reset Current Password Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-            @NotNull @JsonProperty("email") String email,
-            @NotNull @JsonProperty("newPassword") String password
-    ) implements Serializable {
-
-    }
+    public record Request(@NotNull @JsonProperty("email") String email,
+                          @NotNull @JsonProperty("newPassword") String password) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("updated") boolean updated
-    ) implements Serializable {
-
-    }
+    public record Response(@JsonProperty("updated") boolean updated) implements Serializable { }
 
 }

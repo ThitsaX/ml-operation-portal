@@ -3,10 +3,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyExistingUser;
 import jakarta.validation.Valid;
@@ -20,6 +18,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @RestController
 @RequiredArgsConstructor
 public class ModifyExistingParticipantUserController {
@@ -30,22 +30,25 @@ public class ModifyExistingParticipantUserController {
 
     @PostMapping("/secured/modifyParticipantUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Modify Existing Participant User Request: [{}]", request);
 
         var output = this.modifyExistingUser.execute(new ModifyExistingUser.Input(new ParticipantUserId(Long.parseLong(
-                request.participantUserId())),
+            request.participantUserId())),
                                                                                   request.name(),
                                                                                   request.firstName(),
                                                                                   request.lastName(),
                                                                                   request.jobTitle(),
-                                                                                  request.isActive().equalsIgnoreCase(
-                                                                                          "ACTIVE") ?
-                                                                                          PrincipalStatus.ACTIVE :
-                                                                                          PrincipalStatus.INACTIVE));
+                                                                                  request.isActive()
+                                                                                         .equalsIgnoreCase(
+                                                                                             "ACTIVE") ?
+                                                                                      PrincipalStatus.ACTIVE :
+                                                                                      PrincipalStatus.INACTIVE));
 
-        var response = new Response(output.participantUserId().getId().toString(), output.modified());
+        var response = new Response(output.participantUserId()
+                                          .getId()
+                                          .toString(), output.modified());
 
         LOG.info("Modify Existing Participant User Response: [{}]", response);
 
@@ -58,14 +61,10 @@ public class ModifyExistingParticipantUserController {
                           @NotNull @JsonProperty("firstName") String firstName,
                           @NotNull @JsonProperty("lastName") String lastName,
                           @NotNull @JsonProperty("jobTitle") String jobTitle,
-                          @NotNull @JsonProperty("status") String isActive) {
-
-    }
+                          @NotNull @JsonProperty("status") String isActive) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("participantUserId") String participantUserId,
-                           @JsonProperty("modified") boolean modified) {
-
-    }
+                           @JsonProperty("modified") boolean modified) implements Serializable { }
 
 }

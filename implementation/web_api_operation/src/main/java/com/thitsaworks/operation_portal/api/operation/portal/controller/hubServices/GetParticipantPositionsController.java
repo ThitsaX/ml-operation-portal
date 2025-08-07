@@ -33,6 +33,8 @@ public class GetParticipantPositionsController {
     @GetMapping("/secured/getParticipantPositionsData")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
+        LOG.info("Get Participant Positions Request : [{}]", "");
+
         UserContext
             userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -40,9 +42,9 @@ public class GetParticipantPositionsController {
                                                .getDetails();
 
         GetParticipantPositions.Output output =
-                this.getParticipantPositions.execute(new GetParticipantPositions.Input(new ParticipantUserId(
-                        userContext.userId()
-                                   .getEntityId())));
+            this.getParticipantPositions.execute(new GetParticipantPositions.Input(new ParticipantUserId(
+                userContext.userId()
+                           .getEntityId())));
 
         if (output != null && !output.financialData()
                                      .isEmpty()) {
@@ -56,20 +58,27 @@ public class GetParticipantPositionsController {
                                                                                        financialData.currency(),
                                                                                        financialData.balance(),
                                                                                        financialData.currentPosition(),
-                                                                                       ((financialData.ndcPercent() != null &&
-                                                                         !financialData.ndcPercent()
-                                                                                       .equals(BigDecimal.ZERO.setScale(
-                                                                                               2,
-                                                                                               RoundingMode.HALF_UP))) ?
-                                                                         financialData.ndcPercent() + "%" : "-"),
+                                                                                       ((financialData.ndcPercent() !=
+                                                                                             null &&
+                                                                                             !financialData.ndcPercent()
+                                                                                                           .equals(
+                                                                                                               BigDecimal.ZERO.setScale(
+                                                                                                                   2,
+                                                                                                                   RoundingMode.HALF_UP))) ?
+                                                                                            financialData.ndcPercent() +
+                                                                                                "%" : "-"),
                                                                                        financialData.ndc(),
-                                                                                       (financialData.ndcUsed() != null) ?
-                                                                         financialData.ndcUsed() : BigDecimal.ZERO,
+                                                                                       (financialData.ndcUsed() !=
+                                                                                            null) ?
+                                                                                           financialData.ndcUsed() :
+                                                                                           BigDecimal.ZERO,
                                                                                        financialData.participantSettlementCurrencyId(),
                                                                                        financialData.participantPositionCurrencyId()));
             }
 
             var response = new Response(participantPositionsDataList);
+
+            LOG.info("Get Participant Positions Response : [{}]", response);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -87,11 +96,13 @@ public class GetParticipantPositionsController {
             participantPositionsData = participantPositionsData != null ? participantPositionsData : List.of();
         }
 
-        public record ParticipantPositionsData(@JsonProperty("dfspId") String dfspId, @JsonProperty("dfspName") String dfspName,
+        public record ParticipantPositionsData(@JsonProperty("dfspId") String dfspId,
+                                               @JsonProperty("dfspName") String dfspName,
                                                @JsonProperty("currency") String currency,
                                                @JsonProperty("balance") BigDecimal balance,
                                                @JsonProperty("currentPosition") BigDecimal currentPosition,
-                                               @JsonProperty("ndcPercent") String ndcPercent, @JsonProperty("ndc") BigDecimal ndc,
+                                               @JsonProperty("ndcPercent") String ndcPercent,
+                                               @JsonProperty("ndc") BigDecimal ndc,
                                                @JsonProperty("ndcUsed") BigDecimal ndcUsed,
                                                @JsonProperty("participantSettlementCurrencyId") Integer participantSettlementCurrencyId,
                                                @JsonProperty("participantPositionCurrencyId") Integer participantPositionCurrencyId) {

@@ -27,7 +27,6 @@ public class GetExistingParticipantController {
 
     private final GetExistingParticipant getExistingParticipant;
 
-
     @GetMapping("/secured/getParticipant")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {

@@ -26,10 +26,10 @@ public class GetAllIDTypeController {
 
     private final GetIDTypeList getIDTypeList;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getAllIdType")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
+
+        LOG.info("Get All ID Type Request : [{}]", "");
 
         GetIDTypeList.Output output = this.getIDTypeList.execute(new GetIDTypeList.Input());
 
@@ -43,6 +43,8 @@ public class GetAllIDTypeController {
         }
 
         var response = new Response(idTypeInfoList);
+
+        LOG.info("Get All ID Type Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetExistingUser;
@@ -17,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
@@ -52,19 +53,17 @@ public class GetExitingParticipantUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-            @NotNull @JsonProperty("participantUserId") String participantUserId
-    ) { }
+    public record Request(@NotNull @JsonProperty("participantUserId") String participantUserId
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("participantUserId") String participantUserId,
-        @JsonProperty("name") String name,
-        @JsonProperty("email") String email,
-            @JsonProperty("firstName") String firstName,
-            @JsonProperty("lastName") String lastName,
-            @JsonProperty("jobTitle") String jobTitle,
-            @JsonProperty("createdDate") Long createdDate
-    ) { }
+    public record Response(@JsonProperty("participantUserId") String participantUserId,
+                           @JsonProperty("name") String name,
+                           @JsonProperty("email") String email,
+                           @JsonProperty("firstName") String firstName,
+                           @JsonProperty("lastName") String lastName,
+                           @JsonProperty("jobTitle") String jobTitle,
+                           @JsonProperty("createdDate") Long createdDate
+    ) implements Serializable { }
 
 }
