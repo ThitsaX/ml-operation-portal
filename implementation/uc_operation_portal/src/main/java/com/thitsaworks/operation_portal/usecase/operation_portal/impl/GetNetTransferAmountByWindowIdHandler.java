@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -11,13 +10,13 @@ import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class GetNetTransferAmountByWindowIdHandler
@@ -26,8 +25,6 @@ public class GetNetTransferAmountByWindowIdHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
-
     private final GetNetTransferAmountByWindowIdQuery getNetTrasferAmountByWindowIdQuery;
 
     public GetNetTransferAmountByWindowIdHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -35,14 +32,15 @@ public class GetNetTransferAmountByWindowIdHandler
                                                  CreateExceptionAuditCommand createExceptionAuditCommand,
                                                  ObjectMapper objectMapper,
                                                  PrincipalCache principalCache,
+                                                 ActionAuthorizationManager actionAuthorizationManager,
                                                  GetNetTransferAmountByWindowIdQuery getNetTransferAmountByWindowIdQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.getNetTrasferAmountByWindowIdQuery = getNetTransferAmountByWindowIdQuery;
 
