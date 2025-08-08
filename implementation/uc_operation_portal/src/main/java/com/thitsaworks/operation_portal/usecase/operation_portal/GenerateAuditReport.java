@@ -14,7 +14,7 @@ public interface GenerateAuditReport {
                  Instant fromDate,
                  Instant toDate,
                  String timezoneoffset,
-                 UserId participantUserId,
+                 UserId userId,
                  String action,
                  String fileType) { }
 

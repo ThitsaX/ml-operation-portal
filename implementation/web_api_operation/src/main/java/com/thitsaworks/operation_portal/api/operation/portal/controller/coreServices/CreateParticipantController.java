@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
-import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -26,17 +26,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateNewParticipantController {
+public class CreateParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewParticipantController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateParticipantController.class);
 
-    private final CreateParticipant createNewParticipant;
+    private final CreateParticipant createParticipant;
 
-    @PostMapping(value = "/secured/createNewParticipant")
+    @PostMapping(value = "/secured/createParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create New Participant Request: [{}]", request);
+        LOG.info("Create Participant Request: [{}]", request);
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -71,7 +71,7 @@ public class CreateNewParticipantController {
             }
         }
 
-        CreateParticipant.Output output = this.createNewParticipant.execute(
+        CreateParticipant.Output output = this.createParticipant.execute(
             new CreateParticipant.Input(new ParticipantName(request.participantName()),
                                         request.description(),
                                         request.address(),
@@ -83,7 +83,7 @@ public class CreateNewParticipantController {
                                                .getId()
                                                .toString(), output.created());
 
-        LOG.info("Create New Participant Response: [{}]", response);
+        LOG.info("Create Participant Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

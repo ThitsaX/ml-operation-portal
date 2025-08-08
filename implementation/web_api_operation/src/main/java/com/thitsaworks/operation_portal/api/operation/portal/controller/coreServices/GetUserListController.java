@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,42 +21,42 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetParticipantUserListController {
+public class GetUserListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserListController.class);
 
-    private final GetParticipantUserList getParticipantUserList;
+    private final GetUserList getUserList;
 
-    @GetMapping(value = "/secured/getParticipantUserList")
+    @GetMapping(value = "/secured/getUserList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Participant User List Request: ParticipantId = [{}]", participantId);
+        LOG.info("Get User List Request: ParticipantId = [{}]", participantId);
 
-        GetParticipantUserList.Output output = this.getParticipantUserList.execute(
-            new GetParticipantUserList.Input(new ParticipantId(Long.parseLong(participantId))));
+        GetUserList.Output output = this.getUserList.execute(
+                new GetUserList.Input(new ParticipantId(Long.parseLong(participantId))));
 
         List<Response.UserInfo> userInfoList = new ArrayList<>();
 
-        for (var participantUser : output.userInfoList()) {
-            userInfoList.add(new Response.UserInfo(participantUser.participantUserId()
+        for (var user : output.userInfoList()) {
+            userInfoList.add(new Response.UserInfo(user.userId()
                                                                   .getId()
                                                                   .toString(),
-                                                   participantUser.name(),
-                                                   participantUser.email()
+                                                   user.name(),
+                                                   user.email()
                                                                   .getValue(),
-                                                   participantUser.firstName(),
-                                                   participantUser.lastName(),
-                                                   participantUser.jobTitle(),
-                                                   participantUser.roleList(),
-                                                   participantUser.status(),
-                                                   participantUser.createdDate()
+                                                   user.firstName(),
+                                                   user.lastName(),
+                                                   user.jobTitle(),
+                                                   user.roleList(),
+                                                   user.status(),
+                                                   user.createdDate()
                                                                   .getEpochSecond()));
         }
 
-        var response = new GetParticipantUserListController.Response(userInfoList);
+        var response = new GetUserListController.Response(userInfoList);
 
-        LOG.info("Get Participant User List Response: [{}]", response);
+        LOG.info("Get User List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -65,7 +65,7 @@ public class GetParticipantUserListController {
     public record Response(@JsonProperty("userInfoList") List<UserInfo> userInfoList) implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public record UserInfo(@JsonProperty("participantUserId") String participantUserId,
+        public record UserInfo(@JsonProperty("userId") String userId,
                                @JsonProperty("name") String name,
                                @JsonProperty("email") String email,
                                @JsonProperty("firstName") String firstName,

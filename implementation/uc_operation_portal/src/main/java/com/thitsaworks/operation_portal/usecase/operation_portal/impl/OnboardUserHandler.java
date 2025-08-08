@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
+import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.OnboardUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -24,7 +24,7 @@ public class OnboardUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(OnboardUserHandler.class);
 
-    private final CreateParticipantUserCommand createParticipantUserCommand;
+    private final CreateUserCommand createUserCommand;
 
     private final CreatePrincipalCommand createPrincipalCommand;
 
@@ -34,7 +34,7 @@ public class OnboardUserHandler
                               ObjectMapper objectMapper,
                               PrincipalCache principalCache,
                               ActionAuthorizationManager actionAuthorizationManager,
-                              CreateParticipantUserCommand createParticipantUserCommand,
+                              CreateUserCommand createUserCommand,
                               CreatePrincipalCommand createPrincipalCommand) {
 
         super(createInputAuditCommand,
@@ -44,18 +44,18 @@ public class OnboardUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.createParticipantUserCommand = createParticipantUserCommand;
+        this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        CreateParticipantUserCommand.Output output = this.createParticipantUserCommand.execute(
-                new CreateParticipantUserCommand.Input(input.name(), input.email(), input.participantId(),
-                                                       input.firstName(), input.lastName(), input.jobTitle()));
+        CreateUserCommand.Output output = this.createUserCommand.execute(
+                new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
+                                            input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.participantUserId()
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
                                                                                                    .getId()),
                                                                              input.password(),
                                                                              new RealmId(input.participantId()

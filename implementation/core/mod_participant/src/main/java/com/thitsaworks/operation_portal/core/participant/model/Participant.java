@@ -77,7 +77,7 @@ public class Participant extends JpaEntity<ParticipantId> {
         mappedBy = "participant",
         orphanRemoval = true,
         fetch = FetchType.EAGER)
-    protected Set<ParticipantUser> participantUsers = new HashSet<>();
+    protected Set<User> users = new HashSet<>();
 
     @OneToMany(
         cascade = {CascadeType.ALL},
@@ -164,7 +164,7 @@ public class Participant extends JpaEntity<ParticipantId> {
         return this.participantId;
     }
 
-    public ParticipantUser addUser(String name, Email email, String firstName, String lastName, String jobTitle) {
+    public User addUser(String name, Email email, String firstName, String lastName, String jobTitle) {
 
         Validate.notBlank(name);
         Validate.notNull(email);
@@ -172,10 +172,10 @@ public class Participant extends JpaEntity<ParticipantId> {
         Validate.notNull(lastName);
         Validate.notNull(jobTitle);
 
-        ParticipantUser participantUser = new ParticipantUser(name, email, this, firstName, lastName, jobTitle);
-        this.participantUsers.add(participantUser);
+        User user = new User(name, email, this, firstName, lastName, jobTitle);
+        this.users.add(user);
 
-        return participantUser;
+        return user;
     }
 
     public LiquidityProfile addLiquidityProfile(String bankName,

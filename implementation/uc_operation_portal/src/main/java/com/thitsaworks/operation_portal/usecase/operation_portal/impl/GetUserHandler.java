@@ -1,15 +1,14 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.core.participant.data.UserData;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -25,7 +24,7 @@ public class GetUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserHandler.class);
 
-    private final ParticipantUserQuery participantUserQuery;
+    private final UserQuery userQuery;
 
     @Autowired
     public GetUserHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -34,7 +33,7 @@ public class GetUserHandler
                           ObjectMapper objectMapper,
                           PrincipalCache principalCache,
                           ActionAuthorizationManager actionAuthorizationManager,
-                          ParticipantUserQuery participantUserQuery) {
+                          UserQuery userQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -43,26 +42,23 @@ public class GetUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.participantUserQuery = participantUserQuery;
+        this.userQuery = userQuery;
     }
 
     @Override
     public GetUser.Output onExecute(GetUser.Input input) throws DomainException {
 
-        ParticipantUserData participantUserData = this.participantUserQuery.get(new ParticipantUserId(input.userId()
-                                                                                                           .getId()));
+        UserData userData = this.userQuery.get(new UserId(input.userId().getId()));
 
-        return new GetUser.Output(new UserId(participantUserData.participantUserId()
-                                                                .getId()),
-                                  participantUserData.name(),
-                                  participantUserData.email(),
-                                  participantUserData.firstName(),
-                                  participantUserData.lastName(),
-                                  participantUserData.jobTitle(),
-                                  participantUserData.participantId(),
-                                  participantUserData.createdDate(),
-                                  participantUserData.participantName()
-                                                             .getValue());
+        return new GetUser.Output(new UserId(userData.userId().getId()),
+                                  userData.name(),
+                                  userData.email(),
+                                  userData.firstName(),
+                                  userData.lastName(),
+                                  userData.jobTitle(),
+                                  userData.participantId(),
+                                  userData.createdDate(),
+                                  userData.participantName().getValue());
     }
 
 }

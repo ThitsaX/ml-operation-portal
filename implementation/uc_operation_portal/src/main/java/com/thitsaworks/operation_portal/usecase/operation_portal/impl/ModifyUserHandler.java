@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCommand;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantUserCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -23,7 +23,7 @@ public class ModifyUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyUserHandler.class);
 
-    private final ModifyParticipantUserCommand modifyParticipantUserCommand;
+    private final ModifyUserCommand modifyUserCommand;
 
     private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
 
@@ -33,7 +33,7 @@ public class ModifyUserHandler
                              ObjectMapper objectMapper,
                              PrincipalCache principalCache,
                              ActionAuthorizationManager actionAuthorizationManager,
-                             ModifyParticipantUserCommand modifyParticipantUserCommand,
+                             ModifyUserCommand modifyUserCommand,
                              ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
 
         super(createInputAuditCommand,
@@ -43,25 +43,25 @@ public class ModifyUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.modifyParticipantUserCommand = modifyParticipantUserCommand;
+        this.modifyUserCommand = modifyUserCommand;
         this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ModifyParticipantUserCommand.Output output =
-                this.modifyParticipantUserCommand.execute(new ModifyParticipantUserCommand.Input(
-                        input.participantUserId(),
+        ModifyUserCommand.Output output =
+                this.modifyUserCommand.execute(new ModifyUserCommand.Input(
+                        input.userId(),
                         input.name(),
                         null,
                         input.firstName(), input.lastName(), input.jobTitle(), null));
 
         this.modifyPrincipalStatusCommand.execute(
-                new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.participantUserId().getId()),
+                new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.userId().getId()),
                                                        input.principalStatus()));
 
-        return new Output(output.modified(), output.participantUserId());
+        return new Output(output.modified(), output.userId());
 
     }
 

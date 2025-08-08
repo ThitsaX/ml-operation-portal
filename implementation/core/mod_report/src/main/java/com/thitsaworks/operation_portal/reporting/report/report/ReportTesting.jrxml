@@ -23,7 +23,7 @@
 	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT
-    participant_user.name AS user_name,
+    user.name AS user_name,
     Action.name AS action_name,
     DATE_FORMAT(
         CASE
@@ -36,7 +36,7 @@
     ) AS date
 FROM tbl_audit AS audit
 JOIN tbl_participant AS participant ON participant.participant_id = audit.participant_id
-LEFT JOIN tbl_participant_user AS participant_user ON participant_user.user_id = audit.user_id
+LEFT JOIN tbl_user AS user ON user.user_id = audit.user_id
 JOIN tbl_action AS Action ON Action.action_id = audit.action_id
 WHERE
     ($P{realmId} IS NULL OR $P{realmId} = '' OR audit.participant_id = $P{realmId})

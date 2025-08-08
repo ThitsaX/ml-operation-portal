@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
@@ -42,7 +42,7 @@ public class GetParticipantPositionsController {
                                                .getDetails();
 
         GetParticipantPositions.Output output =
-            this.getParticipantPositions.execute(new GetParticipantPositions.Input(new ParticipantUserId(
+                this.getParticipantPositions.execute(new GetParticipantPositions.Input(new UserId(
                 userContext.userId()
                            .getEntityId())));
 

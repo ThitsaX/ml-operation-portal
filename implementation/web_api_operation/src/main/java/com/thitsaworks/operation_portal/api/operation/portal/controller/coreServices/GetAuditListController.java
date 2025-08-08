@@ -41,8 +41,8 @@ public class GetAuditListController {
             new GetAuditList.Input(request.participantId() == null || request.participantId()
                                                                              .isBlank() ? null :
                                        new RealmId(Long.parseLong(request.participantId())),
-                                   request.participantUserId() == null ? null :
-                                       new UserId(Long.parseLong(request.participantUserId())),
+                                   request.userId() == null ? null :
+                                           new UserId(Long.parseLong(request.userId())),
                                    Instant.ofEpochSecond(request.fromDate()),
                                    Instant.ofEpochSecond(request.toDate()),
                                    request.actionName()));
@@ -69,7 +69,7 @@ public class GetAuditListController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotNull @JsonProperty("participantId") String participantId,
-                          @JsonProperty("participantUserId") String participantUserId,
+                          @JsonProperty("userId") String userId,
                           @NotNull @JsonProperty("fromDate") Long fromDate,
                           @NotNull @JsonProperty("toDate") Long toDate,
                           @JsonProperty("actionName") String actionName

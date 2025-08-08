@@ -21,9 +21,9 @@ public class GenerateAuditReportHandler implements GenerateAuditReport {
                                                             .toString();
 
         var
-            userId = input.participantUserId() == null ? null : input.participantUserId()
-                                                                     .getEntityId()
-                                                                     .toString();
+            userId = input.userId() == null ? null : input.userId()
+                                                          .getEntityId()
+                                                          .toString();
 
         var output = this.generateAuditReportCommand.execute(new GenerateAuditReportCommand.Input(realmId,
                                                                                                   input.fromDate(),

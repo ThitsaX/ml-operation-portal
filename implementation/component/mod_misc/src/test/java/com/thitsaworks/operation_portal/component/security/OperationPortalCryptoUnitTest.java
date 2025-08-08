@@ -15,7 +15,7 @@ public class OperationPortalCryptoUnitTest extends EnvAwareUnitTest {
 
         String method = "POST";
 
-        String uri = "/secured/create_new_participant_user";
+        String uri = "/secured/create_new_user";
         String signatureOfPayload = DigestUtils.sha256Hex(
                                                        "{\"name\":\"wallet2 admin\",\"email\":\"wallet2admin@gmail.com\",\"password\":\"123456\",\"first_name\":\"Wallet 2\",\"last_name\":\"admin\",\"job_title\":\"PM\",\"participant_id\":\"486552745708363776\",\"user_role_type\":\"ADMIN\",\"is_active\":true}").toUpperCase();
 

@@ -10,10 +10,10 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.core.participant.data.UserData;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,26 +24,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetParticipantUserListHandler
-    extends OperationPortalAuditableUseCase<GetParticipantUserList.Input, GetParticipantUserList.Output>
-    implements GetParticipantUserList {
+public class GetUserListHandler
+        extends OperationPortalAuditableUseCase<GetUserList.Input, GetUserList.Output>
+        implements GetUserList {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetUserListHandler.class);
 
-    private final ParticipantUserQuery participantUserQuery;
+    private final UserQuery userQuery;
 
     private final PrincipalCache principalCache;
 
     private final IAMQuery iamQuery;
 
-    public GetParticipantUserListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
-                                         ActionAuthorizationManager actionAuthorizationManager,
-                                         ParticipantUserQuery participantUserQuery,
-                                         IAMQuery iamQuery) {
+    public GetUserListHandler(CreateInputAuditCommand createInputAuditCommand,
+                              CreateOutputAuditCommand createOutputAuditCommand,
+                              CreateExceptionAuditCommand createExceptionAuditCommand,
+                              ObjectMapper objectMapper,
+                              PrincipalCache principalCache,
+                              ActionAuthorizationManager actionAuthorizationManager,
+                              UserQuery userQuery,
+                              IAMQuery iamQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -52,7 +52,7 @@ public class GetParticipantUserListHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.participantUserQuery = participantUserQuery;
+        this.userQuery = userQuery;
         this.principalCache = principalCache;
         this.iamQuery = iamQuery;
     }
@@ -60,17 +60,17 @@ public class GetParticipantUserListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        List<ParticipantUserData> participantUserDataList =
-            this.participantUserQuery.getParticipantUsers(input.participantId());
+        List<UserData> userDataList =
+                this.userQuery.getUsers(input.participantId());
 
-        List<GetParticipantUserList.UserInfo> userInfoList = new ArrayList<>();
+        List<GetUserList.UserInfo> userInfoList = new ArrayList<>();
 
-        for (ParticipantUserData participantUserData : participantUserDataList) {
+        for (UserData userData : userDataList) {
 
             PrincipalData
                 principalData =
-                this.principalCache.get(new PrincipalId(participantUserData.participantUserId()
-                                                                           .getId()));
+                    this.principalCache.get(new PrincipalId(userData.userId()
+                                                                    .getId()));
 
             var
                 roleList =
@@ -79,16 +79,16 @@ public class GetParticipantUserListHandler
                              .map(RoleData::name)
                              .toList();
 
-            userInfoList.add(new GetParticipantUserList.UserInfo(participantUserData.participantUserId(),
-                                                                 participantUserData.name(),
-                                                                 participantUserData.email(),
-                                                                 participantUserData.firstName(),
-                                                                 participantUserData.lastName(),
-                                                                 participantUserData.jobTitle(),
+            userInfoList.add(new GetUserList.UserInfo(userData.userId(),
+                                                      userData.name(),
+                                                      userData.email(),
+                                                      userData.firstName(),
+                                                      userData.lastName(),
+                                                      userData.jobTitle(),
                                                                  roleList,
                                                                  principalData.principalStatus()
                                                                               .toString(),
-                                                                 Instant.ofEpochSecond(participantUserData.createdDate())));
+                                                      Instant.ofEpochSecond(userData.createdDate())));
         }
 
         return new Output(userInfoList);

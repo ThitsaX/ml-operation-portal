@@ -36,7 +36,7 @@ public class GetAuditListByParticipantController {
         @RequestParam("participantId") String participantId,
         @RequestParam("fromDate") Long fromDate,
         @RequestParam("toDate") Long toDate,
-        @RequestParam("userId") String participantUserId,
+        @RequestParam("userId") String userId,
         @RequestParam("actionName") String actionName) throws DomainException, JsonProcessingException {
 
         LOG.info(
@@ -44,7 +44,7 @@ public class GetAuditListByParticipantController {
             participantId,
             fromDate,
             toDate,
-            participantUserId,
+            userId,
             actionName);
 
         UserContext userContext =
@@ -57,8 +57,8 @@ public class GetAuditListByParticipantController {
                                                 Instant.ofEpochSecond(fromDate),
                                                 Instant.ofEpochSecond(toDate)
                 ,
-                                                (participantUserId != null && !participantUserId.isEmpty()) ?
-                                                    new UserId(Long.parseLong(participantUserId)) : null,
+                                                (userId != null && !userId.isEmpty()) ?
+                                                    new UserId(Long.parseLong(userId)) : null,
                                                 (actionName != null && !actionName.isEmpty()) ? actionName : null));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();

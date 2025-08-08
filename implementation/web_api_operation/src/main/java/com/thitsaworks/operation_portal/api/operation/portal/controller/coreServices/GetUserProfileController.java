@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserProfile;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +40,7 @@ public class GetUserProfileController {
                                                .getDetails();
 
         GetUserProfile.Output output = this.getUserProfile.execute(
-            new GetUserProfile.Input(new ParticipantUserId(userContext.userId()
-                                                                      .getId())));
+                new GetUserProfile.Input(new UserId(userContext.userId().getId())));
 
         List<Long> menuIds = output.permittedMenuAndActionList()
                                    .entrySet()
@@ -63,7 +62,7 @@ public class GetUserProfileController {
                                          .sorted()
                                          .toList();
 
-        var response = new Response(output.participantUserId()
+        var response = new Response(output.userId()
                                           .getId()
                                           .toString(),
                                     output.name(),
@@ -89,7 +88,7 @@ public class GetUserProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("participantUserId") String participantUserId,
+        @JsonProperty("userId") String userId,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,
         @JsonProperty("firstName") String firstName,

@@ -34,11 +34,6 @@ public class ParticipantCacheUnitTest {
         LOG.info("Participant data: " + participantData);
         LOG.info("Participant data: " + participantData.participantId());
 
-//        for (ParticipantUserId id : participantData.getParticipantUserIds()) {
-//
-//            LOG.info("IDs: " + id);
-//        }
-
     }
 
 }

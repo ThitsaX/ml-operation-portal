@@ -5,10 +5,10 @@ import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
+import com.thitsaworks.operation_portal.core.participant.cache.UserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantNDCData;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
+import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
@@ -36,14 +36,14 @@ public class GetParticipantPositionsHandler
 
     private final ParticipantCache participantCache;
 
-    private final ParticipantUserCache participantUserCache;
+    private final UserCache userCache;
 
     private final ParticipantNDCQuery participantNDCQuery;
 
     public GetParticipantPositionsHandler(PrincipalCache principalCache,
                                           GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
                                           ParticipantCache participantCache,
-                                          ParticipantUserCache participantUserCache,
+                                          UserCache userCache,
                                           ParticipantNDCQuery participantNDCQuery,
                                           ActionAuthorizationManager actionAuthorizationManager) {
 
@@ -51,21 +51,21 @@ public class GetParticipantPositionsHandler
 
         this.getParticipantPositionsDataQuery = getParticipantPositionsDataQuery;
         this.participantCache = participantCache;
-        this.participantUserCache = participantUserCache;
+        this.userCache = userCache;
         this.participantNDCQuery = participantNDCQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
+        UserData userData = this.userCache.get(input.userId());
 
-        if (participantUserData == null) {
+        if (userData == null) {
 
             throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
         }
 
-        ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
+        ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 

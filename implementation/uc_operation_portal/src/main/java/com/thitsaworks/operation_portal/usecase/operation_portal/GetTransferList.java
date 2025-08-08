@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 
@@ -20,7 +20,7 @@ public interface GetTransferList extends
                  String payeeIdentifierValue,
                  String currencyId,
                  String transferStateId,
-                 ParticipantUserId participantUserId,
+                 UserId userId,
                  String timeZone) { }
 
     record Output(List<TransferData> transferInfoList) { }

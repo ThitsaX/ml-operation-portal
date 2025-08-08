@@ -1,9 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -17,7 +17,7 @@ public interface GetUserList extends
      record Output(List<UserInfo> userInfoList) {}
 
      record UserInfo(
-            ParticipantUserId participantUserId,
+            UserId userId,
             String name,
             Email email,
             String firstName,

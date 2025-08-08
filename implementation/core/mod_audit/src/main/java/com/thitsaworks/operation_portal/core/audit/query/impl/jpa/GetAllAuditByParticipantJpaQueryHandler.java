@@ -10,7 +10,7 @@ import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
-import com.thitsaworks.operation_portal.core.participant.model.QParticipantUser;
+import com.thitsaworks.operation_portal.core.participant.model.QUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +33,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
     @CoreReadTransactional
     public Output execute(Input input) {
 
-        QParticipantUser participantUser = QParticipantUser.participantUser;
+        QUser user = QUser.user;
         QParticipant participant = QParticipant.participant;
         QAction action = QAction.action;
         QAudit audit = QAudit.audit;
@@ -42,10 +42,10 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
 
 
         JPAQuery<Tuple> tupleSQLQuery =
-                this.readQueryFactory.select(participant.description, participantUser.name, action.actionCode, audit.createdAt).from(
+                this.readQueryFactory.select(participant.description, user.name, action.actionCode, audit.createdAt).from(
                             audit).join(participant)
-                                     .on(participant.participantId.id.eq(audit.realmId.id)).leftJoin(participantUser)
-                                     .on(participantUser.participantUserId.id.eq(audit.userId.id)).join(action)
+                                     .on(participant.participantId.id.eq(audit.realmId.id)).leftJoin(user)
+                                     .on(user.userId.id.eq(audit.userId.id)).join(action)
                                      .on(action.actionId.eq(audit.actionId)).where(input.realmId() == null ?
                                                                                            audit.realmId.eq(audit.realmId) :
                                                                                            audit.realmId.id.eq(input.realmId()
@@ -76,7 +76,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
         for (Tuple tuple : results.getResults()) {
 
             auditInfoList.add(new Output.AuditInfo(
-                tuple.get(participantUser.name),
+                tuple.get(user.name),
                 Objects.requireNonNull(tuple.get(action.actionCode))
                        .getValue(),
                 tuple.get(audit.createdAt)));

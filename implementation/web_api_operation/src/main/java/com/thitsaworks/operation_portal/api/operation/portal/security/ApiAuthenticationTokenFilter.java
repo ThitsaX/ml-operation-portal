@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.security;
 import com.thitsaworks.operation_portal.api.operation.portal.security.exception.AccessDeniedException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.exception.ApiSecurityException;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
-import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.http.CachedBodyHttpServletRequest;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;

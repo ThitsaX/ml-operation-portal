@@ -30,9 +30,9 @@ public interface PrincipalCache {
                     PrincipalCache.class,
                     CacheQualifiers.DEFAULT);
 
-            PrincipalData participantUserData = new PrincipalData(principal);
+            PrincipalData principalData = new PrincipalData(principal);
 
-            principalCache.save(participantUserData);
+            principalCache.save(principalData);
         }
 
         @PostRemove

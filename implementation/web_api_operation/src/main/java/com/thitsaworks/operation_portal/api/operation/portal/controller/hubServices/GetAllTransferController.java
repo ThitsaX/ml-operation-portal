@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
@@ -77,8 +77,7 @@ public class GetAllTransferController {
                 payeeIdentifierValue,
                 currencyId,
                 transferStateId,
-                new ParticipantUserId(userContext.userId()
-                                                 .getId()),
+                new UserId(userContext.userId().getId()),
                 timezone));
 
         List<Response.TransferInfo> transferInfoList = new ArrayList<>();

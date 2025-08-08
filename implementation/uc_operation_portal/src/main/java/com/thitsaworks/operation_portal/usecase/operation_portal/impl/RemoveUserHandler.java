@@ -15,7 +15,7 @@ import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCo
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.RemoveParticipantUserCommand;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -30,7 +30,7 @@ public class RemoveUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveUserHandler.class);
 
-    private final RemoveParticipantUserCommand removeParticipantUserCommand;
+    private final RemoveUserCommand removeUserCommand;
 
     private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
 
@@ -42,7 +42,7 @@ public class RemoveUserHandler
                              ObjectMapper objectMapper,
                              PrincipalCache principalCache,
                              ActionAuthorizationManager actionAuthorizationManager,
-                             RemoveParticipantUserCommand removeParticipantUserCommand,
+                             RemoveUserCommand removeUserCommand,
                              ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
 
         super(createInputAuditCommand,
@@ -52,7 +52,7 @@ public class RemoveUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.removeParticipantUserCommand = removeParticipantUserCommand;
+        this.removeUserCommand = removeUserCommand;
         this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
         this.principalCache = principalCache;
     }
@@ -81,15 +81,15 @@ public class RemoveUserHandler
             }
         }
 
-        RemoveParticipantUserCommand.Output output = this.removeParticipantUserCommand.execute(
-            new RemoveParticipantUserCommand.Input(input.participantId(), input.participantUserId()));
+        RemoveUserCommand.Output output = this.removeUserCommand.execute(
+            new RemoveUserCommand.Input(input.participantId(), input.userId()));
 
         this.modifyPrincipalStatusCommand.execute(
-            new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.participantUserId()
+            new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.userId()
                                                                          .getId()),
                                                    PrincipalStatus.INACTIVE));
 
-        return new RemoveUser.Output(output.removed(), output.participantUserId());
+        return new RemoveUser.Output(output.removed(), output.userId());
 
     }
 

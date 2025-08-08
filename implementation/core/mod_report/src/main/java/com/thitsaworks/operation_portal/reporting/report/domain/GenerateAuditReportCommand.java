@@ -12,7 +12,7 @@ public interface GenerateAuditReportCommand {
                  Instant fromDate,
                  Instant toDate,
                  String timezoneoffset,
-                 String participantUserId,
+                 String userId,
                  String action,
                  String fileType) { }
 

@@ -37,8 +37,8 @@ public class GenerateAuditReportController {
                                             @RequestParam("toDate") String toDate,
                                             @RequestParam("timezoneOffset") String timezoneOffset,
                                             @RequestParam(
-                                                value = "participantUserId",
-                                                required = false) String participantUserId,
+                                                value = "userId",
+                                                required = false) String userId,
                                             @RequestParam(
                                                 value = "action",
                                                 required = false) String action,
@@ -46,8 +46,8 @@ public class GenerateAuditReportController {
         throws DomainException, JsonProcessingException {
 
         LOG.info("Generate Audit Report Request : participantId = [{}], fromDate = [{}], toDate = [{}], " +
-                 "timezoneOffset = [{}], participantUserId = [{}], action = [{}], fileType = [{}]",
-                 participantId, fromDate, toDate, timezoneOffset, participantUserId, action, fileType);
+                 "timezoneOffset = [{}], userId = [{}], action = [{}], fileType = [{}]",
+                 participantId, fromDate, toDate, timezoneOffset, userId, action, fileType);
 
         String showTimezone = timezoneOffset;
 
@@ -63,8 +63,8 @@ public class GenerateAuditReportController {
                 Instant.parse(fromDate),
                 Instant.parse(toDate),
                 showTimezone,
-                participantUserId == null || participantUserId.isBlank() ? null :
-                    new UserId(Long.parseLong(participantUserId)),
+                userId == null || userId.isBlank() ? null :
+                    new UserId(Long.parseLong(userId)),
                 action,
                 fileType
             ));

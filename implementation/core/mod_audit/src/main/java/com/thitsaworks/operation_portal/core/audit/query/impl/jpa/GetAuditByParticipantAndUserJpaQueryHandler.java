@@ -9,7 +9,7 @@ import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditByParticipantAndUserQuery;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
-import com.thitsaworks.operation_portal.core.participant.model.QParticipantUser;
+import com.thitsaworks.operation_portal.core.participant.model.QUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
     @Override
     public Output execute(Input input) {
 
-        QParticipantUser participantUser = QParticipantUser.participantUser;
+        QUser user = QUser.user;
         QParticipant participant = QParticipant.participant;
         QAction action = QAction.action;
         QAudit audit = QAudit.audit;
@@ -36,7 +36,7 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
 
         JPAQuery<Tuple> tupleSQLQuery =
             this.readQueryFactory.select(participant.description,
-                                         participantUser.name,
+                                         user.name,
                                          action.actionCode,
                                          audit.inputInfo,
                                          audit.outputInfo,
@@ -44,8 +44,8 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
                                  .from(audit)
                                  .join(participant)
                                  .on(participant.participantId.id.eq(audit.realmId.id))
-                                 .leftJoin(participantUser)
-                                 .on(participantUser.participantUserId.id.eq(audit.userId.id))
+                                 .leftJoin(user)
+                                 .on(user.userId.id.eq(audit.userId.id))
                                  .join(action)
                                  .on(action.actionId.eq(audit.actionId))
                                  .where(input.getRealmId() == null ?
@@ -80,7 +80,7 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
         for (Tuple tuple : results.getResults()) {
 
             auditInfoList.add(new Output.AuditInfo(tuple.get(participant.description),
-                                                   tuple.get(participantUser.name),
+                                                   tuple.get(user.name),
                                                    Objects.requireNonNull(tuple.get(action.actionCode))
                                                           .getValue(),
                                                    tuple.get(audit.inputInfo),

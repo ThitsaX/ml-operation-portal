@@ -7,9 +7,9 @@ import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantUserCache;
+import com.thitsaworks.operation_portal.core.participant.cache.UserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantUserData;
+import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -27,7 +27,7 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
     private final ParticipantCache participantCache;
 
-    private final ParticipantUserCache participantUserCache;
+    private final UserCache userCache;
 
     private final PrincipalCache principalCache;
 
@@ -36,12 +36,12 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
     public GetUserProfileHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  ParticipantCache participantCache,
-                                 ParticipantUserCache participantUserCache, IAMQuery iamQuery) {
+                                 UserCache userCache, IAMQuery iamQuery) {
 
         super(principalCache, actionAuthorizationManager);
 
         this.participantCache = participantCache;
-        this.participantUserCache = participantUserCache;
+        this.userCache = userCache;
         this.principalCache = principalCache;
         this.iamQuery = iamQuery;
     }
@@ -49,17 +49,17 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        ParticipantUserData participantUserData = this.participantUserCache.get(input.participantUserId());
+        UserData userData = this.userCache.get(input.userId());
 
-        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.participantUserId()
+        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.userId()
                                                                                    .getId()));
 
-        if (participantUserData == null || principalData == null) {
+        if (userData == null || principalData == null) {
 
             throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
         }
 
-        ParticipantData participantData = this.participantCache.get(participantUserData.participantId());
+        ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
@@ -71,16 +71,15 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
         var permittedMenuAndActionList =
                 this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
 
-        return new Output(participantUserData.participantUserId(),
-                          participantUserData.name(),
-                          participantUserData.email(),
-                          participantUserData.firstName(),
-                          participantUserData.lastName(),
-                          participantUserData.jobTitle(),
-                          participantUserData.participantId(),
-                          participantUserData.createdDate(),
-                          participantData.participantName()
-                                         .getValue(),
+        return new Output(userData.userId(),
+                          userData.name(),
+                          userData.email(),
+                          userData.firstName(),
+                          userData.lastName(),
+                          userData.jobTitle(),
+                          userData.participantId(),
+                          userData.createdDate(),
+                          participantData.participantName().getValue(),
                           participantData.description(),
                           roleList,
                           permittedMenuAndActionList);

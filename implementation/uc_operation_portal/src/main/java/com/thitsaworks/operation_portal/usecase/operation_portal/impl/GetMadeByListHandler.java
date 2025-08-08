@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantUserQuery;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeByList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -21,7 +21,7 @@ import java.util.Set;
 public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMadeByList.Input, GetMadeByList.Output>
     implements GetMadeByList {
 
-    private final ParticipantUserQuery participantUserQuery;
+    private final UserQuery userQuery;
 
     public GetMadeByListHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
@@ -29,7 +29,7 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
                                 ActionAuthorizationManager actionAuthorizationManager,
-                                ParticipantUserQuery participantUserQuery) {
+                                UserQuery userQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -38,19 +38,19 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
               principalCache,
               actionAuthorizationManager);
 
-        this.participantUserQuery = participantUserQuery;
+        this.userQuery = userQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var participantUsers = this.participantUserQuery.getParticipantUsers(input.participantId());
+        var users = this.userQuery.getUsers(input.participantId());
 
         Set<User> madeByUsers = new HashSet<>();
 
-        for (var user : participantUsers) {
+        for (var user : users) {
 
-            madeByUsers.add(new User(new UserId(user.participantUserId()
+            madeByUsers.add(new User(new UserId(user.userId()
                                                     .getEntityId()), user.name()));
 
         }

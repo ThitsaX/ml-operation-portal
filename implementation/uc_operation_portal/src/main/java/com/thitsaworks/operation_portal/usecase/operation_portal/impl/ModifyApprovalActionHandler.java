@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.fspiop.model.Currency;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
@@ -84,17 +84,17 @@ public class ModifyApprovalActionHandler
         ExtensionList extensionList = new ExtensionList();
         Extension extension = new Extension();
         extension.setKey("requestUser");
-        extension.setValue(this.utility.getEmail(new ParticipantUserId(approvalRequestData.requestedBy()
-                                                                                          .getId())));
+        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
+                                                                               .getId())));
         extension.setKey("approveUser");
-        extension.setValue(this.utility.getEmail(new ParticipantUserId(approvalRequestData.requestedBy()
+        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                   .getId())));
         extensionList.addExtensionItem(extension);
 
         PostParticipantBalance.Request
             request =
             new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
-                                               this.utility.getEmail(new ParticipantUserId(approvalRequestData.requestedBy()
+                                               this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                                       .getId())),
                                                action,
                                                "Admin portal funds in request",

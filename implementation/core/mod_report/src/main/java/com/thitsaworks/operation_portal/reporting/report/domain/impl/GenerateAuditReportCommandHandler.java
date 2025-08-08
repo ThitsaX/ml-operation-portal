@@ -67,8 +67,8 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 params.put("realmId", input.realmId());
             }
 
-            if (input.participantUserId() != null) {
-                params.put("userId", input.participantUserId());
+            if (input.userId() != null) {
+                params.put("userId", input.userId());
             }
 
             if (input.action() != null) {

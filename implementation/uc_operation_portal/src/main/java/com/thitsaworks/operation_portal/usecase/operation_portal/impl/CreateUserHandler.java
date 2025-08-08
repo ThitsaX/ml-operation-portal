@@ -16,7 +16,7 @@ import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
+import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -31,7 +31,7 @@ public class CreateUserHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserHandler.class);
 
-    private final CreateParticipantUserCommand createParticipantUserCommand;
+    private final CreateUserCommand createUserCommand;
 
     private final CreatePrincipalCommand createPrincipalCommand;
 
@@ -43,7 +43,7 @@ public class CreateUserHandler
                              ObjectMapper objectMapper,
                              PrincipalCache principalCache,
                              ActionAuthorizationManager actionAuthorizationManager,
-                             CreateParticipantUserCommand createParticipantUserCommand,
+                             CreateUserCommand createUserCommand,
                              CreatePrincipalCommand createPrincipalCommand) {
 
         super(createInputAuditCommand,
@@ -53,7 +53,7 @@ public class CreateUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.createParticipantUserCommand = createParticipantUserCommand;
+        this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
         this.principalCache = principalCache;
     }
@@ -72,14 +72,14 @@ public class CreateUserHandler
 
         }
 
-        CreateParticipantUserCommand.Output output = this.createParticipantUserCommand.execute(
-                new CreateParticipantUserCommand.Input(input.name(),
-                                                       input.email(),
-                                                       new ParticipantId(principalData.realmId()
+        CreateUserCommand.Output output = this.createUserCommand.execute(
+                new CreateUserCommand.Input(input.name(),
+                                            input.email(),
+                                            new ParticipantId(principalData.realmId()
                                                                                       .getId()),
-                                                   input.firstName(), input.lastName(), input.jobTitle()));
+                                            input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.participantUserId()
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
                                                                                                    .getId()),
                                                                              input.password(),
                                                                              new RealmId(principalData.realmId()
