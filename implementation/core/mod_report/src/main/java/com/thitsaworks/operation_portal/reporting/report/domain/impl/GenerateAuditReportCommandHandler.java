@@ -10,7 +10,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -97,17 +96,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
-
-            } else if (input.fileType()
-                            .equalsIgnoreCase("pdf")) {
-
-                JRPdfExporter pdfExporter = new JRPdfExporter();
-                ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-                pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-                pdfExporter.exportReport();
-                rptBytes = pdfReport.toByteArray();
-
+                
             } else if (input.fileType()
                             .equalsIgnoreCase("csv")) {
 
