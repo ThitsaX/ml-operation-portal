@@ -77,10 +77,10 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/reportTesting.jrxml");
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/auditReport.jrxml");
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("reportTesting");
+            design.setName("auditReport");
             JasperReport jasperReport = JasperCompileManager.compileReport(design);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
