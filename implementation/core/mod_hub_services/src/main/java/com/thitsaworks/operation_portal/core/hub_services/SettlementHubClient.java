@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
+import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorDecoder;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
@@ -69,6 +70,38 @@ public class SettlementHubClient {
                                              (s, r) -> s.postCloseSettlementWindows(windowsId, request),
                                              this.hubErrorDecoder)
                                      .body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+
+                //TODO: To implement error handling with proper error response format
+                throw new HubServicesException(null);
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+    }
+
+    public PostCreateSettlement.Response createSettlement(PostCreateSettlement.Request request)
+            throws HubServicesException, ConnectException {
+
+        PostCreateSettlement.Response response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.postCreateSettlement(request),
+                                             this.hubErrorDecoder).body();
 
         } catch (RetrofitRunner.InvocationException e) {
 

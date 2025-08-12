@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
+import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import retrofit2.Call;
@@ -33,5 +34,8 @@ public interface HubService {
     Call<PostCloseSettlementWindows.Response> postCloseSettlementWindows(@Path("settlementWindowId") int settlementWindowId,
                                                                          @Body
                                                                          PostCloseSettlementWindows.Request request);
+
+    @POST("/v2/settlements")
+    Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
 
 }
