@@ -25,9 +25,9 @@ public class GetTranferQueryIT extends BaseVaultSetUpTest {
     public void testGetTransfers() throws HubServicesException {
 
         var input = new GetTransfersQuery.Input(
-            "2023-01-01T00:00:00Z",
-            "2023-12-31T23:59:59Z",
-            "00b26e36-4466-41f6-bee8-f819c971ad9e",
+            "2025-07-01T00:00:00Z",
+            "2025-08-12T23:59:59Z",
+            null,
             null,
             null,
             null,
