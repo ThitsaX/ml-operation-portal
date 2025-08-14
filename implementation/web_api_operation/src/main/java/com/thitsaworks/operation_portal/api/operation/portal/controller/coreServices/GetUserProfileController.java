@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -73,6 +74,9 @@ public class GetUserProfileController {
                                     output.jobTitle(),
                                     output.participantName(),
                                     output.description(),
+                                    output.logoDataType(),
+                                    output.logoBase64() == null ? null : Base64.getEncoder()
+                                                                         .encodeToString(output.logoBase64()),
                                     output.roleList(),
                                     output.participantId()
                                           .getId()
@@ -96,6 +100,8 @@ public class GetUserProfileController {
         @JsonProperty("jobTitle") String jobTitle,
         @JsonProperty("participantName") String participantName,
         @JsonProperty("description") String description,
+        @JsonProperty("logoFileType") String logoFileType,
+        @JsonProperty("logo") String logoBase64,
         @JsonProperty("roleList") List<String> roleList,
         @JsonProperty("participantId") String participantId,
         @JsonProperty("createdDate") Long createdDate,

@@ -45,8 +45,8 @@ public class GetParticipantProfileController {
                                     output.mobile()
                                           .getValue(),
                                     output.logoDataType(),
-                                    output.logo() == null ? null : Base64.getEncoder()
-                                                                         .encodeToString(output.logo()),
+                                    output.logoBase64() == null ? null : Base64.getEncoder()
+                                                                               .encodeToString(output.logoBase64()),
                                     output.createdDate()
                                           .getEpochSecond());
 
