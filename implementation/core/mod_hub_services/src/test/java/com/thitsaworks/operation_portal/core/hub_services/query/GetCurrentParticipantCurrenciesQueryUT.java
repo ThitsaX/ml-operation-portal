@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.core.hub_services.query;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
-import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,19 +14,20 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetTranferDetailQueryIT extends BaseVaultSetUpTest {
+public class GetCurrentParticipantCurrenciesQueryUT extends BaseVaultSetUpTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetTranferDetailQueryIT.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetCurrentParticipantCurrenciesQueryUT.class);
 
     @Autowired
-    private GetTransferDetailQuery getTransferDetailQuery;
+    private GetCurrentParticipantCurrenciesQuery getCurrentParticipantCurrenciesQuery;
 
     @Test
-    public void testGetTransfers() throws HubServicesException {
+    public void success() throws HubServicesException {
+        var input = new GetCurrentParticipantCurrenciesQuery.Input("");
+        var output = getCurrentParticipantCurrenciesQuery.execute(input);
 
-        TransferDetailData output = getTransferDetailQuery.execute("01JWEBM16E1M402J4ZJ3HMB0HA");
-
-        logger.info("Transfer detail: {}", output);
+        LOG.info("Output: {}", output);
     }
-
 }
+

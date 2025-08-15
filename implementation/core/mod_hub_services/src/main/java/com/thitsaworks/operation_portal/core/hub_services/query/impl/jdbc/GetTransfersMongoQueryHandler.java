@@ -166,7 +166,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                              .as("transferId")
                              .and(ConditionalOperators.IfNull.ifNull("transferStateEnum").then(""))
                              .as("state")
-                             .and(ConditionalOperators.IfNull.ifNull("baseUseCase").then(""))
+                             .and(ConditionalOperators.IfNull.ifNull("transactionType").then(""))
                              .as("type")
                              .and(ConditionalOperators.IfNull.ifNull("transferTerms.transferAmount.currency").then(""))
                              .as("currency")
@@ -317,9 +317,16 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                                                   String settlementBatch,
                                                   String submittedOnDate) {
 
-        // If TransferData has a simple ctor or setters, use those instead.
-        throw new UnsupportedOperationException(
-                "Please implement mapToTransferData(...) to map fields into your TransferData class.");
+        return new TransferData(transferId,
+                                state,
+                                type,
+                                currency,
+                                amount,
+                                payerDfsp,
+                                payeeDfsp,
+                                windowId,
+                                settlementBatch,
+                                submittedOnDate);
     }
 
 }

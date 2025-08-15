@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
@@ -14,17 +16,22 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetCurrenciesQueryIT extends BaseVaultSetUpTest {
-    private static final Logger logger = LoggerFactory.getLogger(GetCurrenciesQueryIT.class);
+public class GetNetTransferAmountQueryUT extends BaseVaultSetUpTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(GetNetTransferAmountQueryUT.class);
 
     @Autowired
-    private GetCurrenciesQuery getCurrenciesQuery;
+    private GetNetTransferAmountByWindowIdQuery getTransferDetailQuery;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    public void test() throws HubServicesException {
-        var input = new GetCurrenciesQuery.Input();
-        var output = getCurrenciesQuery.execute(input);
-        logger.info("Output: {}", output);
-    }
-}
+    public void testGetTransfers() throws HubServicesException, JsonProcessingException {
 
+        GetNetTransferAmountByWindowIdQuery.Output output = getTransferDetailQuery.execute(new GetNetTransferAmountByWindowIdQuery.Input(25));
+
+        logger.info("Net Transfer Amount: {}", this.objectMapper.writeValueAsString(output));
+    }
+
+}

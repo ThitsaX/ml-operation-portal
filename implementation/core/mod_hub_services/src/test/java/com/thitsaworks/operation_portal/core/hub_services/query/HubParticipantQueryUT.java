@@ -15,9 +15,9 @@ import java.util.List;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class HubParticipantQueryUnitTest {
+public class HubParticipantQueryUT {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HubParticipantQueryUnitTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HubParticipantQueryUT.class);
 
     @Autowired
     private HubParticipantQuery hubParticipantQuery;

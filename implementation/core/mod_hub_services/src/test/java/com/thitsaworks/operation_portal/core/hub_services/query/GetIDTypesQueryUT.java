@@ -1,11 +1,8 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
-import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,22 +14,19 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetNetTranferAmountQueryUT extends BaseVaultSetUpTest {
+public class GetIDTypesQueryUT extends BaseVaultSetUpTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetNetTranferAmountQueryUT.class);
-
-    @Autowired
-    private GetNetTransferAmountByWindowIdQuery getTransferDetailQuery;
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetIDTypesQueryUT.class);
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private GetIDTypesQuery getIDTypesQuery;
 
     @Test
-    public void testGetTransfers() throws HubServicesException, JsonProcessingException {
+    public void testExecute() throws HubServicesException {
 
-        GetNetTransferAmountByWindowIdQuery.Output output = getTransferDetailQuery.execute(new GetNetTransferAmountByWindowIdQuery.Input(25));
-
-        logger.info("Net Transfer Amount: {}", this.objectMapper.writeValueAsString(output));
+        GetIDTypesQuery.Input input = new GetIDTypesQuery.Input();
+        GetIDTypesQuery.Output output = this.getIDTypesQuery.execute(input);
+        LOGGER.info("ID Types retrieved successfully: {}", output.getIdTypeDataList());
     }
 
 }

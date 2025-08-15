@@ -14,19 +14,17 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetIDTypesQueryIT extends BaseVaultSetUpTest {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetIDTypesQueryIT.class);
+public class GetCurrenciesQueryUT extends BaseVaultSetUpTest {
+    private static final Logger logger = LoggerFactory.getLogger(GetCurrenciesQueryUT.class);
 
     @Autowired
-    private GetIDTypesQuery getIDTypesQuery;
+    private GetCurrenciesQuery getCurrenciesQuery;
 
     @Test
-    public void testExecute() throws HubServicesException {
-
-        GetIDTypesQuery.Input input = new GetIDTypesQuery.Input();
-        GetIDTypesQuery.Output output = this.getIDTypesQuery.execute(input);
-        LOGGER.info("ID Types retrieved successfully: {}", output.getIdTypeDataList());
+    public void test() throws HubServicesException {
+        var input = new GetCurrenciesQuery.Input();
+        var output = getCurrenciesQuery.execute(input);
+        logger.info("Output: {}", output);
     }
-
 }
+

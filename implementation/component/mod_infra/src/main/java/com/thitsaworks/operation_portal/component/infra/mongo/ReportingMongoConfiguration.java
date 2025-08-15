@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.infra.mysql.reporting.mongo;
+package com.thitsaworks.operation_portal.component.infra.mongo;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQu
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
@@ -46,6 +47,7 @@ public class ReportingMongoConfiguration {
 
     @Bean(name = PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE)
     @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE)
+    @Primary
     public MongoTemplate reportingMongoReadTemplate(
             @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_FACTORY) MongoDatabaseFactory reportingMongoReadFactory) {
 
@@ -64,8 +66,10 @@ public class ReportingMongoConfiguration {
         return MongoClients.create(settings);
     }
 
+
     @Bean(name = PersistenceQualifiers.Reporting.MONGO_WRITE_FACTORY)
     @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_FACTORY)
+    @Primary
     public MongoDatabaseFactory writeFactory(
             @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_CLIENT) MongoClient client,
             @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_SETTINGS) Settings s) {
@@ -84,17 +88,15 @@ public class ReportingMongoConfiguration {
     // ---- helpers ----
 
     private MongoClientSettings.Builder baseClientSettings(Settings s) {
-
         return MongoClientSettings.builder()
                                   .applyConnectionString(new ConnectionString(s.uri()))
-                                  .retryWrites(s.retryWrites())
-                                  .applyToConnectionPoolSettings(b -> b
-                                          .minSize(s.minPoolSize())
-                                          .maxSize(s.maxPoolSize())
-                                          .maxWaitTime(s.maxWaitMs(), TimeUnit.MILLISECONDS))
-                                  .applyToSocketSettings(b -> b
-                                          .connectTimeout(s.connectTimeoutMs(), TimeUnit.MILLISECONDS)
-                                          .readTimeout(s.readTimeoutMs(), TimeUnit.MILLISECONDS));
+                                  .retryWrites(s.retryWrites()).applyToClusterSettings(b -> b.serverSelectionTimeout(0,
+                                                                                                                     TimeUnit.MILLISECONDS))
+                                  .applyToConnectionPoolSettings(b -> b.minSize(Math.max(0, s.minPoolSize()))
+                                                                       .maxSize(Math.max(25, s.maxPoolSize()))
+                                                                       .maxWaitTime(0, TimeUnit.MILLISECONDS))
+                                  .applyToSocketSettings(b -> b.connectTimeout(0, TimeUnit.MILLISECONDS)
+                                                               .readTimeout(0, TimeUnit.MILLISECONDS));
     }
 
     private static ReadPreference resolveReadPref(@Nullable String pref, ReadPreference def) {

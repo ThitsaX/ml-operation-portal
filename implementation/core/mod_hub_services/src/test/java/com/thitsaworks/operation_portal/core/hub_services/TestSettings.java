@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.mongo.ReportingMongoConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mongo.ReportingMongoConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
