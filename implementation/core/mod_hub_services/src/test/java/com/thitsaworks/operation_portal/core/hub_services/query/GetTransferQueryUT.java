@@ -45,11 +45,17 @@ public class GetTransferQueryUT extends BaseVaultSetUpTest {
         var output = getTransfersQuery.execute(input);
 
         ObjectMapper mapper = new ObjectMapper();
+
         if (output.getTransferInfoList().isEmpty()) {return;}
+
         for (TransferData transferData : output.getTransferInfoList()) {
+
             try {
+
                 logger.info("Transfers retrieved: {}", mapper.writeValueAsString(transferData));
+
             } catch (Exception e) {
+
                 logger.error("Error serializing transferData", e);
             }
         }

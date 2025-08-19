@@ -44,11 +44,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 @Primary
 public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    // IMPORTANT: Make sure this matches the real collection name.
-    // Your Compass screenshot shows "mojaloop.transaction" (singular).
     private static final String COLLECTION = "transaction";
-    // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     private final MongoTemplate reportingMongoReadTemplate;
 
@@ -186,8 +182,11 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
             SortOperation sort = sort(Sort.Direction.DESC, "submittedOnDate");
 
-            Aggregation agg = newAggregation(normalizeCreatedAt,   // must be before match
-                                             match, lookupSettlement, addFirstSettlement, project, sort);
+            Aggregation agg = newAggregation(normalizeCreatedAt,
+                                             match,
+                                             lookupSettlement,
+                                             addFirstSettlement,
+                                             project, sort);
 
             AggregationResults<Document> results = reportingMongoReadTemplate.aggregate(agg,
                                                                                         COLLECTION,

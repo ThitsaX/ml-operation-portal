@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
@@ -23,11 +24,23 @@ public class GetTranferDetailQueryUT extends BaseVaultSetUpTest {
     private GetTransferDetailQuery getTransferDetailQuery;
 
     @Test
-    public void testGetTransfers() throws HubServicesException {
+    public void testGetTransferDetail() throws HubServicesException {
 
-        TransferDetailData output = getTransferDetailQuery.execute("01JWEBM16E1M402J4ZJ3HMB0HA");
+        TransferDetailData output = getTransferDetailQuery.execute("01K18F29HYWRH2P8PYX4SZ7MDQ");
 
-        logger.info("Transfer detail: {}", output);
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (output == null) {return;}
+
+        try {
+
+            logger.info("Transfer Details : {}", mapper.writeValueAsString(output));
+
+        } catch (Exception e) {
+
+            logger.error("Error serializing transferDetailData", e);
+        }
+
     }
 
 }

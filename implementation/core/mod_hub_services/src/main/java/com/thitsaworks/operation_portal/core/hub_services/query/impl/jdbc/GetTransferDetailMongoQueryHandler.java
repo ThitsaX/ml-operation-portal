@@ -1,9 +1,8 @@
 package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransferDetailQuery;
 import org.bson.Document;
@@ -11,14 +10,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.AddFieldsOperation;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
+import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
+import java.util.TimeZone;
+
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
 @Primary
@@ -31,169 +40,148 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
     @Autowired
     public GetTransferDetailMongoQueryHandler(
             @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE) MongoTemplate reportingMongoReadTemplate) {
-
         this.reportingMongoReadTemplate = reportingMongoReadTemplate;
     }
 
     @Override
     public TransferDetailData execute(String transferId) throws HubServicesException {
 
-        final List<Document> pipeline = new ArrayList<>();
+        try {
 
-        // WHERE t.transferId = IFNULL(?, t.transferId)
-        if (StringUtils.hasText(transferId)) {
-            pipeline.add(new Document("$match", new Document("transferId", transferId)));
+            final String tz = "UTC";
+            final TimeZone tzObj = TimeZone.getTimeZone(tz);
+
+            // 1) Normalize createdAt to a BSON Date (safe even if it's already a Date)
+            AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
+                                                                      .addFieldWithValue("_createdAt",
+                                                                                         ConvertOperators.ToDate.toDate(
+                                                                                                 "$createdAt"))
+                                                                      .build();
+
+            Criteria root = Criteria.where("transferId").is(transferId);
+
+            MatchOperation match = match(root);
+
+            AggregationOperation lookupSettlement = context -> {
+                Document stage = new Document("$lookup", new Document("from", "settlement").append("let",
+                                                                                                   new Document("winId",
+                                                                                                                new Document(
+                                                                                                                        "$toString",
+                                                                                                                        "$transferSettlementWindowId")))
+                                                                                           .append("pipeline",
+                                                                                                   Arrays.asList(
+                                                                                                           // build array of windowIds as strings on the settlement docs
+                                                                                                           new Document(
+                                                                                                                   "$addFields",
+                                                                                                                   new Document(
+                                                                                                                           "_winIds",
+                                                                                                                           new Document(
+                                                                                                                                   "$map",
+                                                                                                                                   new Document(
+                                                                                                                                           "input",
+                                                                                                                                           "$settlementWindows").append(
+                                                                                                                                                                        "as",
+                                                                                                                                                                        "w")
+                                                                                                                                                                .append("in",
+                                                                                                                                                                        new Document(
+                                                                                                                                                                                "$toString",
+                                                                                                                                                                                "$$w.settlementWindowId"))))),
+                                                                                                           new Document(
+                                                                                                                   "$match",
+                                                                                                                   new Document(
+                                                                                                                           "$expr",
+                                                                                                                           new Document(
+                                                                                                                                   "$in",
+                                                                                                                                   Arrays.asList(
+                                                                                                                                           "$$winId",
+                                                                                                                                           "$_winIds")))),
+                                                                                                           new Document(
+                                                                                                                   "$project",
+                                                                                                                   new Document(
+                                                                                                                           "settlementId",
+                                                                                                                           1))))
+                                                                                           .append("as",
+                                                                                                   "settlementMatches"));
+                return context.getMappedObject(stage);
+            };
+
+            AddFieldsOperation addFirstSettlement = AddFieldsOperation.builder()
+                                                                      .addFieldWithValue("settlementMatch",
+                                                                                         new Document("$first",
+                                                                                                      "$settlementMatches"))
+                                                                      .build();
+
+            ProjectionOperation project =
+                    project().and("transferId")
+                             .as("transferId")
+                             .and(ConditionalOperators.IfNull.ifNull("quoteRequest.quoteId").then(""))
+                             .as("quoteId")
+                             .and(ConditionalOperators.IfNull.ifNull("transferState").then(""))
+                             .as("transferState")
+                             .and(ConditionalOperators.IfNull.ifNull("transactionType").then(""))
+                             .as("transferType")
+                             .and(ConditionalOperators.IfNull.ifNull("sourceCurrency").then(""))
+                             .as("currency")
+                             .and(ConditionalOperators.IfNull.ifNull("quoteRequest.amountType").then(""))
+                             .as("amountType")
+                             .and("quoteRequest.amount.amount")
+                             .as("quoteAmount")
+                             .and("transferTerms.transferAmount.amount")
+                             .as("transferAmount")
+                             .and("transferTerms.payeeReceiveAmount.amount")
+                             .as("payeeReceivedAmount")
+                             .and("transferTerms.payeeFspFee.amount")
+                             .as("payeeDfspFeeAmount")
+                             .and("transferTerms.payeeFspCommission.amount")
+                             .as("payeeDfspCommissionAmount")
+                             .and(
+                                     DateOperators.DateToString.dateOf("$_createdAt")
+                                                               .toString("%Y-%m-%d %H:%M:%S")
+                                                               .withTimezone(DateOperators.Timezone.valueOf(tzObj.getID()))
+                                 ).as("submittedOnDate")
+                             .and(ConditionalOperators.IfNull.ifNull("transferSettlementWindowId").then(""))
+                             .as("windowId")
+                             .and(ConditionalOperators.IfNull.ifNull("$settlementMatch.settlementId").then(""))
+                             .as("settlementId")
+                             .and(ConditionalOperators.IfNull.ifNull("payerParty.partyIdType").then(""))
+                             .as("payerIdType")
+                             .and(ConditionalOperators.IfNull.ifNull("payerParty.partyIdentifier").then(""))
+                             .as("payerIdValue")
+                             .and(ConditionalOperators.IfNull.ifNull("payerDFSP").then(""))
+                             .as("payerDspId")
+                             .and(ConditionalOperators.IfNull.ifNull("payerParty.partyName").then(""))
+                             .as("payerName")
+                             .and(ConditionalOperators.IfNull.ifNull("payeeParty.partyIdType").then(""))
+                             .as("payeeIdType")
+                             .and(ConditionalOperators.IfNull.ifNull("payeeParty.partyIdentifier").then(""))
+                             .as("payeeIdValue")
+                             .and(ConditionalOperators.IfNull.ifNull("payeeDFSP").then(""))
+                             .as("payeeDspId")
+                             .and(ConditionalOperators.IfNull.ifNull("payeeParty.partyName").then(""))
+                             .as("payeeName")
+                             .and(ConditionalOperators.IfNull.ifNull("errorCode").then(""))
+                             .as("errorCode")
+                             .and(ConditionalOperators.IfNull.ifNull("errorDescription").then(""))
+                             .as("errorDescription");
+
+            Aggregation agg = newAggregation(match, lookupSettlement, addFirstSettlement, normalizeCreatedAt, project);
+
+            AggregationResults<Document> results = reportingMongoReadTemplate.aggregate(agg,
+                                                                                        COLLECTION,
+                                                                                        Document.class);
+
+            Document d = results.getUniqueMappedResult();
+
+            if (d == null) {
+
+                return null;
+            }
+            return TransferProjection.from(d);
+
+        } catch (Exception e) {
+
+            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
         }
-
-        // LEFT JOIN settlement on transferSettlementWindowId ∈ settlement.settlementWindows[].settlementWindowId
-        //   This matches the sample docs you shared.
-        Document lookupSettlement = new Document("$lookup", new Document().append("from", "settlement")
-                                                                          .append("let",
-                                                                                  new Document("wId",
-                                                                                               new Document("$toLong",
-                                                                                                            "$transferSettlementWindowId")))
-                                                                          .append("pipeline",
-                                                                                  Arrays.asList(new Document("$match",
-                                                                                                             new Document(
-                                                                                                                     "$expr",
-                                                                                                                     new Document(
-                                                                                                                             "$in",
-                                                                                                                             Arrays.asList(
-                                                                                                                                     "$$wId",
-                                                                                                                                     new Document(
-                                                                                                                                             "$map",
-                                                                                                                                             new Document().append(
-                                                                                                                                                                   "input",
-                                                                                                                                                                   "$settlementWindows")
-                                                                                                                                                           .append("as",
-                                                                                                                                                                   "sw")
-                                                                                                                                                           .append("in",
-                                                                                                                                                                   new Document(
-                                                                                                                                                                           "$toLong",
-                                                                                                                                                                           "$$sw.settlementWindowId"))))))),
-                                                                                                new Document("$project",
-                                                                                                             new Document(
-                                                                                                                     "_id",
-                                                                                                                     0).append(
-                                                                                                                     "settlementId",
-                                                                                                                     1))))
-                                                                          .append("as", "settle"));
-        pipeline.add(lookupSettlement);
-        pipeline.add(new Document("$unwind",
-                                  new Document("path", "$settle").append("preserveNullAndEmptyArrays", true)));
-
-        // Final projection – keep raw values; we'll format amounts in Java
-        Document project = new Document("$project", new Document().append("_id", 0)
-
-                                                                  // IDs / states / types
-                                                                  .append("transferId", "$transferId")
-                                                                  .append("quoteId",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$quoteRequest.quoteId",
-                                                                                               "")))
-                                                                  .append("transferState",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$transferState",
-                                                                                                     "")))
-                                                                  .append("transferType",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$baseUseCase",
-                                                                                                     "")))
-                                                                  .append("currency",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$sourceCurrency",
-                                                                                                     "")))
-                                                                  .append("amountType",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$quoteRequest.amountType",
-                                                                                               "")))
-
-                                                                  // Amounts (leave numeric/null; we'll format to 2dp strings in Java)
-                                                                  .append("quoteAmount", "$quoteRequest.amount.amount")
-                                                                  .append("transferAmount",
-                                                                          "$transferTerms.transferAmount.amount")
-                                                                  .append("payeeReceivedAmount",
-                                                                          "$transferTerms.payeeReceiveAmount.amount")
-                                                                  .append("payeeDfspFeeAmount",
-                                                                          "$transferTerms.payeeFspFee.amount")
-                                                                  .append("payeeDfspCommissionAmount",
-                                                                          "$transferTerms.payeeFspCommission.amount")
-
-                                                                  // Dates / windows / settlements
-                                                                  .append("submittedOnDate", "$createdAt")
-                                                                  .append("windowId",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$transferSettlementWindowId",
-                                                                                               "")))
-                                                                  .append("settlementId",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$settle.settlementId",
-                                                                                               "")))
-
-                                                                  // Payer
-                                                                  .append("payerIdType",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payerParty.partyIdType",
-                                                                                               "")))
-                                                                  .append("payerIdValue",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payerParty.partyIdentifier",
-                                                                                               "")))
-                                                                  .append("payerDspId",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$payerDFSP", "")))
-                                                                  .append("payerName",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payerParty.partyName",
-                                                                                               "")))
-
-                                                                  // Payee
-                                                                  .append("payeeIdType",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payeeParty.partyIdType",
-                                                                                               "")))
-                                                                  .append("payeeIdValue",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payeeParty.partyIdentifier",
-                                                                                               "")))
-                                                                  .append("payeeDspId",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$payeeDFSP", "")))
-                                                                  .append("payeeName",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList(
-                                                                                               "$payeeParty.partyName",
-                                                                                               "")))
-
-                                                                  // Errors
-                                                                  .append("errorCode",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$errorCode", "")))
-                                                                  .append("errorDescription",
-                                                                          new Document("$ifNull",
-                                                                                       Arrays.asList("$errorDescription",
-                                                                                                     ""))));
-        pipeline.add(project);
-
-        // Execute against the `transfer` collection
-        MongoCollection<Document> col = reportingMongoReadTemplate.getDb().getCollection("transfer");
-        AggregateIterable<Document> iterable = col.aggregate(pipeline).allowDiskUse(true);
-
-        TransferDetailData out = null;
-
-        for (Document d : iterable) {
-            out = TransferProjection.from(d);
-        }
-        return out;
     }
 
     public static class TransferProjection {
@@ -202,37 +190,29 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
         public static TransferDetailData from(Document d) {
 
-            TransferDetailData.PartyInfoData payerInformation =
-                    new TransferDetailData.PartyInfoData(d.get("payerIdType").toString(),
-                                                         d.get("payerIdValue").toString(),
-                                                         d.get("payerDspId").toString(),
-                                                         d.get("payerName").toString());
+            TransferDetailData.PartyInfoData payerInformation = new TransferDetailData.PartyInfoData(str(d.get(
+                    "payerIdType")), str(d.get("payerIdValue")), str(d.get("payerDspId")), str(d.get("payerName")));
 
-            TransferDetailData.PartyInfoData payeeInformation =
-                    new TransferDetailData.PartyInfoData(d.get("payeeIdType").toString(),
-                                                         d.get("payeeIdValue").toString(),
-                                                         d.get("payeeDspId").toString(),
-                                                         d.get("payeeName").toString());
+            TransferDetailData.PartyInfoData payeeInformation = new TransferDetailData.PartyInfoData(str(d.get(
+                    "payeeIdType")), str(d.get("payeeIdValue")), str(d.get("payeeDspId")), str(d.get("payeeName")));
 
-            TransferDetailData.TransferErrorInfo errorInfo = new TransferDetailData.TransferErrorInfo(d.get("errorCode")
-                                                                                                       .toString(),
-                                                                                                      d.get("errorDescription")
-                                                                                                       .toString());
+            TransferDetailData.TransferErrorInfo errorInfo = new TransferDetailData.TransferErrorInfo(str(d.get(
+                    "errorCode")), str(d.get("errorDescription")));
 
-            return new TransferDetailData(d.get("transferId").toString(),
-                                          d.get("quoteId").toString(),
-                                          d.get("transferState").toString(),
-                                          d.get("transferType").toString(),
-                                          d.get("currency").toString(),
-                                          d.get("amountType").toString(),
-                                          d.get("quoteAmount").toString(),
-                                          d.get("transferAmount").toString(),
-                                          d.get("payeeReceivedAmount").toString(),
-                                          d.get("payeeDfspFeeAmount").toString(),
-                                          d.get("payeeDfspCommissionAmount").toString(),
-                                          d.get("submittedOnDate").toString(),
-                                          d.get("windowId").toString(),
-                                          d.get("settlementId").toString(),
+            return new TransferDetailData(str(d.get("transferId")),
+                                          str(d.get("quoteId")),
+                                          str(d.get("transferState")),
+                                          str(d.get("transferType")),
+                                          str(d.get("currency")),
+                                          str(d.get("amountType")),
+                                          money(d.get("quoteAmount")),
+                                          money(d.get("transferAmount")),
+                                          money(d.get("payeeReceivedAmount")),
+                                          money(d.get("payeeDfspFeeAmount")),
+                                          money(d.get("payeeDfspCommissionAmount")),
+                                          str(d.get("submittedOnDate")),
+                                          str(d.get("windowId")),
+                                          str(d.get("settlementId")),
                                           payerInformation,
                                           payeeInformation,
                                           errorInfo);
@@ -249,10 +229,8 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
             if (v == null) {return "";}
             if (v instanceof Number) {
-                // Round/format to 2dp
                 return TWO_DP.format(((Number) v).doubleValue());
             }
-            // If already a string, pass through
             return Objects.toString(v, "");
         }
 
