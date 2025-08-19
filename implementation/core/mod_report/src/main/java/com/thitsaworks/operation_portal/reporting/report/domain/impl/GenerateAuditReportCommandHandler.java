@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -105,7 +106,11 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
                 csvExporter.exportReport();
-                rptBytes = csvReport.toByteArray();
+
+                String csvContent = csvReport.toString(StandardCharsets.UTF_8);
+                csvContent = "\n" + csvContent;
+
+                rptBytes = csvContent.getBytes(StandardCharsets.UTF_8);
             }
 
             return new Output(rptBytes);

@@ -73,8 +73,7 @@ public class GetParticipantController {
                                     output.participantName(),
                                     output.description(),
                                     output.address(),
-                                    output.mobile()
-                                          .getValue(),
+                                    output.mobile() != null ? output.mobile().getValue() : null,
                                     output.logoType(),
                                     output.logo() == null ? null : Base64.getEncoder()
                                                                          .encodeToString(output.logo()),
