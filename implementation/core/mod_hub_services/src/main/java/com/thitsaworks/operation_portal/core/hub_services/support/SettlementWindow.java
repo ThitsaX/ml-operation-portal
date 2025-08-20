@@ -1,12 +1,14 @@
 package com.thitsaworks.operation_portal.core.hub_services.support;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public record SettlementWindow(
-        Integer id,
-        String reason,
-        String state,
-        String createdDate,
-        String changedDate,
-        List<SettlementContent> content
+        @JsonProperty("id") Integer id,
+        @JsonProperty("reason") String reason,
+        @JsonProperty("state") String state,
+        @JsonProperty("createdDate") String createdDate,
+        @JsonProperty("changedDate") String changedDate,
+        @JsonProperty("content") List<SettlementContent> content
 ) {}

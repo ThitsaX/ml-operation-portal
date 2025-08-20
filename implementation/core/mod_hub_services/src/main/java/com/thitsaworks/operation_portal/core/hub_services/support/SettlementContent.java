@@ -1,11 +1,13 @@
 package com.thitsaworks.operation_portal.core.hub_services.support;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record SettlementContent(
-        Integer id,
-        String state,
-        String ledgerAccountType,
-        String currencyId,
-        String createdDate,
-        String changedDate,
-        Integer settlementId
+        @JsonProperty("id") Integer id,
+        @JsonProperty("state") String state,
+        @JsonProperty("ledgerAccountType") String ledgerAccountType,
+        @JsonProperty("currencyId") String currencyId,
+        @JsonProperty("createdDate") String createdDate,
+        @JsonProperty("changedDate") String changedDate,
+        @JsonProperty("settlementId") Integer settlementId
 ) {}

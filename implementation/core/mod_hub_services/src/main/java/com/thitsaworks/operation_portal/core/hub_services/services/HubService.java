@@ -2,10 +2,13 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
+import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -37,5 +40,21 @@ public interface HubService {
 
     @POST("/v2/settlements")
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
+
+    @GET("/v2/settlements/{settlementId}")
+    Call<GetSettlement.Response> getSettlement(@Path("settlementId") Integer settlementId);
+
+    @PUT("/v2/settlements/{settlementId}")
+    Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
+                                                           @Body
+                                                           PutUpdateSettlement.Request request);
+
+    @POST("/v2/participants/{dfspCode}/accounts/{accountId}")
+    Call<PostUpdateSettlementByParticipant.Response> postUpdateSettlementByParticipant(
+            @Path("dfspCode") String dfspCode,
+            @Path("accountId") Integer accountId,
+            @Body
+            PostUpdateSettlementByParticipant.Request request);
+
 
 }
