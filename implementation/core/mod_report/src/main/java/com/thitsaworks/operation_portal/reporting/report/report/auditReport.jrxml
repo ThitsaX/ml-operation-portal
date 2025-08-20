@@ -279,11 +279,6 @@ ORDER BY ta.created_date DESC]]>
 				</textElement>
 				<text><![CDATA[TimeZoneOffSet]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="0" y="180" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-			</staticText>
 			<textField>
 				<reportElement x="180" y="52" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -352,7 +347,7 @@ ORDER BY ta.created_date DESC]]>
 				<textFieldExpression><![CDATA[$P{timezoneoffset}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="210" width="1960" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
+				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="218" width="1960" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -391,21 +386,6 @@ ORDER BY ta.created_date DESC]]>
 					</datasetRun>
 					<jr:column width="180" uuid="7be88b7d-b36b-4854-a45b-58b244b4eb60">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column1"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="180" height="17" backcolor="#FFFFFF" uuid="6d973096-2317-403e-a815-b4635562b487"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Date Time]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField pattern="d-MMM- yyyy">
@@ -419,22 +399,6 @@ ORDER BY ta.created_date DESC]]>
 					</jr:column>
 					<jr:column width="200" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Action]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -449,22 +413,6 @@ ORDER BY ta.created_date DESC]]>
 					</jr:column>
 					<jr:column width="151" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="151" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Made By]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -479,6 +427,55 @@ ORDER BY ta.created_date DESC]]>
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<staticText>
+				<reportElement x="0" y="200" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="200" width="151" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Made By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="180" y="200" width="200" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Action]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="180" width="180" height="20" uuid="d2e2d944-76ea-4b4c-834f-cd2eeb71c212"/>
+				<text><![CDATA[]]></text>
+			</staticText>
 		</band>
 	</title>
 </jasperReport>

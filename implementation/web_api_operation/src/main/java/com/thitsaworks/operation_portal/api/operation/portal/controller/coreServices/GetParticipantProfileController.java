@@ -42,8 +42,7 @@ public class GetParticipantProfileController {
                                     output.participantName(),
                                     output.description(),
                                     output.address(),
-                                    output.mobile()
-                                          .getValue(),
+                                    output.mobile() != null ? output.mobile().getValue() : null,
                                     output.logoDataType(),
                                     output.logoBase64() == null ? null : Base64.getEncoder()
                                                                                .encodeToString(output.logoBase64()),
