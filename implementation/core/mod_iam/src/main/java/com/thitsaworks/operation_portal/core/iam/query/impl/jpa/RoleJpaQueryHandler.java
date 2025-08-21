@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
@@ -48,6 +49,19 @@ public class RoleJpaQueryHandler implements RoleQuery {
         return roles.stream()
                     .map(RoleData::new)
                     .toList();
+    }
+
+    @Override
+    public  RoleData isDfsp(RoleId roleId) throws IAMException {
+
+        BooleanExpression predicate = this.role.roleId.eq(roleId);
+        var role = this.roleRepository.findOne(predicate);
+
+        if (role.isEmpty()) {
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
+        }
+
+        return new RoleData(role.get());
     }
 
 }

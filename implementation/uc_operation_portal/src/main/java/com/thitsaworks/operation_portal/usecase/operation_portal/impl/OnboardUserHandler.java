@@ -1,14 +1,24 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalRoleData;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
+import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
+import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.OnboardUser;
@@ -16,6 +26,8 @@ import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationM
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OnboardUserHandler
@@ -28,6 +40,12 @@ public class OnboardUserHandler
 
     private final CreatePrincipalCommand createPrincipalCommand;
 
+    private final PrincipalCache principalCache;
+
+    private final PrincipalRoleQuery principalRoleQuery;
+
+    private final RoleQuery roleQuery;
+
     public OnboardUserHandler(CreateInputAuditCommand createInputAuditCommand,
                               CreateOutputAuditCommand createOutputAuditCommand,
                               CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -35,7 +53,9 @@ public class OnboardUserHandler
                               PrincipalCache principalCache,
                               ActionAuthorizationManager actionAuthorizationManager,
                               CreateUserCommand createUserCommand,
-                              CreatePrincipalCommand createPrincipalCommand) {
+                              CreatePrincipalCommand createPrincipalCommand, PrincipalCache principalCache1,
+                              PrincipalRoleQuery principalRoleQuery,
+                              RoleQuery roleQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,23 +66,52 @@ public class OnboardUserHandler
 
         this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
+        this.principalCache = principalCache1;
+        this.principalRoleQuery = principalRoleQuery;
+        this.roleQuery = roleQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        CreateUserCommand.Output output = this.createUserCommand.execute(
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        PrincipalData principalData =
+            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+
+        if (principalData == null) {
+
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+
+        }
+        List<PrincipalRoleData> principalRoleList = this.principalRoleQuery.getRoles(principalData.principalId());
+
+        for (PrincipalRoleData principalRoleData : principalRoleList) {
+             var isDfsp = this.roleQuery.isDfsp(principalRoleData.roleId());
+            if (isDfsp.isDfsp()) {
+
+                if (!input.participantId().equals(new ParticipantId(principalData.principalId()
+                                                                                .getId()))) {
+                    throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
+                }
+            }
+        }
+
+            CreateUserCommand.Output output = this.createUserCommand.execute(
                 new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
                                             input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
-                                                                                                   .getId()),
-                                                                             input.password(),
-                                                                             new RealmId(input.participantId()
-                                                                                              .getId()),
-                                                                             input.activeStatus()));
+            this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
+                                                                                                       .getId()),
+                                                                                 input.password(),
+                                                                                 new RealmId(input.participantId()
+                                                                                                  .getId()),
+                                                                                 input.activeStatus()));
 
-        return new Output(output.created());
+            return new Output(output.created());
+        }
+
+
+
     }
 
-}
