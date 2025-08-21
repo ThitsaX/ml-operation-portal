@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GetOrganizationList extends UseCase<GetOrganizationList.Input, GetOrganizationList.Output> {
 
-    record  Input(UserId ) {}
+    record  Input( ) {}
 
     record Output(List<OrganizationInfo> organizationInfoList) {
         public record OrganizationInfo(ParticipantId participantId,
