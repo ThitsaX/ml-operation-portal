@@ -52,7 +52,7 @@ public class RoleJpaQueryHandler implements RoleQuery {
     }
 
     @Override
-    public  RoleData isDfsp(RoleId roleId) throws IAMException {
+    public  RoleData get(RoleId roleId) throws IAMException {
 
         BooleanExpression predicate = this.role.roleId.eq(roleId);
         var role = this.roleRepository.findOne(predicate);

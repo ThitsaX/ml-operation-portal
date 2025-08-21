@@ -14,7 +14,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalRoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
@@ -27,12 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class OnboardUserHandler
-        extends OperationPortalAuditableUseCase<OnboardUser.Input, OnboardUser.Output>
-        implements OnboardUser {
+    extends OperationPortalAuditableUseCase<OnboardUser.Input, OnboardUser.Output>
+    implements OnboardUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(OnboardUserHandler.class);
 
@@ -80,38 +77,36 @@ public class OnboardUserHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (principalData == null) {
-
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         }
-        List<PrincipalRoleData> principalRoleList = this.principalRoleQuery.getRoles(principalData.principalId());
 
-        for (PrincipalRoleData principalRoleData : principalRoleList) {
-             var isDfsp = this.roleQuery.isDfsp(principalRoleData.roleId());
-            if (isDfsp.isDfsp()) {
+        var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
 
-                if (!input.participantId().equals(new ParticipantId(principalData.principalId()
-                                                                                .getId()))) {
-                    throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
-                }
+        var role = this.roleQuery.get(principalRole.roleId());
+        if (role.isDfsp()) {
+
+            if (!input.participantId()
+                      .equals(new ParticipantId(principalData.principalId()
+                                                             .getId()))) {
+                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
+
         }
 
-            CreateUserCommand.Output output = this.createUserCommand.execute(
-                new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
-                                            input.firstName(), input.lastName(), input.jobTitle()));
+        CreateUserCommand.Output output = this.createUserCommand.execute(
+            new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
+                                        input.firstName(), input.lastName(), input.jobTitle()));
 
-            this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
-                                                                                                       .getId()),
-                                                                                 input.password(),
-                                                                                 new RealmId(input.participantId()
-                                                                                                  .getId()),
-                                                                                 input.activeStatus()));
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
+                                                                                                   .getId()),
+                                                                             input.password(),
+                                                                             new RealmId(input.participantId()
+                                                                                              .getId()),
+                                                                             input.activeStatus()));
 
-            return new Output(output.created());
-        }
-
-
-
+        return new Output(output.created());
     }
+
+}
 

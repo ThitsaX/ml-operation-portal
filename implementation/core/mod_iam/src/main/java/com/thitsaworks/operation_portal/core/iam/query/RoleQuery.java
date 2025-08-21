@@ -13,6 +13,6 @@ public interface RoleQuery {
 
     List<RoleData> getAll() throws IAMException;
 
-    RoleData isDfsp(RoleId roleId) throws IAMException;
+    RoleData get(RoleId roleId) throws IAMException;
 
 }

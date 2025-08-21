@@ -11,7 +11,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalRoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
@@ -28,7 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetOrganizationListHandler extends OperationPortalAuditableUseCase<GetOrganizationList.Input,GetOrganizationList.Output> implements GetOrganizationList {
+public class GetOrganizationListHandler
+    extends OperationPortalAuditableUseCase<GetOrganizationList.Input, GetOrganizationList.Output>
+    implements GetOrganizationList {
 
     private final ParticipantQuery participantQuery;
 
@@ -70,44 +71,40 @@ public class GetOrganizationListHandler extends OperationPortalAuditableUseCase<
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (principalData == null) {
-
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         }
+
         List<Output.OrganizationInfo> participantInfoList = new ArrayList<>();
 
-        List<PrincipalRoleData> principalRoleList = this.principalRoleQuery.getRoles(principalData.principalId());
+        var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
 
-        for (PrincipalRoleData principalRoleData : principalRoleList) {
-            var isDfsp = this.roleQuery.isDfsp(principalRoleData.roleId());
-            if (isDfsp.isDfsp()) {
-                List<ParticipantData> participantDataList =
-                    this.participantQuery.getOtherParticipants(new ParticipantId(principalData.principalId().getId()));
+        var role = this.roleQuery.get(principalRole.roleId());
+        if (role.isDfsp()) {
 
-                for (ParticipantData participantData : participantDataList) {
-                    participantInfoList.add(new Output.OrganizationInfo(participantData.participantId(),
-                                                                        participantData.participantName().getValue()));
-                }
+            var participantData = this.participantQuery.get(new ParticipantId(principalData.realmId()
+                                                                                           .getId()));
+            participantInfoList.add(
+                new Output.OrganizationInfo(participantData.participantId(),
+                                            participantData.participantName()
+                                                           .getValue()));
 
-                return new Output(participantInfoList);
-            } else {
+            return new Output(participantInfoList);
 
-                List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+        } else {
 
-                for (ParticipantData participantData : participantDataList) {
+            List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
-                    participantInfoList.add(
-                        new Output.OrganizationInfo(participantData.participantId(),
-                                                    participantData.participantName()
-                                                                   .getValue()));
-                }
-
-                return new Output(participantInfoList);
+            for (ParticipantData participantData : participantDataList) {
+                participantInfoList.add(
+                    new Output.OrganizationInfo(participantData.participantId(),
+                                                participantData.participantName()
+                                                               .getValue()));
             }
 
-
+            return new Output(participantInfoList);
         }
-        return new Output(participantInfoList);
 
     }
+
 }

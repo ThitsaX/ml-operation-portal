@@ -25,7 +25,7 @@ public class GetOrganizationListController {
     @GetMapping(value = "/secured/getOrganizationList")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Organization List Request");
+        LOG.info("Get Organization List Request : [{}]", "");
 
         var input = new GetOrganizationList.Input();
         var output = this.getOrganizationList.execute(input);

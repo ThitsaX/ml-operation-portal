@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import java.util.List;
 
 public interface PrincipalRoleQuery {
-    List<PrincipalRoleData> getRoles(PrincipalId principalId) throws IAMException;
+    PrincipalRoleData getRole(PrincipalId principalId) throws IAMException;
 
 
 }

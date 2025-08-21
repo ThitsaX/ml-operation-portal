@@ -2,7 +2,7 @@ ALTER TABLE tbl_role
 ADD COLUMN is_dfsp TINYINT(1) DEFAULT 1 AFTER active;
 
 INSERT INTO tbl_role (role_id, name, active, is_dfsp, created_date, updated_date) VALUES
-    (1, 'HUB-Admin', 1, 1, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
+    (1, 'HUB-Admin', 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
     (2, 'HUB-Manager', 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
     (3, 'HUB-Operator', 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),
     (4, 'HUB-User', 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()),

@@ -9,13 +9,9 @@ import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import java.io.Serializable;
 
 public record PrincipalData(PrincipalId principalId,
-
                             AccessKey accessKey,
-
                             String secretKey,
-
                             RealmId realmId,
-
                             PrincipalStatus principalStatus) implements Serializable {
 
     public PrincipalData(Principal principal) {
