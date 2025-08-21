@@ -71,9 +71,12 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 params.put("userId", input.userId());
             }
 
-            if (input.action() != null) {
-                params.put("action", input.action());
+            if (input.actionId() != null) {
+                params.put("actionId", input.actionId());
             }
+
+            params.put("grantedActionList", input.grantedActionList());
+
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(

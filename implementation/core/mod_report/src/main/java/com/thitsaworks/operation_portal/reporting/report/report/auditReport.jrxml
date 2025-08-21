@@ -95,7 +95,10 @@
 		<parameter name="userId" class="java.lang.String">
 			<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 		</parameter>
-		<parameter name="action" class="java.lang.String">
+		<parameter name="actionId" class="java.lang.String">
+			<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+		</parameter>
+		<parameter name="grantedActionList" class="java.util.List">
 			<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 		</parameter>
 		<queryString language="plsql">
@@ -134,7 +137,8 @@ WHERE
         )
     )
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
-    AND ($P{action} IS NULL OR   $P{action} = '' OR tac.action_code = $P{action})
+    AND ($P{actionId} IS NULL OR   $P{actionId} = '' OR tac.action_id = $P{actionId})
+    AND ($X{IN, tac.action_id, grantedActionList})
 ORDER BY ta.created_date DESC]]>
 		</queryString>
 		<field name="date" class="java.lang.String"/>
@@ -154,7 +158,10 @@ ORDER BY ta.created_date DESC]]>
 	<parameter name="userId" class="java.lang.String">
 		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 	</parameter>
-	<parameter name="action" class="java.lang.String">
+	<parameter name="actionId" class="java.lang.String">
+		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+	</parameter>
+	<parameter name="grantedActionList" class="java.util.List">
 		<defaultValueExpression><![CDATA[null]]></defaultValueExpression>
 	</parameter>
 	<queryString language="plsql">
@@ -193,7 +200,8 @@ WHERE
         )
     )
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
-    AND ($P{action} IS NULL OR   $P{action} = '' OR tac.action_code = $P{action})
+    AND ($P{actionId} IS NULL OR   $P{actionId} = '' OR tac.action_id = $P{actionId})
+    AND ($X{IN, tac.action_id, grantedActionList})
 ORDER BY ta.created_date DESC]]>
 	</queryString>
 	<field name="date" class="java.lang.String"/>
@@ -318,7 +326,7 @@ ORDER BY ta.created_date DESC]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{action} == null || $P{action}.trim().isEmpty() ? "All" : $P{action}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{actionId} == null || $P{actionId}.trim().isEmpty() ? "All" : $F{action_name}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="103" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
@@ -373,11 +381,14 @@ ORDER BY ta.created_date DESC]]>
 						<datasetParameter name="userId">
 							<datasetParameterExpression><![CDATA[$P{userId}]]></datasetParameterExpression>
 						</datasetParameter>
-						<datasetParameter name="action">
-							<datasetParameterExpression><![CDATA[$P{action}]]></datasetParameterExpression>
+						<datasetParameter name="actionId">
+							<datasetParameterExpression><![CDATA[$P{actionId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="timezoneoffset">
 							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="grantedActionList">
+							<datasetParameterExpression><![CDATA[$P{grantedActionList}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="ORACLE_REF_CURSOR">
 							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>

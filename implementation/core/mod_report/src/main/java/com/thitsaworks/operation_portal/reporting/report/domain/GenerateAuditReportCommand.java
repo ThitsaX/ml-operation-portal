@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.reporting.report.domain;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
 import java.time.Instant;
+import java.util.List;
 
 public interface GenerateAuditReportCommand {
 
@@ -13,8 +14,9 @@ public interface GenerateAuditReportCommand {
                  Instant toDate,
                  String timezoneoffset,
                  String userId,
-                 String action,
-                 String fileType) { }
+                 String actionId,
+                 String fileType,
+                 List<String> grantedActionList) { }
 
     record Output(byte[] rptData) { }
 

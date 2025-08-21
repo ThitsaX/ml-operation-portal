@@ -22,4 +22,6 @@ public interface IAMQuery {
 
     Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId);
 
+    List<ActionData> getGrantedActionsByPrincipal(PrincipalId principalId) throws IAMException;
+
 }
