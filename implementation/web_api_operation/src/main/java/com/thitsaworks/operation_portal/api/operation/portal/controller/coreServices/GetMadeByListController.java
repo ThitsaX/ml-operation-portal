@@ -40,7 +40,7 @@ public class GetMadeByListController {
                   .map(user -> new Response.User(user.userId()
                                                      .getId()
                                                      .toString(),
-                                                 user.name()))
+                                                 user.email().getValue()))
                   .collect(Collectors.toSet());
 
         LOG.info("Get Made By List Response: [{}]", users);
@@ -52,7 +52,7 @@ public class GetMadeByListController {
     public record Response(Set<User> madeByList) {
 
         public record User(String userId,
-                           String name) implements Serializable { }
+                           String email) implements Serializable { }
 
     }
 

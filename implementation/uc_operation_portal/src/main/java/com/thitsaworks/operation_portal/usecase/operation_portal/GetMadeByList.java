@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.Set;
@@ -13,6 +14,6 @@ public interface GetMadeByList extends UseCase<GetMadeByList.Input, GetMadeByLis
     record Output(Set<User> madeBy) { }
 
     public record User(UserId userId,
-                       String name) { }
+                       Email email) { }
 
 }
