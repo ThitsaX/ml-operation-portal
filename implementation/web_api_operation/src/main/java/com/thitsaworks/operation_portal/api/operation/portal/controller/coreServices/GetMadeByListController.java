@@ -25,12 +25,12 @@ public class GetMadeByListController {
     private final GetMadeByList getMadeByList;
 
     @GetMapping(value = "/secured/getMadeByList")
-    public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
+    public ResponseEntity<Response> execute()
         throws DomainException {
 
-        LOG.info("Get Made By List Request: ParticipantId = [{}]", participantId);
+        LOG.info("Get Made By List Request : [{}]","");
 
-        GetMadeByList.Input input = new GetMadeByList.Input(new ParticipantId(Long.parseLong(participantId)));
+        GetMadeByList.Input input = new GetMadeByList.Input();
         GetMadeByList.Output output = this.getMadeByList.execute(input);
 
         Set<Response.User>

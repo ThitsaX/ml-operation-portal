@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface GetMadeByList extends UseCase<GetMadeByList.Input, GetMadeByList.Output> {
 
-    record Input(ParticipantId participantId) { }
+    record Input() { }
 
     record Output(Set<User> madeBy) { }
 

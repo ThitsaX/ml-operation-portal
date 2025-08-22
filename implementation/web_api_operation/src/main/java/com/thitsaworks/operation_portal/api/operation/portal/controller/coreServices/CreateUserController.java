@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
@@ -31,13 +30,11 @@ public class CreateUserController {
 
     private final CreateUser createUser;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/createUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Onboard user request: {}", objectMapper.writeValueAsString(request));
+        LOG.info("Onboard user request: {}", request);
 
         CreateUser.Output output = this.createUser.execute(
                 new CreateUser.Input(request.name,
@@ -52,7 +49,7 @@ public class CreateUserController {
 
         Response response = new Response(output.created());
 
-        LOG.info("Onboard user response: {}", objectMapper.writeValueAsString(response));
+        LOG.info("Onboard user response: {}", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
