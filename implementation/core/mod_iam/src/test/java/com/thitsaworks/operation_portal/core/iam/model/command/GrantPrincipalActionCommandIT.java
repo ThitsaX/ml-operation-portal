@@ -29,7 +29,7 @@ public class GrantPrincipalActionCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Grant User Action : [{}]", this.grantUserActionCommand.execute(new GrantPrincipalActionCommand.Input(new PrincipalId(1111111111111111L), new ActionId(740630697035673600L))));
+        LOG.info("Grant User Action : [{}]", this.grantUserActionCommand.execute(new GrantPrincipalActionCommand.Input(new PrincipalId(746439742883606528L), new ActionId(746434442642305024L))));
     }
 
 }

@@ -33,7 +33,7 @@ public class CreateUserController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping(value = "/secured/onboardUser")
+    @PostMapping(value = "/secured/createUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 

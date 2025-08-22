@@ -87,8 +87,7 @@ public class CreateUserHandler
         if (role.isDfsp()) {
 
             if (!input.participantId()
-                      .equals(new ParticipantId(principalData.principalId()
-                                                             .getId()))) {
+                      .equals(new ParticipantId(principalData.realmId().getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
