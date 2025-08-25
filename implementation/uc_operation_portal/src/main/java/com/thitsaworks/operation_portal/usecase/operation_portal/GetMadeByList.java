@@ -11,9 +11,11 @@ public interface GetMadeByList extends UseCase<GetMadeByList.Input, GetMadeByLis
 
     record Input() { }
 
-    record Output(Set<User> madeBy) { }
+    record Output(Set<User> madeBy) {
+        public record User(UserId userId,
+                           Email email) { }
+    }
 
-    public record User(UserId userId,
-                       Email email) { }
+
 
 }

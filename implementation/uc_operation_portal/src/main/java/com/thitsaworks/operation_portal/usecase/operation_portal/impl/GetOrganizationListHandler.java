@@ -89,8 +89,6 @@ public class GetOrganizationListHandler
                                             participantData.participantName()
                                                            .getValue()));
 
-            return new Output(participantInfoList);
-
         } else {
 
             List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
@@ -102,8 +100,8 @@ public class GetOrganizationListHandler
                                                                .getValue()));
             }
 
-            return new Output(participantInfoList);
         }
+        return new Output(participantInfoList);
 
     }
 

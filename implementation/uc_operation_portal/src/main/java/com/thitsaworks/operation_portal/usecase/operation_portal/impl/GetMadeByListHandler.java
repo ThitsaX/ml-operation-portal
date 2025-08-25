@@ -77,39 +77,36 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
 
         }
 
-        Set<User> madeByUsers = new HashSet<>();
+        Set<Output.User> madeByUsers = new HashSet<>();
         var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
 
         var role = this.roleQuery.get(principalRole.roleId());
 
         if (role.isDfsp()) {
             var userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
-                                                                               .getId()));
+                                                                                      .getId()));
 
             for (var userData : userDataList) {
 
-                madeByUsers.add(new User(new UserId(userData.userId()
-                                                        .getEntityId()), userData.email()));
+                madeByUsers.add(new Output.User(new UserId(userData.userId()
+                                                                   .getEntityId()), userData.email()));
 
             }
 
             return new Output(madeByUsers);
-        }else{
+        } else {
 
             List<UserData> userDataList = this.userQuery.getUsers();
 
-
             for (var userData : userDataList) {
 
-                madeByUsers.add(new User(new UserId(userData.userId()
-                                                        .getEntityId()), userData.email()));
-
+                madeByUsers.add(new Output.User(new UserId(userData.userId()
+                                                                   .getEntityId()), userData.email()));
             }
 
             return new Output(madeByUsers);
 
         }
-
 
     }
 
