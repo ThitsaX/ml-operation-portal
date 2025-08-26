@@ -8,6 +8,5 @@ public record SettlementContent(
         @JsonProperty("ledgerAccountType") String ledgerAccountType,
         @JsonProperty("currencyId") String currencyId,
         @JsonProperty("createdDate") String createdDate,
-        @JsonProperty("changedDate") String changedDate,
-        @JsonProperty("settlementId") Integer settlementId
+        @JsonProperty("changedDate") String changedDate
 ) {}

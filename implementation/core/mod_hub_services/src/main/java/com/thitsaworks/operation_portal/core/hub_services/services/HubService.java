@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipants;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
@@ -33,6 +34,9 @@ public interface HubService {
 
                                                 );
 
+    @GET("/participants")
+    Call<GetParticipants.Response> getParticipants();
+
     @POST("/v2/settlementWindows/{settlementWindowId}")
     Call<PostCloseSettlementWindows.Response> postCloseSettlementWindows(@Path("settlementWindowId") int settlementWindowId,
                                                                          @Body
@@ -49,7 +53,7 @@ public interface HubService {
                                                            @Body
                                                            PutUpdateSettlement.Request request);
 
-    @POST("/v2/participants/{dfspCode}/accounts/{accountId}")
+    @POST("/participants/{dfspCode}/accounts/{accountId}")
     Call<PostUpdateSettlementByParticipant.Response> postUpdateSettlementByParticipant(
             @Path("dfspCode") String dfspCode,
             @Path("accountId") Integer accountId,

@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.core.hub_services.support;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record SettlementWindowId(
-        Integer id
+        @JsonProperty("id") Integer id
 ) {}

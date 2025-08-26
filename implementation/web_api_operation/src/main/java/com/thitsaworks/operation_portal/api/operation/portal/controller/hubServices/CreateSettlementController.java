@@ -48,7 +48,7 @@ public class CreateSettlementController {
         var response = new Response(output.settlementId(),
                                     output.state(),
                                     output.settlementWindowList(),
-                                    output.participantList());
+                                    output.settlementParticipantList());
 
         LOG.info("Create Settlement Response : {}", response);
 

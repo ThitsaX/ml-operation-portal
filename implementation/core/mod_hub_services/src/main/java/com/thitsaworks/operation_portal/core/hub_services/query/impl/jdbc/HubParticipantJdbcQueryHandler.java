@@ -1,8 +1,8 @@
 package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantAccountData;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
+import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
@@ -69,38 +72,39 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
     }
 
     @Override
-    public HubParticipantAccountData getAccountData(Integer participantId, Integer participantCurrencyId)
+    public List<HubParticipantDetailData> getHubParticipantDetailDataList()
             throws HubServicesException {
 
-        List<HubParticipantAccountData> hubParticipantAccountDataList = this.jdbcTemplate.query(
-                """
-                            SELECT 
-                                p.participantName  AS participantName,
-                                pc.ledgerAccountTypeId,
-                                pc.currencyId,
-                                lat.participantName AS ledgerAccountTypeName
-                            FROM participantCurrency pc
-                            JOIN ledgerAccountType lat 
-                                ON pq.ledgerAccountTypeId = lat.ledgerAccountTypeId
-                            JOIN participant p 
-                                ON pq.participantId = p.participantId
-                            WHERE pq.participantId = ? 
-                              AND pq.participantCurrencyId = ? 
-                        """,
-                new Object[]{participantId, participantCurrencyId},
-                (rs, rowNum) -> new HubParticipantAccountData(
-                        participantId,
-                        rs.getString("participantName"),
-                        participantCurrencyId,
-                        rs.getString("currencyId"),
-                        rs.getInt("ledgerAccountTypeId"),
-                        rs.getString("ledgerAccountTypeName")));
+        final String sql =
+                "SELECT p.participantId, p.name AS participantName, " +
+                        "       pc.participantCurrencyId, pc.currencyId, pc.ledgerAccountTypeId, " +
+                        "       lat.name AS ledgerAccountTypeName " +
+                        "FROM participant p " +
+                        "LEFT JOIN participantCurrency pc ON pc.participantId = p.participantId " +
+                        "LEFT JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId " +
+                        "ORDER BY p.participantId, pc.currencyId, pc.ledgerAccountTypeId";
 
-        if (hubParticipantAccountDataList.isEmpty()) {
-            throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_NOT_FOUND);
-        }
+        Map<Integer, HubParticipantDetailData> map = new LinkedHashMap<>();
+        this.jdbcTemplate.query(sql, rs -> {
+            Integer participantId = rs.getInt("participantId");
+            String participantName = rs.getString("participantName");
+            HubParticipantDetailData participantDetailData = map.computeIfAbsent(participantId,
+                                                                                 k -> new HubParticipantDetailData(
+                                                                                         participantId,
+                                                                                         participantName,
+                                                                                         new ArrayList<>()));
 
-        return hubParticipantAccountDataList.getFirst();
+            participantDetailData.getAccounts().add(new HubParticipantDetailData.AccountData(rs.getInt(
+                    "participantCurrencyId"),
+                                                                                             rs.getString("currencyId"),
+                                                                                             rs.getInt(
+                                                                                                     "ledgerAccountTypeId"),
+                                                                                             rs.getString(
+                                                                                                     "ledgerAccountTypeName")));
+
+        });
+
+        return new ArrayList<>(map.values());
 
     }
 

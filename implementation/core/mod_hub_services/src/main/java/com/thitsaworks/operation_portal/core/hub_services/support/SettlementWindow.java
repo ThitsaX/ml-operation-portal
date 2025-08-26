@@ -6,8 +6,8 @@ import java.util.List;
 
 public record SettlementWindow(
         @JsonProperty("id") Integer id,
-        @JsonProperty("reason") String reason,
         @JsonProperty("state") String state,
+        @JsonProperty("reason") String reason,
         @JsonProperty("createdDate") String createdDate,
         @JsonProperty("changedDate") String changedDate,
         @JsonProperty("content") List<SettlementContent> content

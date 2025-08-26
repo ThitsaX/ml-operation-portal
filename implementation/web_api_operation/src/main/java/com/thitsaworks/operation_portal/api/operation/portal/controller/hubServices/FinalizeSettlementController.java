@@ -35,7 +35,7 @@ public class FinalizeSettlementController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Settlement request : [{}]", request);
+        LOG.info("Finalize Settlement request : [{}]", request);
 
         UserContext userContext =
                 (UserContext) SecurityContextHolder.getContext()
@@ -46,7 +46,7 @@ public class FinalizeSettlementController {
 
         var response = new Response(output.finalized());
 
-        LOG.info("Create Settlement Response : {}", response);
+        LOG.info("Finalize Settlement Response : {}", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

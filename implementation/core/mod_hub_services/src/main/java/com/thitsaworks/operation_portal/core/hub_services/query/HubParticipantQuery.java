@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
-import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantAccountData;
+import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -13,7 +13,7 @@ public interface HubParticipantQuery {
 
     HubParticipantData getByName(String name) throws ParticipantException, HubServicesException;
 
-    HubParticipantAccountData getAccountData(Integer participantId, Integer participantCurrencyId)
+    List<HubParticipantDetailData> getHubParticipantDetailDataList()
             throws HubServicesException;
 
 

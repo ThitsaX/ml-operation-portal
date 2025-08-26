@@ -10,7 +10,9 @@ import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
-import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantAccountData;
+import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDetailData;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAccount;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
@@ -28,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class FinalizeSettlementHandler
@@ -78,8 +81,11 @@ public class FinalizeSettlementHandler
         SettlementState settlementState = SettlementState.valueOf(settlementOutput.state());
 
         // call putUpdateSettlement until the settlementState is settled.
-
-        do {
+        while (!settlementParticipants.getFirst()
+                                      .accounts()
+                                      .getFirst()
+                                      .getState()
+                                      .equals(SettlementState.SETTLED.toString())) {
 
             switch (settlementState) {
                 case PENDING_SETTLEMENT -> settlementState = SettlementState.PS_TRANSFERS_RECORDED;
@@ -100,42 +106,68 @@ public class FinalizeSettlementHandler
 
             settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
 
-        } while (!settlementParticipants.getFirst()
-                                        .accounts()
-                                        .getFirst()
-                                        .getState()
-                                        .equals(SettlementState.SETTLED.toString()));
+        }
 
         // call postUpdateSettlementByParticipant for all participant accounts
+        List<HubParticipantDetailData> hubParticipantDetailDataList =
+                this.hubParticipantQuery.getHubParticipantDetailDataList();
 
-//        for (SettlementParticipant participant : settlementParticipants) {
-//
-//            for (SettlementAccount account : participant.accounts()) {
-//                HubParticipantAccountData hubParticipantAccountData = this.hubParticipantQuery.getAccountData(
-//                        participant.id(),
-//                        account.getId());
-//
-//                String externalReference = "BOP settlement ID " + settlementOutput.id();
-//
-//                String reason = "Business Operations Portal settlement ID " + settlementOutput.id() +
-//                        " finalization report processing";
-//
-//                SettlementAction settlementAction = hubParticipantAccountData.ledgerAccountTypeName().equals(
-//                        SettlementLedgerAccountTypes.POSITION.toString()) ? SettlementAction.recordFundsIn :
-//                        SettlementAction.recordFundsOut;
-//
-//                PostUpdateSettlementByParticipant.Request postParticipantBalanceRequest =
-//                        new PostUpdateSettlementByParticipant.Request(settlementAction.toString(),
-//                                                                      reason,
-//                                                                      externalReference,
-//                                                                      account.getNetSettlementAmount(), "");
-//
-//                this.participantHubClient.postUpdateSettlementByParticipant(hubParticipantAccountData.participantName(),
-//                                                                            account.getId(),
-//                                                                            postParticipantBalanceRequest);
-//            }
-//
-//        }
+        for (SettlementParticipant participant : settlementParticipants) {
+
+            for (SettlementAccount account : participant.accounts()) {
+
+                String externalReference = "BOP settlement ID: " + settlementOutput.id();
+
+                String reason = "Business Operations Portal settlement ID: " + settlementOutput.id() +
+                        " finalization report processing";
+
+                //  TODO: to confirm
+                // if net amount is positive -> sender
+                // if net amount is negative -> receiver
+                SettlementAction settlementAction =
+                        account.getNetSettlementAmount().getAmount().signum() > 0 ?
+                                SettlementAction.recordFundsOutPrepareReserve :
+                                SettlementAction.recordFundsIn;
+
+                account.getNetSettlementAmount().setAmount(account.getNetSettlementAmount().getAmount().abs());
+
+                HubParticipantDetailData hubParticipantDetailData =
+                        hubParticipantDetailDataList.stream()
+                                                    .filter(participantDetailData -> participantDetailData.getParticipantId()
+                                                                                                          .equals(participant.id()))
+                                                    .findFirst().orElse(null);
+
+                if (hubParticipantDetailData == null) {
+                    throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_NOT_FOUND);
+                }
+
+                Integer settleAccountId = hubParticipantDetailData.getAccounts().stream()
+                                                                  .filter(acc -> acc.getCurrencyId()
+                                                                                    .equals(account.getNetSettlementAmount()
+                                                                                                   .getCurrency()) &&
+                                                                          acc.getLedgerAccountTypeName().equals(
+                                                                                  SettlementLedgerAccountTypes.SETTLEMENT.toString()))
+                                                                  .map(HubParticipantDetailData.AccountData::getParticipantCurrencyId)
+                                                                  .findFirst()
+                                                                  .orElse(null);
+
+                if (settleAccountId == null) {
+                    throw new HubServicesException(HubServicesErrors.SETTLEMENT_ACCOUNT_NOT_FOUND);
+                }
+
+                PostUpdateSettlementByParticipant.Request postParticipantBalanceRequest =
+                        new PostUpdateSettlementByParticipant.Request(UUID.randomUUID().toString(),
+                                                                      settlementAction.toString(),
+                                                                      reason,
+                                                                      externalReference,
+                                                                      account.getNetSettlementAmount());
+
+                this.participantHubClient.postUpdateSettlementByParticipant(hubParticipantDetailData.getParticipantName(),
+                                                                            settleAccountId,
+                                                                            postParticipantBalanceRequest);
+            }
+
+        }
 
         return new Output(true);
     }
