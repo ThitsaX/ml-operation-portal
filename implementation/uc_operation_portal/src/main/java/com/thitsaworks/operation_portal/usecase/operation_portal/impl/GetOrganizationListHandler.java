@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
@@ -16,23 +15,23 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
 import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
-import com.thitsaworks.operation_portal.core.participant.data.UserData;
-import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeByList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetOrganizationList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Service
-public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMadeByList.Input, GetMadeByList.Output>
-    implements GetMadeByList {
+public class GetOrganizationListHandler
+    extends OperationPortalAuditableUseCase<GetOrganizationList.Input, GetOrganizationList.Output>
+    implements GetOrganizationList {
 
-    private final UserQuery userQuery;
+    private final ParticipantQuery participantQuery;
 
     private final PrincipalCache principalCache;
 
@@ -40,16 +39,16 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
 
     private final RoleQuery roleQuery;
 
-    public GetMadeByListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                CreateOutputAuditCommand createOutputAuditCommand,
-                                CreateExceptionAuditCommand createExceptionAuditCommand,
-                                ObjectMapper objectMapper,
-                                PrincipalCache principalCache,
-                                ActionAuthorizationManager actionAuthorizationManager,
-                                UserQuery userQuery,
-                                PrincipalCache principalCache1,
-                                PrincipalRoleQuery principalRoleQuery,
-                                RoleQuery roleQuery) {
+    public GetOrganizationListHandler(CreateInputAuditCommand createInputAuditCommand,
+                                      CreateOutputAuditCommand createOutputAuditCommand,
+                                      CreateExceptionAuditCommand createExceptionAuditCommand,
+                                      ObjectMapper objectMapper,
+                                      PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager,
+                                      ParticipantQuery participantQuery,
+                                      PrincipalCache principalCache1,
+                                      PrincipalRoleQuery principalRoleQuery,
+                                      RoleQuery roleQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -57,8 +56,7 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
               objectMapper,
               principalCache,
               actionAuthorizationManager);
-
-        this.userQuery = userQuery;
+        this.participantQuery = participantQuery;
         this.principalCache = principalCache1;
         this.principalRoleQuery = principalRoleQuery;
         this.roleQuery = roleQuery;
@@ -77,36 +75,33 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
 
         }
 
-        Set<Output.User> madeByUsers = new HashSet<>();
+        List<Output.OrganizationInfo> participantInfoList = new ArrayList<>();
+
         var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
 
         var role = this.roleQuery.get(principalRole.roleId());
-
         if (role.isDfsp()) {
-            var userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
-                                                                                      .getId()));
 
-            for (var userData : userDataList) {
+            var participantData = this.participantQuery.get(new ParticipantId(principalData.realmId()
+                                                                                           .getId()));
+            participantInfoList.add(
+                new Output.OrganizationInfo(participantData.participantId(),
+                                            participantData.participantName()
+                                                           .getValue()));
 
-                madeByUsers.add(new Output.User(new UserId(userData.userId()
-                                                                   .getEntityId()), userData.email()));
-
-            }
-
-            return new Output(madeByUsers);
         } else {
 
-            List<UserData> userDataList = this.userQuery.getUsers();
+            List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
-            for (var userData : userDataList) {
-
-                madeByUsers.add(new Output.User(new UserId(userData.userId()
-                                                                   .getEntityId()), userData.email()));
+            for (ParticipantData participantData : participantDataList) {
+                participantInfoList.add(
+                    new Output.OrganizationInfo(participantData.participantId(),
+                                                participantData.participantName()
+                                                               .getValue()));
             }
 
-            return new Output(madeByUsers);
-
         }
+        return new Output(participantInfoList);
 
     }
 

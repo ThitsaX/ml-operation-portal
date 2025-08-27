@@ -11,6 +11,8 @@ import java.util.Optional;
 
 public interface UserQuery {
 
+    List<UserData> getUsers();
+
     List<UserData> getUsers(ParticipantId participantId);
 
     UserData get(UserId userId) throws ParticipantException;

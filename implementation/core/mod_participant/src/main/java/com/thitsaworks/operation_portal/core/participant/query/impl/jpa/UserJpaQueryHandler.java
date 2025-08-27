@@ -32,6 +32,18 @@ public class UserJpaQueryHandler implements UserQuery {
     private final QUser user = QUser.user;
 
     @Override
+    public List<UserData> getUsers() {
+
+        BooleanExpression predicate = this.user.isNotNull();
+
+        List<User> users = (List<User>) this.userRepository.findAll(predicate);
+
+        return users.stream()
+                    .map(UserData::new)
+                    .toList();
+    }
+
+    @Override
     public List<UserData> getUsers(ParticipantId participantId) {
 
         BooleanExpression
