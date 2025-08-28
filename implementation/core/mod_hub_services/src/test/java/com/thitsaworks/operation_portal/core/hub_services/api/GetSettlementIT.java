@@ -1,9 +1,10 @@
-package com.thitsaworks.operation_portal.core.hub_services.query;
+package com.thitsaworks.operation_portal.core.hub_services.api;
 
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +25,7 @@ public class GetSettlementIT extends BaseVaultSetUpTest {
     private SettlementHubClient settlementHubClient;
 
     @Test
-    public void test() throws HubServicesException, ConnectException {
+    public void test() throws HubServicesException, ConnectException, HubServicesApiException {
         var output = this.settlementHubClient.getSettlement(34, null);
         logger.info("Output: {}", output);
     }

@@ -1,10 +1,10 @@
-package com.thitsaworks.operation_portal.core.hub_services.query;
+package com.thitsaworks.operation_portal.core.hub_services.api;
 
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
-import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAmount;
@@ -30,7 +30,7 @@ public class PostUpdateSettlementByiParticipantIT extends BaseVaultSetUpTest {
     private ParticipantHubClient participantHubClient;
 
     @Test
-    public void test() throws HubServicesException, ConnectException {
+    public void test() throws HubServicesException, ConnectException, HubServicesApiException {
 
         PostUpdateSettlementByParticipant.Request request =
                 new PostUpdateSettlementByParticipant.Request(UUID.randomUUID().toString(),

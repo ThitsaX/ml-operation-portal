@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.fspiop.model.ErrorInformationResponse;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
@@ -9,8 +10,8 @@ import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
-import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorDecoder;
-import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;
+import com.thitsaworks.operation_portal.core.hub_services.error.HubApiErrorDecoder;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
@@ -33,7 +34,7 @@ public class ParticipantHubClient {
 
     private final HubService hubService;
 
-    private final HubErrorDecoder hubErrorDecoder;
+    private final HubApiErrorDecoder hubApiErrorDecoder;
 
     @Autowired
     public ParticipantHubClient(HubServicesConfiguration.Settings settings) {
@@ -54,14 +55,14 @@ public class ParticipantHubClient {
                                                                                                                          objectMapper))
                                                                                              .build();
 
-        this.hubErrorDecoder = new HubErrorDecoder(objectMapper);
+        this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
 
     }
 
     public PostParticipantBalance.Response postParticipantBalance(String participantId,
                                                                   String accountId,
                                                                   PostParticipantBalance.Request request)
-        throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         PostParticipantBalance.Response response;
 
@@ -70,15 +71,14 @@ public class ParticipantHubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.postParticipantBalance(participantId, accountId, request),
-                                             this.hubErrorDecoder)
+                                             this.hubApiErrorDecoder)
                                      .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
-                throw new HubServicesException(null);
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -94,7 +94,7 @@ public class ParticipantHubClient {
     }
 
     public PutParticipantStatus.Response putParticipantStatus(PutParticipantStatus.Request request)
-        throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         PutParticipantStatus.Response response;
 
@@ -106,16 +106,15 @@ public class ParticipantHubClient {
                                              (s, r) -> s.putParticipantStatus(request.participantName(),
                                                                               request.participantCurrencyId(), new RequestToHub(
                                                      request.isActive())),
-                                             this.hubErrorDecoder)
+                                             this.hubApiErrorDecoder)
                                      .body();
 
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
-                throw new HubServicesException(null);
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -133,7 +132,7 @@ public class ParticipantHubClient {
     }
 
     public GetParticipant.Response getParticipant(GetParticipant.Request request)
-        throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         GetParticipant.Response response;
 
@@ -144,15 +143,14 @@ public class ParticipantHubClient {
                                              request,
                                              (s, r) -> s.getParticipant(request.participantName()
                                                                               ),
-                                             this.hubErrorDecoder)
+                                             this.hubApiErrorDecoder)
                                      .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
-                throw new HubServicesException(null);
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -170,7 +168,7 @@ public class ParticipantHubClient {
     public PostUpdateSettlementByParticipant.Response postUpdateSettlementByParticipant(String participantName,
                                                                                         Integer accountId,
                                                                                         PostUpdateSettlementByParticipant.Request request)
-            throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         PostUpdateSettlementByParticipant.Response response;
 
@@ -182,15 +180,14 @@ public class ParticipantHubClient {
                                                                                            accountId,
                                                                                            request
                                                                                           ),
-                                             this.hubErrorDecoder)
+                                             this.hubApiErrorDecoder)
                                      .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
-                throw new HubServicesException(null);
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 

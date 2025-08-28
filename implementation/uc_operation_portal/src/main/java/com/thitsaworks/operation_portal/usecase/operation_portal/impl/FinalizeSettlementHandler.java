@@ -82,7 +82,7 @@ public class FinalizeSettlementHandler
 
         // call putUpdateSettlement until the settlementState is settled.
         while (!settlementParticipants.getFirst()
-                                      .accounts()
+                                      .getAccounts()
                                       .getFirst()
                                       .getState()
                                       .equals(SettlementState.SETTLED.toString())) {
@@ -95,7 +95,7 @@ public class FinalizeSettlementHandler
             }
 
             for (SettlementParticipant participant : settlementParticipants) {
-                for (SettlementAccount account : participant.accounts()) {
+                for (SettlementAccount account : participant.getAccounts()) {
                     account.setState(settlementState.toString());
                 }
             }
@@ -114,7 +114,7 @@ public class FinalizeSettlementHandler
 
         for (SettlementParticipant participant : settlementParticipants) {
 
-            for (SettlementAccount account : participant.accounts()) {
+            for (SettlementAccount account : participant.getAccounts()) {
 
                 String externalReference = "BOP settlement ID: " + settlementOutput.id();
 
@@ -134,7 +134,7 @@ public class FinalizeSettlementHandler
                 HubParticipantDetailData hubParticipantDetailData =
                         hubParticipantDetailDataList.stream()
                                                     .filter(participantDetailData -> participantDetailData.getParticipantId()
-                                                                                                          .equals(participant.id()))
+                                                                                                          .equals(participant.getId()))
                                                     .findFirst().orElse(null);
 
                 if (hubParticipantDetailData == null) {

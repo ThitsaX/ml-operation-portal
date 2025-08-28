@@ -1,8 +1,9 @@
-package com.thitsaworks.operation_portal.core.hub_services.query;
+package com.thitsaworks.operation_portal.core.hub_services.api;
 
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
+import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
