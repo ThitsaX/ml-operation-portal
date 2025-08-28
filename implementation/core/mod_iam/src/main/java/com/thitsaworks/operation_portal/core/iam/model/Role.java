@@ -39,6 +39,10 @@ public class Role extends JpaEntity<RoleId> {
     @Column(name = "active")
     protected Boolean active = true;
 
+    @Column(name = "is_dfsp")
+    protected Boolean isDfsp = true;
+
+
     @Getter(AccessLevel.NONE)
     @OneToMany(
         mappedBy = "role",
