@@ -30,8 +30,6 @@ public class ParticipantHubClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(ParticipantHubClient.class);
 
-    private final HubServicesConfiguration.Settings settings;
-
     private final HubService hubService;
 
     private final HubApiErrorDecoder hubApiErrorDecoder;
@@ -39,21 +37,19 @@ public class ParticipantHubClient {
     @Autowired
     public ParticipantHubClient(HubServicesConfiguration.Settings settings) {
 
-        this.settings = settings;
-
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
 
         this.hubService = new RetrofitServiceBuilder<>(HubService.class,
-                                                       this.settings.centralLedgerEndpoint()).withHttpLogging(
+                                                       settings.centralLedgerServiceEndpoint()).withHttpLogging(
                                                                                                  HttpLoggingInterceptor.Level.BODY,
                                                                                                  true)
-                                                                                             .withConverterFactories(new NullOrEmptyConverterFactory(),
+                                                                                               .withConverterFactories(new NullOrEmptyConverterFactory(),
                                                                                                                      ScalarsConverterFactory.create(),
                                                                                                                      JacksonConverterFactory.create(
                                                                                                                          objectMapper))
-                                                                                             .build();
+                                                                                               .build();
 
         this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
 
