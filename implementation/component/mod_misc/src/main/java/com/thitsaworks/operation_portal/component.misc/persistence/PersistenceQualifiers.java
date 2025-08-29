@@ -84,6 +84,14 @@ public class PersistenceQualifiers {
 
         public static final String DATA_SOURCE = "reportingDataSource";
 
+        public static final String MONGO_READ_SETTINGS   = "reportingMongoReadSettings";
+        public static final String MONGO_WRITE_SETTINGS  = "reportingMongoWriteSettings";
+        public static final String MONGO_READ_CLIENT     = "reportingMongoReadClient";
+        public static final String MONGO_WRITE_CLIENT    = "reportingMongoWriteClient";
+        public static final String MONGO_READ_FACTORY    = "reportingMongoReadFactory";
+        public static final String MONGO_WRITE_FACTORY   = "reportingMongoWriteFactory";
+        public static final String MONGO_READ_TEMPLATE   = "reportingMongoReadTemplate";
+        public static final String MONGO_WRITE_TEMPLATE  = "reportingMongoWriteTemplate";
     }
 
 }

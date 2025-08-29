@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
-import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,9 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetNetTranferAmountQueryUT extends BaseVaultSetUpTest {
+public class GetNetTransferAmountQueryUT extends BaseVaultSetUpTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetNetTranferAmountQueryUT.class);
+    private static final Logger logger = LoggerFactory.getLogger(GetNetTransferAmountQueryUT.class);
 
     @Autowired
     private GetNetTransferAmountByWindowIdQuery getTransferDetailQuery;

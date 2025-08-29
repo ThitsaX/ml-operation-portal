@@ -14,9 +14,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetIDTypesQueryIT extends BaseVaultSetUpTest {
+public class GetIDTypesQueryUT extends BaseVaultSetUpTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetIDTypesQueryIT.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetIDTypesQueryUT.class);
 
     @Autowired
     private GetIDTypesQuery getIDTypesQuery;

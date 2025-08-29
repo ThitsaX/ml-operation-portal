@@ -1,8 +1,10 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
+import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,9 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetTranferQueryIT extends BaseVaultSetUpTest {
+public class GetTransferQueryUT extends BaseVaultSetUpTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetTranferQueryIT.class);
+    private static final Logger logger = LoggerFactory.getLogger(GetTransferQueryUT.class);
 
     @Autowired
     private GetTransfersQuery getTransfersQuery;
@@ -25,9 +27,10 @@ public class GetTranferQueryIT extends BaseVaultSetUpTest {
     public void testGetTransfers() throws HubServicesException {
 
         var input = new GetTransfersQuery.Input(
-            "2023-01-01T00:00:00Z",
-            "2023-12-31T23:59:59Z",
-            "00b26e36-4466-41f6-bee8-f819c971ad9e",
+                "2025-07-24T06:00:00Z", "2025-07-29T05:59:59Z",
+            null,
+            "wallet1",
+            "wallet1",
             null,
             null,
             null,
@@ -35,17 +38,27 @@ public class GetTranferQueryIT extends BaseVaultSetUpTest {
             null,
             null,
             null,
-            null,
-            null,
-            null
+                "0900"
 
         );
 
         var output = getTransfersQuery.execute(input);
 
-        logger.info("Transfers retrieved: {}",
-                    output.getTransferInfoList()
-                          .size());
+        ObjectMapper mapper = new ObjectMapper();
+
+        if (output.getTransferInfoList().isEmpty()) {return;}
+
+        for (TransferData transferData : output.getTransferInfoList()) {
+
+            try {
+
+                logger.info("Transfers retrieved: {}", mapper.writeValueAsString(transferData));
+
+            } catch (Exception e) {
+
+                logger.error("Error serializing transferData", e);
+            }
+        }
     }
 
 }

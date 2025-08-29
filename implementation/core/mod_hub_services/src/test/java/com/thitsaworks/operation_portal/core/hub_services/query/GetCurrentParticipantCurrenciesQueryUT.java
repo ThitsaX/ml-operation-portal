@@ -14,10 +14,10 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class GetCurrentParticipantCurrenciesQueryIT extends BaseVaultSetUpTest {
+public class GetCurrentParticipantCurrenciesQueryUT extends BaseVaultSetUpTest {
 
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetCurrentParticipantCurrenciesQueryIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetCurrentParticipantCurrenciesQueryUT.class);
 
     @Autowired
     private GetCurrentParticipantCurrenciesQuery getCurrentParticipantCurrenciesQuery;
