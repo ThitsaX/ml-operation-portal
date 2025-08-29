@@ -27,7 +27,7 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
     public Output execute(Input input) {
 
         var result = this.jdbcTemplate.query(
-                "SELECT p.name AS dfspId, IFNULL(p.description,p.name) AS dfspName, IFNULL(pc.currencyId,'') AS currency, IFNULL(ROUND( SUM(IFNULL(pb.value,0)),2),0) AS balance\n" +
+                "SELECT p.participantName AS dfspId, IFNULL(p.description,p.participantName) AS dfspName, IFNULL(pc.currencyId,'') AS currency, IFNULL(ROUND( SUM(IFNULL(pb.value,0)),2),0) AS balance\n" +
                         ", IFNULL(ROUND(SUM(IFNULL(pp.value,0)),2),0) AS currentPosition, 0 AS ndcPercent, IFNULL(ROUND( SUM(IFNULL(pl.value,0)),2),0) AS ndc, \n" +
                         "IFNULL(ROUND(((SUM(IFNULL(pp.value,0))/SUM(IFNULL(pl.value,0))) * 100),2),0) AS ndcUsed\n" +
                         ",MIN(CASE WHEN pc.ledgerAccountTypeId = 2 THEN pb.participantCurrencyId END) AS participantSettlementCurrencyId\n" +

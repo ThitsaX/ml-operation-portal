@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.core.hub_services.support.SettlementPart
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindow;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlement;
+import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,33 +25,28 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateSettlementController {
+public class FinalizeSettlementController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FinalizeSettlementController.class);
 
-    private final CreateSettlement createSettlement;
+    private final FinalizeSettlement finalizeSettlement;
 
-    @PostMapping(value = "/secured/createSettlement")
+    @PostMapping(value = "/secured/finalizeSettlement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Settlement request : [{}]", request);
+        LOG.info("Finalize Settlement request : [{}]", request);
 
         UserContext userContext =
                 (UserContext) SecurityContextHolder.getContext()
                                                    .getAuthentication()
                                                    .getDetails();
 
-        var output = this.createSettlement.execute(new CreateSettlement.Input(request.settlementModel,
-                                                                              request.reason,
-                                                                              request.settlementWindowIdList));
+        var output = this.finalizeSettlement.execute(new FinalizeSettlement.Input(request.settlementId));
 
-        var response = new Response(output.settlementId(),
-                                    output.state(),
-                                    output.settlementWindowList(),
-                                    output.settlementParticipantList());
+        var response = new Response(output.finalized());
 
-        LOG.info("Create Settlement Response : {}", response);
+        LOG.info("Finalize Settlement Response : {}", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -58,17 +54,12 @@ public class CreateSettlementController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            String settlementModel,
-            String reason,
-            List<SettlementWindowId> settlementWindowIdList
+            Integer settlementId
     ) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            Integer settlementId,
-            String state,
-            List<SettlementWindow> settlementWindowList,
-            List<SettlementParticipant> participantList
+            Boolean finalized
     ) implements Serializable {}
 
 }

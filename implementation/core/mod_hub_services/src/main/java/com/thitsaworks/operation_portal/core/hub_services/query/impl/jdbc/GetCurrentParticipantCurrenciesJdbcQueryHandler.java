@@ -42,7 +42,7 @@ public class GetCurrentParticipantCurrenciesJdbcQueryHandler implements GetCurre
                 "SELECT currencyId FROM participantCurrency\n" +
                     "INNER JOIN participant\n" +
                     " ON participant.participantId =participantCurrency.participantId\n" +
-                    " WHERE participantCurrency.isActive =1 and name=? GROUP BY currencyId ORDER BY currencyId",
+                    " WHERE participantCurrency.isActive =1 and participantName=? GROUP BY currencyId ORDER BY currencyId",
                 new CurrencyDataMapper(), input.getDfspId());
 
         } catch (Exception e) {

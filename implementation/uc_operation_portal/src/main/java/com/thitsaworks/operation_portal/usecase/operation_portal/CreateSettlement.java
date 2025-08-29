@@ -19,9 +19,13 @@ public interface CreateSettlement
 
     public record Output(
             Integer settlementId,
+            String settlementModel,
             String state,
+            String reason,
+            String createdDate,
+            String changedDate,
             List<SettlementWindow> settlementWindowList,
-            List<SettlementParticipant> participantList
+            List<SettlementParticipant> settlementParticipantList
     ) implements Serializable {}
 
 }

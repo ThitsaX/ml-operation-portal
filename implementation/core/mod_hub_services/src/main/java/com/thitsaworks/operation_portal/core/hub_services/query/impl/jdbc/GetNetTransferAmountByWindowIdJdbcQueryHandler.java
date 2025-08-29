@@ -40,7 +40,7 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
             //@@Formatter:off
             results = this.jdbcTemplate.query(
                 "SELECT  \n" +
-                    "  p.name AS DfspName,\n" +
+                    "  p.participantName AS DfspName,\n" +
                     "  SUM(CASE \n" +
                     "        WHEN tp.transferParticipantRoleTypeId = 1 THEN tp.amount\n" +
                     "        ELSE 0\n" +
@@ -69,7 +69,7 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
                     "WHERE \n" +
                     "  tf.settlementWindowId = ?\n" +
                     "GROUP BY \n" +
-                    "  p.name, pc.currencyId, sw_open.createdDate, sw_closed.createdDate;",
+                    "  p.participantName, pc.currencyId, sw_open.createdDate, sw_closed.createdDate;",
                 new WindowInfoDataMapper(),
                 input.getSettlementWindowId());
 

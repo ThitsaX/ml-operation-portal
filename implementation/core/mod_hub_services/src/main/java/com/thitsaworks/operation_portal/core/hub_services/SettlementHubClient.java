@@ -2,13 +2,17 @@ package com.thitsaworks.operation_portal.core.hub_services;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.fspiop.model.ErrorInformation;
+import com.thitsaworks.operation_portal.component.fspiop.model.ErrorInformationResponse;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
-import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorDecoder;
-import com.thitsaworks.operation_portal.core.hub_services.error.HubErrorResponse;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
+import com.thitsaworks.operation_portal.core.hub_services.error.HubApiErrorDecoder;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
@@ -31,7 +35,7 @@ public class SettlementHubClient {
 
     private final HubService hubService;
 
-    private final HubErrorDecoder hubErrorDecoder;
+    private final HubApiErrorDecoder hubApiErrorDecoder;
 
     @Autowired
     public SettlementHubClient(HubServicesConfiguration.Settings settings) {
@@ -52,14 +56,14 @@ public class SettlementHubClient {
                                                                                                                          objectMapper))
                                                                                              .build();
 
-        this.hubErrorDecoder = new HubErrorDecoder(objectMapper);
+        this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
 
     }
 
     public PostCloseSettlementWindows.Response closeSettlementWindows(int windowsId,
 
                                                                       PostCloseSettlementWindows.Request request)
-        throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         PostCloseSettlementWindows.Response response;
 
@@ -68,15 +72,16 @@ public class SettlementHubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.postCloseSettlementWindows(windowsId, request),
-                                             this.hubErrorDecoder)
+                                             this.hubApiErrorDecoder)
                                      .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
-                throw new HubServicesException(null);
+                ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -92,7 +97,7 @@ public class SettlementHubClient {
     }
 
     public PostCreateSettlement.Response createSettlement(PostCreateSettlement.Request request)
-            throws HubServicesException, ConnectException {
+            throws HubServicesException, ConnectException, HubServicesApiException {
 
         PostCreateSettlement.Response response;
 
@@ -101,14 +106,75 @@ public class SettlementHubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.postCreateSettlement(request),
-                                             this.hubErrorDecoder).body();
+                                             this.hubApiErrorDecoder).body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof HubErrorResponse) {
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                //TODO: To implement error handling with proper error response format
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
                 throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+    }
+
+    public GetSettlement.Response getSettlement(Integer settlementId, GetSettlement.Request request)
+            throws HubServicesException, ConnectException, HubServicesApiException {
+
+        GetSettlement.Response response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.getSettlement(settlementId),
+                                             this.hubApiErrorDecoder).body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+    }
+
+    public PutUpdateSettlement.Response putUpdateSettlement(Integer settlementId, PutUpdateSettlement.Request request)
+            throws HubServicesException, ConnectException, HubServicesApiException {
+
+        PutUpdateSettlement.Response response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.putUpdateSettlement(settlementId, request),
+                                             this.hubApiErrorDecoder).body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
 
             } else if (e.getCause() instanceof ConnectException) {
 

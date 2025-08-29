@@ -14,12 +14,33 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SettlementParticipant {
+public class HubParticipant {
 
     @JsonProperty("id")
     Integer id;
 
+    @JsonProperty("name")
+    String name;
+
+    @JsonProperty("created")
+    String created;
+
+    @JsonProperty("isActive")
+    Boolean isActive;
+
+    @JsonProperty("links")
+    Links links;
+
     @JsonProperty("accounts")
     List<SettlementAccount> accounts;
 
+    @JsonProperty("isProxy")
+    Boolean isProxy;
+
+    public static class Links {
+
+        @JsonProperty("self")
+        String self;
+
+    }
 }

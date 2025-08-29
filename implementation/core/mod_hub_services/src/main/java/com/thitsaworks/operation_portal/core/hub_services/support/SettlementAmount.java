@@ -7,19 +7,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SettlementParticipant {
+public class SettlementAmount {
 
-    @JsonProperty("id")
-    Integer id;
+    @JsonProperty("amount")
+    BigDecimal amount;
 
-    @JsonProperty("accounts")
-    List<SettlementAccount> accounts;
+    @JsonProperty("currency")
+    String currency;
 
 }

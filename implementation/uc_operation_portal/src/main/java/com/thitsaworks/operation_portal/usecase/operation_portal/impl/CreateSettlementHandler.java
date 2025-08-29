@@ -54,7 +54,14 @@ public class CreateSettlementHandler
                                                                                            input.reason(),
                                                                                            input.settlementWindowIdList()));
 
-        return new Output(response.id(), response.state(), response.settlementWindows(), response.participants());
+        return new Output(response.id(),
+                          response.settlementModel(),
+                          response.state(),
+                          response.reason(),
+                          response.createdDate(),
+                          response.changedDate(),
+                          response.settlementWindows(),
+                          response.participants());
     }
 
 }
