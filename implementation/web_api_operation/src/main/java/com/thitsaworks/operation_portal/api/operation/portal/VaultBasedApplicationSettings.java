@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.component.infra.mysql.reporting.Reportin
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -66,12 +65,6 @@ public class VaultBasedApplicationSettings {
     public ReportingMongoConfiguration.Settings reportingMongoConfigurationWriteDbSettings(Vault vault) {
 
         return vault.get(ReportingMongoConfiguration.WRITE_SETTINGS_PATH, ReportingMongoConfiguration.Settings.class);
-    }
-
-    @Bean
-    public HubServicesConfiguration.Settings hubServiceConfigurationSettings(Vault vault) {
-
-        return vault.get(HubServicesConfiguration.HUB_SERVICE_SETTINGS_PATH, HubServicesConfiguration.Settings.class);
     }
 
 }
