@@ -67,8 +67,6 @@ public class GetAuditByParticipantListHandler
                 input.realmId(),
                 input.fromDate(),
                 input.toDate(),
-                input.userId(),
-                input.actionId(),
                 grantedActionList));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();

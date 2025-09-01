@@ -19,7 +19,7 @@ import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeByList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMadeByList.Input, GetMadeByList.Output>
-    implements GetMadeByList {
+public class GetParticipantUserListByParticipantHandler extends OperationPortalAuditableUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
+    implements GetParticipantUserListByParticipant {
 
     private final UserQuery userQuery;
 
@@ -40,16 +40,16 @@ public class GetMadeByListHandler extends OperationPortalAuditableUseCase<GetMad
 
     private final RoleQuery roleQuery;
 
-    public GetMadeByListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                CreateOutputAuditCommand createOutputAuditCommand,
-                                CreateExceptionAuditCommand createExceptionAuditCommand,
-                                ObjectMapper objectMapper,
-                                PrincipalCache principalCache,
-                                ActionAuthorizationManager actionAuthorizationManager,
-                                UserQuery userQuery,
-                                PrincipalCache principalCache1,
-                                PrincipalRoleQuery principalRoleQuery,
-                                RoleQuery roleQuery) {
+    public GetParticipantUserListByParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
+                                                      CreateOutputAuditCommand createOutputAuditCommand,
+                                                      CreateExceptionAuditCommand createExceptionAuditCommand,
+                                                      ObjectMapper objectMapper,
+                                                      PrincipalCache principalCache,
+                                                      ActionAuthorizationManager actionAuthorizationManager,
+                                                      UserQuery userQuery,
+                                                      PrincipalCache principalCache1,
+                                                      PrincipalRoleQuery principalRoleQuery,
+                                                      RoleQuery roleQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
