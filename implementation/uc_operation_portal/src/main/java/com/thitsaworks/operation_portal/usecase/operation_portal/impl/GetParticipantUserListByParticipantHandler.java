@@ -29,7 +29,8 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class GetParticipantUserListByParticipantHandler extends OperationPortalAuditableUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
+public class GetParticipantUserListByParticipantHandler
+    extends OperationPortalAuditableUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
     implements GetParticipantUserListByParticipant {
 
     private final UserQuery userQuery;
@@ -82,9 +83,12 @@ public class GetParticipantUserListByParticipantHandler extends OperationPortalA
 
         var role = this.roleQuery.get(principalRole.roleId());
 
+        List<UserData> userDataList;
+
         if (role.isDfsp()) {
-            var userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
-                                                                                      .getId()));
+
+            userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
+                                                                                  .getId()));
 
             for (var userData : userDataList) {
 
@@ -93,10 +97,9 @@ public class GetParticipantUserListByParticipantHandler extends OperationPortalA
 
             }
 
-            return new Output(madeByUsers);
         } else {
 
-            List<UserData> userDataList = this.userQuery.getUsers();
+            userDataList = this.userQuery.getUsers();
 
             for (var userData : userDataList) {
 
@@ -104,9 +107,9 @@ public class GetParticipantUserListByParticipantHandler extends OperationPortalA
                                                                    .getEntityId()), userData.email()));
             }
 
-            return new Output(madeByUsers);
-
         }
+
+        return new Output(madeByUsers);
 
     }
 

@@ -25,6 +25,8 @@ public class GetActionListByUserIdController {
     @GetMapping(value = "/secured/getActionListByUserId")
     public ResponseEntity<Response> execute() throws DomainException {
 
+        LOG.info("Get Action List By User Id Request : [{}]", "");
+
         var input = new GetActionListByUserId.Input();
         var output = this.getActionListByUserId.execute(input);
 
@@ -39,7 +41,7 @@ public class GetActionListByUserIdController {
 
         var response = new Response(actionNames);
 
-        LOG.info("Get Action List Response : [{}]", response);
+        LOG.info("Get Action List By User Id Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

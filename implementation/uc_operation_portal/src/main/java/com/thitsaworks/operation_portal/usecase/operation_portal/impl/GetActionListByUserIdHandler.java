@@ -24,19 +24,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
-public class GetActionListByUserIdHandler extends OperationPortalAuditableUseCase<GetActionListByUserId.Input, GetActionListByUserId.Output>
+public class GetActionListByUserIdHandler
+    extends OperationPortalAuditableUseCase<GetActionListByUserId.Input, GetActionListByUserId.Output>
     implements GetActionListByUserId {
 
     private final IAMQuery iamQuery;
 
     private final PrincipalCache principalCache;
-
-    private final PrincipalRoleQuery principalRoleQuery;
-
-    private final RoleQuery roleQuery;
 
     public GetActionListByUserIdHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
@@ -44,9 +40,7 @@ public class GetActionListByUserIdHandler extends OperationPortalAuditableUseCas
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
                                         ActionAuthorizationManager actionAuthorizationManager,
-                                        IAMQuery iamQuery, PrincipalCache principalCache1,
-                                        PrincipalRoleQuery principalRoleQuery,
-                                        RoleQuery roleQuery) {
+                                        IAMQuery iamQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -56,9 +50,7 @@ public class GetActionListByUserIdHandler extends OperationPortalAuditableUseCas
               actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
-        this.principalCache = principalCache1;
-        this.principalRoleQuery = principalRoleQuery;
-        this.roleQuery = roleQuery;
+        this.principalCache = principalCache;
     }
 
     @Override
@@ -74,34 +66,16 @@ public class GetActionListByUserIdHandler extends OperationPortalAuditableUseCas
 
         }
 
-        Set<GetParticipantUserListByParticipant.Output.User> madeByUsers = new HashSet<>();
-        var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
+        var output = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(principalData.principalId()
+                                                                                             .getId()))
+                                  .stream()
+                                  .map(action -> new Output.ActionName(action.actionId(),
+                                                                       action.actionCode()
+                                                                             .getValue()))
+                                  .toList();
 
-        var role = this.roleQuery.get(principalRole.roleId());
-
-        if (role.isDfsp()) {
-
-            var output = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(principalData.principalId()
-                                                                                                 .getId()))
-                                                 .stream()
-                                                 .map(action -> new Output.ActionName(action.actionId(),
-                                                                                      action.actionCode()
-                                                                                            .getValue()))
-                                                 .toList();
-
-            return new Output(output);
-
-        } else {
-
-            var output = this.iamQuery
-                             .getActions()
-                             .stream()
-                             .map(action -> new Output.ActionName(action.actionId(), action.actionCode()
-                                                                                           .getValue()))
-                             .collect(Collectors.toList());
-
-            return new Output(output);
-        }
+        return new Output(output);
 
     }
+
 }

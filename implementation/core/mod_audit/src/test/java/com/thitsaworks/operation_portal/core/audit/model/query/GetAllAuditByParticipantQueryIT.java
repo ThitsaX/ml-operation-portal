@@ -37,8 +37,6 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
             new RealmId(731147922761035776L),
             Instant.parse("2025-02-01T00:00:00Z"),
             Instant.parse("2025-08-31T23:59:59Z"),
-                          new UserId(731148506436186112L),
-                          new ActionId(1L),
                           grantedActionList);
 
         GetAllAuditByParticipantQuery.Output output = getAllAuditByParticipantQuery.execute(input);

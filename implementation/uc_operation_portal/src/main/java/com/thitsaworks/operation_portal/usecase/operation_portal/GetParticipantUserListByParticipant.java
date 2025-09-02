@@ -12,10 +12,10 @@ public interface GetParticipantUserListByParticipant
     record Input() { }
 
     record Output(Set<User> madeBy) {
+
         public record User(UserId userId,
                            Email email) { }
+
     }
-
-
 
 }

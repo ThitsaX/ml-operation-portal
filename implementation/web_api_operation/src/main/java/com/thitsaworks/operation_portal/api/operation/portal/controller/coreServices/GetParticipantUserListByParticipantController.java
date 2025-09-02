@@ -26,7 +26,7 @@ public class GetParticipantUserListByParticipantController {
     public ResponseEntity<Response> execute()
         throws DomainException {
 
-        LOG.info("Get Made By List Request : [{}]", "");
+        LOG.info("Get Participant User List By Participant Request : [{}]", "");
 
         GetParticipantUserListByParticipant.Input input = new GetParticipantUserListByParticipant.Input();
         GetParticipantUserListByParticipant.Output output = this.getParticipantUserListByParticipant.execute(input);
@@ -43,13 +43,13 @@ public class GetParticipantUserListByParticipantController {
                           })
                           .collect(Collectors.toSet());
 
-        LOG.info("Get Made By List Response: [{}]", users);
+        LOG.info("Get Participant User List By Participant Response: [{}]", users);
 
         return ResponseEntity.ok(new Response(users));
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(Set<User> madeByList) {
+    public record Response(Set<User> userList) {
 
         public record User(String userId,
                            String email) implements Serializable { }
