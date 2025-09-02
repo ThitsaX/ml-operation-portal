@@ -9,10 +9,10 @@ public interface GetActionListByUserId extends UseCase<GetActionListByUserId.Inp
 
     record Input() { }
 
-    record Output(List<ActionName> actionNames) {
+    record Output(List<Action> actionNames) {
 
-        public record ActionName(ActionId actionId,
-                                 String actionName) { }
+        public record Action(ActionId actionId,
+                             String actionName) { }
 
     }
 

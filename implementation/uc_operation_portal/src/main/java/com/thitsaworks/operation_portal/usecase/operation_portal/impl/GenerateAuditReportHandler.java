@@ -8,11 +8,12 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
+import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
+import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateAuditReport;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,10 @@ public class GenerateAuditReportHandler
 
     private final IAMQuery iamQuery;
 
+    private final PrincipalRoleQuery principalRoleQuery;
+
+    private final RoleQuery roleQuery;
+
     private final GenerateAuditReportCommand generateAuditReportCommand;
 
     public GenerateAuditReportHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -38,6 +43,8 @@ public class GenerateAuditReportHandler
                                       PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       IAMQuery iamQuery,
+                                      PrincipalRoleQuery principalRoleQuery,
+                                      RoleQuery roleQuery,
                                       GenerateAuditReportCommand generateAuditReportCommand) {
 
         super(createInputAuditCommand,
@@ -49,15 +56,23 @@ public class GenerateAuditReportHandler
 
         this.iamQuery = iamQuery;
         this.generateAuditReportCommand = generateAuditReportCommand;
+        this.principalRoleQuery = principalRoleQuery;
+        this.roleQuery = roleQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var
-            realmId = input.realmId() == null ? null : input.realmId()
-                                                            .getEntityId()
-                                                            .toString();
+        var principalRole = this.principalRoleQuery.getRole(new PrincipalId(input.auditedById()
+                                                                                 .getEntityId()));
+        var role = this.roleQuery.get(principalRole.roleId());
+
+        String realmId = null;
+        if (role.isDfsp()) {
+            realmId = input.realmId()
+                           .getEntityId()
+                           .toString();
+        }
 
         var
             userId = input.userId() == null ? null : input.userId()
@@ -67,9 +82,6 @@ public class GenerateAuditReportHandler
         var actionId = input.actionId() == null ? null : input.actionId()
                                                               .getEntityId()
                                                               .toString();
-
-        // TODO: to check only same participant user records are fetched for dfsp user and all users records for HUB
-
 
         List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(input.auditedById()
                                                                                                          .getEntityId()))

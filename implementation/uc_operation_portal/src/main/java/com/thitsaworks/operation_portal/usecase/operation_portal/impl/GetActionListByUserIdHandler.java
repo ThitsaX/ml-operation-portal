@@ -14,16 +14,10 @@ import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
-import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
-import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUserId;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Service
 public class GetActionListByUserIdHandler
@@ -69,9 +63,9 @@ public class GetActionListByUserIdHandler
         var output = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(principalData.principalId()
                                                                                              .getId()))
                                   .stream()
-                                  .map(action -> new Output.ActionName(action.actionId(),
-                                                                       action.actionCode()
-                                                                             .getValue()))
+                                  .map(action -> new Output.Action(action.actionId(),
+                                                                   action.actionCode()
+                                                                         .getValue()))
                                   .toList();
 
         return new Output(output);

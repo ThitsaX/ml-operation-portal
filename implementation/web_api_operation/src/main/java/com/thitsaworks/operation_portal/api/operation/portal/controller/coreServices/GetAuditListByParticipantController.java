@@ -4,9 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import lombok.RequiredArgsConstructor;
@@ -36,15 +34,13 @@ public class GetAuditListByParticipantController {
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
         @RequestParam("fromDate") Long fromDate,
-        @RequestParam("toDate") Long toDate,
-        @RequestParam("auditedById")String auditedById) throws DomainException, JsonProcessingException {
+        @RequestParam("toDate") Long toDate) throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}], auditedById = [{}],",
+            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}]",
             participantId,
             fromDate,
-            toDate,
-            auditedById);
+            toDate);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -55,8 +51,7 @@ public class GetAuditListByParticipantController {
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
                                                 Instant.ofEpochSecond(fromDate),
                                                 Instant.ofEpochSecond(toDate),
-                                                (auditedById != null && !auditedById.isEmpty()) ?
-                                                new UserId(Long.parseLong(auditedById)) : null));
+                                                userContext.userId()));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditInfo : output.auditInfoList()) {

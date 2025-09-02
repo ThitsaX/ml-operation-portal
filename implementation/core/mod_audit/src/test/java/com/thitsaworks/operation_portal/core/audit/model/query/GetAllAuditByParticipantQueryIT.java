@@ -41,7 +41,7 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
 
         GetAllAuditByParticipantQuery.Output output = getAllAuditByParticipantQuery.execute(input);
 
-        LOG.info("Audit Info userName: {},ActionName :{},ActionDate :{}", output.auditInfoList());
+        LOG.info("Audit Info : {}", output.auditInfoList());
 
     }
 

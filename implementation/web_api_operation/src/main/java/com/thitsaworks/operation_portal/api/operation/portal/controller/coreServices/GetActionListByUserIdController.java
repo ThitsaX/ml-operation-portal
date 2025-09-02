@@ -30,11 +30,11 @@ public class GetActionListByUserIdController {
         var input = new GetActionListByUserId.Input();
         var output = this.getActionListByUserId.execute(input);
 
-        List<Response.ActionName>
+        List<Response.Action>
             actionNames =
             output.actionNames()
                   .stream()
-                  .map(actionName -> new Response.ActionName(String.valueOf(actionName.actionId()
+                  .map(actionName -> new Response.Action(String.valueOf(actionName.actionId()
                                                                                       .getId()),
                                                              actionName.actionName()))
                   .collect(Collectors.toList());
@@ -47,9 +47,9 @@ public class GetActionListByUserIdController {
 
     }
 
-    public record Response(List<ActionName> actionNames) {
+    public record Response(List<Action> actionList) {
 
-        public record ActionName(String actionId, String actionName) implements Serializable { }
+        public record Action(String actionId, String actionName) implements Serializable { }
 
     }
 
