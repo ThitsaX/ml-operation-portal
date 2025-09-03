@@ -16,8 +16,6 @@ public interface GetAllAuditByParticipantQuery {
     record Input(RealmId realmId,
                  Instant fromDate,
                  Instant toDate,
-                 UserId userId,
-                 ActionId actionId,
                  List<ActionId> grantedActionList) { }
 
     record Output(List<AuditInfo> auditInfoList) {

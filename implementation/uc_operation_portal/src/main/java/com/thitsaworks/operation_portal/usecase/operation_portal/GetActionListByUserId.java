@@ -5,12 +5,15 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public interface GetActionList extends UseCase<GetActionList.Input, GetActionList.Output> {
+public interface GetActionListByUserId extends UseCase<GetActionListByUserId.Input, GetActionListByUserId.Output> {
 
-    record Input(){}
+    record Input() { }
 
-    record Output(List<ActionName> actionNames){
+    record Output(List<ActionName> actionNames) {
+
         public record ActionName(ActionId actionId,
-                                 String actionName){}
+                                 String actionName) { }
+
     }
+
 }

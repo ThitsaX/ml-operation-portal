@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUserId;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +16,19 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-public class GetActionListController {
+public class GetActionListByUserIdController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetActionListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetActionListByUserIdController.class);
 
-    private final GetActionList getActionList;
+    private final GetActionListByUserId getActionListByUserId;
 
-    @GetMapping(value = "/secured/getActionList")
+    @GetMapping(value = "/secured/getActionListByUserId")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        var input = new GetActionList.Input();
-        var output = this.getActionList.execute(input);
+        LOG.info("Get Action List By User Id Request : [{}]", "");
+
+        var input = new GetActionListByUserId.Input();
+        var output = this.getActionListByUserId.execute(input);
 
         List<Response.ActionName>
             actionNames =
@@ -39,7 +41,7 @@ public class GetActionListController {
 
         var response = new Response(actionNames);
 
-        LOG.info("Get Action List Response : [{}]", response);
+        LOG.info("Get Action List By User Id Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

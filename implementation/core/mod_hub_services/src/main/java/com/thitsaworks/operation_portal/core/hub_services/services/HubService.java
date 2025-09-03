@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettleme
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,6 +24,10 @@ public interface HubService {
     Call<PostParticipantBalance.Response> postParticipantBalance(@Path("participantId") String participantId,
                                                                  @Path("accountId") String accountId,
                                                                  @Body PostParticipantBalance.Request request);
+
+    @PUT("/participants/{participantId}/limits")
+    Call<PutUpdateParticipantLimit.Response> putUpdateParticipantLimit (@Path("participantId") String participantId,
+                                                                     @Body PutUpdateParticipantLimit.Request request);
 
     @PUT("/participants/{participantId}/accounts/{accountId}")
     Call<PutParticipantStatus.Response> putParticipantStatus(@Path("participantId") String participantId,

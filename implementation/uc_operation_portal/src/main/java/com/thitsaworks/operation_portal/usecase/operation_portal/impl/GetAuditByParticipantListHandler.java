@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -10,6 +11,8 @@ import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipan
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
+import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
+import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -31,6 +34,10 @@ public class GetAuditByParticipantListHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
+    private final PrincipalRoleQuery principalRoleQuery;
+
+    private final RoleQuery roleQuery;
+
     public GetAuditByParticipantListHandler(CreateInputAuditCommand createInputAuditCommand,
                                             CreateOutputAuditCommand createOutputAuditCommand,
                                             CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -38,7 +45,9 @@ public class GetAuditByParticipantListHandler
                                             PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
-                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
+                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
+                                            PrincipalRoleQuery principalRoleQuery,
+                                            RoleQuery roleQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -49,6 +58,8 @@ public class GetAuditByParticipantListHandler
 
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
+        this.principalRoleQuery = principalRoleQuery;
+        this.roleQuery = roleQuery;
     }
 
     @Override
@@ -60,15 +71,20 @@ public class GetAuditByParticipantListHandler
                                              .map(ActionData::actionId)
                                              .toList();
 
-        // TODO: to check only same participant user records are fetched for dfsp user and all users records for HUB
+        var principalRole = this.principalRoleQuery.getRole(new PrincipalId(input.auditedById()
+                                                                                 .getEntityId()));
+        var role = this.roleQuery.get(principalRole.roleId());
+
+        RealmId realmId = null;
+        if (role.isDfsp()) {
+            realmId = input.realmId();
+        }
 
         GetAllAuditByParticipantQuery.Output output =
             this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
-                input.realmId(),
+                realmId,
                 input.fromDate(),
                 input.toDate(),
-                input.userId(),
-                input.actionId(),
                 grantedActionList));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();

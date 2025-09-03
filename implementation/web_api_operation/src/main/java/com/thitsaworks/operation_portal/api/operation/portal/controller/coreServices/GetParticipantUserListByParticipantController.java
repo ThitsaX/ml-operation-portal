@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetMadeByList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,20 +16,20 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-public class GetMadeByListController {
+public class GetParticipantUserListByParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetMadeByListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantUserListByParticipantController.class);
 
-    private final GetMadeByList getMadeByList;
+    private final GetParticipantUserListByParticipant getParticipantUserListByParticipant;
 
-    @GetMapping(value = "/secured/getMadeByList")
+    @GetMapping(value = "/secured/getParticipantUserListByParticipant")
     public ResponseEntity<Response> execute()
         throws DomainException {
 
-        LOG.info("Get Made By List Request : [{}]", "");
+        LOG.info("Get Participant User List By Participant Request : [{}]", "");
 
-        GetMadeByList.Input input = new GetMadeByList.Input();
-        GetMadeByList.Output output = this.getMadeByList.execute(input);
+        GetParticipantUserListByParticipant.Input input = new GetParticipantUserListByParticipant.Input();
+        GetParticipantUserListByParticipant.Output output = this.getParticipantUserListByParticipant.execute(input);
 
         Set<Response.User>
             users = output.madeBy()
@@ -43,13 +43,13 @@ public class GetMadeByListController {
                           })
                           .collect(Collectors.toSet());
 
-        LOG.info("Get Made By List Response: [{}]", users);
+        LOG.info("Get Participant User List By Participant Response: [{}]", users);
 
         return ResponseEntity.ok(new Response(users));
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(Set<User> madeByList) {
+    public record Response(Set<User> userList) {
 
         public record User(String userId,
                            String email) implements Serializable { }

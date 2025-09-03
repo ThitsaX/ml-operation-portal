@@ -37,16 +37,14 @@ public class GetAuditListByParticipantController {
         @RequestParam("participantId") String participantId,
         @RequestParam("fromDate") Long fromDate,
         @RequestParam("toDate") Long toDate,
-        @RequestParam("userId") String userId,
-        @RequestParam("actionId") String actionId) throws DomainException, JsonProcessingException {
+        @RequestParam("auditedById")String auditedById) throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
+            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}], auditedById = [{}],",
             participantId,
             fromDate,
             toDate,
-            userId,
-            actionId);
+            auditedById);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -57,11 +55,8 @@ public class GetAuditListByParticipantController {
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
                                                 Instant.ofEpochSecond(fromDate),
                                                 Instant.ofEpochSecond(toDate),
-                                                (userId != null && !userId.isEmpty()) ?
-                                                    new UserId(Long.parseLong(userId)) : null,
-                                                (actionId != null && !actionId.isEmpty()) ?
-                                                    new ActionId(Long.parseLong(actionId)) : null,
-                                                userContext.userId()));
+                                                (auditedById != null && !auditedById.isEmpty()) ?
+                                                new UserId(Long.parseLong(auditedById)) : null));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditInfo : output.auditInfoList()) {

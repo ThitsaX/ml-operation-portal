@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubApiErrorDecoder;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
@@ -91,6 +92,39 @@ public class ParticipantHubClient {
             }
         }
         return response;
+    }
+
+    public PutUpdateParticipantLimit.Response putUpdateParticipantLimit(String participantId,
+                                                                        PutUpdateParticipantLimit.Request request)
+            throws HubServicesException, ConnectException, HubServicesApiException {
+
+        PutUpdateParticipantLimit.Response response;
+
+        try {
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.putUpdateParticipantLimit(participantId, request),
+                                             this.hubApiErrorDecoder)
+                                     .body();
+
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return  response;
     }
 
     public PutParticipantStatus.Response putParticipantStatus(PutParticipantStatus.Request request)
