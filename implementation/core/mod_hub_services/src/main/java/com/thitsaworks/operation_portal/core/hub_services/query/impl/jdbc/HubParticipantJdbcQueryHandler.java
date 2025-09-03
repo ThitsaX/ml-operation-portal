@@ -36,7 +36,7 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
     public List<HubParticipantData> getParticipantList() {
 
         return this.jdbcTemplate.query(
-                "SELECT participantId, participantName, description, isActive, createdDate, createdBy, isProxy FROM participant",
+                "SELECT participantId, name, description, isActive, createdDate, createdBy, isProxy FROM participant",
                 (rs, rowNum) -> new HubParticipantData(
                         rs.getString("participantId"),
                         rs.getString("name"),
@@ -52,7 +52,7 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
     public HubParticipantData getByName(String name) throws HubServicesException {
 
         List<HubParticipantData> participantDataList = this.jdbcTemplate.query(
-                "SELECT participantId, participantName, description, isActive, createdDate, createdBy, isProxy FROM participant WHERE participantName = ?",
+                "SELECT participantId, name, description, isActive, createdDate, createdBy, isProxy FROM participant WHERE name = ?",
                 new Object[]{name},
                 (rs, rowNum) -> new HubParticipantData(
                         rs.getString("participantId"),
