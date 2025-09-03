@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetOrganizationList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByUserId;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,38 +21,42 @@ public class GetOrganizationListController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetOrganizationListController.class);
 
-    private final GetOrganizationList getOrganizationList;
+    private final GetParticipantListByUserId getParticipantListByUserId;
 
-    @GetMapping(value = "/secured/getOrganizationList")
+    @GetMapping(value = "/secured/getParticipantListByUserId")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Organization List Request : [{}]", "");
+        LOG.info("Get Participant List By User Id Request : [{}]", "");
 
-        var input = new GetOrganizationList.Input();
-        var output = this.getOrganizationList.execute(input);
+        var input = new GetParticipantListByUserId.Input();
+        var output = this.getParticipantListByUserId.execute(input);
 
-        List<Response.OrganizationInfo> organizationInfoList = new ArrayList<>();
+        List<Response.ParticipantInfo> participantInfoList = new ArrayList<>();
 
-        for (var organizationInfo : output.organizationInfoList()) {
-            organizationInfoList.add(new Response.OrganizationInfo(organizationInfo.participantId().toString(),
-                                                                  organizationInfo.participantName()));
+        for (var participantInfo : output.participantInfoList()) {
+            participantInfoList.add(new Response.ParticipantInfo(participantInfo.participantId()
+                                                                                .toString(),
+                                                                 participantInfo.participantName(),
+                                                                 participantInfo.participantDescription()));
         }
 
-        var response = new Response(organizationInfoList);
+        var response = new Response(participantInfoList);
 
-        LOG.info("Get Organization List Response : [{}]", response);
+        LOG.info("Get Participant List By User Id Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
-
-
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(List<OrganizationInfo> organizationInfoList) {
-            public record OrganizationInfo(String participantId,
-                                           String participantName){}
-        }
+    public record Response(List<ParticipantInfo> participantInfoList) {
+
+        public record ParticipantInfo(String participantId,
+                                      String participantName,
+                                      String participantDescription) implements Serializable { }
+
     }
+
+}
 
 

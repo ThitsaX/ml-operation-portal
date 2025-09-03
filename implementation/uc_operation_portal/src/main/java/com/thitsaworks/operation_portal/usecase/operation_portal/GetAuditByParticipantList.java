@@ -16,6 +16,7 @@ public interface GetAuditByParticipantList
     record Input(RealmId realmId,
                  Instant fromDate,
                  Instant toDate,
+                 String timezoneoffset,
                  UserId auditedById) { }
 
     record Output(List<AuditInfo> auditInfoList) {

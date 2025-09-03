@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,8 +34,9 @@ public class GetAuditListByParticipantController {
     @GetMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
-        @RequestParam("fromDate") Long fromDate,
-        @RequestParam("toDate") Long toDate) throws DomainException, JsonProcessingException {
+        @RequestParam("fromDate") String fromDate,
+        @RequestParam("toDate") String toDate,
+        @RequestParam("timezoneOffset") String timezoneOffset) throws DomainException, JsonProcessingException {
 
         LOG.info(
             "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}]",
@@ -47,10 +49,19 @@ public class GetAuditListByParticipantController {
                                                .getAuthentication()
                                                .getDetails();
 
+        String showTimezone = timezoneOffset;
+
+        if (!timezoneOffset.startsWith("-")) {
+            showTimezone = timezoneOffset.replaceFirst(".", "+");
+        }
+
+        showTimezone = TimeZoneOffsetFormater.normalizeOffset(showTimezone);
+
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
-                                                Instant.ofEpochSecond(fromDate),
-                                                Instant.ofEpochSecond(toDate),
+                                                Instant.parse(fromDate),
+                                                Instant.parse(toDate),
+                                                showTimezone,
                                                 userContext.userId()));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();

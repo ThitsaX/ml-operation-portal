@@ -33,8 +33,8 @@ public class GenerateAuditReportController {
 
     @PostMapping("/secured/generateAuditReport")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId,
-                                            @RequestParam("fromDate") Long fromDate,
-                                            @RequestParam("toDate") Long toDate,
+                                            @RequestParam("fromDate") String fromDate,
+                                            @RequestParam("toDate") String toDate,
                                             @RequestParam("timezoneOffset") String timezoneOffset,
                                             @RequestParam(
                                                 value = "userId",
@@ -64,8 +64,8 @@ public class GenerateAuditReportController {
 
         var output = this.generateAuditReport.execute(new GenerateAuditReport.Input(
             new RealmId(Long.parseLong(participantId)),
-            Instant.ofEpochSecond(fromDate),
-            Instant.ofEpochSecond(toDate),
+            Instant.parse(fromDate),
+            Instant.parse(toDate),
             showTimezone,
             userId == null || userId.isBlank() ? null :
                 new UserId(Long.parseLong(userId)),

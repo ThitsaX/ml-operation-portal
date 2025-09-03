@@ -85,6 +85,7 @@ public class GetAuditByParticipantListHandler
                 realmId,
                 input.fromDate(),
                 input.toDate(),
+                input.timezoneoffset(),
                 grantedActionList));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();

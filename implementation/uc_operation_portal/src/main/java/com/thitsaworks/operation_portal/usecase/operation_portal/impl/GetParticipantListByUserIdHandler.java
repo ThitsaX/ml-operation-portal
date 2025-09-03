@@ -18,7 +18,7 @@ import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetOrganizationList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByUserId;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
@@ -27,9 +27,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetOrganizationListHandler
-    extends OperationPortalAuditableUseCase<GetOrganizationList.Input, GetOrganizationList.Output>
-    implements GetOrganizationList {
+public class GetParticipantListByUserIdHandler
+    extends OperationPortalAuditableUseCase<GetParticipantListByUserId.Input, GetParticipantListByUserId.Output>
+    implements GetParticipantListByUserId {
 
     private final ParticipantQuery participantQuery;
 
@@ -39,16 +39,16 @@ public class GetOrganizationListHandler
 
     private final RoleQuery roleQuery;
 
-    public GetOrganizationListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                      CreateOutputAuditCommand createOutputAuditCommand,
-                                      CreateExceptionAuditCommand createExceptionAuditCommand,
-                                      ObjectMapper objectMapper,
-                                      PrincipalCache principalCache,
-                                      ActionAuthorizationManager actionAuthorizationManager,
-                                      ParticipantQuery participantQuery,
-                                      PrincipalCache principalCache1,
-                                      PrincipalRoleQuery principalRoleQuery,
-                                      RoleQuery roleQuery) {
+    public GetParticipantListByUserIdHandler(CreateInputAuditCommand createInputAuditCommand,
+                                             CreateOutputAuditCommand createOutputAuditCommand,
+                                             CreateExceptionAuditCommand createExceptionAuditCommand,
+                                             ObjectMapper objectMapper,
+                                             PrincipalCache principalCache,
+                                             ActionAuthorizationManager actionAuthorizationManager,
+                                             ParticipantQuery participantQuery,
+                                             PrincipalCache principalCache1,
+                                             PrincipalRoleQuery principalRoleQuery,
+                                             RoleQuery roleQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -56,6 +56,7 @@ public class GetOrganizationListHandler
               objectMapper,
               principalCache,
               actionAuthorizationManager);
+
         this.participantQuery = participantQuery;
         this.principalCache = principalCache1;
         this.principalRoleQuery = principalRoleQuery;
@@ -75,7 +76,7 @@ public class GetOrganizationListHandler
 
         }
 
-        List<Output.OrganizationInfo> participantInfoList = new ArrayList<>();
+        List<Output.ParticipantInfo> participantInfoList = new ArrayList<>();
 
         var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
 
@@ -85,9 +86,10 @@ public class GetOrganizationListHandler
             var participantData = this.participantQuery.get(new ParticipantId(principalData.realmId()
                                                                                            .getId()));
             participantInfoList.add(
-                new Output.OrganizationInfo(participantData.participantId(),
-                                            participantData.participantName()
-                                                           .getValue()));
+                new Output.ParticipantInfo(participantData.participantId(),
+                                           participantData.participantName()
+                                                          .getValue(),
+                                           participantData.description()));
 
         } else {
 
@@ -95,9 +97,10 @@ public class GetOrganizationListHandler
 
             for (ParticipantData participantData : participantDataList) {
                 participantInfoList.add(
-                    new Output.OrganizationInfo(participantData.participantId(),
-                                                participantData.participantName()
-                                                               .getValue()));
+                    new Output.ParticipantInfo(participantData.participantId(),
+                                               participantData.participantName()
+                                                              .getValue(),
+                                               participantData.description()));
             }
 
         }

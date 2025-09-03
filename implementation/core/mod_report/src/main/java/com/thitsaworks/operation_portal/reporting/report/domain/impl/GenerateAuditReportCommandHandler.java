@@ -57,7 +57,6 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             var timeOffset = input.timezoneoffset();
 
 
-
             params.put("timezoneoffset", timeOffset);
             params.put("fromDate", input.fromDate().getEpochSecond());
             params.put("toDate", input.toDate().getEpochSecond());
