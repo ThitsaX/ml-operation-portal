@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetHubSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
@@ -25,6 +26,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.net.ConnectException;
+import java.util.List;
 
 @Component
 public class SettlementHubClient {
@@ -59,6 +61,7 @@ public class SettlementHubClient {
         this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
 
     }
+
 
     public PostCloseSettlementWindows.Response closeSettlementWindows(int windowsId,
 
@@ -96,6 +99,45 @@ public class SettlementHubClient {
         return response;
     }
 
+    public List<GetHubSettlementWindows.SettlementWindow> getSettlementWindows(String fromDate,
+                                                                 String toDate,
+                                                                 String currency,
+                                                                 String state,
+                                                                 Integer participantId,
+                                                                 GetHubSettlementWindows.Request request )
+        throws HubServicesException, ConnectException, HubServicesApiException {
+
+        List<GetHubSettlementWindows.SettlementWindow> response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.getSettlementWindows(fromDate,toDate,currency,state,participantId),
+                                             this.hubApiErrorDecoder)
+                                     .body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return response;
+
+    }
     public PostCreateSettlement.Response createSettlement(PostCreateSettlement.Request request)
             throws HubServicesException, ConnectException, HubServicesApiException {
 
