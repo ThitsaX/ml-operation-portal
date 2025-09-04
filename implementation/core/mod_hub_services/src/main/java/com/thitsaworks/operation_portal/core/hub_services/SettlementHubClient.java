@@ -16,6 +16,7 @@ import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesA
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
+import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class SettlementHubClient {
@@ -136,7 +139,7 @@ public class SettlementHubClient {
 
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
-                                             (s, r) -> s.getSettlement(settlementId),
+                                             (s, r) -> s.getSettlementById(settlementId),
                                              this.hubApiErrorDecoder).body();
 
         } catch (RetrofitRunner.InvocationException e) {
@@ -156,6 +159,54 @@ public class SettlementHubClient {
             }
         }
         return response;
+    }
+
+    public List<Settlement> getSettlementsByParam(String currency,
+                                                  Integer participantId,
+                                                  Integer settlementWindowId,
+                                                  Integer accountId,
+                                                  String state,
+                                                  String fromDateTime,
+                                                  String toDateTime,
+                                                  String fromSettlementWindowDateTime,
+                                                  String toSettlementWindowDateTime,
+                                                  GetSettlement.Request request)
+            throws HubServicesException, ConnectException, HubServicesApiException {
+
+        List<Settlement> settlementList;
+
+        try {
+
+            settlementList = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.getSettlementsByParam(currency,
+                                                                               participantId,
+                                                                               settlementWindowId,
+                                                                               accountId,
+                                                                               state,
+                                                                               fromDateTime,
+                                                                               toDateTime,
+                                                                               fromSettlementWindowDateTime,
+                                                                               toSettlementWindowDateTime),
+                                             this.hubApiErrorDecoder).body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
+
+            }
+        }
+        return settlementList;
     }
 
     public PutUpdateSettlement.Response putUpdateSettlement(Integer settlementId, PutUpdateSettlement.Request request)

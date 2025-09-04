@@ -11,12 +11,16 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettleme
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
+import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
+
+import java.util.List;
 
 public interface HubService {
 
@@ -51,7 +55,19 @@ public interface HubService {
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
 
     @GET("/v2/settlements/{settlementId}")
-    Call<GetSettlement.Response> getSettlement(@Path("settlementId") Integer settlementId);
+    Call<GetSettlement.Response> getSettlementById(@Path("settlementId") Integer settlementId);
+
+
+    @GET("/v2/settlements")
+    Call<List<Settlement>> getSettlementsByParam(@Query("currency") String currency,
+                                                 @Query("participantId") Integer participantId,
+                                                 @Query("settlementWindowId") Integer settlementWindowId,
+                                                 @Query("accountId") Integer accountId,
+                                                 @Query("state") String state,
+                                                 @Query("fromDateTime") String fromDateTime,
+                                                 @Query("toDateTime") String toDateTime,
+                                                 @Query("fromSettlementWindowDateTime") String fromSettlementWindowDateTime,
+                                                 @Query("toSettlementWindowDateTime") String toSettlementWindowDateTime);
 
     @PUT("/v2/settlements/{settlementId}")
     Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
