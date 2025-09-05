@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
@@ -9,10 +8,10 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetUserList extends
-                                       UseCase<GetUserList.Input, GetUserList.Output> {
+public interface GetUserListByParticipant extends
+                                       UseCase<GetUserListByParticipant.Input, GetUserListByParticipant.Output> {
 
-     record Input(ParticipantId participantId) {}
+     record Input(UserId userId) {}
 
      record Output(List<UserInfo> userInfoList) {}
 

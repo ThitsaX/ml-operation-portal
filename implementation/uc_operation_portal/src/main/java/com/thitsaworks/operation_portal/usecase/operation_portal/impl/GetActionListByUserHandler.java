@@ -15,26 +15,26 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUserId;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetActionListByUserIdHandler
-    extends OperationPortalAuditableUseCase<GetActionListByUserId.Input, GetActionListByUserId.Output>
-    implements GetActionListByUserId {
+public class GetActionListByUserHandler
+    extends OperationPortalAuditableUseCase<GetActionListByUser.Input, GetActionListByUser.Output>
+    implements GetActionListByUser {
 
     private final IAMQuery iamQuery;
 
     private final PrincipalCache principalCache;
 
-    public GetActionListByUserIdHandler(CreateInputAuditCommand createInputAuditCommand,
-                                        CreateOutputAuditCommand createOutputAuditCommand,
-                                        CreateExceptionAuditCommand createExceptionAuditCommand,
-                                        ObjectMapper objectMapper,
-                                        PrincipalCache principalCache,
-                                        ActionAuthorizationManager actionAuthorizationManager,
-                                        IAMQuery iamQuery) {
+    public GetActionListByUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                      CreateOutputAuditCommand createOutputAuditCommand,
+                                      CreateExceptionAuditCommand createExceptionAuditCommand,
+                                      ObjectMapper objectMapper,
+                                      PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager,
+                                      IAMQuery iamQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -50,10 +50,9 @@ public class GetActionListByUserIdHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var principalId = new PrincipalId(input.userId().getId());
 
-        PrincipalData principalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+        PrincipalData principalData = this.principalCache.get(principalId);
 
         if (principalData == null) {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);

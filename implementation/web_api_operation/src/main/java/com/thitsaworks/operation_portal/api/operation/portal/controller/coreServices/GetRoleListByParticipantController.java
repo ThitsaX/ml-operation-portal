@@ -1,12 +1,14 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,18 +17,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetRoleListController {
+public class GetRoleListByParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetRoleListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetRoleListByParticipantController.class);
 
-    private final GetRoleList getRoleList;
+    private final GetRoleListByParticipant getRoleListByParticipant;
 
-    @GetMapping("/secured/getRoleList")
+    @GetMapping("/secured/getRoleListByParticipant")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Role List Request : [{}]", "");
+        LOG.info("Get Role List By User Id Request : [{}]", "");
 
-        var output = this.getRoleList.execute(new GetRoleList.Input());
+        UserContext userContext =
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
+
+        var output = this.getRoleListByParticipant.execute(new GetRoleListByParticipant.Input(userContext.userId()));
 
         var response = new Response(output.roleList()
                                           .stream()
@@ -37,7 +44,7 @@ public class GetRoleListController {
                                                                          role.active()))
                                           .toList());
 
-        LOG.info("Get Role List Response: [{}]", response);
+        LOG.info("Get Role List By User Id Response: [{}]", response);
 
         return ResponseEntity.ok(response);
     }
