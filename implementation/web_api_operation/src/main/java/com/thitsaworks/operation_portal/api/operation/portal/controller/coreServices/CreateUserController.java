@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -43,6 +44,7 @@ public class CreateUserController {
                                      request.firstName,
                                      request.lastName,
                                      request.jobTitle,
+                                     new RoleId(Long.parseLong(request.roleId)),
                                      new ParticipantId(Long.parseLong(request.participantId)),
                                      request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
                                               PrincipalStatus.INACTIVE));
@@ -65,6 +67,7 @@ public class CreateUserController {
             @NotNull @JsonProperty("firstName") String firstName,
             @NotNull @JsonProperty("lastName") String lastName,
             @NotNull @JsonProperty("jobTitle") String jobTitle,
+            @NotNull @JsonProperty("roleId") String roleId,
             @NotNull @JsonProperty("participantId") String participantId,
             @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 

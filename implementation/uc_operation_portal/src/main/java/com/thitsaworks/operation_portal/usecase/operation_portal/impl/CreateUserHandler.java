@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -37,6 +38,8 @@ public class CreateUserHandler
 
     private final CreatePrincipalCommand createPrincipalCommand;
 
+    private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
+
     private final PrincipalCache principalCache;
 
     private final PrincipalRoleQuery principalRoleQuery;
@@ -50,7 +53,9 @@ public class CreateUserHandler
                              PrincipalCache principalCache,
                              ActionAuthorizationManager actionAuthorizationManager,
                              CreateUserCommand createUserCommand,
-                             CreatePrincipalCommand createPrincipalCommand, PrincipalCache principalCache1,
+                             CreatePrincipalCommand createPrincipalCommand,
+                             AssignRoleToPrincipalCommand assignRoleToPrincipalCommand,
+                             PrincipalCache principalCache1,
                              PrincipalRoleQuery principalRoleQuery,
                              RoleQuery roleQuery) {
 
@@ -63,6 +68,7 @@ public class CreateUserHandler
 
         this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
+        this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
         this.principalCache = principalCache1;
         this.principalRoleQuery = principalRoleQuery;
         this.roleQuery = roleQuery;
@@ -87,7 +93,8 @@ public class CreateUserHandler
         if (role.isDfsp()) {
 
             if (!input.participantId()
-                      .equals(new ParticipantId(principalData.realmId().getId()))) {
+                      .equals(new ParticipantId(principalData.realmId()
+                                                             .getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
@@ -97,12 +104,16 @@ public class CreateUserHandler
             new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
                                         input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
-                                                                                                   .getId()),
+        var principalId = new PrincipalId(output.userId()
+                                                .getId());
+
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(principalId,
                                                                              input.password(),
                                                                              new RealmId(input.participantId()
                                                                                               .getId()),
                                                                              input.activeStatus()));
+
+        this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, input.roleId()));
 
         return new Output(output.created());
     }
