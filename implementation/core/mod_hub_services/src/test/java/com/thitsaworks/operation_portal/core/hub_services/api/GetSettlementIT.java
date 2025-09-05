@@ -26,7 +26,8 @@ public class GetSettlementIT extends BaseVaultSetUpTest {
 
     @Test
     public void test() throws HubServicesException, ConnectException, HubServicesApiException {
-        var output = this.settlementHubClient.getSettlement(34, null);
+
+        var output = this.settlementHubClient.getSettlement(34);
         logger.info("Output: {}", output);
     }
 }

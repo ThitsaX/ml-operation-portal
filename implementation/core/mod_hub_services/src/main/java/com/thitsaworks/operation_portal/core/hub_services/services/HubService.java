@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipants;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsByParams;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
@@ -12,7 +12,6 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStat
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetHubSettlementWindows;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -53,17 +52,17 @@ public interface HubService {
                                                                          PostCloseSettlementWindows.Request request);
 
     @GET("/v2/settlementWindows")
-    Call<List<GetHubSettlementWindows.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
-                                                                              @Query("toDateTime") String toDate,
-                                                                              @Query("currency") String currency,
-                                                                              @Query("state") String state,
-                                                                              @Query("participantId") Integer participantId);
+    Call<List<GetSettlementWindowsByParams.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
+                                                                                   @Query("toDateTime") String toDate,
+                                                                                   @Query("currency") String currency,
+                                                                                   @Query("state") String state,
+                                                                                   @Query("participantId") Integer participantId);
 
     @POST("/v2/settlements")
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
 
     @GET("/v2/settlements/{settlementId}")
-    Call<GetSettlement.Response> getSettlementById(@Path("settlementId") Integer settlementId);
+    Call<Settlement> getSettlementById(@Path("settlementId") Integer settlementId);
 
 
     @GET("/v2/settlements")
@@ -79,14 +78,12 @@ public interface HubService {
 
     @PUT("/v2/settlements/{settlementId}")
     Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
-                                                           @Body
-                                                           PutUpdateSettlement.Request request);
+                                                           @Body PutUpdateSettlement.Request request);
 
     @POST("/participants/{dfspCode}/accounts/{accountId}")
     Call<PostUpdateSettlementByParticipant.Response> postUpdateSettlementByParticipant(
             @Path("dfspCode") String dfspCode,
             @Path("accountId") Integer accountId,
-            @Body
-            PostUpdateSettlementByParticipant.Request request);
+            @Body PostUpdateSettlementByParticipant.Request request);
 
 }

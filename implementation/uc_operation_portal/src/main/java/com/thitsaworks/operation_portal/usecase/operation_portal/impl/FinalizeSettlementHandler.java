@@ -7,13 +7,13 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
+import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAccount;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementLedgerAccountTypes;
@@ -71,14 +71,13 @@ public class FinalizeSettlementHandler
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
-        GetSettlement.Response settlementOutput = this.settlementHubClient.getSettlement(input.settlementId(),
-                                                                                         new GetSettlement.Request());
+        Settlement settlement = this.settlementHubClient.getSettlement(input.settlementId());
 
-        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlementOutput.participants());
+        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
 
         List<SettlementParticipant> settlementParticipants = request.participants();
 
-        SettlementState settlementState = SettlementState.valueOf(settlementOutput.state());
+        SettlementState settlementState = SettlementState.valueOf(settlement.getState());
 
         // call putUpdateSettlement until the settlementState is settled.
         while (!settlementParticipants.getFirst()
@@ -101,7 +100,7 @@ public class FinalizeSettlementHandler
             }
 
             PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
-                    settlementOutput.id(),
+                    settlement.getId(),
                     new PutUpdateSettlement.Request(settlementParticipants));
 
             settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
@@ -116,9 +115,9 @@ public class FinalizeSettlementHandler
 
             for (SettlementAccount account : participant.getAccounts()) {
 
-                String externalReference = "BOP settlement ID: " + settlementOutput.id();
+                String externalReference = "BOP settlement ID: " + settlement.getId();
 
-                String reason = "Business Operations Portal settlement ID: " + settlementOutput.id() +
+                String reason = "Business Operations Portal settlement ID: " + settlement.getId() +
                         " finalization report processing";
 
                 //  TODO: to confirm

@@ -7,8 +7,7 @@ import com.thitsaworks.operation_portal.component.fspiop.model.ErrorInformationR
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlement;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetHubSettlementWindows;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsByParams;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
@@ -27,7 +26,6 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 import java.net.ConnectException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -100,15 +98,15 @@ public class SettlementHubClient {
         return response;
     }
 
-    public List<GetHubSettlementWindows.SettlementWindow> getSettlementWindows(String fromDate,
-                                                                 String toDate,
-                                                                 String currency,
-                                                                 String state,
-                                                                 Integer participantId,
-                                                                 GetHubSettlementWindows.Request request )
+    public List<GetSettlementWindowsByParams.SettlementWindow> getSettlementWindowsByParams(String fromDate,
+                                                                                            String toDate,
+                                                                                            String currency,
+                                                                                            String state,
+                                                                                            Integer participantId,
+                                                                                            GetSettlementWindowsByParams.Request request)
         throws HubServicesException, ConnectException, HubServicesApiException {
 
-        List<GetHubSettlementWindows.SettlementWindow> response;
+        List<GetSettlementWindowsByParams.SettlementWindow> response;
 
         try {
 
@@ -170,15 +168,15 @@ public class SettlementHubClient {
         return response;
     }
 
-    public GetSettlement.Response getSettlement(Integer settlementId, GetSettlement.Request request)
+    public Settlement getSettlement(Integer settlementId)
             throws HubServicesException, ConnectException, HubServicesApiException {
 
-        GetSettlement.Response response;
+        Settlement settlement;
 
         try {
 
-            response = RetrofitRunner.invoke(this.hubService,
-                                             request,
+            settlement = RetrofitRunner.invoke(this.hubService,
+                                               null,
                                              (s, r) -> s.getSettlementById(settlementId),
                                              this.hubApiErrorDecoder).body();
 
@@ -198,37 +196,36 @@ public class SettlementHubClient {
 
             }
         }
-        return response;
+        return settlement;
     }
 
-    public List<Settlement> getSettlementsByParam(String currency,
-                                                  Integer participantId,
-                                                  Integer settlementWindowId,
-                                                  Integer accountId,
-                                                  String state,
-                                                  String fromDateTime,
-                                                  String toDateTime,
-                                                  String fromSettlementWindowDateTime,
-                                                  String toSettlementWindowDateTime,
-                                                  GetSettlement.Request request)
+    public List<Settlement> getSettlementsByParams(String currency,
+                                                   Integer participantId,
+                                                   Integer settlementWindowId,
+                                                   Integer accountId,
+                                                   String state,
+                                                   String fromDateTime,
+                                                   String toDateTime,
+                                                   String fromSettlementWindowDateTime,
+                                                   String toSettlementWindowDateTime)
+
             throws HubServicesException, ConnectException, HubServicesApiException {
 
         List<Settlement> settlementList;
 
         try {
 
-            settlementList = RetrofitRunner.invoke(this.hubService,
-                                             request,
-                                             (s, r) -> s.getSettlementsByParam(currency,
-                                                                               participantId,
-                                                                               settlementWindowId,
-                                                                               accountId,
-                                                                               state,
-                                                                               fromDateTime,
-                                                                               toDateTime,
-                                                                               fromSettlementWindowDateTime,
-                                                                               toSettlementWindowDateTime),
-                                             this.hubApiErrorDecoder).body();
+            settlementList = RetrofitRunner.invoke(this.hubService, null,
+                                                   (s, r) -> s.getSettlementsByParam(currency,
+                                                                                     participantId,
+                                                                                     settlementWindowId,
+                                                                                     accountId,
+                                                                                     state,
+                                                                                     fromDateTime,
+                                                                                     toDateTime,
+                                                                                     fromSettlementWindowDateTime,
+                                                                                     toSettlementWindowDateTime),
+                                                   this.hubApiErrorDecoder).body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
