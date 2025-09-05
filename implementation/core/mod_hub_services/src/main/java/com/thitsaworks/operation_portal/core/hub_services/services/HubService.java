@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStat
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetHubSettlementWindows;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -30,8 +31,8 @@ public interface HubService {
                                                                  @Body PostParticipantBalance.Request request);
 
     @PUT("/participants/{participantId}/limits")
-    Call<PutUpdateParticipantLimit.Response> putUpdateParticipantLimit (@Path("participantId") String participantId,
-                                                                     @Body PutUpdateParticipantLimit.Request request);
+    Call<PutUpdateParticipantLimit.Response> putUpdateParticipantLimit(@Path("participantId") String participantId,
+                                                                       @Body PutUpdateParticipantLimit.Request request);
 
     @PUT("/participants/{participantId}/accounts/{accountId}")
     Call<PutParticipantStatus.Response> putParticipantStatus(@Path("participantId") String participantId,
@@ -41,7 +42,7 @@ public interface HubService {
     @GET("/participants/{participantId}")
     Call<GetParticipant.Response> getParticipant(@Path("participantId") String participantId
 
-                                                );
+    );
 
     @GET("/participants")
     Call<GetParticipants.Response> getParticipants();
@@ -50,6 +51,13 @@ public interface HubService {
     Call<PostCloseSettlementWindows.Response> postCloseSettlementWindows(@Path("settlementWindowId") int settlementWindowId,
                                                                          @Body
                                                                          PostCloseSettlementWindows.Request request);
+
+    @GET("/v2/settlementWindows")
+    Call<List<GetHubSettlementWindows.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
+                                                                              @Query("toDateTime") String toDate,
+                                                                              @Query("currency") String currency,
+                                                                              @Query("state") String state,
+                                                                              @Query("participantId") Integer participantId);
 
     @POST("/v2/settlements")
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
@@ -80,6 +88,5 @@ public interface HubService {
             @Path("accountId") Integer accountId,
             @Body
             PostUpdateSettlementByParticipant.Request request);
-
 
 }
