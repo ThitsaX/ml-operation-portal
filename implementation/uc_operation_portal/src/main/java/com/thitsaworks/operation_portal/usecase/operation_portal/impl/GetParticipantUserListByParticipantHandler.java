@@ -14,12 +14,11 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
-import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +36,7 @@ public class GetParticipantUserListByParticipantHandler
 
     private final PrincipalCache principalCache;
 
-    private final PrincipalRoleQuery principalRoleQuery;
-
-    private final RoleQuery roleQuery;
+    private final UserPermissionManager userPermissionManager;
 
     public GetParticipantUserListByParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
                                                       CreateOutputAuditCommand createOutputAuditCommand,
@@ -48,9 +45,7 @@ public class GetParticipantUserListByParticipantHandler
                                                       PrincipalCache principalCache,
                                                       ActionAuthorizationManager actionAuthorizationManager,
                                                       UserQuery userQuery,
-                                                      PrincipalCache principalCache1,
-                                                      PrincipalRoleQuery principalRoleQuery,
-                                                      RoleQuery roleQuery) {
+                                                      UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -60,9 +55,8 @@ public class GetParticipantUserListByParticipantHandler
               actionAuthorizationManager);
 
         this.userQuery = userQuery;
-        this.principalCache = principalCache1;
-        this.principalRoleQuery = principalRoleQuery;
-        this.roleQuery = roleQuery;
+        this.principalCache = principalCache;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
@@ -79,13 +73,10 @@ public class GetParticipantUserListByParticipantHandler
         }
 
         Set<Output.User> madeByUsers = new HashSet<>();
-        var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
-
-        var role = this.roleQuery.get(principalRole.roleId());
 
         List<UserData> userDataList;
 
-        if (role.isDfsp()) {
+        if (this.userPermissionManager.isDfsp(principalData.principalId())) {
 
             userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
                                                                                   .getId()));

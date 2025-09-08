@@ -22,6 +22,7 @@ import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,11 +41,9 @@ public class CreateUserHandler
 
     private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
 
+    private final UserPermissionManager userPermissionManager;
+
     private final PrincipalCache principalCache;
-
-    private final PrincipalRoleQuery principalRoleQuery;
-
-    private final RoleQuery roleQuery;
 
     public CreateUserHandler(CreateInputAuditCommand createInputAuditCommand,
                              CreateOutputAuditCommand createOutputAuditCommand,
@@ -55,9 +54,7 @@ public class CreateUserHandler
                              CreateUserCommand createUserCommand,
                              CreatePrincipalCommand createPrincipalCommand,
                              AssignRoleToPrincipalCommand assignRoleToPrincipalCommand,
-                             PrincipalCache principalCache1,
-                             PrincipalRoleQuery principalRoleQuery,
-                             RoleQuery roleQuery) {
+                             UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -69,9 +66,8 @@ public class CreateUserHandler
         this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
         this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
-        this.principalCache = principalCache1;
-        this.principalRoleQuery = principalRoleQuery;
-        this.roleQuery = roleQuery;
+        this.userPermissionManager = userPermissionManager;
+        this.principalCache = principalCache;
     }
 
     @Override
@@ -87,10 +83,7 @@ public class CreateUserHandler
 
         }
 
-        var principalRole = this.principalRoleQuery.getRole(principalData.principalId());
-
-        var role = this.roleQuery.get(principalRole.roleId());
-        if (role.isDfsp()) {
+        if (userPermissionManager.isDfsp(principalData.principalId())) {
 
             if (!input.participantId()
                       .equals(new ParticipantId(principalData.realmId()

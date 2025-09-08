@@ -1,11 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -50,7 +47,8 @@ public class GetActionListByUserHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var principalId = new PrincipalId(input.userId().getId());
+        var principalId = new PrincipalId(input.userId()
+                                               .getId());
 
         PrincipalData principalData = this.principalCache.get(principalId);
 

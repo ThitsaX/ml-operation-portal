@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.core.audit.model.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
@@ -23,6 +22,7 @@ import java.util.ArrayList;
     classes = {
         AuditConfiguration.class, TestSettings.class})
 public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
+
     private static final Logger LOG = LoggerFactory.getLogger(GetAllAuditByParticipantQueryIT.class);
 
     @Autowired
@@ -37,7 +37,8 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
             new RealmId(731147922761035776L),
             Instant.parse("2025-02-01T00:00:00Z"),
             Instant.parse("2025-08-31T23:59:59Z"),
-                          grantedActionList);
+            "",
+            grantedActionList);
 
         GetAllAuditByParticipantQuery.Output output = getAllAuditByParticipantQuery.execute(input);
 

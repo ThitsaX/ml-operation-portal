@@ -8,11 +8,10 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
-import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
-import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateAuditReport;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +29,7 @@ public class GenerateAuditReportHandler
 
     private final IAMQuery iamQuery;
 
-    private final PrincipalRoleQuery principalRoleQuery;
-
-    private final RoleQuery roleQuery;
+    private final UserPermissionManager userPermissionManager;
 
     private final GenerateAuditReportCommand generateAuditReportCommand;
 
@@ -43,8 +40,7 @@ public class GenerateAuditReportHandler
                                       PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       IAMQuery iamQuery,
-                                      PrincipalRoleQuery principalRoleQuery,
-                                      RoleQuery roleQuery,
+                                      UserPermissionManager userPermissionManager,
                                       GenerateAuditReportCommand generateAuditReportCommand) {
 
         super(createInputAuditCommand,
@@ -56,19 +52,15 @@ public class GenerateAuditReportHandler
 
         this.iamQuery = iamQuery;
         this.generateAuditReportCommand = generateAuditReportCommand;
-        this.principalRoleQuery = principalRoleQuery;
-        this.roleQuery = roleQuery;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var principalRole = this.principalRoleQuery.getRole(new PrincipalId(input.auditedById()
-                                                                                 .getEntityId()));
-        var role = this.roleQuery.get(principalRole.roleId());
-
         String realmId = null;
-        if (role.isDfsp()) {
+        if (this.userPermissionManager.isDfsp(new PrincipalId(input.auditedById()
+                                                                   .getEntityId()))) {
             realmId = input.realmId()
                            .getEntityId()
                            .toString();
