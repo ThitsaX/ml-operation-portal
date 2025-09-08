@@ -3,8 +3,6 @@ package com.thitsaworks.operation_portal.core.iam.model.command;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
@@ -31,11 +29,10 @@ public class CreatePrincipalCommandUnitTest {
     public void test_createPrincipalSuccessfully() throws DomainException {
 
         this.createPrincipalCommand.execute(
-                new CreatePrincipalCommand.Input(new PrincipalId(1L),
-                                                 RealmType.PARTICIPANT,
-                                                 "password",
-                                                 new RealmId(395926063007432704L),
-                                                 UserRoleType.ADMIN, PrincipalStatus.ACTIVE));
+            new CreatePrincipalCommand.Input(new PrincipalId(1L),
+                                             "password",
+                                             new RealmId(395926063007432704L),
+                                             PrincipalStatus.ACTIVE));
     }
 
 }

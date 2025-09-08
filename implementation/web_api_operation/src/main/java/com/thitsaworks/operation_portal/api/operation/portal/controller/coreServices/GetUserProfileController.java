@@ -3,9 +3,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserProfile;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+import java.util.Base64;
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class GetUserProfileController {
@@ -25,13 +28,11 @@ public class GetUserProfileController {
 
     private final GetUserProfile getUserProfile;
 
-    private final ObjectMapper objectMapper;
-
     @GetMapping("/secured/getUserProfile")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get user profile request : {}", "");
+        LOG.info("Get User Profile Request : [{}]", "");
 
         UserContext
             userContext =
@@ -40,10 +41,29 @@ public class GetUserProfileController {
                                                .getDetails();
 
         GetUserProfile.Output output = this.getUserProfile.execute(
-            new GetUserProfile.Input(new ParticipantUserId(userContext.userId()
-                                                                      .getId())));
+                new GetUserProfile.Input(new UserId(userContext.userId().getId())));
 
-        var response = new Response(output.participantUserId()
+        List<Long> menuIds = output.permittedMenuAndActionList()
+                                   .entrySet()
+                                   .stream()
+                                   .flatMap(entry -> entry.getKey()
+                                                          .stream())
+                                   .map(menu -> menu.menuId()
+                                                    .getId()).distinct()
+                                   .sorted()
+                                   .toList();
+
+        List<String> actionCodes = output.permittedMenuAndActionList()
+                                         .entrySet()
+                                         .stream()
+                                         .flatMap(entry -> entry.getValue()
+                                                                .stream())
+                                         .map(action -> action.actionCode()
+                                                              .getValue()).distinct()
+                                         .sorted()
+                                         .toList();
+
+        var response = new Response(output.userId()
                                           .getId()
                                           .toString(),
                                     output.name(),
@@ -54,20 +74,25 @@ public class GetUserProfileController {
                                     output.jobTitle(),
                                     output.participantName(),
                                     output.description(),
-                                    output.roleType(),
+                                    output.logoDataType(),
+                                    output.logoBase64() == null ? null : Base64.getEncoder()
+                                                                         .encodeToString(output.logoBase64()),
+                                    output.roleList(),
                                     output.participantId()
                                           .getId()
                                           .toString(),
-                                    output.createdDate());
+                                    output.createdDate(),
+                                    menuIds,
+                                    actionCodes);
 
-        LOG.info("Get user profile response : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info("Get User Profile Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("participantUserId") String participantUserId,
+        @JsonProperty("userId") String userId,
         @JsonProperty("name") String name,
         @JsonProperty("email") String email,
         @JsonProperty("firstName") String firstName,
@@ -75,11 +100,13 @@ public class GetUserProfileController {
         @JsonProperty("jobTitle") String jobTitle,
         @JsonProperty("participantName") String participantName,
         @JsonProperty("description") String description,
-        @JsonProperty("userRoleType") String roleType,
+        @JsonProperty("logoFileType") String logoFileType,
+        @JsonProperty("logo") String logoBase64,
+        @JsonProperty("roleList") List<String> roleList,
         @JsonProperty("participantId") String participantId,
-        @JsonProperty("createdDate") Long createdDate
-    ) {
-
-    }
+        @JsonProperty("createdDate") Long createdDate,
+        @JsonProperty("accessMenuList") List<Long> menuList,
+        @JsonProperty("accessActionList") List<String> actionList
+    ) implements Serializable { }
 
 }

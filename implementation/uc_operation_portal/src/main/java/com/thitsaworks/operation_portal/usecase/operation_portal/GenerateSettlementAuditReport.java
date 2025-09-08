@@ -9,6 +9,8 @@ public interface GenerateSettlementAuditReport extends
 
     record Input(Instant startDate,
                  Instant endDate,
+                 String dfspId,
+                 String currencyId,
                  String fileType,
                  String timezone) {}
 

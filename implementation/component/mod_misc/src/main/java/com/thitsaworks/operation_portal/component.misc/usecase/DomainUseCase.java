@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.component.misc.usecase;
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 
 import java.net.ConnectException;
 

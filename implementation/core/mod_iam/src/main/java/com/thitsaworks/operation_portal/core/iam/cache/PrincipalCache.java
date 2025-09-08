@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.core.iam.cache;
 
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
 import com.thitsaworks.operation_portal.component.misc.spring.CacheQualifiers;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -19,8 +18,6 @@ public interface PrincipalCache {
 
     PrincipalData get(PrincipalId principalId);
 
-    PrincipalData get(AccessKey accessKey, RealmType realmType);
-
     void delete(AccessKey accessKey);
 
     public static class Updater {
@@ -33,9 +30,9 @@ public interface PrincipalCache {
                     PrincipalCache.class,
                     CacheQualifiers.DEFAULT);
 
-            PrincipalData participantUserData = new PrincipalData(principal);
+            PrincipalData principalData = new PrincipalData(principal);
 
-            principalCache.save(participantUserData);
+            principalCache.save(principalData);
         }
 
         @PostRemove

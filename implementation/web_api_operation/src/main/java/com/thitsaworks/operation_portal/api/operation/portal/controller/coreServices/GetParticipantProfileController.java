@@ -29,6 +29,8 @@ public class GetParticipantProfileController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
+        LOG.info("Get Participant Profile Request: ParticipantId = [{}]", participantId);
+
         var
             output =
             this.getParticipantProfile.execute(new GetParticipantProfile.Input(new ParticipantId(Long.parseLong(
@@ -40,13 +42,14 @@ public class GetParticipantProfileController {
                                     output.participantName(),
                                     output.description(),
                                     output.address(),
-                                    output.mobile()
-                                          .getValue(),
+                                    output.mobile() != null ? output.mobile().getValue() : null,
                                     output.logoDataType(),
-                                    output.logo() == null ? null : Base64.getEncoder()
-                                                                         .encodeToString(output.logo()),
+                                    output.logoBase64() == null ? null : Base64.getEncoder()
+                                                                               .encodeToString(output.logoBase64()),
                                     output.createdDate()
                                           .getEpochSecond());
+
+        LOG.info("Get Participant Profile Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

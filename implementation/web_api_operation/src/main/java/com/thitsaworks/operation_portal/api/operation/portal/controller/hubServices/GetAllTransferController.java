@@ -3,10 +3,10 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllTransfer;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class GetAllTransferController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferController.class);
 
-    private final GetAllTransfer getAllTransfer;
+    private final GetTransferList getTransferList;
 
     @GetMapping("/secured/getAllTransfer")
     public ResponseEntity<Response> execute(
@@ -40,6 +40,13 @@ public class GetAllTransferController {
         String currencyId,
         String transferStateId,
         String timezone) throws DomainException, ParseException, JsonProcessingException {
+
+        LOG.info("Get All Transfer Request for fromDate = [{}], toDate = [{}], transferId = [{}], " +
+                     "payerFspId = [{}], payeeFspId = [{}], payerIdentifierTypeId = [{}], " +
+                     "payeeIdentifierTypeId = [{}], " + "payerIdentifierValue = [{}], " +
+                     "payeeIdentifierValue = [{}], currencyId = [{}], transferStateId = [{}], timezone = [{}]",
+                 fromDate, toDate, transferId, payerFspId, payeeFspId, payerIdentifierTypeId, payeeIdentifierTypeId,
+                 payerIdentifierValue, payeeIdentifierValue, currencyId, transferStateId, timezone);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -57,8 +64,8 @@ public class GetAllTransferController {
             showTimezone = timezone.replaceFirst(".", "-");
         }
 
-        GetAllTransfer.Output output = this.getAllTransfer.execute(
-            new GetAllTransfer.Input(
+        GetTransferList.Output output = this.getTransferList.execute(
+            new GetTransferList.Input(
                 localFromDate,
                 localToDate,
                 transferId,
@@ -70,8 +77,7 @@ public class GetAllTransferController {
                 payeeIdentifierValue,
                 currencyId,
                 transferStateId,
-                new ParticipantUserId(userContext.userId()
-                                                 .getId()),
+                new UserId(userContext.userId().getId()),
                 timezone));
 
         List<Response.TransferInfo> transferInfoList = new ArrayList<>();
@@ -96,6 +102,8 @@ public class GetAllTransferController {
         }
 
         var response = new Response(transferInfoList);
+
+        LOG.info("Get All Transfer Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

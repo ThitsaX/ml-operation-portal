@@ -22,9 +22,8 @@
         </dependency>
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_hub_user</artifactId>
+            <artifactId>mod_participant</artifactId>
             <version>1.0.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

@@ -30,6 +30,8 @@ public class CreateGreetingMessageController {
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
 
+        LOGGER.info("Create Greeting Message Request : [{}]", request);
+
         var input = new CreateGreetingMessage.Input(
             request.greetingTitle(),
             request.greetingDetail(),
@@ -38,6 +40,8 @@ public class CreateGreetingMessageController {
         var output = this.createGreetingMessage.execute(input);
 
         var response = new Response(output.created());
+
+        LOGGER.info("Create Greeting Message Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

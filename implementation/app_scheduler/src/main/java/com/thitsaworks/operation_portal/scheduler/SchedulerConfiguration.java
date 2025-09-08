@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.scheduler;
 
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
-import com.thitsaworks.operation_portal.core.hubuser.HubUserConfiguration;
+import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Import;
 @ComponentScan("com.thitsaworks.operation_portal.scheduler")
 @Import(value = {
         VaultConfiguration.class,
-        VaultBasedApplicationSettings.class, HubUserConfiguration.class})
+        VaultBasedApplicationSettings.class, ParticipantConfiguration.class})
 public class SchedulerConfiguration {
 
     @Bean

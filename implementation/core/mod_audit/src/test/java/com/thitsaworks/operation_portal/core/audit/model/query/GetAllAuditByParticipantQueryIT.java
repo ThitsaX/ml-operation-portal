@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.audit.model.query;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
@@ -15,6 +16,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
@@ -29,17 +31,17 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
     @Test
     public void test_getAuditsSuccessfully() {
 
+        var grantedActionList = new ArrayList<ActionId>();
+
         GetAllAuditByParticipantQuery.Input input = new GetAllAuditByParticipantQuery.Input(
             new RealmId(731147922761035776L),
             Instant.parse("2025-02-01T00:00:00Z"),
             Instant.parse("2025-08-31T23:59:59Z"),
-                          new UserId(731148506436186112L),
-                          "CreateNewParticipantUser"
-                         );
+                          grantedActionList);
 
         GetAllAuditByParticipantQuery.Output output = getAllAuditByParticipantQuery.execute(input);
 
-        LOG.info("Audit Info userName: {},ActionName :{},ActionDate :{}", output.getAuditInfoList());
+        LOG.info("Audit Info userName: {},ActionName :{},ActionDate :{}", output.auditInfoList());
 
     }
 

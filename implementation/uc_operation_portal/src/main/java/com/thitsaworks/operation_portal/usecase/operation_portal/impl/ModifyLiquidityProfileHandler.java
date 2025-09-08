@@ -1,21 +1,18 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyLiquidityProfileCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyLiquidityProfile;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class ModifyLiquidityProfileHandler
@@ -24,9 +21,6 @@ public class ModifyLiquidityProfileHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyLiquidityProfileHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final ModifyLiquidityProfileCommand modifyLiquidityProfileCommand;
 
     public ModifyLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -34,15 +28,15 @@ public class ModifyLiquidityProfileHandler
                                          CreateExceptionAuditCommand createExceptionAuditCommand,
                                          ObjectMapper objectMapper,
                                          PrincipalCache principalCache,
-                                         ModifyLiquidityProfileCommand modifyLiquidityProfileCommand,
-                                         ParticipantCache participantCache) {
+                                         ActionAuthorizationManager actionAuthorizationManager,
+                                         ModifyLiquidityProfileCommand modifyLiquidityProfileCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyLiquidityProfileCommand = modifyLiquidityProfileCommand;
     }

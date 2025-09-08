@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewContact;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,6 @@ public class CreateNewContactHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewContactHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final CreateContactCommand createContactCommand;
 
     public CreateNewContactHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -33,14 +31,15 @@ public class CreateNewContactHandler
                                    CreateExceptionAuditCommand createExceptionAuditCommand,
                                    ObjectMapper objectMapper,
                                    PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
                                    CreateContactCommand createContactCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createContactCommand = createContactCommand;
     }

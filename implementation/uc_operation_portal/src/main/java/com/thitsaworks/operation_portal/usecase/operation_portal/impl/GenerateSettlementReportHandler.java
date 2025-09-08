@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -10,11 +9,10 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementReport;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class GenerateSettlementReportHandler
@@ -23,8 +21,6 @@ public class GenerateSettlementReportHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION);
-
     private final GenerateSettlementReportCommand generateSettlementReportCommand;
 
     public GenerateSettlementReportHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -32,14 +28,15 @@ public class GenerateSettlementReportHandler
                                            CreateExceptionAuditCommand createExceptionAuditCommand,
                                            ObjectMapper objectMapper,
                                            PrincipalCache principalCache,
+                                           ActionAuthorizationManager actionAuthorizationManager,
                                            GenerateSettlementReportCommand generateSettlementReportCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.generateSettlementReportCommand = generateSettlementReportCommand;
     }

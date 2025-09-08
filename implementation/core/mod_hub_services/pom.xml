@@ -20,6 +20,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.thitsaworks.operation_portal.component</groupId>
             <artifactId>mod_fspiop</artifactId>
         </dependency>
@@ -38,10 +42,6 @@
         <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_participant</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.thitsaworks.operation_portal.core</groupId>
-            <artifactId>mod_hub_user</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateLiquidityProfileCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewLiquidityProfile;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,6 @@ public class CreateNewLiquidityProfileHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateNewLiquidityProfileHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
-
     private final CreateLiquidityProfileCommand createLiquidityProfileCommand;
 
     public CreateNewLiquidityProfileHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -33,14 +31,15 @@ public class CreateNewLiquidityProfileHandler
                                             CreateExceptionAuditCommand createExceptionAuditCommand,
                                             ObjectMapper objectMapper,
                                             PrincipalCache principalCache,
+                                            ActionAuthorizationManager actionAuthorizationManager,
                                             CreateLiquidityProfileCommand createLiquidityProfileCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.createLiquidityProfileCommand = createLiquidityProfileCommand;
 

@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
@@ -65,6 +66,21 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         return participants.stream().map(ParticipantData::new).toList();
 
+    }
+
+    @Override
+    public Optional<ParticipantData> get(String participantName) {
+
+        BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName));
+
+        Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
+
+        if(optionalParticipant.isEmpty())
+        {
+            return Optional.empty();
+        }
+
+        return Optional.of(new ParticipantData(optionalParticipant.get()));
     }
 
 }

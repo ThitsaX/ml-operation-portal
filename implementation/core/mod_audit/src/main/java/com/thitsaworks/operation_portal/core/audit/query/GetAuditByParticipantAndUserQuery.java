@@ -21,7 +21,7 @@ public interface GetAuditByParticipantAndUserQuery {
 
         private Instant toDate;
 
-         String actionName;
+        private String actionName;
 
     }
 

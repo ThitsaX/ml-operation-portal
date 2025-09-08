@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -14,12 +13,12 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateParticipa
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,8 +29,6 @@ public class SyncHubParticipantsToPortalHandler
     implements SyncHubParticipantsToPortal {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncHubParticipantsToPortalHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
 
     private final HubParticipantQuery hubParticipantQuery;
 
@@ -46,6 +43,7 @@ public class SyncHubParticipantsToPortalHandler
                                               CreateExceptionAuditCommand createExceptionAuditCommand,
                                               ObjectMapper objectMapper,
                                               PrincipalCache principalCache,
+                                              ActionAuthorizationManager actionAuthorizationManager,
                                               HubParticipantQuery hubParticipantQuery,
                                               ParticipantQuery participantQuery,
                                               CreateParticipantCommand createParticipantCommand) {
@@ -53,9 +51,9 @@ public class SyncHubParticipantsToPortalHandler
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.hubParticipantQuery = hubParticipantQuery;
         this.participantQuery = participantQuery;
@@ -68,9 +66,13 @@ public class SyncHubParticipantsToPortalHandler
 
         List<HubParticipantData> hubParticipantDataList = this.hubParticipantQuery.getParticipantList();
 
-        Set<String> existingParticipantNames = this.participantQuery.getParticipants().stream()
-                                                                        .map(pd   -> pd.participantName().getValue())
-                                                                        .collect(Collectors.toSet());
+        Set<String>
+            existingParticipantNames =
+            this.participantQuery.getParticipants()
+                                 .stream()
+                                 .map(pd -> pd.participantName()
+                                              .getValue())
+                                 .collect(Collectors.toSet());
 
         List<CreatedParticipantInfo> createdParticipantInfoList = new ArrayList<>();
 
@@ -78,16 +80,18 @@ public class SyncHubParticipantsToPortalHandler
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
                 CreateParticipantCommand.Output output =
-                        this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(
-                                hubParticipant.name()),
-                                                                                         hubParticipant.description(),
-                                                                                         null,
-                                                                                         null,
+                    this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(
+                        hubParticipant.name()),
+                                                                                             hubParticipant.description(),
+                                                                                             null,
+                                                                                             null,
 
-                                                                                         null,
-                                                                                         null));
+                                                                                             null,
+                                                                                             null));
 
-                createdParticipantInfoList.add(new CreatedParticipantInfo(output.participantId().getId().toString(),
+                createdParticipantInfoList.add(new CreatedParticipantInfo(output.participantId()
+                                                                                .getId()
+                                                                                .toString(),
                                                                           hubParticipant.name(),
                                                                           hubParticipant.description()));
 
@@ -105,6 +109,6 @@ public class SyncHubParticipantsToPortalHandler
         return new Output(true);
     }
 
-    record CreatedParticipantInfo(String participantId, String name, String description) {}
+    record CreatedParticipantInfo(String participantId, String name, String description) { }
 
 }

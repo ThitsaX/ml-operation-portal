@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
-import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantUserCommand;
+import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.core.participant.model.TestSettings;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,19 +21,19 @@ public class CreateParticipantCommandUserUnitTest {
     private static final Logger LOG = LoggerFactory.getLogger(CreateParticipantCommandUserUnitTest.class);
 
     @Autowired
-    private CreateParticipantUserCommand createParticipantUserCommand;
+    private CreateUserCommand createUserCommand;
 
     @Test
     public void test_createUserSuccessfully() throws Exception {
 
-        this.createParticipantUserCommand.execute(
+        this.createUserCommand.execute(
 
-            new CreateParticipantUserCommand.Input("ksh",
-                                                   new Email("ksoohyun@email.com"),
-                                                   new ParticipantId(486520066979930112L),
-                                                   "kim",
-                                                   "soohyun",
-                                                   "actor"));
+            new CreateUserCommand.Input("ksh",
+                                        new Email("ksoohyun@email.com"),
+                                        new ParticipantId(486520066979930112L),
+                                        "kim",
+                                        "soohyun",
+                                        "actor"));
 
     }
 

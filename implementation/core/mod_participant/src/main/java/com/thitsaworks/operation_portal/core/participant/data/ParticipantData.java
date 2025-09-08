@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.core.participant.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
-import com.thitsaworks.operation_portal.core.participant.model.ParticipantUser;
+import com.thitsaworks.operation_portal.core.participant.model.User;
 
 import java.io.Serializable;
 import java.util.Set;
@@ -19,7 +19,7 @@ public record ParticipantData(ParticipantId participantId,
                               String logoDataType,
                               byte[] logo,
                               Long createdDate,
-                              Set<ParticipantUserId> participantUserIds) implements Serializable {
+                              Set<UserId> userIds) implements Serializable {
 
     public ParticipantData(Participant participant) {
 
@@ -32,11 +32,11 @@ public record ParticipantData(ParticipantId participantId,
              participant.getLogoBase64(),
              participant.getCreatedAt()
                         .getEpochSecond(),
-             participant.getParticipantUsers()
+             participant.getUsers()
                         .stream()
-                        .map((ParticipantUser participantUser) -> new ParticipantUserId(
-                            participantUser.getParticipantUserId()
-                                           .getId()))
+                        .map((User user) -> new UserId(
+                                user.getUserId()
+                                    .getId()))
                         .collect(Collectors.toSet()));
 
     }

@@ -30,6 +30,8 @@ public class RemoveContactController {
     @PostMapping(value = "/secured/removeContact")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Remove Contact Request: [{}]", request);
+
         var
             output =
             this.removeContact.execute(new RemoveContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -37,13 +39,14 @@ public class RemoveContactController {
 
         var response = new Response(output.removed());
 
+        LOG.info("Remove Contact Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("contactId") String contactId) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("contactId") String contactId) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("removed") boolean removed) implements Serializable { }

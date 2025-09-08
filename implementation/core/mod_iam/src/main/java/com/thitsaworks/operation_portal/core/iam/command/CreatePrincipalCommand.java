@@ -4,28 +4,17 @@ import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.common.type.RealmType;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
 public interface CreatePrincipalCommand {
 
-    record Input(
-            PrincipalId principalId,
-            RealmType realmType,
-            String passwordPlain,
-            RealmId realmId,
-            UserRoleType userRoleType,
+    Output execute(Input input) throws IAMException;
 
-            PrincipalStatus principalStatus) {
+    record Input(PrincipalId principalId,
+                 String passwordPlain,
+                 RealmId realmId,
+                 PrincipalStatus principalStatus) { }
 
-
-    }
-
-    record Output(AccessKey accessKey, String secretKey) {
-
-    }
-
-    CreatePrincipalCommand.Output execute(CreatePrincipalCommand.Input input) throws IAMException;
+    record Output(AccessKey accessKey, String secretKey) { }
 
 }

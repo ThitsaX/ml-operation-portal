@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -15,11 +14,10 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class ModifyParticipantProfileHandler
@@ -27,9 +25,6 @@ public class ModifyParticipantProfileHandler
     implements ModifyParticipantProfile {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyParticipantProfileHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
 
     private final ModifyParticipantCommand modifyParticipantCommand;
 
@@ -40,14 +35,15 @@ public class ModifyParticipantProfileHandler
                                            CreateExceptionAuditCommand createExceptionAuditCommand,
                                            ObjectMapper objectMapper,
                                            PrincipalCache principalCache,
+                                           ActionAuthorizationManager actionAuthorizationManager,
                                            ModifyParticipantCommand modifyParticipantCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.modifyParticipantCommand = modifyParticipantCommand;
         this.principalCache = principalCache;

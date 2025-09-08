@@ -10,7 +10,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -67,20 +67,23 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 params.put("realmId", input.realmId());
             }
 
-            if (input.participantUserId() != null) {
-                params.put("userId", input.participantUserId());
+            if (input.userId() != null) {
+                params.put("userId", input.userId());
             }
 
-            if (input.action() != null) {
-                params.put("action", input.action());
+            if (input.actionId() != null) {
+                params.put("actionId", input.actionId());
             }
+
+            params.put("grantedActionList", input.grantedActionList());
+
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/reportTesting.jrxml");
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/auditReport.jrxml");
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("reportTesting");
+            design.setName("auditReport");
             JasperReport jasperReport = JasperCompileManager.compileReport(design);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
@@ -97,17 +100,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
-
-            } else if (input.fileType()
-                            .equalsIgnoreCase("pdf")) {
-
-                JRPdfExporter pdfExporter = new JRPdfExporter();
-                ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-                pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-                pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-                pdfExporter.exportReport();
-                rptBytes = pdfReport.toByteArray();
-
+                
             } else if (input.fileType()
                             .equalsIgnoreCase("csv")) {
 
@@ -116,7 +109,11 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
                 csvExporter.exportReport();
-                rptBytes = csvReport.toByteArray();
+
+                String csvContent = csvReport.toString(StandardCharsets.UTF_8);
+                csvContent = "\n" + csvContent;
+
+                rptBytes = csvContent.getBytes(StandardCharsets.UTF_8);
             }
 
             return new Output(rptBytes);

@@ -30,11 +30,11 @@ public class GetParticipantsUnitTest {
         List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
 
         if (participantDataList.isEmpty()) {
-            System.out.println("No record");
+            LOG.info("No record");
         }
 
         for (var participant : participantDataList) {
-            System.out.println(participant.participantName() + " , " +
+            LOG.info(participant.participantName() + " , " +
                                    participant.description() + " , " +
                                    participant.address() + " , " +
                                    participant.mobile()

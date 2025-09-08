@@ -1,0 +1,57 @@
+package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
+import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.operation_portal.AssignRoleToUser;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import java.net.ConnectException;
+
+@Service
+public class AssignRoleToUserHandler
+    extends OperationPortalAuditableUseCase<AssignRoleToUser.Input, AssignRoleToUser.Output>
+    implements AssignRoleToUser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AssignRoleToUserHandler.class);
+
+    private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
+
+    public AssignRoleToUserHandler(CreateInputAuditCommand createInputAuditCommand,
+                                   CreateOutputAuditCommand createOutputAuditCommand,
+                                   CreateExceptionAuditCommand createExceptionAuditCommand,
+                                   ObjectMapper objectMapper,
+                                   PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
+                                   AssignRoleToPrincipalCommand assignRoleToPrincipalCommand) {
+
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              objectMapper,
+              principalCache,
+              actionAuthorizationManager);
+
+        this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
+    }
+
+    @Override
+    protected Output onExecute(Input input) throws DomainException, ConnectException {
+
+        var
+            output =
+            this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(input.principalId(),
+                                                                                             input.roleId()));
+
+        return new Output(output.principalRoleId());
+    }
+
+}

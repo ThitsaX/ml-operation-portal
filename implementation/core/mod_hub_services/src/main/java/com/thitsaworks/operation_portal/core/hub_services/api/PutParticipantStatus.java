@@ -6,21 +6,17 @@ import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 
 public class PutParticipantStatus {
 
-    public record Request(
-        String participantName,
+    public record Request(String participantName,
 
-        int participantCurrencyId,
+                          int participantCurrencyId,
 
-        boolean isActive
-    ) {
-    }
+                          boolean isActive) { }
 
-    public record Response(
-        String participantName,
+    public record Response(String participantName,
 
-        String participantCurrencyId,
+                           String participantCurrencyId,
 
-        boolean isActive) {
+                           boolean isActive) {
 
     }
 

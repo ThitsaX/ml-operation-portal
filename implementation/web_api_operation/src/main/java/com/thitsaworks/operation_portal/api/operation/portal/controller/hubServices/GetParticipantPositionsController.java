@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantUserId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionsData;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +28,12 @@ public class GetParticipantPositionsController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsController.class);
 
-    private final GetParticipantPositionsData getParticipantPositionsData;
+    private final GetParticipantPositions getParticipantPositions;
 
     @GetMapping("/secured/getParticipantPositionsData")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
+
+        LOG.info("Get Participant Positions Request : [{}]", "");
 
         UserContext
             userContext =
@@ -39,10 +41,10 @@ public class GetParticipantPositionsController {
                                                .getAuthentication()
                                                .getDetails();
 
-        GetParticipantPositionsData.Output output =
-                this.getParticipantPositionsData.execute(new GetParticipantPositionsData.Input(new ParticipantUserId(
-                        userContext.userId()
-                                   .getEntityId())));
+        GetParticipantPositions.Output output =
+                this.getParticipantPositions.execute(new GetParticipantPositions.Input(new UserId(
+                userContext.userId()
+                           .getEntityId())));
 
         if (output != null && !output.financialData()
                                      .isEmpty()) {
@@ -56,20 +58,27 @@ public class GetParticipantPositionsController {
                                                                                        financialData.currency(),
                                                                                        financialData.balance(),
                                                                                        financialData.currentPosition(),
-                                                                                       ((financialData.ndcPercent() != null &&
-                                                                         !financialData.ndcPercent()
-                                                                                       .equals(BigDecimal.ZERO.setScale(
-                                                                                               2,
-                                                                                               RoundingMode.HALF_UP))) ?
-                                                                         financialData.ndcPercent() + "%" : "-"),
+                                                                                       ((financialData.ndcPercent() !=
+                                                                                             null &&
+                                                                                             !financialData.ndcPercent()
+                                                                                                           .equals(
+                                                                                                               BigDecimal.ZERO.setScale(
+                                                                                                                   2,
+                                                                                                                   RoundingMode.HALF_UP))) ?
+                                                                                            financialData.ndcPercent() +
+                                                                                                "%" : "-"),
                                                                                        financialData.ndc(),
-                                                                                       (financialData.ndcUsed() != null) ?
-                                                                         financialData.ndcUsed() : BigDecimal.ZERO,
+                                                                                       (financialData.ndcUsed() !=
+                                                                                            null) ?
+                                                                                           financialData.ndcUsed() :
+                                                                                           BigDecimal.ZERO,
                                                                                        financialData.participantSettlementCurrencyId(),
                                                                                        financialData.participantPositionCurrencyId()));
             }
 
             var response = new Response(participantPositionsDataList);
+
+            LOG.info("Get Participant Positions Response : [{}]", response);
 
             return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -87,11 +96,13 @@ public class GetParticipantPositionsController {
             participantPositionsData = participantPositionsData != null ? participantPositionsData : List.of();
         }
 
-        public record ParticipantPositionsData(@JsonProperty("dfspId") String dfspId, @JsonProperty("dfspName") String dfspName,
+        public record ParticipantPositionsData(@JsonProperty("dfspId") String dfspId,
+                                               @JsonProperty("dfspName") String dfspName,
                                                @JsonProperty("currency") String currency,
                                                @JsonProperty("balance") BigDecimal balance,
                                                @JsonProperty("currentPosition") BigDecimal currentPosition,
-                                               @JsonProperty("ndcPercent") String ndcPercent, @JsonProperty("ndc") BigDecimal ndc,
+                                               @JsonProperty("ndcPercent") String ndcPercent,
+                                               @JsonProperty("ndc") BigDecimal ndc,
                                                @JsonProperty("ndcUsed") BigDecimal ndcUsed,
                                                @JsonProperty("participantSettlementCurrencyId") Integer participantSettlementCurrencyId,
                                                @JsonProperty("participantPositionCurrencyId") Integer participantPositionCurrencyId) {

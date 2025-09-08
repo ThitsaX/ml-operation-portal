@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mongo.ReportingMongoConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
@@ -48,6 +49,22 @@ public class TestSettings {
 
         return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
                 ReportingDataSourceConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_SETTINGS)
+    public ReportingMongoConfiguration.Settings reportingMongoConfigurationReadDbSettings(Vault vault) {
+
+        return vault.get(ReportingMongoConfiguration.READ_SETTINGS_PATH,
+                         ReportingMongoConfiguration.Settings.class);
+    }
+
+    @Bean
+    @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_SETTINGS)
+    public ReportingMongoConfiguration.Settings reportingMongoConfigurationWriteDbSettings(Vault vault) {
+
+        return vault.get(ReportingMongoConfiguration.WRITE_SETTINGS_PATH,
+                         ReportingMongoConfiguration.Settings.class);
     }
 
 }

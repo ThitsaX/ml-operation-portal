@@ -1,19 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hubuser.command.RemoveAnnouncementsCommand;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveAnnouncementsCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemovePastSixMonthsAnnouncements;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.EnumSet;
-import java.util.Set;
 
 @Service
 public class RemovePastSixMonthsAnnouncementsHandler
@@ -22,15 +18,14 @@ public class RemovePastSixMonthsAnnouncementsHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsHandler.class);
 
-    private static final Set<UserRoleType> PERMITTED_ROLES = EnumSet.allOf(UserRoleType.class);
-
     private final RemoveAnnouncementsCommand removeAnnouncementsCommand;
 
     @Autowired
     public RemovePastSixMonthsAnnouncementsHandler(PrincipalCache principalCache,
+                                                   ActionAuthorizationManager actionAuthorizationManager,
                                                    RemoveAnnouncementsCommand removeAnnouncementsCommand) {
 
-        super(PERMITTED_ROLES, principalCache);
+        super(principalCache, actionAuthorizationManager);
 
         this.removeAnnouncementsCommand = removeAnnouncementsCommand;
     }

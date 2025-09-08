@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -11,20 +10,16 @@ import com.thitsaworks.operation_portal.core.participant.command.CreateContactHi
 import com.thitsaworks.operation_portal.core.participant.command.RemoveContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveContact;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class RemoveContactHandler extends OperationPortalAuditableUseCase<RemoveContact.Input, RemoveContact.Output>
     implements RemoveContact {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveContactHandler.class);
-
-    private static final Set<UserRoleType> PERMITTED_ROLES = Set.of(UserRoleType.OPERATION,
-                                                                    UserRoleType.ADMIN);
 
     private final RemoveContactCommand removeContactCommand;
 
@@ -35,15 +30,16 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
+                                ActionAuthorizationManager actionAuthorizationManager,
                                 RemoveContactCommand removeContactCommand,
                                 CreateContactHistoryCommand createContactHistoryCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
               createExceptionAuditCommand,
-              PERMITTED_ROLES,
               objectMapper,
-              principalCache);
+              principalCache,
+              actionAuthorizationManager);
 
         this.removeContactCommand = removeContactCommand;
         this.createContactHistoryCommand = createContactHistoryCommand;

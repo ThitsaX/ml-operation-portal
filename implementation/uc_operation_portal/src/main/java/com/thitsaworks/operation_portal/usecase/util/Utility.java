@@ -1,8 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.util;
 
-import com.thitsaworks.operation_portal.component.common.identifier.HubUserId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.core.hubuser.query.HubUserQuery;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,13 +9,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class Utility {
 
+    private final UserQuery userQuery;
 
-    private final HubUserQuery hubUserQuery;
+    public String getEmail(UserId userId) {
 
-
-    public String getEmail(HubUserId hubUserId) {
-
-        return this.hubUserQuery.find(hubUserId)
+        return this.userQuery.find(userId)
                              .map(user -> user.email()
                                                  .getValue())
                              .orElse("unknown");

@@ -7,12 +7,11 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMIgnorableException
 
 public interface ChangePasswordCommand {
 
-    record Input (PrincipalId principalId, String oldPassword, String newPassword) {
-    }
+    record Input(PrincipalId principalId,
+                 String oldPassword,
+                 String newPassword) { }
 
-    record Output( AccessKey accessKey, String secretKey) {
-
-    }
+    record Output(AccessKey accessKey, String secretKey) { }
 
     Output execute(Input input) throws IAMException, IAMIgnorableException;
 

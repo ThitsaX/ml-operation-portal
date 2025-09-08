@@ -8,6 +8,12 @@ public interface GenerateSettlementAuditReportCommand {
 
     record Input(Instant startDate,
                  Instant endDate,
+
+                 String dfspId,
+
+                 String dfspName,
+
+                 String currencyId,
                  String filetype,
                  String timeZoneOffset) {}
 

@@ -30,6 +30,8 @@ public class RemoveLiquidityProfileController {
     @PostMapping(value = "/secured/removeLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Remove Liquidity Profile Request: [{}]", request);
+
         var
             output =
             this.removeLiquidityProfile.execute(new RemoveLiquidityProfile.Input(new ParticipantId(Long.parseLong(
@@ -39,13 +41,15 @@ public class RemoveLiquidityProfileController {
 
         var response = new Response(output.removed());
 
+        LOG.info("Remove Liquidity Profile Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId) implements Serializable { }
+    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+                          @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable { }
