@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="WARN" packages="pl.tkowalcz.tjahzi.log4j2">
+    <appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <ThresholdFilter level="info" onMatch="ACCEPT"
+                             onMismatch="DENY"/>
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss}{GMT+06:30}  %style{[REQ_ID:%X{REQ_ID}]}{cyan} %style{[USER_ID:%X{USER_ID}]}{cyan} %style{%8level}{magenta} %t:%class{36}:%L:(%M) - %msg%xEx%n"/>
+        </Console>
+        <Loki name="Loki">
+            <host>${sys:loki.host}</host>
+            <port>${sys:loki.port}</port>
+            <username>${sys:loki.username}</username>
+            <password>${sys:loki.password}</password>
+
+            <PatternLayout>
+                <Pattern>%d{yyyy-MM-dd HH:mm:ss}{GMT+06:30}  %style{[REQ_ID:%X{REQ_ID}]}{cyan} %style{[USER_ID:%X{USER_ID}]}{cyan} %style{%8level}{magenta} %t:%class{36}:%L:(%M) - %msg%xEx%n</Pattern>
+            </PatternLayout>
+
+            <Label name="server" value="mcix"/>
+            <Label name="service_name" value="mcix"/>
+            <Label name="instance" value="1"/>
+        </Loki>
+    </appenders>
+    <loggers>
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="Loki"/>
+        </root>
+    </loggers>
+</configuration>

@@ -33,16 +33,16 @@ public interface GetAllSchedulerConfigs
      * @param sortDirection the sort direction, defaults to ASC
      */
     record Input(
-        Optional<Boolean> active,
-        Optional<@NotNull String> sortBy,
-        Optional<Sort.Direction> sortDirection
+        Boolean active,
+        String sortBy,
+        Sort.Direction sortDirection
     ) {
         /**
          * Creates a new Input with default values for any null parameters.
          */
         public Input {
-            sortBy = sortBy != null ? sortBy : Optional.of(DEFAULT_SORT_FIELD);
-            sortDirection = sortDirection != null ? sortDirection : Optional.of(Sort.Direction.ASC);
+            sortBy = sortBy != null ? sortBy : DEFAULT_SORT_FIELD;
+            sortDirection = sortDirection != null ? sortDirection : Sort.Direction.ASC;
         }
     }
 

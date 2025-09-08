@@ -1,13 +1,21 @@
 package com.thitsaworks.operation_portal.core.scheduler.command.impl;
 
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
+import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.core.scheduler.BaseVaultSetUpTest;
+import com.thitsaworks.operation_portal.core.scheduler.SchedulerConfiguration;
+import com.thitsaworks.operation_portal.core.scheduler.TestSettings;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateOrUpdateSchedulerConfigCommand;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-public class CreateOrUpdateSchedulerConfigCommandUnitTest extends EnvAwareUnitTest {
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {SchedulerConfiguration.class, TestSettings.class, RedisConfiguration.class})
+public class CreateOrUpdateSchedulerConfigCommandUnitTest extends BaseVaultSetUpTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateOrUpdateSchedulerConfigCommandUnitTest.class);
 
@@ -18,7 +26,7 @@ public class CreateOrUpdateSchedulerConfigCommandUnitTest extends EnvAwareUnitTe
     public void test_createSchedulerConfigSuccessfully() throws Exception {
         // Arrange
         String taskName = "testScheduledTask";
-        String cronExpression = "0 0/5 * * * ?";
+        String cronExpression = "0 0/8 * * * ?";
         String description = "Test scheduled task";
         boolean active = true;
         
@@ -27,11 +35,11 @@ public class CreateOrUpdateSchedulerConfigCommandUnitTest extends EnvAwareUnitTe
         );
         
         // Act
-        CreateOrUpdateSchedulerConfigCommand.Output output = 
+        CreateOrUpdateSchedulerConfigCommand.Output output =
             createOrUpdateSchedulerConfigCommand.execute(input);
         
         // Assert
-        LOG.info("Scheduler config created: {}, cron: {}", 
+        LOG.info("Scheduler config created: {}, cron: {}",
                 output.created(), output.cronExpression());
     }
     
@@ -41,7 +49,7 @@ public class CreateOrUpdateSchedulerConfigCommandUnitTest extends EnvAwareUnitTe
         String taskName = "existingScheduledTask";
         String newCronExpression = "0 0/10 * * * ?";
         String updatedDescription = "Updated test scheduled task";
-        boolean active = false;
+        boolean active = true;
         
         CreateOrUpdateSchedulerConfigCommand.Input input = new CreateOrUpdateSchedulerConfigCommand.Input(
             taskName, newCronExpression, updatedDescription, active

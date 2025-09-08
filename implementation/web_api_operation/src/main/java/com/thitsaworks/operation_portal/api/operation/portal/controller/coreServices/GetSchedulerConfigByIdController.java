@@ -1,0 +1,51 @@
+package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSchedulerConfigById;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class GetSchedulerConfigByIdController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GetSchedulerConfigByIdController.class);
+
+    private final GetSchedulerConfigById getSchedulerConfigById;
+
+    @GetMapping("/secured/scheduler-configs/{configId}")
+    public ResponseEntity<Response> execute(
+        @PathVariable("configId") Long configId
+    ) throws DomainException {
+        LOG.debug("Fetching scheduler configuration with id: {}", configId);
+
+        GetSchedulerConfigById.Output output = this.getSchedulerConfigById.execute(
+            new GetSchedulerConfigById.Input(configId)
+        );
+
+        var response = new Response(output.config());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Response(
+        @JsonProperty("config") SchedulerConfigData config
+    ) {
+        public Response {
+            if (config == null) {
+                throw new IllegalArgumentException("Config cannot be null");
+            }
+        }
+    }
+}
