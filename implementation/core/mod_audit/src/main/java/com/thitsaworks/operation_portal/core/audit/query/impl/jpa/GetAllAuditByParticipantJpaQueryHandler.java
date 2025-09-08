@@ -42,10 +42,10 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                  .on(user.userId.id.eq(audit.userId.id))
                                  .join(action)
                                  .on(action.actionId.eq(audit.actionId))
-                                 .where(input.realmId() == null ?
+                                 .where((input.realmId() == null ?
                                             audit.realmId.eq(audit.realmId) :
                                             audit.realmId.id.eq(input.realmId()
-                                                                     .getId())
+                                                                     .getId()))
                                                             .and(input.fromDate() ==
                                                                      null ||
                                                                      input.toDate() ==

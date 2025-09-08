@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByUserId;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,19 +17,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetOrganizationListController {
+public class GetParticipantListByParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetOrganizationListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantListByParticipantController.class);
 
-    private final GetParticipantListByUserId getParticipantListByUserId;
+    private final GetParticipantListByParticipant getParticipantListByParticipant;
 
-    @GetMapping(value = "/secured/getParticipantListByUserId")
+    @GetMapping(value = "/secured/getParticipantListByParticipant")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Participant List By User Id Request : [{}]", "");
+        LOG.info("Get Participant List By Participant Request : [{}]", "");
 
-        var input = new GetParticipantListByUserId.Input();
-        var output = this.getParticipantListByUserId.execute(input);
+        var input = new GetParticipantListByParticipant.Input();
+        var output = this.getParticipantListByParticipant.execute(input);
 
         List<Response.ParticipantInfo> participantInfoList = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class GetOrganizationListController {
 
         var response = new Response(participantInfoList);
 
-        LOG.info("Get Participant List By User Id Response : [{}]", response);
+        LOG.info("Get Participant List By Participant Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

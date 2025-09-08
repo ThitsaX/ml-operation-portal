@@ -5,8 +5,8 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public interface GetParticipantListByUserId
-    extends UseCase<GetParticipantListByUserId.Input, GetParticipantListByUserId.Output> {
+public interface GetParticipantListByParticipant
+    extends UseCase<GetParticipantListByParticipant.Input, GetParticipantListByParticipant.Output> {
 
     record  Input( ) {}
 

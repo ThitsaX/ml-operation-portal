@@ -35,8 +35,7 @@ public class GetAuditListByParticipantController {
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
         @RequestParam("fromDate") String fromDate,
-        @RequestParam("toDate") String toDate,
-        @RequestParam("timezoneOffset") String timezoneOffset) throws DomainException, JsonProcessingException {
+        @RequestParam("toDate") String toDate) throws DomainException, JsonProcessingException {
 
         LOG.info(
             "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}]",
@@ -49,19 +48,11 @@ public class GetAuditListByParticipantController {
                                                .getAuthentication()
                                                .getDetails();
 
-        String showTimezone = timezoneOffset;
-
-        if (!timezoneOffset.startsWith("-")) {
-            showTimezone = timezoneOffset.replaceFirst(".", "+");
-        }
-
-        showTimezone = TimeZoneOffsetFormater.normalizeOffset(showTimezone);
 
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
                                                 Instant.parse(fromDate),
                                                 Instant.parse(toDate),
-                                                showTimezone,
                                                 userContext.userId()));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();

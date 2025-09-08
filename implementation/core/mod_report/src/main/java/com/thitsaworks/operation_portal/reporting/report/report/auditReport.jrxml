@@ -121,7 +121,7 @@ WHERE
   AND (
     ($P{fromDate} IS NULL OR $P{toDate} IS NULL)
     OR (
-      UNIX_TIMESTAMP(CONVERT_TZ(FROM_UNIXTIME(ta.created_date), '+00:00', $P{timezoneoffset})) BETWEEN $P{fromDate} AND $P{toDate}
+            ta.created_date BETWEEN $P{fromDate} AND $P{toDate}
     )
   )
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
@@ -176,7 +176,7 @@ WHERE
   AND (
     ($P{fromDate} IS NULL OR $P{toDate} IS NULL)
     OR (
-      UNIX_TIMESTAMP(CONVERT_TZ(FROM_UNIXTIME(ta.created_date), '+00:00', $P{timezoneoffset})) BETWEEN $P{fromDate} AND $P{toDate}
+      ta.created_date BETWEEN $P{fromDate} AND $P{toDate}
     )
   )
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
@@ -280,9 +280,10 @@ ORDER BY ta.created_date DESC]]>
                 <textElement textAlignment="Left">
                     <font fontName="Calibri" size="11"/>
                 </textElement>
-                <textFieldExpression><![CDATA[java.time.Instant.ofEpochSecond($P{fromDate}.longValue())
-    .atZone(java.time.ZoneOffset.UTC)
-    .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))+ $P{timezoneoffset}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[java.time.OffsetDateTime.ofInstant(
+    java.time.Instant.ofEpochSecond($P{fromDate}.longValue()),
+    java.time.ZoneOffset.of($P{timezoneoffset})
+).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="180" y="69" width="200" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
@@ -295,9 +296,10 @@ ORDER BY ta.created_date DESC]]>
                 <textElement textAlignment="Left">
                     <font fontName="Calibri" size="11"/>
                 </textElement>
-                <textFieldExpression><![CDATA[java.time.Instant.ofEpochSecond($P{toDate}.longValue())
-    .atZone(java.time.ZoneOffset.UTC)
-    .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")) + $P{timezoneoffset}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[java.time.OffsetDateTime.ofInstant(
+    java.time.Instant.ofEpochSecond($P{toDate}.longValue()),
+    java.time.ZoneOffset.of($P{timezoneoffset})
+).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="180" y="86" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>

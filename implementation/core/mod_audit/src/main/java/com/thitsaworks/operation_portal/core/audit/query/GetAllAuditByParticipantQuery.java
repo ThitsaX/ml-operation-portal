@@ -16,7 +16,6 @@ public interface GetAllAuditByParticipantQuery {
     record Input(RealmId realmId,
                  Instant fromDate,
                  Instant toDate,
-                 String timezoneoffset,
                  List<ActionId> grantedActionList) { }
 
     record Output(List<AuditInfo> auditInfoList) {
