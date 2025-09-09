@@ -7,7 +7,6 @@ import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindo
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
-import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
@@ -79,11 +78,5 @@ public interface HubService {
     @PUT("/v2/settlements/{settlementId}")
     Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
                                                            @Body PutUpdateSettlement.Request request);
-
-    @POST("/participants/{dfspCode}/accounts/{accountId}")
-    Call<PostUpdateSettlementByParticipant.Response> postUpdateSettlementByParticipant(
-            @Path("dfspCode") String dfspCode,
-            @Path("accountId") Integer accountId,
-            @Body PostUpdateSettlementByParticipant.Request request);
 
 }

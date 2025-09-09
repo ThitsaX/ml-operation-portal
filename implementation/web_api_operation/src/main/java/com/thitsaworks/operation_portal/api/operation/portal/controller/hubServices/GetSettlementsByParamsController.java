@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementsByParams;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -104,10 +104,7 @@ public class GetSettlementsByParamsController {
                                                          account.getReason(),
                                                          account.getExternalReference(),
                                                          account.getCreatedDate(),
-                                                         new Response.NetSettlementAmount(account.getNetSettlementAmount()
-                                                                                                 .getAmount(),
-                                                                                          account.getNetSettlementAmount()
-                                                                                                 .getCurrency())));
+                                                         account.getNetSettlementAmount()));
                 }
                 participantList.add(new Response.Participant(participant.getId(), accountList));
             }
@@ -131,7 +128,7 @@ public class GetSettlementsByParamsController {
 
     public record Response(List<Settlement> settlementList) implements Serializable {
 
-        public record Settlement(Integer id,
+        public record Settlement(Integer settlementId,
                                  String state,
                                  String reason,
                                  String createdDate,
@@ -165,11 +162,7 @@ public class GetSettlementsByParamsController {
                               String reason,
                               String externalReference,
                               String createdDate,
-                              NetSettlementAmount netSettlementAmount) {
-        }
-
-        public record NetSettlementAmount(BigDecimal amount,
-                                          String currency) {
+                              Money netSettlementAmount) {
         }
 
     }
