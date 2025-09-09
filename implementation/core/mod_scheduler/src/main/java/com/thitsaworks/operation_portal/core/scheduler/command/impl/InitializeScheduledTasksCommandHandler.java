@@ -1,10 +1,8 @@
 package com.thitsaworks.operation_portal.core.scheduler.command.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateOrUpdateSchedulerConfigCommand;
-import com.thitsaworks.operation_portal.core.scheduler.command.DeleteSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.core.scheduler.command.InitializeScheduledTasksCommand;
-import com.thitsaworks.operation_portal.core.scheduler.exception.ResourceNotFoundException;
-import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,14 +16,9 @@ public class InitializeScheduledTasksCommandHandler implements InitializeSchedul
     private final CreateOrUpdateSchedulerConfigCommand createOrUpdateSchedulerConfigCommand;
 
     @Override
-    public Output execute() {
-
-        schedulerConfigRepository.findByActiveTrue()
-                                 .forEach(config ->
-                                              createOrUpdateSchedulerConfigCommand.rescheduleTask(config.getName(),
-                                                                                                  config.getCronExpression())
-                                         );
-
+    @CoreWriteTransactional
+    public Output execute(String taskName, String cronExpression) {
+        createOrUpdateSchedulerConfigCommand.rescheduleTask(taskName, cronExpression);
         return new Output(true);
     }
 

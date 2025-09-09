@@ -16,6 +16,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
+import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
@@ -26,8 +27,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ModifyApprovalActionHandler
@@ -73,9 +72,10 @@ public class ModifyApprovalActionHandler
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
 
-        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ? "recordFundsIn" :
+        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
+                SettlementAction.recordFundsIn.toString() :
                             "Withdraw".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
-                                "recordFundsOutPrepareReserve" :
+                                    SettlementAction.recordFundsOutPrepareReserve.toString() :
                                     approvalRequestData.requestedAction();
 
 
@@ -99,7 +99,7 @@ public class ModifyApprovalActionHandler
 
            var request = new PutUpdateParticipantLimit.Request(
                 approvalRequestData.currency(),
-                new PutUpdateParticipantLimit.Limit("NET_DEBIT_CAP",
+                new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
                                                                              approvalRequestData.amount().intValue(),
                                                                              10));
 

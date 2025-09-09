@@ -8,7 +8,6 @@ import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceB
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
-import com.thitsaworks.operation_portal.core.hub_services.api.PostUpdateSettlementByParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubApiErrorDecoder;
@@ -177,43 +176,6 @@ public class ParticipantHubClient {
                                              request,
                                              (s, r) -> s.getParticipant(request.participantName()
                                                                               ),
-                                             this.hubApiErrorDecoder)
-                                     .body();
-
-        } catch (RetrofitRunner.InvocationException e) {
-
-            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
-
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
-
-            } else if (e.getCause() instanceof ConnectException) {
-
-                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
-
-            } else {
-
-                throw new HubServicesException(null);
-
-            }
-        }
-        return response;
-    }
-
-    public PostUpdateSettlementByParticipant.Response postUpdateSettlementByParticipant(String participantName,
-                                                                                        Integer accountId,
-                                                                                        PostUpdateSettlementByParticipant.Request request)
-            throws HubServicesException, ConnectException, HubServicesApiException {
-
-        PostUpdateSettlementByParticipant.Response response;
-
-        try {
-
-            response = RetrofitRunner.invoke(this.hubService,
-                                             request,
-                                             (s, r) -> s.postUpdateSettlementByParticipant(participantName,
-                                                                                           accountId,
-                                                                                           request
-                                                                                          ),
                                              this.hubApiErrorDecoder)
                                      .body();
 

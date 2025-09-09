@@ -10,11 +10,12 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "scheduler_configs")
+@Table(name = "tbl_scheduler_configs")
 public class SchedulerConfig {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     
     @Column(name = "name", nullable = false, unique = true)
