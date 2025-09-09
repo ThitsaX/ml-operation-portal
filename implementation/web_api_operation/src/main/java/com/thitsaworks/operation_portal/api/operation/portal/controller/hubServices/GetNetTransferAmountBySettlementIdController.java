@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -25,18 +26,19 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetNetTransferAmountByWindowIdController {
+public class GetNetTransferAmountBySettlementIdController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountBySettlementIdController.class);
 
-    private final GetNetTransferAmountByWindowId getNetTransferAmountByWindowId;
+    private final GetNetTransferAmountBySettlementId getNetTransferAmountBySettlementId;
 
-    @GetMapping(value = "/secured/getNetTransferAmountByWindowId")
-    public ResponseEntity<Response> execute( @RequestParam
-                                             @NotNull(message = "settlementWindowId is required") int settlementWindowId)
-        throws DomainException, JsonProcessingException {
+    @GetMapping(value = "/secured/getNetTransferAmountBySettlementId")
+    public ResponseEntity<GetNetTransferAmountBySettlementIdController.Response> execute(@RequestParam
+                                                                                     @NotNull(message = "settlementId is required") int settlementId)
 
-        LOG.info("Get Net Transfer Amount By Window Id Request : [{}]", settlementWindowId);
+    throws DomainException, JsonProcessingException {
+
+        LOG.info("Get Net Transfer Amount By Settlement Id Request : [{}]", settlementId);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -44,10 +46,11 @@ public class GetNetTransferAmountByWindowIdController {
                                                .getDetails();
         var
             output =
-            this.getNetTransferAmountByWindowId.execute(new GetNetTransferAmountByWindowId.Input(
-                settlementWindowId));
+            this.getNetTransferAmountBySettlementId.execute(new GetNetTransferAmountBySettlementId.Input(
+                settlementId));
 
-        var response = new Response(output.settlementWindowId(),
+        var response = new Response(output.settlementId(),
+                                    output.settlementWindowIds(),
                                     output.windowOpenedDate(),
                                     output.windowClosedDate(),
                                     output.details()
@@ -68,8 +71,10 @@ public class GetNetTransferAmountByWindowIdController {
     }
 
 
+
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(int settlementWindowId,
+    public record Response(int settlementId,
+                           String settlementWindowIds,
                            String windowOpenedDate,
                            String windowClosedDate,
                            List<Detail> details

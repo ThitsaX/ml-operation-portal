@@ -6,12 +6,12 @@ import lombok.Value;
 
 import java.util.List;
 
-public interface GetNetTransferAmountByWindowIdQuery {
+public interface GetNetTransferAmountBySettlementIdQuery {
 
     @Value
     class Input {
 
-        private int settlementWindowId;
+        private int settlementId;
 
     }
 

@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowI
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.SettlementWindowInfoDataMapper;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountBySettlementIdQuery;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTransferAmountByWindowIdQuery {
+public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNetTransferAmountBySettlementIdQuery {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdJdbcQueryHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountBySettlementIdJdbcQueryHandler.class);
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GetNetTransferAmountByWindowIdJdbcQueryHandler(
+    public GetNetTransferAmountBySettlementIdJdbcQueryHandler(
         @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
@@ -36,13 +37,20 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
         List<SettlementWindowInfoData> results = null;
 
         try {
+
+//@@Formatter:off
             results = this.jdbcTemplate.query(
                 "SELECT  \n" +
                     "  p.name AS DfspName,\n" +
                     "  IF(SUM(tp.amount) < 0, SUM(tp.amount), 0) AS Debit,\n" +
                     "  IF(SUM(tp.amount) > 0, SUM(tp.amount), 0) AS Credit,\n" +
                     "  pc.currencyId,\n" +
-                    "  swso.createdDate as WindowOpenDate,\n" +
+                    "  (\n" +
+                    "    SELECT GROUP_CONCAT(DISTINCT ssw.settlementWindowId ORDER BY ssw.settlementWindowId)\n" +
+                    "    FROM central_ledger.settlementSettlementWindow ssw\n" +
+                    "    WHERE ssw.settlementId = ? \n" +
+                    "  ) AS WindowIDs,\n" +
+                    "  ssw.createdDate as WindowOpenDate,\n" +
                     "  swsf.createdDate as WindowSettledDate\n" +
                     "FROM \n" +
                     "  central_ledger.transferFulfilment tf\n" +
@@ -52,19 +60,22 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
                     "  participant p ON tp.participantId = p.participantId\n" +
                     "JOIN \n" +
                     "  participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId\n" +
-                    "Join \n" +
-                    " settlementWindowStateChange swso on swso.settlementWindowId = tf.settlementWindowId\n" +
-                    " AND swso.settlementWindowStateId ='OPEN' \n" +
+                    "JOIN \n" +
+                    "  settlementSettlementWindow ssw ON ssw.settlementWindowId = tf.settlementWindowId\n" +
+                    "\n" +
                     " Join \n" +
                     " settlementWindowStateChange swsf on swsf.settlementWindowId = tf.settlementWindowId\n" +
                     " AND swsf.settlementWindowStateId ='SETTLED' \n" +
                     "WHERE \n" +
-                    "  tf.settlementWindowId = ?\n" +
+                    "  ssw.settlementId = ? \n" +
                     "GROUP BY \n" +
-                    "  p.name, pc.currencyId ,swso.createdDate, swsf.createdDate;",
+                    "  p.name, pc.currencyId, ssw.createdDate, swsf.createdDate;",
                 new SettlementWindowInfoDataMapper(),
-                input.getSettlementWindowId()
+                input.getSettlementId(), // for subquery
+                input.getSettlementId()  // for main WHERE
                                              );
+//@@Formatter:on
+
         } catch (Exception e) {
 
             throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
