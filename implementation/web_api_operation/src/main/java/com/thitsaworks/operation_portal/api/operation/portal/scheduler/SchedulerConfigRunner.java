@@ -9,10 +9,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Manages the scheduling of tasks based on configurations from the database.
+ * Implements delta-based updates to minimize unnecessary task recreation.
+ */
 @Component
 public class SchedulerConfigRunner {
 
@@ -28,7 +31,8 @@ public class SchedulerConfigRunner {
     }
 
     /**
-     * Run every minute to check for new or updated scheduler configurations
+     * Runs periodically to check for configuration changes and update scheduled tasks accordingly.
+     * Only updates tasks that have actually changed.
      */
     @Scheduled(fixedRate = 60000) // Run every minute
     @CoreWriteTransactional
@@ -36,32 +40,75 @@ public class SchedulerConfigRunner {
         try {
             // Get all active scheduler configurations
             List<SchedulerConfigData> configs = schedulerConfigQuery.getSchedulerConfigs(true, null);
-
-            // Schedule new or updated configs
+            
+            // Track changes
+            List<InitializeScheduledTasks.Input.ConfigChange> changes = new ArrayList<>();
+            
+            // Check for new or updated schedules
             configs.forEach(config -> {
                 String taskName = config.name();
                 String cronExpression = config.cronExpression();
+                String currentCron = activeSchedules.get(taskName);
+                
+                if (currentCron == null) {
+                    // New schedule
+                    changes.add(new InitializeScheduledTasks.Input.ConfigChange(
+                        taskName, 
+                        cronExpression, 
+                        InitializeScheduledTasks.Input.ChangeType.NEW
+                    ));
+                    activeSchedules.put(taskName, cronExpression);
+                    LOG.info("Scheduling new task: {} with cron: {}", taskName, cronExpression);
+                } else if (!currentCron.equals(cronExpression)) {
+                    // Updated schedule
+                    changes.add(new InitializeScheduledTasks.Input.ConfigChange(
+                        taskName, 
+                        cronExpression, 
+                        InitializeScheduledTasks.Input.ChangeType.UPDATED
+                    ));
+                    activeSchedules.put(taskName, cronExpression);
+                    LOG.info("Updating task: {} with new cron: {}", taskName, cronExpression);
+                }
+                // No change needed if cron matches
+            });
 
-                // Check if this is a new or updated schedule
-                if (!cronExpression.equals(activeSchedules.get(taskName))) {
-                    try {
-                        // Initialize the scheduled tasks using the use case
-                        initializeScheduledTasks.execute(new InitializeScheduledTasks.Input());
-                        activeSchedules.put(taskName, cronExpression);
-                        LOG.info("Initialized scheduled task: {} with cron: {}", taskName, cronExpression);
-                    } catch (Exception e) {
-                        LOG.error("Failed to schedule task: " + taskName, e);
-                    }
+            // Check for removed schedules
+            Set<String> currentTaskNames = new HashSet<>();
+            configs.forEach(config -> currentTaskNames.add(config.name()));
+            
+            activeSchedules.keySet().forEach(taskName -> {
+                if (!currentTaskNames.contains(taskName)) {
+                    changes.add(new InitializeScheduledTasks.Input.ConfigChange(
+                        taskName, 
+                        null, 
+                        InitializeScheduledTasks.Input.ChangeType.REMOVED
+                    ));
+                    activeSchedules.remove(taskName);
+                    LOG.info("Removed task: {}", taskName);
                 }
             });
 
-            // Handle removed configs
-            activeSchedules.keySet().removeIf(taskName ->
-                                                  configs.stream().noneMatch(config -> config.name().equals(taskName))
-                                             );
+            // Process changes if any
+            if (!changes.isEmpty()) {
+                InitializeScheduledTasks.Output result = initializeScheduledTasks.execute(
+                    new InitializeScheduledTasks.Input(changes)
+                );
+                
+                if (!result.success()) {
+                    LOG.error("Failed to process some scheduled task updates: {}", result.message());
+                }
+            }
 
         } catch (Exception e) {
             LOG.error("Error in scheduler config runner", e);
         }
+    }
+    
+    /**
+     * Gets the currently active schedules
+     * @return Map of task names to their cron expressions
+     */
+    public Map<String, String> getActiveSchedules() {
+        return Collections.unmodifiableMap(activeSchedules);
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -24,15 +25,14 @@ public class GetSchedulerConfigByIdController {
 
     private final GetSchedulerConfigById getSchedulerConfigById;
 
-    @GetMapping("/secured/scheduler-configs/{configId}")
-    public ResponseEntity<Response> execute(
-        @PathVariable("configId") Long configId
-    ) throws DomainException {
+    @GetMapping("/secured/schedulerConfig")
+    public ResponseEntity<Response> execute(@Valid @RequestParam Long configId) throws DomainException {
+
         LOG.debug("Fetching scheduler configuration with id: {}", configId);
 
         GetSchedulerConfigById.Output output = this.getSchedulerConfigById.execute(
             new GetSchedulerConfigById.Input(configId)
-        );
+                                                                                  );
 
         var response = new Response(output.config());
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -42,10 +42,14 @@ public class GetSchedulerConfigByIdController {
     public record Response(
         @JsonProperty("config") SchedulerConfigData config
     ) {
+
         public Response {
+
             if (config == null) {
                 throw new IllegalArgumentException("Config cannot be null");
             }
         }
+
     }
+
 }

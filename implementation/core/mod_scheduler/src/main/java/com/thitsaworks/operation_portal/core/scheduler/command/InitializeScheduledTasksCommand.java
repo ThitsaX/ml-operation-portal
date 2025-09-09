@@ -4,6 +4,6 @@ public interface InitializeScheduledTasksCommand {
 
     record Output(boolean initialized) {}
 
-    Output execute();
+    Output execute(String taskName, String cronExpression);
 
 }

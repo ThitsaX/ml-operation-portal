@@ -24,7 +24,7 @@ public class CreateSchedulerConfigController {
 
     private final CreateSchedulerConfig createSchedulerConfig;
 
-    @PostMapping("/secured/scheduler-config")
+    @PostMapping("/secured/schedulerConfig")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
 
@@ -49,6 +49,6 @@ public class CreateSchedulerConfigController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("isCreated") boolean isCreated
+        @JsonProperty("created") boolean created
     ) {}
 }

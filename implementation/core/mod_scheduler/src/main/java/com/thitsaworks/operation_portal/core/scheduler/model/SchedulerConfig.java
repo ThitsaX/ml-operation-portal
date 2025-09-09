@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "scheduler_configs")
+@Table(name = "tbl_scheduler_configs")
 public class SchedulerConfig {
     
     @Id

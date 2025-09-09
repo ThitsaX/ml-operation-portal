@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,9 +26,9 @@ public class ModifySchedulerConfigController {
 
     private final ModifySchedulerConfig modifySchedulerConfig;
 
-    @PutMapping("/secured/scheduler-configs/{configId}")
+    @PutMapping("/secured/schedulerConfig")
     public ResponseEntity<Response> execute(
-        @PathVariable("configId") Long configId,
+        @Valid @RequestParam Long configId,
         @Valid @RequestBody Request request
     ) throws DomainException {
         LOG.debug("Updating scheduler configuration with id: {}", configId);
@@ -55,6 +56,6 @@ public class ModifySchedulerConfigController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-        @JsonProperty("isUpdated") boolean isUpdated
+        @JsonProperty("updated") boolean updated
     ) {}
 }

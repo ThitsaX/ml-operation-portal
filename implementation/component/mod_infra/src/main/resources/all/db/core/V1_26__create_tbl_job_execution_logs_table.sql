@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS tbl_job_execution_logs (
     start_time DATETIME NOT NULL,
     end_time DATETIME,
     execution_message TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_date bigint DEFAULT NULL,
+    updated_date bigint DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create indexes

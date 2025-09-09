@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAllSchedulerConfigs;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSchedulerConfigList;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -20,13 +20,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllSchedulerConfigsController {
+public class GetSchedulerConfigListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAllSchedulerConfigsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetSchedulerConfigListController.class);
 
-    private final GetAllSchedulerConfigs getAllSchedulerConfigs;
+    private final GetSchedulerConfigList getSchedulerConfigList;
 
-    @GetMapping("/secured/scheduler-configs")
+    @GetMapping("/secured/schedulerConfigs")
     public ResponseEntity<Response> execute(
         @RequestParam(value = "active", required = false) Boolean active,
         @RequestParam(value = "sortBy", required = false) String sortBy,
@@ -35,13 +35,13 @@ public class GetAllSchedulerConfigsController {
         LOG.debug("Fetching all scheduler configurations with active={}, sortBy={}, sortDirection={}", 
                  active, sortBy, sortDirection);
 
-        GetAllSchedulerConfigs.Output output = this.getAllSchedulerConfigs.execute(
-            new GetAllSchedulerConfigs.Input(
+        GetSchedulerConfigList.Output output = this.getSchedulerConfigList.execute(
+            new GetSchedulerConfigList.Input(
                 active,
                 sortBy,
                 sortDirection
             )
-        );
+                                                                                  );
 
         var response = new Response(output.configs());
         return new ResponseEntity<>(response, HttpStatus.OK);

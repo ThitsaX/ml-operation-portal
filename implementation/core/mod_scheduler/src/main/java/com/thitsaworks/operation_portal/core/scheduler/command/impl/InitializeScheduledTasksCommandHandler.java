@@ -17,14 +17,8 @@ public class InitializeScheduledTasksCommandHandler implements InitializeSchedul
 
     @Override
     @CoreWriteTransactional
-    public Output execute() {
-
-        schedulerConfigRepository.findByActiveTrue()
-                                 .forEach(config ->
-                                              createOrUpdateSchedulerConfigCommand.rescheduleTask(config.getName(),
-                                                                                                  config.getCronExpression())
-                                         );
-
+    public Output execute(String taskName, String cronExpression) {
+        createOrUpdateSchedulerConfigCommand.rescheduleTask(taskName, cronExpression);
         return new Output(true);
     }
 
