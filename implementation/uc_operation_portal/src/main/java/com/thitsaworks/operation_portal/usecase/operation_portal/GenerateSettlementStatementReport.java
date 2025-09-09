@@ -8,8 +8,8 @@ public interface GenerateSettlementStatementReport
     extends UseCase<GenerateSettlementStatementReport.Input, GenerateSettlementStatementReport.Output> {
 
     record Input(String fspId,
-                 String startDate,
-                 String endDate,
+                 Instant startDate,
+                 Instant endDate,
                  String fileType,
                  String currencyId,
                  String timezoneOffSet) { }

@@ -46,8 +46,8 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
         Map<String, Object> params = new HashMap<String, Object>();
 
         params.put("dfspId", input.fspId());
-        params.put("startDate", input.startDate());
-        params.put("endDate", input.endDate());
+        params.put("startDate", input.startDate().toString());
+        params.put("endDate", input.endDate().toString());
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timeZoneOffset());
 

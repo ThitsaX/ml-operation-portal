@@ -46,8 +46,8 @@ public class GenerateSettlementStatementReportController {
 
         GenerateSettlementStatementReport.Output output = this.generateSettlementStatementReport.execute(
             new GenerateSettlementStatementReport.Input(fspId,
-                                                        startDate,
-                                                        endDate,
+                                                        Instant.parse(startDate),
+                                                        Instant.parse(endDate),
                                                         fileType,
                                                         currencyId,
                                                         timeZoneOffset
@@ -55,7 +55,7 @@ public class GenerateSettlementStatementReportController {
 
         var response = new GenerateStatementReportController.Response(output.statementData());
 
-        LOG.info("Generate Statement Report response = [{}]", response);
+        LOG.info("Generate Settlement Statement Report response = [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
