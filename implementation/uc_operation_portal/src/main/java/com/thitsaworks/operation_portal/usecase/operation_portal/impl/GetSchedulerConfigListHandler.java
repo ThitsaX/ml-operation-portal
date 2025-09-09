@@ -59,17 +59,13 @@ public class GetSchedulerConfigListHandler
 
         // Create sort object based on input
         Sort sort = Sort.by(
-            input.sortDirection()
-                 .orElse(Sort.Direction.ASC),
+            input.sortDirection(),
             input.sortBy()
-                 .orElse(DEFAULT_SORT_FIELD)
-                           );
-
+        );
+        
         // Fetch filtered and sorted results
-        List<SchedulerConfigData> configs = input.active()
-                                                 .map(active -> schedulerConfigQuery.getSchedulerConfigs(active, sort))
-                                                 .orElseGet(() -> schedulerConfigQuery.getSchedulerConfigs(sort));
-
+        List<SchedulerConfigData> configs = schedulerConfigQuery.getSchedulerConfigs(input.active(), sort);
+        
         return new Output(configs);
     }
 

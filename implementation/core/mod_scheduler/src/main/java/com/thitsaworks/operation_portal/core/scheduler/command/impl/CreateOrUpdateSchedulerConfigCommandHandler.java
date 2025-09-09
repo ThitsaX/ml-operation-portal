@@ -45,7 +45,7 @@ public class CreateOrUpdateSchedulerConfigCommandHandler implements CreateOrUpda
         return new Output(savedConfig.getCronExpression(), true);
     }
 
-    @Transactional
+    @CoreWriteTransactional
     public void rescheduleTask(String taskName, String cronExpression) {
         // Delegate task scheduling to SchedulerService
         scheduleTaskCommand.execute(taskName, cronExpression);

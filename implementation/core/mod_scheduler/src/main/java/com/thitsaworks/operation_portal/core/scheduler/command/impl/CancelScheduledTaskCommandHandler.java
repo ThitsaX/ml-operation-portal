@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.scheduler.command.impl;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.command.CancelScheduledTaskCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ public class CancelScheduledTaskCommandHandler implements CancelScheduledTaskCom
     private final Map<String, ScheduledFuture<?>> scheduledTasks;
 
     @Override
+    @CoreWriteTransactional
     public Output execute(String taskName) {
         ScheduledFuture<?> task = scheduledTasks.remove(taskName);
         if (task != null) {
