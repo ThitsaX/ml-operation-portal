@@ -15,8 +15,7 @@ public interface GetAuditByParticipantList
 
     record Input(RealmId realmId,
                  Instant fromDate,
-                 Instant toDate,
-                 UserId auditedById) { }
+                 Instant toDate) { }
 
     record Output(List<AuditInfo> auditInfoList) {
 

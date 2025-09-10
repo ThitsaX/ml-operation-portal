@@ -47,9 +47,7 @@ public class UserJpaQueryHandler implements UserQuery {
     public List<UserData> getUsers(ParticipantId participantId) {
 
         BooleanExpression
-            predicate =
-                this.user.participant.participantId.eq(participantId)
-                                                   .and(user.isDeleted.isFalse());
+            predicate = this.user.participant.participantId.eq(participantId);
 
         List<User> users = (List<User>) this.userRepository.findAll(
             predicate);

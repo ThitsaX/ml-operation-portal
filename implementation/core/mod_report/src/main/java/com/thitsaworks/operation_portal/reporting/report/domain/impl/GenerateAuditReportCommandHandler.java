@@ -56,12 +56,10 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             var timeOffset = input.timezoneoffset();
 
-            var fromDate = this.convertInstantToDate(input.fromDate(), timeOffset);
-            var toDate = this.convertInstantToDate(input.toDate(), timeOffset);
 
             params.put("timezoneoffset", timeOffset);
-            params.put("fromDate", fromDate);
-            params.put("toDate", toDate);
+            params.put("fromDate", input.fromDate().getEpochSecond());
+            params.put("toDate", input.toDate().getEpochSecond());
 
             if (input.realmId() != null) {
                 params.put("realmId", input.realmId());
@@ -125,14 +123,5 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         }
     }
 
-    private Date convertInstantToDate(Instant instant, String timeOffset) {
-
-        ZoneId zoneId = ZoneId.of(timeOffset);
-
-        ZonedDateTime zonedDateTime = instant.atZone(zoneId);
-
-        return Date.from(zonedDateTime.toInstant());
-
-    }
 
 }

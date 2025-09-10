@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -11,10 +13,9 @@ import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipan
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
-import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
-import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +35,7 @@ public class GetAuditByParticipantListHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
-    private final PrincipalRoleQuery principalRoleQuery;
-
-    private final RoleQuery roleQuery;
+    private final UserPermissionManager userPermissionManager;
 
     public GetAuditByParticipantListHandler(CreateInputAuditCommand createInputAuditCommand,
                                             CreateOutputAuditCommand createOutputAuditCommand,
@@ -46,8 +45,7 @@ public class GetAuditByParticipantListHandler
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
                                             GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
-                                            PrincipalRoleQuery principalRoleQuery,
-                                            RoleQuery roleQuery) {
+                                            UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -58,25 +56,24 @@ public class GetAuditByParticipantListHandler
 
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
-        this.principalRoleQuery = principalRoleQuery;
-        this.roleQuery = roleQuery;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(input.auditedById()
-                                                                                                .getEntityId()))
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+
+
+        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
                                              .stream()
                                              .map(ActionData::actionId)
                                              .toList();
 
-        var principalRole = this.principalRoleQuery.getRole(new PrincipalId(input.auditedById()
-                                                                                 .getEntityId()));
-        var role = this.roleQuery.get(principalRole.roleId());
-
         RealmId realmId = null;
-        if (role.isDfsp()) {
+        if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
             realmId = input.realmId();
         }
 

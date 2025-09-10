@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +46,7 @@ public class GetUserController {
                                     output.firstName(),
                                     output.lastName(),
                                     output.jobTitle(),
+                                    output.roleList(),
                                     output.createdDate());
 
         LOG.info("Get User Response: [{}]", response);
@@ -63,6 +65,7 @@ public class GetUserController {
                            @JsonProperty("firstName") String firstName,
                            @JsonProperty("lastName") String lastName,
                            @JsonProperty("jobTitle") String jobTitle,
+                           @JsonProperty("roleList") List<String> roleList,
                            @JsonProperty("createdDate") Long createdDate
     ) implements Serializable { }
 

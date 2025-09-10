@@ -23,5 +23,8 @@ public class IAMErrors {
     public static final ErrorMessage MENU_NOT_FOUND = new ErrorMessage("MENU_NOT_FOUND","System cannot find menu .");
 
     public static final ErrorMessage DUPLICATE_ROLE_NAME = new ErrorMessage("DUPLICATE_ROLE_NAME","Duplicate role name ");
+    public static final ErrorMessage UNAUTHORIZED_ROLE_CREATION = new ErrorMessage("UNAUTHORIZED_ROLE_CREATION", "The inputted role is not authorized to create.");
+    public static final ErrorMessage UNAUTHORIZED_USER_ACCESS = new ErrorMessage("UNAUTHORIZED_USER_ACCESS", "You are not authorized to view this user.");
+
     //@@formatter:on
 }
