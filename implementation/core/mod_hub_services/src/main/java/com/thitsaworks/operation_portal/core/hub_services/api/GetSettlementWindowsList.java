@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.core.hub_services.support.SettlementCont
 
 import java.util.List;
 
-public class GetSettlementWindowsByParams {
+public class GetSettlementWindowsList {
 
     public record Request() { }
 

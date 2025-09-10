@@ -6,8 +6,8 @@ import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import java.io.Serializable;
 import java.util.List;
 
-public interface GetSettlementsByParams
-        extends UseCase<GetSettlementsByParams.Input, GetSettlementsByParams.Output> {
+public interface GetSettlementList
+        extends UseCase<GetSettlementList.Input, GetSettlementList.Output> {
 
     public record Input(String currency,
                         Integer participantId,

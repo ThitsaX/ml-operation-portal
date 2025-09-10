@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementsByParams;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,13 +19,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetSettlementsByParamsController {
+public class GetSettlementListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementsByParamsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementListController.class);
 
-    private final GetSettlementsByParams getSettlementsByParams;
+    private final GetSettlementList getSettlementList;
 
-    @GetMapping("/secured/getSettlementsByParams")
+    @GetMapping("/secured/getSettlementList")
     public ResponseEntity<Response> execute(@RequestParam(value = "currency", required = false) String currency,
                                             @RequestParam(value = "participantId", required = false)
                                             Integer participantId,
@@ -53,8 +53,8 @@ public class GetSettlementsByParamsController {
                 fromSettlementWindowDateTime,
                 toSettlementWindowDateTime);
 
-        GetSettlementsByParams.Output output = this.getSettlementsByParams.execute(
-                new GetSettlementsByParams.Input(currency,
+        GetSettlementList.Output output = this.getSettlementList.execute(
+                new GetSettlementList.Input(currency,
                                                  participantId,
                                                  settlementWindowId,
                                                  accountId,

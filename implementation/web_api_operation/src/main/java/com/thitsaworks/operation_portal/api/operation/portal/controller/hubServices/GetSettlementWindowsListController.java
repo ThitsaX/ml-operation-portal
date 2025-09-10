@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsByParams;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,33 +17,33 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetSettlementWindowsByParamsController {
+public class GetSettlementWindowsListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementWindowsByParamsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementWindowsListController.class);
 
-    private final GetSettlementWindowsByParams getSettlementWindowsByParams;
+    private final GetSettlementWindowsList getSettlementWindowsList;
 
-    @GetMapping("/secured/getSettlementWindowsByParams")
+    @GetMapping("/secured/getSettlementWindowsList")
     public ResponseEntity<Response> execute(
             @RequestParam("fromDate") String fromDate,
             @RequestParam("toDate") String toDate,
             @RequestParam(value = "currency", required = false) String currency,
             @RequestParam(value = "state", required = false) String state,
             @RequestParam(value = "participantId", required = false) Integer participantId
-                                           )
+    )
             throws DomainException {
 
         LOG.info(
                 "Get Settlement Windows By Params Request: FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
                 fromDate, toDate, currency, state, participantId);
 
-        var output = this.getSettlementWindowsByParams.execute(
-                new GetSettlementWindowsByParams.Input(fromDate,
-                                                       toDate,
-                                                       currency,
-                                                       state,
-                                                       participantId)
-                                                              );
+        var output = this.getSettlementWindowsList.execute(
+                new GetSettlementWindowsList.Input(fromDate,
+                        toDate,
+                        currency,
+                        state,
+                        participantId)
+        );
 
         List<Response.SettlementWindow> settlementWindowList = new ArrayList<>();
 
@@ -53,19 +53,19 @@ public class GetSettlementWindowsByParamsController {
 
             for (var content : settlementWindow.content()) {
                 contentList.add(new Response.Content(content.getId(),
-                                                     content.getState(),
-                                                     content.getLedgerAccountType(),
-                                                     content.getCurrencyId(),
-                                                     content.getCreatedDate(),
-                                                     content.getChangedDate()));
+                        content.getState(),
+                        content.getLedgerAccountType(),
+                        content.getCurrencyId(),
+                        content.getCreatedDate(),
+                        content.getChangedDate()));
             }
 
             settlementWindowList.add(new Response.SettlementWindow(settlementWindow.settlementWindowId(),
-                                                                   settlementWindow.state(),
-                                                                   settlementWindow.reason(),
-                                                                   settlementWindow.createdDate(),
-                                                                   settlementWindow.changedDate(),
-                                                                   contentList));
+                    settlementWindow.state(),
+                    settlementWindow.reason(),
+                    settlementWindow.createdDate(),
+                    settlementWindow.changedDate(),
+                    contentList));
 
         }
         LOG.info("Get Settlement Windows By Params Response: [{}]", settlementWindowList);
@@ -83,7 +83,9 @@ public class GetSettlementWindowsByParamsController {
                 String createdDate,
                 String changedDate,
                 List<Content> contentList
-        ) implements Serializable {}
+        ) implements Serializable {
+
+        }
 
         public record Content(
                 Integer contentId,
@@ -92,7 +94,9 @@ public class GetSettlementWindowsByParamsController {
                 String currencyId,
                 String createdDate,
                 String changedDate
-        ) implements Serializable {}
+        ) implements Serializable {
+
+        }
 
     }
 

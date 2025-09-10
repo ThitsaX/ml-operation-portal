@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipants;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsByParams;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
@@ -47,15 +47,15 @@ public interface HubService {
 
     @POST("/v2/settlementWindows/{settlementWindowId}")
     Call<PostCloseSettlementWindows.Response> postCloseSettlementWindows(@Path("settlementWindowId") int settlementWindowId,
-                                                                         @Body
-                                                                         PostCloseSettlementWindows.Request request);
+                                                                         @Body PostCloseSettlementWindows.Request request);
 
     @GET("/v2/settlementWindows")
-    Call<List<GetSettlementWindowsByParams.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
-                                                                                   @Query("toDateTime") String toDate,
-                                                                                   @Query("currency") String currency,
-                                                                                   @Query("state") String state,
-                                                                                   @Query("participantId") Integer participantId);
+    Call<List<GetSettlementWindowsList.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
+                                                                               @Query("toDateTime") String toDate,
+                                                                               @Query("currency") String currency,
+                                                                               @Query("state") String state,
+                                                                               @Query("participantId")
+                                                                               Integer participantId);
 
     @POST("/v2/settlements")
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
@@ -63,17 +63,16 @@ public interface HubService {
     @GET("/v2/settlements/{settlementId}")
     Call<Settlement> getSettlementById(@Path("settlementId") Integer settlementId);
 
-
     @GET("/v2/settlements")
-    Call<List<Settlement>> getSettlementsByParam(@Query("currency") String currency,
-                                                 @Query("participantId") Integer participantId,
-                                                 @Query("settlementWindowId") Integer settlementWindowId,
-                                                 @Query("accountId") Integer accountId,
-                                                 @Query("state") String state,
-                                                 @Query("fromDateTime") String fromDateTime,
-                                                 @Query("toDateTime") String toDateTime,
-                                                 @Query("fromSettlementWindowDateTime") String fromSettlementWindowDateTime,
-                                                 @Query("toSettlementWindowDateTime") String toSettlementWindowDateTime);
+    Call<List<Settlement>> getSettlements(@Query("currency") String currency,
+                                          @Query("participantId") Integer participantId,
+                                          @Query("settlementWindowId") Integer settlementWindowId,
+                                          @Query("accountId") Integer accountId,
+                                          @Query("state") String state,
+                                          @Query("fromDateTime") String fromDateTime,
+                                          @Query("toDateTime") String toDateTime,
+                                          @Query("fromSettlementWindowDateTime") String fromSettlementWindowDateTime,
+                                          @Query("toSettlementWindowDateTime") String toSettlementWindowDateTime);
 
     @PUT("/v2/settlements/{settlementId}")
     Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
