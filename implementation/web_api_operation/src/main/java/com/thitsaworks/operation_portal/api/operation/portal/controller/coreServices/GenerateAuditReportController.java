@@ -32,9 +32,7 @@ public class GenerateAuditReportController {
     private final GenerateAuditReport generateAuditReport;
 
     @PostMapping("/secured/generateAuditReport")
-    public ResponseEntity<Response> execute(@RequestParam(
-                                                value = "participantId",
-                                                required = false) String participantId,
+    public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId,
                                             @RequestParam("fromDate") String fromDate,
                                             @RequestParam("toDate") String toDate,
                                             @RequestParam("timezoneOffset") String timezoneOffset,
@@ -51,11 +49,6 @@ public class GenerateAuditReportController {
                      "timezoneOffset = [{}], userId = [{}], actionId = [{}], fileType = [{}]",
                  participantId, fromDate, toDate, timezoneOffset, userId, actionId, fileType);
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
-
         String showTimezone = timezoneOffset;
 
         if (!timezoneOffset.startsWith("-")) {
@@ -65,15 +58,14 @@ public class GenerateAuditReportController {
         showTimezone = TimeZoneOffsetFormater.normalizeOffset(showTimezone);
 
         var output = this.generateAuditReport.execute(new GenerateAuditReport.Input(
-            participantId == null || participantId.isBlank() ? null : new RealmId(Long.parseLong(participantId)),
+            new RealmId(Long.parseLong(participantId)),
             Instant.parse(fromDate),
             Instant.parse(toDate),
             showTimezone,
             userId == null || userId.isBlank() ? null :
                 new UserId(Long.parseLong(userId)),
             actionId == null || actionId.isBlank() ? null : new ActionId(Long.parseLong(actionId)),
-            fileType,
-            userContext.userId()));
+            fileType));
 
         var response = new Response(output.rptBytes());
 

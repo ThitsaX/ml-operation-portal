@@ -17,8 +17,7 @@ public interface GenerateAuditReport extends UseCase<GenerateAuditReport.Input, 
                  String timezoneoffset,
                  UserId userId,
                  ActionId actionId,
-                 String fileType,
-                 UserId auditedById) { }
+                 String fileType) { }
 
     record Output(byte[] rptBytes) { }
 

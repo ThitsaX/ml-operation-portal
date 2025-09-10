@@ -4,10 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,28 +34,20 @@ public class GetAuditListByParticipantController {
     @GetMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId,
-        @RequestParam("fromDate") Long fromDate,
-        @RequestParam("toDate") Long toDate,
-        @RequestParam("auditedById")String auditedById) throws DomainException, JsonProcessingException {
+        @RequestParam("fromDate") String fromDate,
+        @RequestParam("toDate") String toDate) throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}], auditedById = [{}],",
+            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}]",
             participantId,
             fromDate,
-            toDate,
-            auditedById);
+            toDate);
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
 
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
-                                                Instant.ofEpochSecond(fromDate),
-                                                Instant.ofEpochSecond(toDate),
-                                                (auditedById != null && !auditedById.isEmpty()) ?
-                                                new UserId(Long.parseLong(auditedById)) : null));
+                                                Instant.parse(fromDate),
+                                                Instant.parse(toDate)));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditInfo : output.auditInfoList()) {

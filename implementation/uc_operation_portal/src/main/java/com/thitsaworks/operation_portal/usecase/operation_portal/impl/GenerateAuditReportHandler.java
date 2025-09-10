@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -11,8 +13,8 @@ import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateAuditReport;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ public class GenerateAuditReportHandler
 
     private final IAMQuery iamQuery;
 
+    private final UserPermissionManager userPermissionManager;
+
     private final GenerateAuditReportCommand generateAuditReportCommand;
 
     public GenerateAuditReportHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -38,6 +42,7 @@ public class GenerateAuditReportHandler
                                       PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       IAMQuery iamQuery,
+                                      UserPermissionManager userPermissionManager,
                                       GenerateAuditReportCommand generateAuditReportCommand) {
 
         super(createInputAuditCommand,
@@ -49,15 +54,22 @@ public class GenerateAuditReportHandler
 
         this.iamQuery = iamQuery;
         this.generateAuditReportCommand = generateAuditReportCommand;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var
-            realmId = input.realmId() == null ? null : input.realmId()
-                                                            .getEntityId()
-                                                            .toString();
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+
+        String realmId = null;
+        if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
+            realmId = input.realmId()
+                           .getEntityId()
+                           .toString();
+        }
 
         var
             userId = input.userId() == null ? null : input.userId()
@@ -68,11 +80,7 @@ public class GenerateAuditReportHandler
                                                               .getEntityId()
                                                               .toString();
 
-        // TODO: to check only same participant user records are fetched for dfsp user and all users records for HUB
-
-
-        List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(input.auditedById()
-                                                                                                         .getEntityId()))
+        List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
                                                       .stream()
                                                       .map(action -> String.valueOf(action.actionId()
                                                                                           .getEntityId()))

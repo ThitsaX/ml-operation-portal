@@ -82,11 +82,13 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
                                                        PersistenceQualifiers.Core.TRANSACTION_MANAGER);
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def);
+        TransactionStatus status = null;
 
         this.beforeExecute(input);
 
         try {
+
+            status = transactionManager.getTransaction(def);
 
             output = this.onExecute(input);
 
@@ -96,7 +98,9 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         } catch (RuntimeException exception) {
 
-            transactionManager.rollback(status);
+            if (status != null && !status.isCompleted()) {
+                transactionManager.rollback(status);
+            }
 
             throw exception;
 
