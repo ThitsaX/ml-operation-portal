@@ -34,16 +34,12 @@ RUN mkdir -p /opt/app/lib
 COPY --from=build /opt/app/implementation/web_api_operation/target/operation_api.jar /opt/app/operation_api.jar
 COPY --from=build /opt/app/implementation/web_api_operation/target/lib/* /opt/app/lib/
 
+# Copy entrypoint script and make it executable
+COPY ./dockers/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 WORKDIR /opt/app/
 
-ENTRYPOINT ["sh", "-c", "java \
-               -DVAULT_ADDR=${VAULT_ADDR} \
-               -DVAULT_TOKEN=${VAULT_TOKEN} \
-               -DENGINE_PATH=${ENGINE_PATH} \
-               -DOPERATION_PORTAL_PORT_NO=${OPERATION_PORTAL_PORT_NO} \
-               -Dcentral_ledger_end_point=${CENTRAL_LEDGER_ENDPOINT} \
-               -Dsettlement_end_point=${SETTLEMENT_END_POINT} \
-               -cp operation_api.jar:lib/* \
-               com.thitsaworks.operation_portal.api.operation.portal.WebApiOperationPortalApplication"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 8002

@@ -25,7 +25,7 @@ public class InitializeScheduledTasksCommandUnitTest extends BaseVaultSetUpTest 
     @Test
     public void test_initializeScheduledTasksSuccessfully() throws Exception {
         // Act
-        InitializeScheduledTasksCommand.Output output = initializeScheduledTasksCommand.execute();
+        InitializeScheduledTasksCommand.Output output = initializeScheduledTasksCommand.execute("","");
         
         // Assert
         LOG.info("Scheduled tasks initialized: {}", output.initialized());
@@ -34,7 +34,7 @@ public class InitializeScheduledTasksCommandUnitTest extends BaseVaultSetUpTest 
     @Test
     public void test_initializeWithNoActiveTasks() throws Exception {
         // Act
-        InitializeScheduledTasksCommand.Output output = initializeScheduledTasksCommand.execute();
+        InitializeScheduledTasksCommand.Output output = initializeScheduledTasksCommand.execute("","");
         
         // Assert - Just log that the initialization completed without errors
         LOG.info("Initialization completed with no active tasks: {}", output.initialized());

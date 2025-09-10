@@ -2,7 +2,15 @@
 # docker-entrypoint.sh
 
 # run the main container command
-java "-DVAULT_ADDRESS=${VAULT_ADDRESS}" "-DVAULT_TOKEN=${VAULT_TOKEN}" "-DJASYPT_PASSWORD=${JASYPT_PASSWORD}" -cp hub_operator/hub_operator_api.jar:hub_operator/lib/* com.thitsaworks.dfsp_portal.api.hub_operator.WebApiHubOperatorApplication
+java \
+  "-DVAULT_ADDRESS=${VAULT_ADDRESS}" \
+  "-DVAULT_TOKEN=${VAULT_TOKEN}" \
+  "-DENGINE_PATH=${ENGINE_PATH}" \
+  "-DOPERATION_PORTAL_PORT_NO=${OPERATION_PORTAL_PORT_NO}" \
+  "-DCENTRAL_LEDGER_END_POINT=${CENTRAL_LEDGER_ENDPOINT}" \
+  "-DSETTLEMENT_END_POINT=${SETTLEMENT_END_POINT}" \
+  -cp operation_api.jar:lib/* \
+  com.thitsaworks.operation_portal.api.operation.portal.WebApiOperationPortalApplication
 ## Wait for any process to exit
 #wait -n
 ## Exit with status of process that exited first
