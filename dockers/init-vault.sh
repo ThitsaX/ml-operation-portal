@@ -4,6 +4,13 @@
 echo "Enabling KV secrets engine (version 2) at path 'operation_portal'..."
 vault secrets enable -path=operation_portal -version=2 kv || echo "KV secrets engine already enabled at path 'operation_portal'."
 
+#Hub Service Settings
+HUB_SERVICE_SETTINGS_PATH="operation_portal/hub_services/settings"
+HUB_SERVICE_SETTINGS_DATA='{
+  "centralLedgerServiceEndpoint": "http://localhost:3001",
+  "centralSettlementServiceEndpoint": "http://localhost:3007"
+}'
+
 #Mongo Settings
 MONGO_HUB_DATA_WRITE_SETTINGS_PATH="operation_portal/mongo/hub_data/write_db/settings"
 MONGO_HUB_DATA_WRITE_SETTINGS_DATA='{
@@ -16,7 +23,7 @@ MONGO_HUB_DATA_WRITE_SETTINGS_DATA='{
   "readTimeoutMs": 0,
   "retryWrites": false,
   "readPreference": "primary"
-  }'
+}'
 
 MONGO_HUB_DATA_READ_SETTINGS_PATH="operation_portal/mongo/hub_data/read_db/settings"
 MONGO_HUB_DATA_READ_SETTINGS_DATA='{
@@ -29,7 +36,7 @@ MONGO_HUB_DATA_READ_SETTINGS_DATA='{
     "readTimeoutMs": 0,
     "retryWrites": false,
     "readPreference": "primary"
-  }'
+}'
 
 
 
@@ -87,6 +94,10 @@ MYSQL_HUB_DATA_READ_SETTINGS_DATA='{
    "maxPoolSize": 20
 }'
 
+#Hub Service Settings
+echo "Adding Hub Service Settings to Vault at path '$HUB_SERVICE_SETTINGS_PATH'..."
+vault kv put $HUB_SERVICE_SETTINGS_PATH @<(echo "$HUB_SERVICE_SETTINGS_DATA")
+
 #Mongo Hub
 echo "Adding Mongo Hub Data Write Settings to Vault at path '$MONGO_HUB_DATA_WRITE_SETTINGS_PATH'..."
 vault kv put $MONGO_HUB_DATA_WRITE_SETTINGS_PATH @<(echo "$MONGO_HUB_DATA_WRITE_SETTINGS_DATA")
@@ -122,6 +133,7 @@ vault kv put $MYSQL_HUB_DATA_READ_SETTINGS_PATH @<(echo "$MYSQL_HUB_DATA_READ_SE
 
 # Verify all secrets
 echo "Verifying all secrets..."
+vault kv get $HUB_SERVICE_SETTINGS_PATH
 vault kv get $MONGO_HUB_DATA_WRITE_SETTINGS_PATH
 vault kv get $MONGO_HUB_DATA_READ_SETTINGS_PATH
 vault kv get $REDIS_SETTINGS_PATH
