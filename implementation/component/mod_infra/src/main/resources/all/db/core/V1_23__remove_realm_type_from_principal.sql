@@ -1,1 +1,0 @@
-ALTER TABLE tbl_principal DROP COLUMN realm;

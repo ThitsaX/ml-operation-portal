@@ -27,7 +27,6 @@ public class WebApiOperationPortalApplication {
 
         VaultConfiguration.Settings vaultSettings = VaultConfiguration.Settings.withPropertyOrEnv();
         DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
-        DatabaseMigration.migrate(ReportingDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
 
         SpringApplication.run(WebApiOperationPortalApplication.class, args);
     }
