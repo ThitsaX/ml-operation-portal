@@ -304,6 +304,12 @@ public class Principal extends JpaEntity<PrincipalId> {
         return new SecurityToken(this.accessKey, this.secretKey);
     }
 
+    public Principal realmId(RealmId realmId) {
+
+        this.realmId = realmId;
+        return this;
+    }
+
     public Principal principalStatus(PrincipalStatus principalStatus) {
 
         this.principalStatus = principalStatus;

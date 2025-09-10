@@ -31,8 +31,7 @@ public class ModifyUserCommandHandler implements ModifyUserCommand {
                 user.name(input.name())
                     .firstName(input.firstName())
                     .lastName(input.lastName())
-                    .jobTitle(input.jobTitle())
-                                );
+                    .jobTitle(input.jobTitle()));
 
         return new ModifyUserCommand.Output(user.getUserId(), true);
     }

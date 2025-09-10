@@ -28,12 +28,7 @@ public class GetRoleListByParticipantController {
 
         LOG.info("Get Role List By User Id Request : [{}]", "");
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
-
-        var output = this.getRoleListByParticipant.execute(new GetRoleListByParticipant.Input(userContext.userId()));
+        var output = this.getRoleListByParticipant.execute(new GetRoleListByParticipant.Input());
 
         var response = new Response(output.roleList()
                                           .stream()

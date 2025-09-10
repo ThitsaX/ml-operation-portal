@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GetRoleListByParticipant extends UseCase<GetRoleListByParticipant.Input, GetRoleListByParticipant.Output> {
 
-    record Input(UserId userId) { }
+    record Input() { }
 
     record Output(List<RoleData> roleList) { }
 

@@ -5,20 +5,20 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
+import java.util.List;
+
 public interface GetUser extends UseCase<GetUser.Input, GetUser.Output> {
 
     record Input(UserId userId) { }
 
-    record Output(
-        UserId userId,
-        String name,
-        Email email,
-        String firstName,
-        String lastName,
-        String jobTitle,
-        ParticipantId participantId,
-        Long createdDate,
-        String dfspCode
-    ) { }
+    record Output(UserId userId,
+                  String name,
+                  Email email,
+                  String firstName,
+                  String lastName,
+                  String jobTitle,
+                  List<String> roleList,
+                  ParticipantId participantId,
+                  Long createdDate) { }
 
 }

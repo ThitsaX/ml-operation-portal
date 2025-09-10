@@ -17,8 +17,6 @@ import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.iam.query.PrincipalRoleQuery;
-import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
 import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
@@ -44,6 +42,7 @@ public class CreateUserHandler
     private final UserPermissionManager userPermissionManager;
 
     private final PrincipalCache principalCache;
+
 
     public CreateUserHandler(CreateInputAuditCommand createInputAuditCommand,
                              CreateOutputAuditCommand createOutputAuditCommand,
@@ -75,18 +74,20 @@ public class CreateUserHandler
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        PrincipalData principalData =
+        PrincipalData requestingPrincipalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (principalData == null) {
+        if (requestingPrincipalData == null) {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         }
 
-        if (userPermissionManager.isDfsp(principalData.principalId())) {
+        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
+
+        if (isDfsp) {
 
             if (!input.participantId()
-                      .equals(new ParticipantId(principalData.realmId()
+                      .equals(new ParticipantId(requestingPrincipalData.realmId()
                                                              .getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
@@ -106,10 +107,20 @@ public class CreateUserHandler
                                                                                               .getId()),
                                                                              input.activeStatus()));
 
-        this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, input.roleId()));
+        var roleIdList = input.roleIdList();
+
+        if (!this.userPermissionManager.areRolesAllowed(isDfsp, roleIdList)) {
+            throw new IAMException(IAMErrors.UNAUTHORIZED_ROLE_CREATION);
+        }
+
+        for (var roleId : roleIdList) {
+            this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, roleId));
+        }
 
         return new Output(output.created());
     }
+
+
 
 }
 

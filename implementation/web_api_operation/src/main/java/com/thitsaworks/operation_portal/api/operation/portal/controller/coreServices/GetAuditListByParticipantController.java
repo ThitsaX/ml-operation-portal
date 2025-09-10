@@ -43,17 +43,11 @@ public class GetAuditListByParticipantController {
             fromDate,
             toDate);
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
-
 
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
                                                 Instant.parse(fromDate),
-                                                Instant.parse(toDate),
-                                                userContext.userId()));
+                                                Instant.parse(toDate)));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditInfo : output.auditInfoList()) {

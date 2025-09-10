@@ -49,11 +49,6 @@ public class GenerateAuditReportController {
                      "timezoneOffset = [{}], userId = [{}], actionId = [{}], fileType = [{}]",
                  participantId, fromDate, toDate, timezoneOffset, userId, actionId, fileType);
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
-
         String showTimezone = timezoneOffset;
 
         if (!timezoneOffset.startsWith("-")) {
@@ -70,8 +65,7 @@ public class GenerateAuditReportController {
             userId == null || userId.isBlank() ? null :
                 new UserId(Long.parseLong(userId)),
             actionId == null || actionId.isBlank() ? null : new ActionId(Long.parseLong(actionId)),
-            fileType,
-            userContext.userId()));
+            fileType));
 
         var response = new Response(output.rptBytes());
 

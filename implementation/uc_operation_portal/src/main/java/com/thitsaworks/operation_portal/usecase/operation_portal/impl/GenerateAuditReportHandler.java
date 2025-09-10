@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -58,9 +60,12 @@ public class GenerateAuditReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+
         String realmId = null;
-        if (this.userPermissionManager.isDfsp(new PrincipalId(input.auditedById()
-                                                                   .getEntityId()))) {
+        if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
             realmId = input.realmId()
                            .getEntityId()
                            .toString();
@@ -75,8 +80,7 @@ public class GenerateAuditReportHandler
                                                               .getEntityId()
                                                               .toString();
 
-        List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(input.auditedById()
-                                                                                                         .getEntityId()))
+        List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
                                                       .stream()
                                                       .map(action -> String.valueOf(action.actionId()
                                                                                           .getEntityId()))

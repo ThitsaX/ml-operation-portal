@@ -64,10 +64,10 @@ public class GetParticipantUserListByParticipantHandler
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        PrincipalData principalData =
+        PrincipalData requestingPrincipalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (principalData == null) {
+        if (requestingPrincipalData == null) {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
 
         }
@@ -76,9 +76,9 @@ public class GetParticipantUserListByParticipantHandler
 
         List<UserData> userDataList;
 
-        if (this.userPermissionManager.isDfsp(principalData.principalId())) {
+        if (this.userPermissionManager.isDfsp(requestingPrincipalData.principalId())) {
 
-            userDataList = this.userQuery.getUsers(new ParticipantId(principalData.realmId()
+            userDataList = this.userQuery.getUsers(new ParticipantId(requestingPrincipalData.realmId()
                                                                                   .getId()));
 
             for (var userData : userDataList) {

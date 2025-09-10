@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GetActionListByUser extends UseCase<GetActionListByUser.Input, GetActionListByUser.Output> {
 
-    record Input(UserId userId) { }
+    record Input() { }
 
     record Output(List<Action> actionNames) {
 

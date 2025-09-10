@@ -33,14 +33,8 @@ public class GetUserListByParticipantController {
 
         LOG.info("Get User List By Participant Request: [{}]", "");
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
-
-
         GetUserListByParticipant.Output output = this.getUserListByParticipant.execute(
-                new GetUserListByParticipant.Input(userContext.userId()));
+                new GetUserListByParticipant.Input());
 
         List<Response.UserInfo> userInfoList = new ArrayList<>();
 
@@ -53,7 +47,6 @@ public class GetUserListByParticipantController {
                                                                   .getValue(),
                                                    user.firstName(),
                                                    user.lastName(),
-                                                   user.jobTitle(),
                                                    user.roleList(),
                                                    user.status(),
                                                    user.createdDate()
@@ -76,7 +69,6 @@ public class GetUserListByParticipantController {
                                @JsonProperty("email") String email,
                                @JsonProperty("firstName") String firstName,
                                @JsonProperty("lastName") String lastName,
-                               @JsonProperty("jobTitle") String jobTitle,
                                @JsonProperty("roleList") List<String> roleList,
                                @JsonProperty("status") String status,
                                @JsonProperty("createdDate") Long createdDate) implements Serializable { }

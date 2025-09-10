@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -53,10 +55,13 @@ public class GetRoleListByParticipantHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+
         List<RoleData> roleList = this.roleQuery.getAll();
 
-        boolean isDfspUser = this.userPermissionManager.isDfsp(new PrincipalId(input.userId()
-                                                                                    .getId()));
+        boolean isDfspUser = this.userPermissionManager.isDfsp(requestingPrincipalId);
 
         if (isDfspUser) {
             roleList = roleList.stream()

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -66,8 +68,9 @@ public class GetUserListByParticipantHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var principalId = new PrincipalId(input.userId()
-                                               .getId());
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var principalId = new PrincipalId(securityContext.userId());
         var participantId = new ParticipantId(this.principalCache.get(principalId)
                                                                  .realmId()
                                                                  .getId());
@@ -102,10 +105,9 @@ public class GetUserListByParticipantHandler
                                                                    userData.email(),
                                                                    userData.firstName(),
                                                                    userData.lastName(),
-                                                                   userData.jobTitle(),
                                                                    roleList,
                                                                    principalData.principalStatus()
-                                                                   .toString(),
+                                                                                .toString(),
                                                                    Instant.ofEpochSecond(userData.createdDate())));
         }
 

@@ -29,12 +29,9 @@ public class GetActionListByUserController {
 
         LOG.info("Get Action List By User Request : [{}]", "");
 
-        UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
 
-        var input = new GetActionListByUser.Input(userContext.userId());
+
+        var input = new GetActionListByUser.Input();
         var output = this.getActionListByUser.execute(input);
 
         List<Response.Action>

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,21 +34,26 @@ public class CreateUserController {
 
     @PostMapping(value = "/secured/createUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Onboard user request: {}", request);
 
-        CreateUser.Output output = this.createUser.execute(
-                new CreateUser.Input(request.name,
-                                     new Email(request.email),
-                                     request.password,
-                                     request.firstName,
-                                     request.lastName,
-                                     request.jobTitle,
-                                     new RoleId(Long.parseLong(request.roleId)),
-                                     new ParticipantId(Long.parseLong(request.participantId)),
-                                     request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
-                                              PrincipalStatus.INACTIVE));
+        CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
+                                                                                new Email(request.email()),
+                                                                                request.password(),
+                                                                                request.firstName(),
+                                                                                request.lastName(),
+                                                                                request.jobTitle(),
+                                                                                request.roleIdList()
+                                                                                       .stream()
+                                                                                       .map(roleId -> new RoleId(Long.parseLong(
+                                                                                           roleId)))
+                                                                                       .toList(),
+                                                                                new ParticipantId(Long.parseLong(request.participantId())),
+                                                                                request.userStatus()
+                                                                                       .equalsIgnoreCase("ACTIVE") ?
+                                                                                    PrincipalStatus.ACTIVE :
+                                                                                    PrincipalStatus.INACTIVE));
 
         Response response = new Response(output.created());
 
@@ -59,17 +65,17 @@ public class CreateUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("name") String name,
-            @NotNull @Pattern(
-                    regexp = Email.FORMAT,
-                    message = "Email must be with valid format.") @JsonProperty("email") String email,
-            @NotNull @JsonProperty("password") String password,
-            @NotNull @JsonProperty("firstName") String firstName,
-            @NotNull @JsonProperty("lastName") String lastName,
-            @NotNull @JsonProperty("jobTitle") String jobTitle,
-            @NotNull @JsonProperty("roleId") String roleId,
-            @NotNull @JsonProperty("participantId") String participantId,
-            @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
+        @NotNull @JsonProperty("name") String name,
+        @NotNull @Pattern(
+            regexp = Email.FORMAT,
+            message = "Email must be with valid format.") @JsonProperty("email") String email,
+        @NotNull @JsonProperty("password") String password,
+        @NotNull @JsonProperty("firstName") String firstName,
+        @NotNull @JsonProperty("lastName") String lastName,
+        @NotNull @JsonProperty("jobTitle") String jobTitle,
+        @NotNull @JsonProperty("roleIdList") List<String> roleIdList,
+        @NotNull @JsonProperty("participantId") String participantId,
+        @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 
     }
 
