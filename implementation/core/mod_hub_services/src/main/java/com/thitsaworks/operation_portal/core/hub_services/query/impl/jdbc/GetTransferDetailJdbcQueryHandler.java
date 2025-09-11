@@ -118,12 +118,13 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                 transferId);
 
         } catch (Exception e) {
-            throw new HubServicesException(new ErrorMessage(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION.getCode(),
+            throw new HubServicesException(new ErrorMessage(HubServicesErrors.HUB_TRANSFER_ERROR.getCode(),
                                                             e.getMessage()));
         }
 
         if (result.isEmpty()) {
-            throw new HubServicesException(HubServicesErrors.HUB_TRANSACTION_NOT_FOUND);
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(
+                    "Transfer with Id [" + transferId + "] cannot find on Hub"));
         }
 
         return result.getFirst();

@@ -25,7 +25,10 @@ public class ModifyApprovalActionCommandHandler implements ModifyApprovalActionC
         var
             approvalRequest = this.approvalRequestRepository.findById(input.approvalRequestId())
                                                             .orElseThrow(() -> new ApprovalException(
-                                                                ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND));
+                                                                    ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.defaultMessage(
+                                                                            "Approval Request does not exist for ID [" +
+                                                                                    input.approvalRequestId().getId() +
+                                                                                    "] in System")));
 
         approvalRequest.action(input.action());
         approvalRequest.respondedBy(input.respondedBy());

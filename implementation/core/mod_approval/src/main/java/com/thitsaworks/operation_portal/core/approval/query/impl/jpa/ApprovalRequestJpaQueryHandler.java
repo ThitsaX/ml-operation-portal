@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.core.approval.query.impl.jpa;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequestId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
-import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.approval.exception.ApprovalErrors;
@@ -47,7 +46,8 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
         throws ApprovalException {
         
         if (approvalRequestId == null) {
-            throw new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND);
+            throw new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.defaultMessage(
+                    "Approval Request ID must not must NOT be blank or empty"));
         }
 
         BooleanExpression predicate = this.approvalRequest.approvalRequestId.eq(approvalRequestId)
@@ -55,7 +55,9 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
 
         return this.approvalRequestRepository.findOne(predicate)
                 .map(ApprovalRequestData::new)
-                .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND));
+                                             .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.defaultMessage(
+                                                     "Approval Request does not exist for ID [" +
+                                                             approvalRequestId.getId() + "] in the System")));
     }
 
 }
