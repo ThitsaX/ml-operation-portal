@@ -130,7 +130,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_NOT_FOUND);
 
             }
         }

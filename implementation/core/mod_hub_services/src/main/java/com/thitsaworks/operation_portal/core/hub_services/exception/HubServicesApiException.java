@@ -14,7 +14,7 @@ public class HubServicesApiException extends DomainException {
 
     public HubServicesApiException(ErrorInformation errorInformation) {
 
-        super(new ErrorMessage(errorInformation.getErrorCode(), errorInformation.getErrorDescription()));
+        super(new ErrorMessage(errorInformation.getErrorCode(),null, errorInformation.getErrorDescription()));
 
         this.errorInformation = errorInformation;
 

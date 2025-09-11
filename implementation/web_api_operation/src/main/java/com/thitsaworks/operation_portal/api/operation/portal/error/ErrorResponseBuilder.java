@@ -9,71 +9,67 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
 public class ErrorResponseBuilder {
 
-    Map<String, String> i18nErrorMessages = new HashMap<>();
-
     public ResponseEntity<ErrorResponse> convert(Exception exception) {
 
+        String errorCode;
+        String defaultErrorMessage;
+        String description = null;
+
         if (exception instanceof HubServicesApiException e) {
+            errorCode = e.getErrorInformation().getErrorCode();
+            defaultErrorMessage = e.getErrorInformation().getErrorDescription();
+            description = e.getErrorMessage().getDefaultMessage();
 
-            i18nErrorMessages.put("en", e.getErrorInformation().getErrorDescription());
-
-            var errorResponse = new ErrorResponse(e.getErrorInformation().getErrorCode(),
-                                                  e.getErrorInformation().getErrorDescription(), i18nErrorMessages);
-
+            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-
         if (exception instanceof DomainException e) {
+            errorCode = e.getErrorMessage().code();
+            defaultErrorMessage = e.getErrorMessage().getDefaultMessage();
+            description = e.getErrorMessage().description();
+            if (description == null) {
+                description = "";
+            }
 
-            i18nErrorMessages.put("en", e.getErrorMessage().description());
-
-            var errorResponse = new ErrorResponse(e.getErrorMessage().code(),
-                                                  e.getErrorMessage().description(), i18nErrorMessages);
-
+            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         if (exception instanceof InputException e) {
+            errorCode = e.getErrorMessage().code();
+            defaultErrorMessage = e.getErrorMessage().getDefaultMessage();
+            description = e.getErrorMessage().description();
+            if (description == null) {
+                description = "";
+            }
 
-            i18nErrorMessages.put("en", e.getErrorMessage().description());
-
-            var errorResponse = new ErrorResponse(e.getErrorMessage().code(),
-                                                  e.getErrorMessage().description(), i18nErrorMessages);
-
+            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-        
-        if (exception instanceof MethodArgumentNotValidException e) {
 
+        if (exception instanceof MethodArgumentNotValidException e) {
             String message = (e.getBindingResult().getFieldErrors().isEmpty()) ? null :
                     String.format("[ %s ] %s",
-                                  e.getBindingResult().getFieldErrors().getFirst().getField(),
-                                  e.getBindingResult().getFieldErrors().getFirst().getDefaultMessage());
+                            e.getBindingResult().getFieldErrors().getFirst().getField(),
+                            e.getBindingResult().getFieldErrors().getFirst().getDefaultMessage());
 
-            i18nErrorMessages.put("en", message);
+            errorCode = SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.code();
+            defaultErrorMessage = message;
 
-            var errorResponse = new ErrorResponse(SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.code(),
-                                                  message, i18nErrorMessages);
-
+            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-
         }
 
-        i18nErrorMessages.put("en", exception.getMessage());
+        errorCode = "INTERNAL_SERVER_ERROR";
+        defaultErrorMessage = exception.getMessage();
 
-        var errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR",
-                                              exception.getMessage(),
-                                              i18nErrorMessages);
-
+        var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-
     }
 
 }
+
