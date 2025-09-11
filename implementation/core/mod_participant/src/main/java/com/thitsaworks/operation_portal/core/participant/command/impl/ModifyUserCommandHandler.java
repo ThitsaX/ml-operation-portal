@@ -4,7 +4,9 @@ import com.thitsaworks.operation_portal.component.misc.persistence.transactional
 import com.thitsaworks.operation_portal.core.participant.command.ModifyUserCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.User;
+import com.thitsaworks.operation_portal.core.participant.model.repository.ParticipantRepository;
 import com.thitsaworks.operation_portal.core.participant.model.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,9 +21,15 @@ public class ModifyUserCommandHandler implements ModifyUserCommand {
 
     private final UserRepository userRepository;
 
+    private final ParticipantRepository participantRepository;
+
     @Override
     @CoreWriteTransactional
     public ModifyUserCommand.Output execute(Input input) throws ParticipantException {
+
+        Participant participant = this.participantRepository.findById(input.participantId())
+                                                            .orElseThrow(() -> new ParticipantException(
+                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND));
 
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
@@ -31,6 +39,7 @@ public class ModifyUserCommandHandler implements ModifyUserCommand {
                 user.name(input.name())
                     .firstName(input.firstName())
                     .lastName(input.lastName())
+                    .participant(participant)
                     .jobTitle(input.jobTitle()));
 
         return new ModifyUserCommand.Output(user.getUserId(), true);

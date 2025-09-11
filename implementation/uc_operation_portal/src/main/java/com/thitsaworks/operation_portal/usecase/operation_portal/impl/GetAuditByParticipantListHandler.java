@@ -35,6 +35,8 @@ public class GetAuditByParticipantListHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
+    private final PrincipalCache principalCache;
+
     private final UserPermissionManager userPermissionManager;
 
     public GetAuditByParticipantListHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -57,6 +59,7 @@ public class GetAuditByParticipantListHandler
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
         this.userPermissionManager = userPermissionManager;
+        this.principalCache = principalCache;
     }
 
     @Override
@@ -66,6 +69,8 @@ public class GetAuditByParticipantListHandler
 
         var requestingPrincipalId = new PrincipalId(securityContext.userId());
 
+        var existingRealmId = this.principalCache.get(requestingPrincipalId).realmId();
+
 
         var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
                                              .stream()
@@ -74,7 +79,7 @@ public class GetAuditByParticipantListHandler
 
         RealmId realmId = null;
         if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
-            realmId = input.realmId();
+            realmId = existingRealmId;
         }
 
         GetAllAuditByParticipantQuery.Output output =

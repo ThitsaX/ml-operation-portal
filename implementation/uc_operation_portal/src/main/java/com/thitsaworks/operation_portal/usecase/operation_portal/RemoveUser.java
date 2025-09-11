@@ -4,11 +4,10 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface RemoveUser extends
-                                               UseCase<RemoveUser.Input, RemoveUser.Output> {
+public interface RemoveUser extends UseCase<RemoveUser.Input, RemoveUser.Output> {
 
-    record Input(ParticipantId participantId, UserId userId) {}
+    record Input(ParticipantId participantId, UserId userId) { }
 
-    record Output(boolean removed, UserId userId) {}
+    record Output(boolean removed, UserId userId) { }
 
 }

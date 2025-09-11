@@ -3,17 +3,13 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,20 +29,16 @@ public class GetAuditListByParticipantController {
 
     @GetMapping("/secured/getAuditList")
     public ResponseEntity<Response> execute(
-        @RequestParam("participantId") String participantId,
         @RequestParam("fromDate") String fromDate,
         @RequestParam("toDate") String toDate) throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get Audit List Request: participantId = [{}], fromDate = [{}], toDate = [{}]",
-            participantId,
+            "Get Audit List Request: fromDate = [{}], toDate = [{}]",
             fromDate,
             toDate);
 
-
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
-            new GetAuditByParticipantList.Input(new RealmId(Long.parseLong(participantId)),
-                                                Instant.parse(fromDate),
+            new GetAuditByParticipantList.Input(Instant.parse(fromDate),
                                                 Instant.parse(toDate)));
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
