@@ -25,5 +25,6 @@ public class ParticipantErrors {
     public static final ErrorMessage ALREADY_GREETING = new ErrorMessage("ALREADY_GREETING", "The Greeting Message already existed.");
     public static final ErrorMessage GREETING_NOT_FOUND = new ErrorMessage("GREETING_NOT_FOUND", "System cannot find the Greeting Message.");
 
+    public static final ErrorMessage USER_NOT_ACTIVE = new ErrorMessage("USER_NOT_ACTIVE", "The user is not active.");
     //@@formatter:on
 }

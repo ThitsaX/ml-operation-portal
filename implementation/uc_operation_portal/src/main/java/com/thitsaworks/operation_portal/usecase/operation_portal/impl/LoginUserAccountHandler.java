@@ -38,8 +38,10 @@ public class LoginUserAccountHandler implements LoginUserAccount {
             throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
         }
 
+
         AuthenticateCommand.Output securityToken = this.authenticateCommand.execute(
-                new AuthenticateCommand.Input(new PrincipalId(userData.userId().getId()),
+            new AuthenticateCommand.Input(new PrincipalId(userData.userId()
+                                                                  .getId()),
                                           input.passwordPlain()));
 
         return new Output(securityToken.securityToken()
