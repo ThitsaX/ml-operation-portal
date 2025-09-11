@@ -47,7 +47,7 @@ public class GetCurrentParticipantCurrenciesJdbcQueryHandler implements GetCurre
 
         } catch (Exception e) {
             try {
-                throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(e.getMessage()));
             } catch (HubServicesException ex) {
                 throw new RuntimeException(ex);
             }

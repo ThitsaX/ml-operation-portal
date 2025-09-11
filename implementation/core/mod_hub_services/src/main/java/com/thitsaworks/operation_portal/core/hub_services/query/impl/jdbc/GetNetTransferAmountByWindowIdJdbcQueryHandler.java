@@ -67,7 +67,7 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
                                              );
         } catch (Exception e) {
 
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.defaultMessage(e.getMessage()));
         }
 
         if (results == null || results.isEmpty()) {

@@ -148,7 +148,8 @@ public class FinalizeSettlementHandler
                                                     .findFirst().orElse(null);
 
                 if (hubParticipantDetailData == null) {
-                    throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_NOT_FOUND);
+                    throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
+                            "Participant with ID [" + participant.getId() + "] cannot find on Hub"));
                 }
 
                 Integer settleAccountId = hubParticipantDetailData.getAccounts().stream()
@@ -163,7 +164,12 @@ public class FinalizeSettlementHandler
                                                                   .orElse(null);
 
                 if (settleAccountId == null) {
-                    throw new HubServicesException(HubServicesErrors.SETTLEMENT_ACCOUNT_NOT_FOUND);
+                    throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
+                            "Account with Currency [" + account.getNetSettlementAmount()
+                                                               .getCurrency()
+                                                               .toString() + "] and Ledger Account Type [" +
+                                    SettlementLedgerAccountTypes.SETTLEMENT.toString() + "] cannot find for [" +
+                                    hubParticipantDetailData.getParticipantName() + "] on Hub"));
                 }
 
                 PostParticipantBalance.Request postParticipantBalanceRequest =

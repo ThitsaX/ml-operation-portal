@@ -4,7 +4,6 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.exception.
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,15 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 public class ErrorResponseBuilder {
 
     public ResponseEntity<ErrorResponse> convert(Exception exception) {
-
-        //Todo: to delete after refactoring.
-        if (exception instanceof HubServicesApiException e) {
-
-            var errorResponse = new ErrorResponse(e.getErrorInformation().getErrorCode(),
-                                                  e.getErrorInformation().getErrorDescription(),
-                                                  e.getErrorInformation().getErrorDescription());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-        }
 
         if (exception instanceof DomainException e) {
             ErrorMessage errorMessage = e.getErrorMessage();
