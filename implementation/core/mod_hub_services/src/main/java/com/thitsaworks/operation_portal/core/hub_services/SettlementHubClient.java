@@ -83,7 +83,8 @@ public class SettlementHubClient {
 
                 ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
+                                                                                        .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -91,7 +92,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(e.getMessage()));
 
             }
         }

@@ -180,8 +180,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         String exceptionMessage = (exception instanceof DomainException e)
                                       ? e.getErrorMessage()
-                                         .code() + " - " + e.getErrorMessage()
-                                                            .description()
+                                         .getCode() + " - " + e.getErrorMessage()
+                                                               .getDefaultMessage()
                                       : exception.getMessage();
 
         var auditId = OperationPortalAuditableUseCase.auditId.get();
@@ -196,7 +196,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
             } catch (AuditException e) {
 
                 LOGGER.info("Audit Exception: [{}]", e.getErrorMessage()
-                                                      .description());
+                                                      .getDefaultMessage());
             }
         }
 

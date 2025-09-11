@@ -14,6 +14,8 @@ public class HubServicesErrors {
     public static final ErrorMessage INVALID_SETTLEMENT_STATE = new ErrorMessage("INVALID_SETTLEMENT_STATE", "The settlement state is invalid.");
     public static final ErrorMessage INVALID_SETTLEMENT = new ErrorMessage("INVALID_SETTLEMENT", "The settlement state is invalid.");
     public static final ErrorMessage SETTLEMENT_ACCOUNT_NOT_FOUND = new ErrorMessage("SETTLEMENT_ACCOUNT_NOT_FOUND", "System cannot find the settlement account for the participant with given currency on Hub.");
+    public static final ErrorMessage SETTLEMENT_WINDOW_ERROR = new ErrorMessage("SETTLEMENT_WINDOW_ERROR", "Unable to process the operation for Settlement Window.");
+
 
     public static final ErrorMessage SETTLEMENT_WINDOW_NOT_FOUND = new ErrorMessage("SETTLEMENT_WINDOW_NOT_FOUND", "System cannot find the settlement window for the participant with given currency on Hub.");
     //@@formatter:on

@@ -1,11 +1,12 @@
 package com.thitsaworks.operation_portal.component.misc.exception;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.text.MessageFormat;
-import java.util.Map;
 
 @Getter
+@AllArgsConstructor
 public class ErrorMessage {
 
     private final String code;
@@ -14,39 +15,23 @@ public class ErrorMessage {
 
     private final String description;
 
-    public ErrorMessage(String code, String defaultMessage, String description) {
-
-        this.code = code;
-        this.defaultMessage = defaultMessage;
-        this.description = description;
-    }
     public ErrorMessage(String code, String defaultMessage) {
         this(code, defaultMessage, null);
     }
 
+    public ErrorMessage code(String code) {
 
-
-    public String code() {
-
-        return code;
+        return new ErrorMessage(code, defaultMessage, description);
     }
 
-    public String defaultMessage() {
+    public ErrorMessage defaultMessage(String message) {
 
-        return defaultMessage;
+        return new ErrorMessage(code, message, description);
     }
 
-    public String description() {
+    public ErrorMessage description(String description) {
 
-        return description;
-    }
-    public String format(Object... args) {
-        return MessageFormat.format(defaultMessage, args);
-    }
-
-
-    public ErrorMessage withArgs(Object... args) {
-        return new ErrorMessage(code, format(args), description);
+        return new ErrorMessage(code, defaultMessage, description);
     }
 
 

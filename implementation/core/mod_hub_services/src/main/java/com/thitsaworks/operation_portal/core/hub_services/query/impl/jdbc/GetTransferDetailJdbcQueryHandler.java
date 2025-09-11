@@ -118,7 +118,7 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                 transferId);
 
         } catch (Exception e) {
-            throw new HubServicesException(new ErrorMessage(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION.code(),
+            throw new HubServicesException(new ErrorMessage(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION.getCode(),
                                                             e.getMessage()));
         }
 

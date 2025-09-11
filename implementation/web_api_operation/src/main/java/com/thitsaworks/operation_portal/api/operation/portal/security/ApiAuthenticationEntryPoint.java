@@ -37,8 +37,8 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 
         response.getWriter().write(objectMapper.writeValueAsString(
-                new ErrorResponse(SecurityErrors.AUTHENTICATION_FAILED.code(),
-                                  SecurityErrors.AUTHENTICATION_FAILED.defaultMessage(), SecurityErrors.AUTHENTICATION_FAILED.description())));
+                new ErrorResponse(SecurityErrors.AUTHENTICATION_FAILED.getCode(),
+                                  SecurityErrors.AUTHENTICATION_FAILED.getDefaultMessage(), SecurityErrors.AUTHENTICATION_FAILED.getDescription())));
 
     }
 

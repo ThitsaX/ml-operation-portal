@@ -25,7 +25,9 @@ public class AssignRoleToPrincipalCommandHandler implements AssignRoleToPrincipa
     public Output execute(Input input) throws IAMException {
 
         Principal principal = this.principalRepository.findById(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.withArgs(input.principalId())));
+                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
+                                                              "Principal is not found for the user [" +
+                                                                      input.principalId().getId() + "].")));
 
         Role role = this.roleRepository.findById(input.roleId())
                                        .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));

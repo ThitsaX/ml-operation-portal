@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.error;
 
 import com.thitsaworks.operation_portal.api.operation.portal.security.exception.SecurityErrors;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import org.springframework.http.HttpStatus;
@@ -14,40 +15,34 @@ public class ErrorResponseBuilder {
 
     public ResponseEntity<ErrorResponse> convert(Exception exception) {
 
-        String errorCode;
-        String defaultErrorMessage;
-        String description = null;
-
+        //Todo: to delete after refactoring.
         if (exception instanceof HubServicesApiException e) {
-            errorCode = e.getErrorInformation().getErrorCode();
-            defaultErrorMessage = e.getErrorInformation().getErrorDescription();
-            description = e.getErrorMessage().getDefaultMessage();
 
-            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
+            var errorResponse = new ErrorResponse(e.getErrorInformation().getErrorCode(),
+                                                  e.getErrorInformation().getErrorDescription(),
+                                                  e.getErrorInformation().getErrorDescription());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         if (exception instanceof DomainException e) {
-            errorCode = e.getErrorMessage().code();
-            defaultErrorMessage = e.getErrorMessage().getDefaultMessage();
-            description = e.getErrorMessage().description();
-            if (description == null) {
-                description = "";
-            }
+            ErrorMessage errorMessage = e.getErrorMessage();
 
-            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
+            var errorResponse = new ErrorResponse(errorMessage.getCode(),
+                                                  errorMessage.getDefaultMessage(),
+                                                  errorMessage.getDescription() == null ? "" :
+                                                          errorMessage.getDescription());
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
         if (exception instanceof InputException e) {
-            errorCode = e.getErrorMessage().code();
-            defaultErrorMessage = e.getErrorMessage().getDefaultMessage();
-            description = e.getErrorMessage().description();
-            if (description == null) {
-                description = "";
-            }
+            ErrorMessage errorMessage = e.getErrorMessage();
 
-            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
+            var errorResponse = new ErrorResponse(errorMessage.getCode(),
+                                                  errorMessage.getDefaultMessage(),
+                                                  errorMessage.getDescription() == null ? "" :
+                                                          errorMessage.getDescription());
+
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
@@ -57,17 +52,13 @@ public class ErrorResponseBuilder {
                             e.getBindingResult().getFieldErrors().getFirst().getField(),
                             e.getBindingResult().getFieldErrors().getFirst().getDefaultMessage());
 
-            errorCode = SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.code();
-            defaultErrorMessage = message;
-
-            var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
+            var errorResponse = new ErrorResponse(SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.getCode(),
+                                                  message,
+                                                  "");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 
-        errorCode = "INTERNAL_SERVER_ERROR";
-        defaultErrorMessage = exception.getMessage();
-
-        var errorResponse = new ErrorResponse(errorCode, defaultErrorMessage, description);
+        var errorResponse = new ErrorResponse("INTERNAL_SERVER_ERROR", exception.getMessage(), "");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
