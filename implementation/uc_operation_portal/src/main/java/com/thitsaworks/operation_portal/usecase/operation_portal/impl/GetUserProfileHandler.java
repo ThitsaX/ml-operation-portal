@@ -56,14 +56,17 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
         if (userData == null || principalData == null) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
+            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.defaultMessage(
+                    "System cannot find the user with provided ID [" + input.userId().getId() + "]."));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
+                    .defaultMessage("System cannot find the participant with provided ID. ["
+                            + userData.participantId().getId() + "]."));
         }
 
         var roleList = this.iamQuery.getRolesByPrincipal(principalData.principalId()).stream().map(RoleData::name).toList();

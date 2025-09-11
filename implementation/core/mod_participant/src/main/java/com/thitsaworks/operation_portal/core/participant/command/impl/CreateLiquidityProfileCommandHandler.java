@@ -24,8 +24,9 @@ public class CreateLiquidityProfileCommandHandler implements CreateLiquidityProf
     public Output execute(Input input) throws ParticipantException {
 
         Participant participant = this.participantRepository.findById(input.participantId())
-                                                            .orElseThrow(() -> new ParticipantException(
-                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                            .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                                                    .defaultMessage("System cannot find the participant with provided ID. ["
+                                                                            + input.participantId().getId() + "].")));
 
         var liquidityProfile = participant.addLiquidityProfile(input.bankName(),
                                                                input.accountName(),

@@ -95,7 +95,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
 
         } catch (Exception e) {
 
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.STATEMENT_REPORT_FAILURE_EXCEPTION);
         }
     }
 

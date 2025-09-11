@@ -113,7 +113,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
         } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.SETTLEMENT_AUDIT_REPORT_FAILURE_EXCEPTION);
         }
     }
 

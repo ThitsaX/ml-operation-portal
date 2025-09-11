@@ -79,7 +79,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         O output;
 
         var transactionManager = SpringContext.getBean(PlatformTransactionManager.class,
-                                                       PersistenceQualifiers.Core.TRANSACTION_MANAGER);
+                PersistenceQualifiers.Core.TRANSACTION_MANAGER);
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
         TransactionStatus status = null;
@@ -119,13 +119,14 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
         PrincipalData principalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+                this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
-                                                            new ActionCode(this.getName()))) {
+                new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
+            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED.defaultMessage(
+                    "Access denied: You do not have permission to perform this action [ " + this.getName() + " ]"));
         }
 
         String inputJson, inputInfo;
@@ -142,13 +143,14 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         var action = this.actionAuthorizationManager.getAction(new ActionCode(this.getName()));
 
-        OperationPortalAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                                                            action.actionId(),
-                                                            new UserId(
-                                                                principalId.getId()),
-                                                            principalData.realmId(),
-                                                            inputInfo))
-                                                                                .auditId());
+        OperationPortalAuditableUseCase.auditId.set(
+                this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
+                            action.actionId(),
+                            new UserId(
+                                    principalId.getId()),
+                            principalData.realmId(),
+                            inputInfo))
+                                            .auditId());
     }
 
     protected void afterExecute(O output) throws DomainException {
@@ -170,7 +172,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         if (auditId != null) {
 
             this.createOutputAuditCommand.execute(new CreateOutputAuditCommand.Input(auditId,
-                                                                                     outputInfo));
+                    outputInfo));
 
         }
 
@@ -179,10 +181,10 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
     protected DomainException onException(Exception exception) {
 
         String exceptionMessage = (exception instanceof DomainException e)
-                                      ? e.getErrorMessage()
-                                         .getCode() + " - " + e.getErrorMessage()
-                                                               .getDefaultMessage()
-                                      : exception.getMessage();
+                ? e.getErrorMessage()
+                   .getCode() + " - " + e.getErrorMessage()
+                                         .getDefaultMessage()
+                : exception.getMessage();
 
         var auditId = OperationPortalAuditableUseCase.auditId.get();
 

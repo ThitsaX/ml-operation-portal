@@ -28,13 +28,15 @@ public class UnblockPrincipalActionCommandHandler implements UnblockPrincipalAct
         Optional<Principal> optPrincipal = this.principalRepository.findById(input.principalId());
 
         if (optPrincipal.isEmpty()) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
+                    "Principal is not found for the user [" + input.principalId().getId() + "]."));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.defaultMessage(
+                    "System cannot find Action [" + input.actionId() + "]"));
         }
 
         Principal principal = optPrincipal.get();

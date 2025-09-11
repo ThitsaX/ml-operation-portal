@@ -36,7 +36,8 @@ public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
             this.actionRepository.findOne(ActionRepository.Filters.withActionCode(input.actionCode()));
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.defaultMessage(
+                    "System cannot find Action [" + input.actionCode() + "]"));
         }
 
         Principal principal = optPrincipal.get();

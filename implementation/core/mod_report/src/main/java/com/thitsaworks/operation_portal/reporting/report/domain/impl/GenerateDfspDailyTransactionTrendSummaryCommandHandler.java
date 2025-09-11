@@ -100,7 +100,7 @@ public class GenerateDfspDailyTransactionTrendSummaryCommandHandler implements
 
         } catch (Exception e) {
 
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.DAILY_TRANSACTION_SUMMARY_REPORT_FAILURE_EXCEPTION);
         }
 
     }

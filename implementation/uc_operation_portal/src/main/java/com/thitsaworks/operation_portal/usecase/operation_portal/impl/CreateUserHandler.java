@@ -78,7 +78,8 @@ public class CreateUserHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
+                    "Principal is not found for the user [" + requestingPrincipalData.principalId().getId() + "]."));
 
         }
 

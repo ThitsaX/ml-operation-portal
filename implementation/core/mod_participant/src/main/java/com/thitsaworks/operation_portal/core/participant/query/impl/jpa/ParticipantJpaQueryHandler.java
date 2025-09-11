@@ -51,7 +51,9 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         if (optionalParticipant.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
+                    .defaultMessage("System cannot find the participant with provided ID. ["
+                            + participantId.getId() + "]."));
         }
 
         return new ParticipantData(optionalParticipant.get());

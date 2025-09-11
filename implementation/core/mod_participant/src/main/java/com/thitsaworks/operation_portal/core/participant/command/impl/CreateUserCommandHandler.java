@@ -31,20 +31,25 @@ public class CreateUserCommandHandler implements CreateUserCommand {
 
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                                                            .defaultMessage(
+                                                                                    "System cannot find the participant with provided ID. ["
+                                                                                            + input.participantId()
+                                                                                                   .getId() + "].")));
 
         Optional<User> optionalUser =
                 this.userRepository.findByEmailAndIsDeleted(input.email(), false);
 
         if (optionalUser.isPresent()) {
-            throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED.defaultMessage(
+                    "The provided email [" + input.email() + "] has already registered in the system."));
 
         }
 
         User user =
                 participant.addUser(input.name(), input.email(), input.firstName(), input.lastName(),
-                                    input.jobTitle());
-        
+                        input.jobTitle());
+
         this.participantRepository.save(participant);
 
         return new Output(true, user.getUserId());

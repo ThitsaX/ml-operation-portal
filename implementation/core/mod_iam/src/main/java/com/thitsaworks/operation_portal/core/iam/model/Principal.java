@@ -112,7 +112,7 @@ public class Principal extends JpaEntity<PrincipalId> {
         if (this.roles.stream()
                       .anyMatch(existing -> existing.role.equals(role))) {
 
-            throw new IAMException(IAMErrors.ROLE_ALREADY_ASSIGN_TO_USER);
+            throw new IAMException(IAMErrors.ROLE_ALREADY_ASSIGN_TO_USER.defaultMessage("Role already assign to user [ " + this.principalId + " ]"));
         }
 
         PrincipalRole principalRole = new PrincipalRole(role, this);

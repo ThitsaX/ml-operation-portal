@@ -56,7 +56,8 @@ public class GetActionListByUserHandler
         PrincipalData principalData = this.principalCache.get(requestingPrincipalId);
 
         if (principalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
+                    "Principal is not found for the user [" + requestingPrincipalId + "]."));
 
         }
 

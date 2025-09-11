@@ -29,11 +29,16 @@ public class ModifyUserCommandHandler implements ModifyUserCommand {
 
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                                                            .defaultMessage(
+                                                                                    "System cannot find the participant with provided ID. ["
+                                                                                            + input.participantId()
+                                                                                                   .getId() + "].")));
 
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.USER_NOT_FOUND));
+                                               ParticipantErrors.USER_NOT_FOUND.defaultMessage(
+                                                       "System cannot find the user with provided ID [" + input.userId().getId() + "].")));
 
         this.userRepository.save(
                 user.name(input.name())
