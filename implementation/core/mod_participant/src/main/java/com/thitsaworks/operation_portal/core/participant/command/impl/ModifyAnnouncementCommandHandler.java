@@ -28,7 +28,7 @@ public class ModifyAnnouncementCommandHandler implements ModifyAnnouncementComma
 
         Announcement announcement =
                 this.announcementRepository.findById(input.announcementId()).orElseThrow(() -> new ParticipantException(
-                        ParticipantErrors.ANNOUNCEMENT_NOT_FOUND));
+                        ParticipantErrors.ANNOUNCEMENT_NOT_FOUND.defaultMessage("System cannot find the announcement with provided ID [" + input.announcementId().getId() + "].")));
 
         Optional<Announcement> optionalAnnouncementTitle = this.announcementRepository.findOne(
                 AnnouncementRepository.Filters.findByAnnouncementTitle(input.announcementTitle()));

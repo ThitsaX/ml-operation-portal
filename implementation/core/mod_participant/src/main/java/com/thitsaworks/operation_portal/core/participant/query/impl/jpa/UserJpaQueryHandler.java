@@ -96,7 +96,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.defaultMessage("System cannot find the provided ["+ email +"] email."));
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.defaultMessage("System cannot find the provided ["+ email.getValue() +"] email."));
         }
 
         return new UserData(optionalUser.get());

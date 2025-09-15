@@ -29,7 +29,7 @@ public class CreatePrincipalCommandHandler implements CreatePrincipalCommand {
 
         if (optionalPrincipal.isPresent()) {
 
-            throw new IAMException(IAMErrors.DUPLICATE_PRINCIPAL.defaultMessage("Duplicate principal for user with ID: [" + input.principalId()+"]."));
+            throw new IAMException(IAMErrors.DUPLICATE_PRINCIPAL.defaultMessage("Duplicate principal for user with ID: [" + input.principalId().getId() +"]."));
         }
 
         Principal newPrincipal = new Principal(input.principalId(),

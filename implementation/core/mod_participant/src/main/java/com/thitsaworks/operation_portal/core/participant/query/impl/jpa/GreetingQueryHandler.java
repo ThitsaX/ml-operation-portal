@@ -69,7 +69,10 @@ public class GreetingQueryHandler implements GreetingQuery {
                                               Greeting.getGreetingDate()
                                       ))
                                       .orElseThrow(
-                                              () -> new ParticipantException(ParticipantErrors.GREETING_NOT_FOUND));
+                                              () -> new ParticipantException(ParticipantErrors.GREETING_NOT_FOUND.defaultMessage(
+                                                      "System cannot find the greeting with provided ID [" +
+                                                              greetingId.getId() + "].")));
+
 
     }
 

@@ -44,7 +44,7 @@ public class AnnouncementJpaQueryHandler implements AnnouncementQuery {
 
         if (optionalAnnouncement.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.ANNOUNCEMENT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.ANNOUNCEMENT_NOT_FOUND.defaultMessage("System cannot find the announcement with provided ID [" + announcementId.getId() + "]."));
         }
 
         return new AnnouncementData(optionalAnnouncement.get());

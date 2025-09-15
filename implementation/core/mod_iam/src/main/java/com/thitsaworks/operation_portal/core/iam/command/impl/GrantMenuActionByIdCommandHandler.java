@@ -34,7 +34,7 @@ public class GrantMenuActionByIdCommandHandler implements GrantMenuActionByIdCom
         if (optMenu.isEmpty()) {
 
             LOG.info("Menu Not Found : [{}]", input.menuId());
-            throw new IAMException(IAMErrors.MENU_NOT_FOUND.defaultMessage("System cannot find menu ["+input.menuId()+"]."));
+            throw new IAMException(IAMErrors.MENU_NOT_FOUND.defaultMessage("System cannot find menu ["+input.menuId().getId()+"]."));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());

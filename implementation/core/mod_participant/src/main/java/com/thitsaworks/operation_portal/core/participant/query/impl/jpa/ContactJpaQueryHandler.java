@@ -51,7 +51,7 @@ public class ContactJpaQueryHandler implements ContactQuery {
         if (optionalContact.isEmpty()) {
 
             throw new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND.defaultMessage(
-                    "System cannot find the contact with provided ID. [" + contactId.getId() + "]."));
+                    "System cannot find the contact with provided ID [" + contactId.getId() + "]."));
         }
 
         return new ContactData(optionalContact.get());

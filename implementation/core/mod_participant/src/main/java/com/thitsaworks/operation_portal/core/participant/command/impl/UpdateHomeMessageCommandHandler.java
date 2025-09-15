@@ -23,7 +23,9 @@ public class UpdateHomeMessageCommandHandler implements UpdateGreetingCommand {
 
         var greeting = this.greetingRepository.findById(input.greetingId())
                                               .orElseThrow(() -> new ParticipantException(
-                                                      ParticipantErrors.GREETING_NOT_FOUND));
+                                                      ParticipantErrors.GREETING_NOT_FOUND.defaultMessage(
+                                                              "System cannot find the greeting with provided ID [" +
+                                                                      input.greetingId().getId() + "].")));
 
         Optional<GreetingMessage> optionalGreetingMessage = this.greetingRepository.findOne(
             GreetingRepository.Filters.findByGreetingTitle(input.greetingTitle()));

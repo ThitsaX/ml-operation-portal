@@ -16,7 +16,7 @@ public class ErrorMessage {
     private final String description;
 
     public ErrorMessage(String code, String defaultMessage) {
-        this(code, defaultMessage, null);
+        this(code, defaultMessage, "");
     }
 
     public ErrorMessage code(String code) {

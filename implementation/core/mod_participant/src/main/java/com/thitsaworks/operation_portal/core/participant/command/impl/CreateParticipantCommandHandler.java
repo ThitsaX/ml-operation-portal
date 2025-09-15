@@ -70,7 +70,9 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
         } else {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTER);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTER.defaultMessage(
+                    "The Participant has already registered in the system with provided DFSP Code [" +
+                            input.participantName().getValue() + "]"));
         }
     }
 

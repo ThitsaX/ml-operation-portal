@@ -19,8 +19,7 @@ public class ErrorResponseBuilder {
 
             var errorResponse = new ErrorResponse(errorMessage.getCode(),
                                                   errorMessage.getDefaultMessage(),
-                                                  errorMessage.getDescription() == null ? "" :
-                                                          errorMessage.getDescription());
+                                                  errorMessage.getDescription());
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
@@ -30,8 +29,7 @@ public class ErrorResponseBuilder {
 
             var errorResponse = new ErrorResponse(errorMessage.getCode(),
                                                   errorMessage.getDefaultMessage(),
-                                                  errorMessage.getDescription() == null ? "" :
-                                                          errorMessage.getDescription());
+                                                  errorMessage.getDescription());
 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }

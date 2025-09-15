@@ -42,7 +42,7 @@ public class CreateUserCommandHandler implements CreateUserCommand {
 
         if (optionalUser.isPresent()) {
             throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED.defaultMessage(
-                    "The provided email [" + input.email() + "] has already registered in the system."));
+                    "The provided email [" + input.email().getValue() + "] has already registered in the system."));
 
         }
 
