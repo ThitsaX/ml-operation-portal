@@ -35,6 +35,9 @@ public class UpdateHomeMessageCommandHandler implements UpdateGreetingCommand {
 
         greeting.greetingTitle(input.greetingTitle());
         greeting.greetingDetail(input.greetingDetail());
+        greeting.isDeleted(input.isDeleted());
+        greeting.greetingDate(input.greetDate());
+
 
 
         this.greetingRepository.save(greeting);

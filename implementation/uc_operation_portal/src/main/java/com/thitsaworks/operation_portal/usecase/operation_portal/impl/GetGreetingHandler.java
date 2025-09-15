@@ -43,12 +43,13 @@ public class GetGreetingHandler extends OperationPortalAuditableUseCase<GetGreet
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var greeting = this.greetingQuery.get(input.greetingId());
-
-        return new GetGreeting.Output(greeting.greetingId(),
-                                      greeting.greetingTitle(),
-                                      greeting.greetingDetail(),
-                                      greeting.isDeleted());
+        return this.greetingQuery.getLatestGreeting()
+                .map(greeting -> new Output(
+                        greeting.greetingId(),
+                        greeting.greetingTitle(),
+                        greeting.greetingDetail(),
+                        greeting.isDeleted()
+                )).orElse(null);
     }
 
 }
