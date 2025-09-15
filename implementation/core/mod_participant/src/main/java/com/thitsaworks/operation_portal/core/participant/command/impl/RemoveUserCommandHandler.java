@@ -29,13 +29,11 @@ public class RemoveUserCommandHandler implements RemoveUserCommand {
 
         this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND
-                                                                            .defaultMessage("System cannot find the participant with provided ID. ["
-                                                                                    + input.participantId().getId() + "].")));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
+
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
-                                               ParticipantErrors.USER_NOT_FOUND.defaultMessage(
-                                                       "System cannot find the user with provided ID [" + input.userId().getId() + "].")));
+                                                                                ParticipantErrors.USER_NOT_FOUND));
 
         this.userRepository.save(user.isDeleted(true));
 

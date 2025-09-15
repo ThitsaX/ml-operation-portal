@@ -3,10 +3,10 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUserStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -22,35 +22,39 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class RemoveUserController {
+public class ModifyUserStatusController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveUserController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyUserStatusController.class);
 
-    private final RemoveUser removeUser;
+    private final ModifyUserStatus modifyUserStatus;
 
-    @PostMapping("/secured/removeUser")
+    @PostMapping("/secured/modifyUserStatus")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove User Request: [{}]", request);
+        LOG.info("Modify User Status Request: [{}]", request);
 
-        RemoveUser.Output output = this.removeUser.execute(
-                new RemoveUser.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                     new UserId(Long.parseLong(request.userId()))));
+        ModifyUserStatus.Output
+            output =
+            this.modifyUserStatus.execute(new ModifyUserStatus.Input(new UserId(Long.parseLong(request.userId())),
+                                                                     request.userStatus()
+                                                                .equalsIgnoreCase("ACTIVE") ?
+                                                             PrincipalStatus.ACTIVE :
+                                                             PrincipalStatus.INACTIVE));
         var response = new Response(output.removed());
 
-        LOG.info("Remove User Response: [{}]", response);
+        LOG.info("Modify User Status Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
-                          @NotNull @JsonProperty("userId") String userId)
+    public record Request(@NotNull @JsonProperty("userId") String userId,
+                          @NotNull @JsonProperty("userStatus") String userStatus)
         implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isRemoved") boolean isRemoved) implements Serializable { }
+    public record Response(@JsonProperty("isModified") boolean isModified) implements Serializable { }
 
 }

@@ -6,6 +6,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
@@ -16,6 +17,8 @@ import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
+import com.thitsaworks.operation_portal.core.iam.model.Menu;
+import com.thitsaworks.operation_portal.core.iam.model.MenuGrant;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 import com.thitsaworks.operation_portal.core.iam.model.QAction;
 import com.thitsaworks.operation_portal.core.iam.model.QBlockedAction;
@@ -28,6 +31,8 @@ import com.thitsaworks.operation_portal.core.iam.model.QRole;
 import com.thitsaworks.operation_portal.core.iam.model.QRoleGrant;
 import com.thitsaworks.operation_portal.core.iam.model.Role;
 import com.thitsaworks.operation_portal.core.iam.model.repository.ActionRepository;
+import com.thitsaworks.operation_portal.core.iam.model.repository.MenuGrantRepository;
+import com.thitsaworks.operation_portal.core.iam.model.repository.MenuRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.PrincipalRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.RoleGrantRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.RoleRepository;
@@ -81,6 +86,10 @@ public class IAMJpaQueryHandler implements IAMQuery {
     private final PrincipalRepository principalRepository;
 
     private final RoleGrantRepository roleGrantRepository;
+
+    private final MenuRepository menuRepository;
+
+    private final MenuGrantRepository menuGrantRepository;
 
     private final IAMEngine iamEngine;
 
@@ -173,96 +182,44 @@ public class IAMJpaQueryHandler implements IAMQuery {
      * menus
      */
     @Override
-    public Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId) {
+    public Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId)
+        throws IAMException {
+
+        var principal = this.principalRepository.findByPrincipalId(principalId).orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
 
         // get roles for the principal
-        List<RoleId>
-            roleIds =
-            this.readQueryFactory.select(principalRole.role.roleId)
-                                 .from(principalRole)
-                                 .where(
-                                     principalRole.principal.principalId.eq(principalId))
-                                 .fetch();
+        var roleList = principal.getRoles();
 
-        // get role grants for the principal
-        List<Tuple> roleGrants = this.readQueryFactory.select(roleGrant.Action.actionId,
-                                                              Expressions.constant(principalId),
-                                                              roleGrant.role.roleId)
-                                                      .from(roleGrant)
-                                                      .where(roleGrant.role.roleId.in(roleIds))
-                                                      .fetch();
-
-        // get principal grants for the principal
-        List<Tuple> principalGrants = this.readQueryFactory.select(principalGrant.Action.actionId,
-                                                                   principalGrant.principal.principalId,
-                                                                   Expressions.constant(0L))
-                                                           .from(principalGrant)
-                                                           .where(
-                                                               principalGrant.principal.principalId.eq(principalId))
-                                                           .fetch();
-
-        // merge the two lists and remove duplicates
-        Set<Tuple> grantedActions = new HashSet<>();
-        grantedActions.addAll(roleGrants);
-        grantedActions.addAll(principalGrants);
-
-        // create a map of menus to their associated actions
-        Map<List<MenuData>, List<ActionData>> resultMap = new HashMap<>();
-
-        for (Tuple granted : grantedActions) {
-
-            ActionId actionId = granted.get(0, ActionId.class);
-            RoleId roleId = granted.get(2, RoleId.class);
-
-            // get the menu data and action data for the granted action
-            List<Tuple> rows = readQueryFactory.select(menu.menuId, menu.name, action.actionId, action.actionCode)
-                                               .from(action)
-                                               .join(menuGrant)
-                                               .on(menuGrant.Action.actionId.eq(action.actionId))
-                                               .join(menu)
-                                               .on(menu.menuId.eq(menuGrant.menu.menuId)
-                                                              .and(menu.isActive.eq(true)))
-                                               .join(qUr)
-                                               .on(qUr.principal.principalId.eq(principalId))
-                                               .join(role)
-                                               .on(role.roleId.eq(qUr.role.roleId)
-                                                              .and(role.roleId.eq(roleId)))
-                                               .where(action.actionId.eq(actionId)
-                                                                     .and(action.actionId.notIn(JPAExpressions.select(
-                                                                                                                  blockedAction.Action.actionId)
-                                                                                                              .from(
-                                                                                                                  blockedAction)
-                                                                                                              .where(
-                                                                                                                  blockedAction.principal.principalId.eq(
-                                                                                                                      principalId)))))
-                                               .fetch();
-
-            // create a partial map
-            Map<List<MenuData>, List<ActionData>> partialMap =
-                rows.stream()
-                    .collect(Collectors.groupingBy(row -> List.of(new MenuData(row.get(menu.menuId),
-                                                                               row.get(menu.name),
-                                                                               "0",
-                                                                               true)),
-                                                   Collectors.mapping(row -> new ActionData(row.get(action.actionId),
-                                                                                            row.get(action.actionCode),
-                                                                                            "",
-                                                                                            ""),
-                                                                      Collectors.toList())
-                                                  ));
-
-            // merge the partial map with the result map
-            partialMap.forEach((menuList, actionList) ->
-                                   resultMap.merge(menuList, actionList, (oldList, newList) -> {
-                                       Set<ActionData> merged = new LinkedHashSet<>(oldList);
-                                       merged.addAll(newList);
-                                       return new ArrayList<>(merged);
-                                   })
-                              );
-
+        // get grantedActions which not include blockedActions
+        Set<Action> grantedActionList = new HashSet<>();
+        for(var role : roleList){
+            grantedActionList.addAll(role.getGrantedActions());
         }
 
-        return resultMap;
+        Set<Action> blockedActionList = new HashSet<>(principal.getDeniedActions());
+        grantedActionList.removeAll(blockedActionList);
+
+        BooleanExpression predicate1  = this.menuGrant.Action.actionId.in(grantedActionList.stream().map(Action::getActionId).toList());
+        var menuGrantList = (List<MenuGrant>) this.menuGrantRepository.findAll(predicate1);
+
+        Set<Menu> menuList = menuGrantList.stream().map(MenuGrant::getMenu).collect(Collectors.toSet());
+
+        List<MenuId>  menuIdList = menuList.stream().map(menu -> new MenuId(Long.parseLong(menu.getParentId()))).toList();
+
+        BooleanExpression predicate2 = this.menu.menuId.in(menuIdList);
+        var parentMenuList = (List<Menu>) this.menuRepository.findAll(predicate2);
+
+        menuList.addAll(parentMenuList);
+
+        List<MenuData> menuDataList = menuList.stream().map(MenuData::new).toList();
+        List<ActionData> grantedActionDataList = grantedActionList.stream().map(ActionData::new).toList();
+
+
+        Map<List<MenuData>, List<ActionData>> result = new HashMap<>();
+        result.put(menuDataList, grantedActionDataList);
+
+        return result;
+
     }
     /* <<<<<<<<<<  23d64a55-83cb-413a-9adb-389860137df9  >>>>>>>>>>> */
 
