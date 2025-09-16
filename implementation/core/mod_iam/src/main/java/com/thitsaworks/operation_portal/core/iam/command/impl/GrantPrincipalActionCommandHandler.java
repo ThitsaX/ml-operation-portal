@@ -28,13 +28,13 @@ public class GrantPrincipalActionCommandHandler implements GrantPrincipalActionC
         Optional<Principal> optPrincipal = this.principalRepository.findById(input.principalId());
 
         if (optPrincipal.isEmpty()) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString()));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId().getId().toString()));
         }
 
         Principal principal = optPrincipal.get();

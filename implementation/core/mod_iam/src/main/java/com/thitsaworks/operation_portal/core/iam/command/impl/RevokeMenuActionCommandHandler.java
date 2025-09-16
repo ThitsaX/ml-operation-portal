@@ -28,13 +28,13 @@ public class RevokeMenuActionCommandHandler implements RevokeMenuActionCommand {
         Optional<Menu> optMenu = this.menuRepository.findById(input.menuId());
 
         if (optMenu.isEmpty()) {
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
+            throw new IAMException(IAMErrors.MENU_NOT_FOUND.format(input.menuId().getId()));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId().getId()));
         }
 
         Menu menu = optMenu.get();

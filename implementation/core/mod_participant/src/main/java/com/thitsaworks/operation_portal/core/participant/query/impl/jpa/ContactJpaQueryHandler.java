@@ -52,7 +52,7 @@ public class ContactJpaQueryHandler implements ContactQuery {
 
         if (optionalContact.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId));
+            throw new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId.getId().toString()));
         }
 
         return new ContactData(optionalContact.get());

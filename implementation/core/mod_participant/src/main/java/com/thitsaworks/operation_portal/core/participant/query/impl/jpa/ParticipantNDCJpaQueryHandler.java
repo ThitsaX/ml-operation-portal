@@ -37,7 +37,7 @@ public class ParticipantNDCJpaQueryHandler implements ParticipantNDCQuery {
 
         if (optionalParticipantNDC.isEmpty()) {
 
-            throw new ParticipantNDCException(ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND.format(participantNDCId.getId()));
+            throw new ParticipantNDCException(ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND.format(participantNDCId.getId().toString()));
         }
 
         return new ParticipantNDCData(optionalParticipantNDC.get());

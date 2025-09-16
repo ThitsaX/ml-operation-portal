@@ -33,7 +33,7 @@ public class RoleJpaQueryHandler implements RoleQuery {
         var role = this.roleRepository.findOne(predicate);
 
         if (role.isEmpty()) {
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(name));
         }
 
         return new RoleData(role.get());
@@ -52,13 +52,13 @@ public class RoleJpaQueryHandler implements RoleQuery {
     }
 
     @Override
-    public  RoleData get(RoleId roleId) throws IAMException {
+    public RoleData get(RoleId roleId) throws IAMException {
 
         BooleanExpression predicate = this.role.roleId.eq(roleId);
         var role = this.roleRepository.findOne(predicate);
 
         if (role.isEmpty()) {
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND);
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(roleId.getId().toString()));
         }
 
         return new RoleData(role.get());

@@ -34,8 +34,7 @@ public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
         if (optRole.isEmpty()) {
 
             LOG.info("Role Not Found : [{}]", input.role());
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.defaultMessage(
-                "System cannot find [" + input.role() + "] Role."));
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.role()));
         }
 
         var role = optRole.get();
@@ -47,7 +46,7 @@ public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
         if (optAction.isEmpty()) {
 
             LOG.info("Action Not Found : [{}]", input.actionCode());
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionCode()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionCode().getValue()));
         }
 
         role.grantAction(optAction.get());

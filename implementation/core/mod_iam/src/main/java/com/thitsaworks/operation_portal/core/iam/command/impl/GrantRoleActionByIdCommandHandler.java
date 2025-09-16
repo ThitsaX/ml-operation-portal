@@ -34,7 +34,7 @@ public class GrantRoleActionByIdCommandHandler implements GrantRoleActionByIdCom
         if (optRole.isEmpty()) {
 
             LOG.info("Role Not Found : [{}]", input.roleId());
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()));
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId().getId()));
         }
 
         var role = optRole.get();

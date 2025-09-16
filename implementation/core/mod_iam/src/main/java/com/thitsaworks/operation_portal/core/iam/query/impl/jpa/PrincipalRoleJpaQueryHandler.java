@@ -27,7 +27,7 @@ public class PrincipalRoleJpaQueryHandler implements PrincipalRoleQuery {
         var
             principalRole =
             this.principalRoleRepository.findOne(predicate)
-                                        .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
+                                        .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(principalId.getId().toString())));
 
         return new PrincipalRoleData(principalRole);
     }

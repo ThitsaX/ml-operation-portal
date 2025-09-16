@@ -42,7 +42,7 @@ public class MenuJpaQueryHandler implements MenuQuery {
         var menu = this.menuRepository.findOne(predicate);
 
         if (menu.isEmpty()) {
-            throw new IAMException(IAMErrors.MENU_NOT_FOUND.format(menuId));
+            throw new IAMException(IAMErrors.MENU_NOT_FOUND.format(menuId.getId().toString()));
         }
 
         return new MenuData(menu.get());

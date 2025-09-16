@@ -13,7 +13,7 @@ public class ApprovalErrors {
     public static final ErrorMessage INVALID_REQUESTED_BY = new ErrorMessage("INVALID_REQUESTED_BY", "Requested By is required and must NOT be blank or empty.");
     public static final ErrorMessage INVALID_RESPONDED_BY = new ErrorMessage("INVALID_RESPONDED_BY", "Responded By is required and must NOT be blank or empty.");
 
-    public static final ErrorMessage APPROVAL_REQUEST_NOT_FOUND = new ErrorMessage("APPROVAL_REQUEST_NOT_FOUND", "The System cannot find the Approval Request with provided : [%s].");
+    public static final ErrorMessage APPROVAL_REQUEST_NOT_FOUND = new ErrorMessage("APPROVAL_REQUEST_NOT_FOUND", "The System cannot find the Approval Request with provided : [{0}].");
 
     //@@formatter:on
 

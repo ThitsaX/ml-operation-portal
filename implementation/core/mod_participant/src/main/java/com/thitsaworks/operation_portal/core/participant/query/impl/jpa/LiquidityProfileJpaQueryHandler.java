@@ -70,7 +70,7 @@ public class LiquidityProfileJpaQueryHandler implements LiquidityProfileQuery {
 
         if (optionalLiquidityProfile.isEmpty()) {
 
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.format(liquidityProfileId.getId()));
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.format(liquidityProfileId.getId().toString()));
         }
 
         return new LiquidityProfileData(optionalLiquidityProfile.get());

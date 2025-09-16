@@ -153,7 +153,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId));
+            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId.getId()));
 
         }
     }
