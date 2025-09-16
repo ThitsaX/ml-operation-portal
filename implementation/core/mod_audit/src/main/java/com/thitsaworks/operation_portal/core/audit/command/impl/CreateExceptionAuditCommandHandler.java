@@ -24,7 +24,7 @@ public class CreateExceptionAuditCommandHandler implements CreateExceptionAuditC
 
         var audit = this.auditRepository.findById(input.auditId())
                                         .orElseThrow(() -> new AuditException(AuditErrors.AUDIT_NOT_FOUND.format(input.auditId()
-                                                                                                                      .getId())));
+                                                                                                                      .getId().toString())));
 
         audit.exception(input.exception());
 

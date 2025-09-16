@@ -28,7 +28,7 @@ public class IsActionGrantedCommandHandler implements IsActionGrantedCommand {
         Optional<Principal> optPrincipal = this.principalRepository.findById(input.principalId());
 
         if (optPrincipal.isEmpty()) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString()));
         }
 
         Optional<Action>

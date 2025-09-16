@@ -20,7 +20,7 @@ public class EditRoleCommandHandler implements EditRoleCommand {
 
         var role = this.roleRepository.findById(input.roleId())
                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()
-                                                                                                               .getId())));
+                                                                                                               .getId().toString())));
 
         if (this.roleRepository.findOne(RoleRepository.Filters.withName(input.name())
                                                               .and(RoleRepository.Filters.withoutRoleId(input.roleId())))

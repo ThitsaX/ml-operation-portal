@@ -63,7 +63,7 @@ public class GetParticipantPositionsHandler
         if (userData == null) {
 
             throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
-                                                                                        .getId()));
+                                                                                        .getId().toString()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
@@ -72,7 +72,7 @@ public class GetParticipantPositionsHandler
 
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
                                                .format(userData.participantId()
-                                                               .getId()));
+                                                               .getId().toString()));
         }
 
         String

@@ -56,7 +56,7 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
         return this.approvalRequestRepository.findOne(predicate)
                                              .map(ApprovalRequestData::new)
                                              .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.format(
-                                                 approvalRequestId.getId())));
+                                                 approvalRequestId.getId().toString())));
     }
 
 }

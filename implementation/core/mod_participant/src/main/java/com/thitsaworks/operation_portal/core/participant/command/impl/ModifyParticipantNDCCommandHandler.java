@@ -26,7 +26,7 @@ public class ModifyParticipantNDCCommandHandler implements ModifyParticipantNDCC
         ParticipantNDC
                 existingParticipantNDC = this.participantNDCRepository.findById(input.participantNDCId())
                                                                       .orElseThrow(() -> new ParticipantNDCException(
-                                                                              ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND.format(input.participantNDCId().getId())));
+                                                                              ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND.format(input.participantNDCId().getId().toString())));
 
         existingParticipantNDC.moveParticipantNDCToHistory(existingParticipantNDC);
 

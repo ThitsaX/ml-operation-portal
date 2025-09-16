@@ -77,7 +77,7 @@ public class CreateUserHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
 
         }
 

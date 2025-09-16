@@ -66,7 +66,7 @@ public class GetParticipantListByParticipantHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (principalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
         }
 
         List<Output.ParticipantInfo> participantInfoList = new ArrayList<>();
