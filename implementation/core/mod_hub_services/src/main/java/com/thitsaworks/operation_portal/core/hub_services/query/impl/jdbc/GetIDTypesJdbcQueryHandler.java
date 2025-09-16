@@ -37,11 +37,11 @@ public class GetIDTypesJdbcQueryHandler implements GetIDTypesQuery {
         try {
 
             results = this.jdbcTemplate.query(
-                "SELECT name as partyIdentifierTypeId, name FROM partyIdentifierType ORDER BY partyIdentifierTypeId;",
+                    "SELECT name as partyIdentifierTypeId, name FROM partyIdentifierType ORDER BY partyIdentifierTypeId;",
                 new IDTypeDataMapper());
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.PARTY_IDENTIFIER_TYPE_ID.defaultMessage(e.getMessage()));
         }
 
         if (results == null || results.isEmpty()) {

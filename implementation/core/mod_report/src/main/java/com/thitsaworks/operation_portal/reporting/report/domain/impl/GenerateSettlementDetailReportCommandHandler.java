@@ -80,7 +80,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
         } catch (Exception e) {
 
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION);
 
         }
     }

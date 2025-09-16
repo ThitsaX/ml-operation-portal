@@ -10,7 +10,7 @@ public class SystemException extends RuntimeException {
 
     public SystemException(ErrorMessage errorMessage) {
 
-        super(errorMessage.code() + "-" + errorMessage.description());
+        super(errorMessage.getCode() + "-" + errorMessage.getDefaultMessage());
         this.errorMessage = errorMessage;
     }
 

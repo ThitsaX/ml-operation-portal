@@ -1,10 +1,21 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
+import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
+import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,41 +26,76 @@ import java.util.List;
 
 @Service
 public class GetAuditByParticipantListHandler
-    extends OperationPortalUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
+    extends OperationPortalAuditableUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
     implements GetAuditByParticipantList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAuditByParticipantListHandler.class);
 
+    private final IAMQuery iamQuery;
+
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
-    public GetAuditByParticipantListHandler(PrincipalCache principalCache,
+    private final PrincipalCache principalCache;
+
+    private final UserPermissionManager userPermissionManager;
+
+    public GetAuditByParticipantListHandler(CreateInputAuditCommand createInputAuditCommand,
+                                            CreateOutputAuditCommand createOutputAuditCommand,
+                                            CreateExceptionAuditCommand createExceptionAuditCommand,
+                                            ObjectMapper objectMapper,
+                                            PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
-                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery) {
+                                            IAMQuery iamQuery,
+                                            GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
+                                            UserPermissionManager userPermissionManager) {
 
-        super(principalCache, actionAuthorizationManager);
+        super(createInputAuditCommand,
+              createOutputAuditCommand,
+              createExceptionAuditCommand,
+              objectMapper,
+              principalCache,
+              actionAuthorizationManager);
 
+        this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
+        this.userPermissionManager = userPermissionManager;
+        this.principalCache = principalCache;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+
+        var existingRealmId = this.principalCache.get(requestingPrincipalId).realmId();
+
+
+        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
+                                             .stream()
+                                             .map(ActionData::actionId)
+                                             .toList();
+
+        RealmId realmId = null;
+        if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
+            realmId = existingRealmId;
+        }
+
         GetAllAuditByParticipantQuery.Output output =
             this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
-                input.realmId(),
+                realmId,
                 input.fromDate(),
                 input.toDate(),
-                input.userId(),
-                input.actionName()));
+                grantedActionList));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
-        for (GetAllAuditByParticipantQuery.Output.AuditInfo data : output.getAuditInfoList()) {
+        for (var data : output.auditInfoList()) {
 
-            auditInfoList.add(new Output.AuditInfo(
-                data.getUserName(),
-                data.getActionName(),
-                data.getActionDate()));
+            auditInfoList.add(new Output.AuditInfo(data.date(),
+                                                   data.action(),
+                                                   data.madeBy()));
         }
 
         return new Output(auditInfoList);

@@ -32,12 +32,24 @@ public class UserJpaQueryHandler implements UserQuery {
     private final QUser user = QUser.user;
 
     @Override
+    public List<UserData> getUsers() {
+
+        BooleanExpression predicate = this.user.isDeleted.isFalse();
+
+        List<User> users = (List<User>) this.userRepository.findAll(predicate);
+
+        return users.stream()
+                    .map(UserData::new)
+                    .toList();
+    }
+
+    @Override
     public List<UserData> getUsers(ParticipantId participantId) {
 
         BooleanExpression
             predicate =
-                this.user.participant.participantId.eq(participantId)
-                                                   .and(user.isDeleted.isFalse());
+            this.user.isDeleted.isFalse()
+                               .and(this.user.participant.participantId.eq(participantId));
 
         List<User> users = (List<User>) this.userRepository.findAll(
             predicate);
@@ -57,7 +69,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
+            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.format(userId.getId()));
         }
 
         return new UserData(optionalUser.get());
@@ -83,7 +95,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(email.getValue()));
         }
 
         return new UserData(optionalUser.get());

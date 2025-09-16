@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
-import com.thitsaworks.operation_portal.core.hub_services.data.WindowInfoData;
+import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowInfoData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -56,7 +56,7 @@ public class GetNetTransferAmountByWindowIdHandler
 
         List<GetNetTransferAmountByWindowId.Detail> details = new ArrayList<>();
 
-        for (WindowInfoData windowInfo : output.getWindowInfoList()) {
+        for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
             GetNetTransferAmountByWindowId.Detail detail = new GetNetTransferAmountByWindowId.Detail(
                 windowInfo.getDfspName(),

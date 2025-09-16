@@ -1,8 +1,9 @@
 package com.thitsaworks.operation_portal.core.audit.query;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import lombok.Value;
+import com.thitsaworks.operation_portal.component.common.type.Email;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -10,31 +11,19 @@ import java.util.List;
 
 public interface GetAllAuditByParticipantQuery {
 
+    Output execute(Input input);
+
     record Input(RealmId realmId,
                  Instant fromDate,
                  Instant toDate,
-                 UserId userId,
-                 String actionName) {}
+                 List<ActionId> grantedActionList) { }
 
-    @Value
-    class Output {
+    record Output(List<AuditInfo> auditInfoList) {
 
-        private List<AuditInfo> auditInfoList;
-
-        @Value
-        public static class AuditInfo implements Serializable
-        {
-
-            private String userName;
-
-            private String actionName;
-
-            private Instant actionDate;
-
-        }
+        public record AuditInfo(Instant date,
+                                String action,
+                                Email madeBy) implements Serializable { }
 
     }
-
-    Output execute(Input input);
 
 }

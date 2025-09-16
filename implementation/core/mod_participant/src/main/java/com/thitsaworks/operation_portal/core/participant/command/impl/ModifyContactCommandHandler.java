@@ -25,7 +25,8 @@ public class ModifyContactCommandHandler implements ModifyContactCommand {
         var
             participant =
             this.participantRepository.findById(input.participantId())
-                                      .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                      .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                              .format(input.participantId().getId())));
 
         var contact = participant.updateContact(input.contactId(),
                                                 input.name(),

@@ -15,6 +15,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
+import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
@@ -70,10 +72,12 @@ public class ModifyApprovalActionHandler
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
 
-        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ? "recordFundsIn" :
+        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
+                SettlementAction.recordFundsIn.toString() :
                             "Withdraw".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
-                                "recordFundsOutPrepareReserve" :
-                                approvalRequestData.requestedAction();
+                                    SettlementAction.recordFundsOutPrepareReserve.toString() :
+                                    approvalRequestData.requestedAction();
+
 
         Money
             money =
@@ -91,6 +95,20 @@ public class ModifyApprovalActionHandler
                                                                                   .getId())));
         extensionList.addExtensionItem(extension);
 
+        if ("Change Net Debit Cap".equalsIgnoreCase(approvalRequestData.requestedAction())) {
+
+           var request = new PutUpdateParticipantLimit.Request(
+                approvalRequestData.currency(),
+                new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
+                                                                             approvalRequestData.amount().intValue(),
+                                                                             10));
+
+           this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantId(),
+                                                               request);
+
+        }else{
+
+
         PostParticipantBalance.Request
             request =
             new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
@@ -107,7 +125,7 @@ public class ModifyApprovalActionHandler
             this.participantHubClient.postParticipantBalance(approvalRequestData.participantId(),
                                                              approvalRequestData.participantCurrencyId(),
                                                              request);
-
+        }
         var
             output =
             this.modifyApprovalActionCommand.execute(new ModifyApprovalActionCommand.Input(input.approvalRequestId(),

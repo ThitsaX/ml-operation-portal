@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -19,6 +20,7 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,14 +28,18 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CreateUserHandler
-        extends OperationPortalAuditableUseCase<CreateUser.Input, CreateUser.Output>
-        implements CreateUser {
+    extends OperationPortalAuditableUseCase<CreateUser.Input, CreateUser.Output>
+    implements CreateUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateUserHandler.class);
 
     private final CreateUserCommand createUserCommand;
 
     private final CreatePrincipalCommand createPrincipalCommand;
+
+    private final AssignRoleToPrincipalCommand assignRoleToPrincipalCommand;
+
+    private final UserPermissionManager userPermissionManager;
 
     private final PrincipalCache principalCache;
 
@@ -44,7 +50,9 @@ public class CreateUserHandler
                              PrincipalCache principalCache,
                              ActionAuthorizationManager actionAuthorizationManager,
                              CreateUserCommand createUserCommand,
-                             CreatePrincipalCommand createPrincipalCommand) {
+                             CreatePrincipalCommand createPrincipalCommand,
+                             AssignRoleToPrincipalCommand assignRoleToPrincipalCommand,
+                             UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -55,6 +63,8 @@ public class CreateUserHandler
 
         this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
+        this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
+        this.userPermissionManager = userPermissionManager;
         this.principalCache = principalCache;
     }
 
@@ -63,30 +73,51 @@ public class CreateUserHandler
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        PrincipalData principalData =
+        PrincipalData requestingPrincipalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (principalData == null) {
+        if (requestingPrincipalData == null) {
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
 
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+        }
+
+        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
+
+        if (isDfsp) {
+
+            if (!input.participantId()
+                      .equals(new ParticipantId(requestingPrincipalData.realmId()
+                                                                       .getId()))) {
+                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
+            }
 
         }
 
         CreateUserCommand.Output output = this.createUserCommand.execute(
-                new CreateUserCommand.Input(input.name(),
-                                            input.email(),
-                                            new ParticipantId(principalData.realmId()
-                                                                                      .getId()),
-                                            input.firstName(), input.lastName(), input.jobTitle()));
+            new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
+                                        input.firstName(), input.lastName(), input.jobTitle()));
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(new PrincipalId(output.userId()
-                                                                                                   .getId()),
+        var principalId = new PrincipalId(output.userId()
+                                                .getId());
+
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(principalId,
                                                                              input.password(),
-                                                                             new RealmId(principalData.realmId()
-                                                                                                      .getId()),
+                                                                             new RealmId(input.participantId()
+                                                                                              .getId()),
                                                                              input.activeStatus()));
+
+        var roleIdList = input.roleIdList();
+
+        if (!this.userPermissionManager.areRolesAllowed(isDfsp, roleIdList)) {
+            throw new IAMException(IAMErrors.UNAUTHORIZED_ROLE_CREATION);
+        }
+
+        for (var roleId : roleIdList) {
+            this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, roleId));
+        }
 
         return new Output(output.created());
     }
 
 }
+

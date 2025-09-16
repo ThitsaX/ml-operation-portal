@@ -26,7 +26,8 @@ public class ModifyParticipantCommandHandler implements ModifyParticipantCommand
 
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                                                            .format(input.participantId().getId())));
 
         this.participantRepository.save(participant.description(input.description())
                                                    .address(input.address())

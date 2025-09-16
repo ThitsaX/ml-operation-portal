@@ -1,1 +1,0 @@
-ALTER TABLE tbl_audit MODIFY output_info LONGTEXT;

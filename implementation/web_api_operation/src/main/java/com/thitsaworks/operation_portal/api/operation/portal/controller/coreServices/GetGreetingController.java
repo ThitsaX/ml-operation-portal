@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,15 +27,11 @@ public class GetGreetingController {
 
     private final GetGreeting getGreeting;
 
-    @PostMapping(value = "/public/getGreeting")
-    public ResponseEntity<Response> execute(
-        @Valid @RequestBody Request request) throws DomainException {
+    @GetMapping(value = "/public/getGreeting")
+    public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Greeting Request: [{}]", request);
-
-        var input = new GetGreeting.Input(new GreetingId(Long.parseLong(request.greetingId())));
-
-        var output = this.getGreeting.execute(input);
+        LOG.info("Get Greeting Request: [{}]","");
+        var output = this.getGreeting.execute(new GetGreeting.Input());
 
         var response = new Response(output.greetingId()
                                           .toString(),
@@ -47,9 +44,7 @@ public class GetGreetingController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("greetingId") String greetingId) implements Serializable {
-    }
+
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@NotNull @JsonProperty("greetingId") String greetingId,

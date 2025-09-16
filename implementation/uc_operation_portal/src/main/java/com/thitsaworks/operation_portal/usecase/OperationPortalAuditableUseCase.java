@@ -82,11 +82,13 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
                                                        PersistenceQualifiers.Core.TRANSACTION_MANAGER);
         DefaultTransactionDefinition def = new DefaultTransactionDefinition();
         def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def);
+        TransactionStatus status = null;
 
         this.beforeExecute(input);
 
         try {
+
+            status = transactionManager.getTransaction(def);
 
             output = this.onExecute(input);
 
@@ -96,7 +98,9 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         } catch (RuntimeException exception) {
 
-            transactionManager.rollback(status);
+            if (status != null && !status.isCompleted()) {
+                transactionManager.rollback(status);
+            }
 
             throw exception;
 
@@ -121,7 +125,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
                                                             new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
+            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED.format(this.getName()));
         }
 
         String inputJson, inputInfo;
@@ -138,13 +142,14 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         var action = this.actionAuthorizationManager.getAction(new ActionCode(this.getName()));
 
-        OperationPortalAuditableUseCase.auditId.set(this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                                                            action.actionId(),
-                                                            new UserId(
-                                                                principalId.getId()),
-                                                            principalData.realmId(),
-                                                            inputInfo))
-                                                                                .auditId());
+        OperationPortalAuditableUseCase.auditId.set(
+            this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
+                    action.actionId(),
+                    new UserId(
+                        principalId.getId()),
+                    principalData.realmId(),
+                    inputInfo))
+                                        .auditId());
     }
 
     protected void afterExecute(O output) throws DomainException {
@@ -176,8 +181,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
 
         String exceptionMessage = (exception instanceof DomainException e)
                                       ? e.getErrorMessage()
-                                         .code() + " - " + e.getErrorMessage()
-                                                            .description()
+                                         .getCode() + " - " + e.getErrorMessage()
+                                                               .getDefaultMessage()
                                       : exception.getMessage();
 
         var auditId = OperationPortalAuditableUseCase.auditId.get();
@@ -192,7 +197,7 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
             } catch (AuditException e) {
 
                 LOGGER.info("Audit Exception: [{}]", e.getErrorMessage()
-                                                      .description());
+                                                      .getDefaultMessage());
             }
         }
 

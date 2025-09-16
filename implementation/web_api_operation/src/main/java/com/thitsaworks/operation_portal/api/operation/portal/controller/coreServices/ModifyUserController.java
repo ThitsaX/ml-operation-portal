@@ -3,11 +3,13 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
-import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,19 +37,21 @@ public class ModifyUserController {
 
         LOG.info("Modify User Request: [{}]", request);
 
-        var output = this.modifyUser.execute(new ModifyUser.Input(new UserId(Long.parseLong(
-                request.userId())),
+        var output = this.modifyUser.execute(new ModifyUser.Input(new UserId(Long.parseLong(request.userId())),
                                                                   request.name(),
                                                                   request.firstName(),
                                                                   request.lastName(),
+                                                                  new ParticipantId(Long.parseLong(
+                                                                      request.participantId())),
                                                                   request.jobTitle(),
-                                                                  request.isActive()
-                                                                                         .equalsIgnoreCase(
-                                                                                             "ACTIVE") ?
-                                                                                      PrincipalStatus.ACTIVE :
-                                                                                      PrincipalStatus.INACTIVE));
+                                                                  request.roleIdList()
+                                                                         .stream()
+                                                                         .map(role -> new RoleId(Long.parseLong(role)))
+                                                                         .toList()));
 
-        var response = new Response(output.userId().getId().toString(), output.modified());
+        var response = new Response(output.userId()
+                                          .getId()
+                                          .toString(), output.modified());
 
         LOG.info("Modify User Response: [{}]", response);
 
@@ -54,12 +59,14 @@ public class ModifyUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("userId") String userId,
-                          @NotNull @JsonProperty("name") String name, @NotNull @JsonProperty("email") String email,
+    public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
+                          @NotNull @JsonProperty("name") String name,
                           @NotNull @JsonProperty("firstName") String firstName,
                           @NotNull @JsonProperty("lastName") String lastName,
+                          @NotNull @NotBlank @JsonProperty("participantId") String participantId,
                           @NotNull @JsonProperty("jobTitle") String jobTitle,
-                          @NotNull @JsonProperty("status") String isActive) implements Serializable { }
+                          @NotNull @JsonProperty("roleIdList") List<String> roleIdList
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("userId") String userId,

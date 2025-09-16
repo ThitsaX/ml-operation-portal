@@ -7,13 +7,15 @@ import java.io.Serializable;
 
 public record RoleData(RoleId roleId,
                        String name,
-                       boolean active) implements Serializable {
+                       boolean active,
+                       boolean isDfsp) implements Serializable {
 
     public RoleData(Role role) {
 
         this(role.getRoleId(),
              role.getName(),
-             role.getActive());
+             role.getActive(),
+             role.getIsDfsp());
     }
 
 }

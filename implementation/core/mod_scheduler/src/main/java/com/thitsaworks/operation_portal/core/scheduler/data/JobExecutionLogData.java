@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.scheduler.data;
 
+import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
 import com.thitsaworks.operation_portal.core.scheduler.model.JobExecutionLog;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
  * Provides a clean interface for transferring job execution log data between layers.
  */
 public record JobExecutionLogData(
-        Long id,
+        JobExecutionLogId jobExecutionLogId,
         String jobName,
         String status,
         LocalDateTime startTime,
@@ -23,7 +24,7 @@ public record JobExecutionLogData(
      */
     public JobExecutionLogData(JobExecutionLog log) {
         this(
-                log.getId(),
+                log.getJobExecutionLogId(),
                 log.getJobName(),
                 log.getStatus(),
                 log.getStartTime(),

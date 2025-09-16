@@ -34,7 +34,8 @@ public class RevokeRoleActionCommandHandler implements RevokeRoleActionCommand {
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()
+                                                                          .getId()));
         }
 
         Role role = optRole.get();

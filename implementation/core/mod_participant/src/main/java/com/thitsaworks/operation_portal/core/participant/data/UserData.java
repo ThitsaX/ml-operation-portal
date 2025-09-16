@@ -16,26 +16,20 @@ public record UserData(UserId userId,
                        String firstName,
                        String lastName,
                        String jobTitle,
+                       boolean isDeleted,
                        Long createdDate) implements Serializable {
 
     public UserData(User user) {
 
         this(user.getUserId(),
-
              user.getParticipant().getParticipantId(),
-
              user.getParticipant().getParticipantName(),
-
              user.getName(),
-
              user.getEmail(),
-
              user.getFirstName(),
-
              user.getLastName(),
-
              user.getJobTitle(),
-
+             user.isDeleted(),
              user.getCreatedAt().getEpochSecond());
     }
 

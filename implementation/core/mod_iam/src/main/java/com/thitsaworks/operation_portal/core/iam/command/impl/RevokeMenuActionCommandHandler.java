@@ -34,7 +34,7 @@ public class RevokeMenuActionCommandHandler implements RevokeMenuActionCommand {
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND);
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()));
         }
 
         Menu menu = optMenu.get();

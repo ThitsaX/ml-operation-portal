@@ -41,21 +41,11 @@ MYSQL_PORTAL_DATA_READ_SETTINGS_DATA='{
 }'
 
 # Hub Data Settings
-MYSQL_HUB_DATA_FLYWAY_SETTINGS_PATH="operation_portal/mysql/hub_data/flyway/settings"
-MYSQL_HUB_DATA_FLYWAY_SETTINGS_DATA='{
-   "locations": [
-     "classpath:db/report"
-   ],
-   "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger?createDatabaseIfNotExist=true",
-   "username": "root",
-   "password": "admin"
-}'
-
 MYSQL_HUB_DATA_WRITE_SETTINGS_PATH="operation_portal/mysql/hub_data/write_db/settings"
 MYSQL_HUB_DATA_WRITE_SETTINGS_DATA='{
    "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger",
-   "username": "central_ledger_ro",
-   "password": "password",
+   "username": "root",
+   "password": "admin",
    "minPoolSize": 10,
    "maxPoolSize": 20
 }'
@@ -63,10 +53,36 @@ MYSQL_HUB_DATA_WRITE_SETTINGS_DATA='{
 MYSQL_HUB_DATA_READ_SETTINGS_PATH="operation_portal/mysql/hub_data/read_db/settings"
 MYSQL_HUB_DATA_READ_SETTINGS_DATA='{
    "url": "jdbc:mysql://mysql-central-ledger:3306/central_ledger",
-   "username": "central_ledger_ro",
-   "password": "password",
+   "username": "root",
+   "password": "admin",
    "minPoolSize": 10,
    "maxPoolSize": 20
+}'
+
+MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH="operation_portal/mongo/hub_data/write_db/settings"
+MONGO_DB_HUB_DATA_WRITE_SETTINGS_DATA='{
+   "uri": "mongodb://z3Xt6cl_4KcqzSZ3ANCC:qtlrdc71SOpmO_PljhRz@localhost:27017/?authSource=admin",
+   "database": "mojaloop",
+   "minPoolSize": 0,
+   "maxPoolSize": 10,
+   "maxWaitMs": 120000,
+   "connectTimeoutMs": 10000,
+   "readTimeoutMs": 0,
+   "retryWrites": false,
+   "readPreference": "primary"
+}'
+
+MONGO_DB_HUB_DATA_READ_SETTINGS_PATH="operation_portal/mongo/hub_data/read_db/settings"
+MONGO_DB_HUB_DATA_READ_SETTINGS_DATA='{
+    "uri": "mongodb://z3Xt6cl_4KcqzSZ3ANCC:qtlrdc71SOpmO_PljhRz@localhost:27017/?authSource=admin",
+    "database": "mojaloop",
+    "minPoolSize": 0,
+    "maxPoolSize": 10,
+    "maxWaitMs": 120000,
+    "connectTimeoutMs": 10000,
+    "readTimeoutMs": 0,
+    "retryWrites": false,
+    "readPreference": "primary"
 }'
 
 echo "Adding Redis Settings to Vault at path '$REDIS_SETTINGS_PATH'..."
@@ -86,14 +102,17 @@ vault kv put $MYSQL_PORTAL_DATA_READ_SETTINGS_PATH @<(echo "$MYSQL_PORTAL_DATA_R
 
 # Add Hub Secrets
 
-echo "Adding Hub Data Flyway Settings to Vault at path '$MYSQL_HUB_DATA_FLYWAY_SETTINGS_PATH'..."
-vault kv put $MYSQL_HUB_DATA_FLYWAY_SETTINGS_PATH @<(echo "$MYSQL_HUB_DATA_FLYWAY_SETTINGS_DATA")
-
 echo "Adding Hub Data Write Data Source Settings to Vault at path '$MYSQL_HUB_DATA_WRITE_SETTINGS_PATH'..."
 vault kv put $MYSQL_HUB_DATA_WRITE_SETTINGS_PATH @<(echo "$MYSQL_HUB_DATA_WRITE_SETTINGS_DATA")
 
 echo "Adding Hub Data Read Data Source Settings to Vault at path '$MYSQL_HUB_DATA_READ_SETTINGS_PATH'..."
 vault kv put $MYSQL_HUB_DATA_READ_SETTINGS_PATH @<(echo "$MYSQL_HUB_DATA_READ_SETTINGS_DATA")
+
+echo "Adding Hub Data Mongodb Write Data Source Settings to Vault at path '$MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH'..."
+vault kv put $MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH @<(echo "$MONGO_DB_HUB_DATA_WRITE_SETTINGS_DATA")
+
+echo "Adding Hub Data Mongodb Read Data Source Settings to Vault at path '$MONGO_DB_HUB_DATA_READ_SETTINGS_PATH'..."
+vault kv put $MONGO_DB_HUB_DATA_READ_SETTINGS_PATH @<(echo "$MONGO_DB_HUB_DATA_READ_SETTINGS_DATA")
 
 
 
@@ -104,9 +123,10 @@ vault kv get $REDIS_SETTINGS_PATH
 vault kv get $MYSQL_PORTAL_DATA_FLYWAY_SETTINGS_PATH
 vault kv get $MYSQL_PORTAL_DATA_WRITE_SETTINGS_PATH
 vault kv get $MYSQL_PORTAL_DATA_READ_SETTINGS_PATH
-vault kv get $MYSQL_HUB_DATA_FLYWAY_SETTINGS_PATH
 vault kv get $MYSQL_HUB_DATA_WRITE_SETTINGS_PATH
 vault kv get $MYSQL_HUB_DATA_READ_SETTINGS_PATH
+vault kv get $MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH
+vault kv get $MONGO_DB_HUB_DATA_READ_SETTINGS_PATH
 
 
 echo "Vault initialization and secret creation complete."

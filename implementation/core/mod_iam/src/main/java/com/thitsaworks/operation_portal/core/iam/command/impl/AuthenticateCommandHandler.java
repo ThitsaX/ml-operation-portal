@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.iam.command.AuthenticateCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -26,8 +27,14 @@ public class AuthenticateCommandHandler implements AuthenticateCommand {
     public Output execute(Input input) throws IAMException, IAMIgnorableException {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                      .orElseThrow(() -> new IAMException(
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId())));
 
+        if (principal.getPrincipalStatus()
+                     .equals(PrincipalStatus.INACTIVE)) {
+
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId()));
+        }
         SecurityToken securityToken = principal.authenticate(input.passwordPlain());
 
         this.principalRepository.save(principal);

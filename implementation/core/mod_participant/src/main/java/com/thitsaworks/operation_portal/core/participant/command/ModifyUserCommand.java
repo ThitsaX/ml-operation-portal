@@ -10,7 +10,6 @@ public interface ModifyUserCommand {
     record Input(
             UserId userId,
             String name,
-            Email email,
             String firstName,
             String lastName,
             String jobTitle,

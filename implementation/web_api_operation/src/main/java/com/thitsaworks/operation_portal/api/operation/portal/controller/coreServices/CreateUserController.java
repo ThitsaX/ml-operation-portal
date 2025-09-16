@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,21 +36,28 @@ public class CreateUserController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Create User Request: [{}]", request);
+        LOG.info("Onboard user request: {}", request);
 
-        CreateUser.Output output = this.createUser.execute(
-                new CreateUser.Input(request.name,
-                                               new Email(request.email),
-                                               request.password,
-                                               request.firstName,
-                                               request.lastName,
-                                               request.jobTitle,
-                                               request.userStatus.equalsIgnoreCase("ACTIVE") ? PrincipalStatus.ACTIVE :
-                                                   PrincipalStatus.INACTIVE));
+        CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
+                                                                                new Email(request.email()),
+                                                                                request.password(),
+                                                                                request.firstName(),
+                                                                                request.lastName(),
+                                                                                request.jobTitle(),
+                                                                                request.roleIdList()
+                                                                                       .stream()
+                                                                                       .map(roleId -> new RoleId(Long.parseLong(
+                                                                                           roleId)))
+                                                                                       .toList(),
+                                                                                new ParticipantId(Long.parseLong(request.participantId())),
+                                                                                request.userStatus()
+                                                                                       .equalsIgnoreCase("ACTIVE") ?
+                                                                                    PrincipalStatus.ACTIVE :
+                                                                                    PrincipalStatus.INACTIVE));
 
         Response response = new Response(output.created());
 
-        LOG.info("Create User Response: [{}]", response);
+        LOG.info("Onboard user response: {}", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -63,6 +73,8 @@ public class CreateUserController {
         @NotNull @JsonProperty("firstName") String firstName,
         @NotNull @JsonProperty("lastName") String lastName,
         @NotNull @JsonProperty("jobTitle") String jobTitle,
+        @NotNull @JsonProperty("roleIdList") List<String> roleIdList,
+        @NotNull @JsonProperty("participantId") String participantId,
         @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
 
     }

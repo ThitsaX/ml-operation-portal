@@ -19,12 +19,12 @@ public class EditRoleCommandHandler implements EditRoleCommand {
     public Output execute(Input input) throws IAMException {
 
         var role = this.roleRepository.findById(input.roleId())
-                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
+                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId())));
 
         if (this.roleRepository.findOne(RoleRepository.Filters.withName(input.name())
                                                               .and(RoleRepository.Filters.withoutRoleId(input.roleId())))
                                .isPresent()) {
-            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME);
+            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME.format(input.name()));
         }
 
         role.name(input.name());

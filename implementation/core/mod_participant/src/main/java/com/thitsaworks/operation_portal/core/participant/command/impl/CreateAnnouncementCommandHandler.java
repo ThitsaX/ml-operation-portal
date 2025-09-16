@@ -30,7 +30,7 @@ public class CreateAnnouncementCommandHandler implements CreateAnnouncementComma
 
         if (optionalAnnouncement.isPresent()) {
 
-            throw new ParticipantException(ParticipantErrors.ALREADY_ANNOUNCED);
+            throw new ParticipantException(ParticipantErrors.ANNOUNCEMENT_ALREADY_REGISTERED.format(input.announcementTitle()));
         }
 
         Announcement announcement = new Announcement(input.announcementTitle(),
