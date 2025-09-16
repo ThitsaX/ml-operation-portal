@@ -111,9 +111,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                              .anyMatch(c -> c.contactType.equals(contactType));
 
         if (contactExists) {
-            throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED.defaultMessage(
-                    "The Contact has already registered in the system with provided Contact Type [" +
-                            contactType.name() + "]."));
+            throw new ParticipantException(ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
         }
 
         this.contacts.add(contact);
@@ -142,9 +140,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                 c.contactType.equals(contactType));
 
             if (isChangingType && typeExist) {
-                throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED.defaultMessage(
-                        "The Contact has already registered in the system with provided Contact Type [" +
-                                contactType.name() + "]."));
+                throw new ParticipantException(ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
             }
 
             contact.name(name);
@@ -157,8 +153,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND.defaultMessage(
-                    "System cannot find the contact with provided ID [" + contactId.getId() + "]."));
+            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId));
 
         }
     }
@@ -205,9 +200,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                profile.isActive);
 
         if (currencyExist) {
-            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.defaultMessage(
-                    "The Liquidity Profile has already registered in the system with provided Currency [" +
-                            currency + "]."));
+            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.format(currency));
         }
 
         this.liquidityProfiles.add(liquidityProfile);
@@ -243,9 +236,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                         profile.isActive));
 
             if (isChangingCurrency && currencyExist) {
-                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.defaultMessage(
-                        "The Liquidity Profile has already registered in the system with provided Currency [" +
-                                currency + "]."));
+                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.format(currency));
             }
 
             liquidityProfile.bankName(bankName);
@@ -257,8 +248,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.defaultMessage(
-                    "System cannot find the liquidity profile with provided ID [" + liquidityProfileId.getId() + "]."));
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.format(liquidityProfileId.getId()));
 
         }
 

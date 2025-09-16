@@ -25,7 +25,7 @@ public class CreateGreetingMessageCommandHandler implements CreateGreetingMessag
 
         if (optionalGreetingMessage.isPresent()) {
 
-            throw new ParticipantException(ParticipantErrors.ALREADY_GREETING);
+            throw new ParticipantException(ParticipantErrors.GREETING_MESSAGE_ALREADY_REGISTERED.format(input.greetingTitle()));
         }
 
         var greeting = new GreetingMessage(input.greetingTitle(),

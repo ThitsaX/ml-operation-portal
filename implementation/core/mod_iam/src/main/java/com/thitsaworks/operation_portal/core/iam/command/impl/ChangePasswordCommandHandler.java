@@ -30,9 +30,7 @@ public class ChangePasswordCommandHandler implements ChangePasswordCommand {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
                                                       .orElseThrow(() -> new IAMException(
-                                                              IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
-                                                                      "Principal is not found for the user [" +
-                                                                              input.principalId().getId() + "].")));
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId())));
 
         AccessKey oldAccessKey = principal.getAccessKey();
 

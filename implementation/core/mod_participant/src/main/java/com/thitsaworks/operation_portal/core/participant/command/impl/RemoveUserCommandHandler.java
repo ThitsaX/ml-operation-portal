@@ -26,9 +26,7 @@ public class RemoveUserCommandHandler implements RemoveUserCommand {
 
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
-                                               ParticipantErrors.USER_NOT_FOUND.defaultMessage(
-                                                       "System cannot find the user with provided ID [" +
-                                                               input.userId().getId() + "].")));
+                                               ParticipantErrors.USER_NOT_FOUND.format(input.userId())));
 
         this.userRepository.save(user.isDeleted(true));
 

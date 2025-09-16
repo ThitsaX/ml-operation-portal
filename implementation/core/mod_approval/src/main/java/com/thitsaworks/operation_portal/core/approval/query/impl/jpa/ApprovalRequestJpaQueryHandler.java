@@ -44,20 +44,19 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
     @Override
     public ApprovalRequestData getPendingApprovalRequestByID(ApprovalRequestId approvalRequestId)
         throws ApprovalException {
-        
+
         if (approvalRequestId == null) {
-            throw new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.defaultMessage(
-                    "Approval Request ID must not must NOT be blank or empty"));
+            throw new ApprovalException(ApprovalErrors.INVALID_APPROVAL_REQUEST);
         }
 
         BooleanExpression predicate = this.approvalRequest.approvalRequestId.eq(approvalRequestId)
-                .and(this.approvalRequest.action.eq(ApprovalActionType.PENDING));
+                                                                            .and(this.approvalRequest.action.eq(
+                                                                                ApprovalActionType.PENDING));
 
         return this.approvalRequestRepository.findOne(predicate)
-                .map(ApprovalRequestData::new)
-                                             .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.defaultMessage(
-                                                     "Approval Request does not exist for ID [" +
-                                                             approvalRequestId.getId() + "] in the System")));
+                                             .map(ApprovalRequestData::new)
+                                             .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.format(
+                                                 approvalRequestId.getId())));
     }
 
 }

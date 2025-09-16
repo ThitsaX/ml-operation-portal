@@ -68,7 +68,7 @@ public class GetParticipantUserListByParticipantHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
 
         }
 

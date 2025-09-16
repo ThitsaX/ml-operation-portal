@@ -67,8 +67,8 @@ public class GetTransferListHandler
 
         if (userData == null) {
 
-            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.defaultMessage(
-                    "System cannot find the user with provided ID [" + input.userId().getId() + "]."));
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
+                                                                                        .getId()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
@@ -76,8 +76,8 @@ public class GetTransferListHandler
         if (participantData == null) {
 
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
-                    .defaultMessage("System cannot find the participant with provided ID. ["
-                            + userData.participantId().getId() + "]."));
+                                               .format(userData.participantId()
+                                                               .getId()));
         }
 
         String

@@ -68,8 +68,7 @@ public class ModifyUserStatusHandler
                                                                                    .getEntityId()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
-                    "Principal is not found for the user [" + input.userId().getId() + "]."));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
 
         }
 

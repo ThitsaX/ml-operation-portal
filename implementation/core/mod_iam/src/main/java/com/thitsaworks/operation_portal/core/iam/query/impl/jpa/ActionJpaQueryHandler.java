@@ -38,14 +38,15 @@ public class ActionJpaQueryHandler implements ActionQuery {
             var optFetchAction = this.actionRepository.findOne(predicate);
 
             if (optFetchAction.isEmpty()) {
-                throw new IAMException(IAMErrors.ACTION_NOT_FOUND.defaultMessage(
-                        "System cannot find Action [ " + actionCode + " ]"));
+                throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(actionCode));
 
             } else {
 
                 var fetchAction = optFetchAction.get();
 
-                this.iamEngine.addAction(fetchAction.getActionId(), fetchAction.getActionCode(), new ActionData(fetchAction));
+                this.iamEngine.addAction(fetchAction.getActionId(),
+                                         fetchAction.getActionCode(),
+                                         new ActionData(fetchAction));
 
                 return new ActionData(fetchAction);
 

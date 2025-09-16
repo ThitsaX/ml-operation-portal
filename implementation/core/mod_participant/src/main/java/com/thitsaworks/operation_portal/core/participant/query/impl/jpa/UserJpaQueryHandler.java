@@ -69,8 +69,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.defaultMessage(
-                    "System cannot find the user with provided ID [" + userId.getId() + "]."));
+            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.format(userId.getId()));
         }
 
         return new UserData(optionalUser.get());
@@ -96,7 +95,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.defaultMessage("System cannot find the provided ["+ email.getValue() +"] email."));
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(email.getValue()));
         }
 
         return new UserData(optionalUser.get());

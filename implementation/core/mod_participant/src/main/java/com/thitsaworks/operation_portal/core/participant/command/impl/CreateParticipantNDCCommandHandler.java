@@ -30,7 +30,7 @@ public class CreateParticipantNDCCommandHandler implements CreateParticipantNDCC
 
         Participant participant = this.participantRepository.findByParticipantName(new ParticipantName(input.dfspCode()))
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.dfspCode())));
 
         ParticipantNDC participantNDC = new ParticipantNDC(input.dfspCode(),
                                                            input.currency(),

@@ -35,8 +35,7 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
         if (userData.userId() == null) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.defaultMessage(
-                    "System cannot find the provided [" + input.email().getValue() + "] email."));
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(input.email().getValue()));
         }
 
         AuthenticateCommand.Output securityToken = this.authenticateCommand.execute(

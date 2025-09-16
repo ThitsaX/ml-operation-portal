@@ -70,8 +70,7 @@ public class LiquidityProfileJpaQueryHandler implements LiquidityProfileQuery {
 
         if (optionalLiquidityProfile.isEmpty()) {
 
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.defaultMessage(
-                    "System cannot find the liquidity profile with provided ID [" + liquidityProfileId.getId() + "]."));
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.format(liquidityProfileId.getId()));
         }
 
         return new LiquidityProfileData(optionalLiquidityProfile.get());

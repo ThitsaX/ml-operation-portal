@@ -26,13 +26,10 @@ public class AssignRoleToPrincipalCommandHandler implements AssignRoleToPrincipa
 
         Principal principal = this.principalRepository.findById(input.principalId())
                                                       .orElseThrow(() -> new IAMException(
-                                                              IAMErrors.PRINCIPAL_NOT_FOUND.defaultMessage(
-                                                                      "Principal is not found for the user [" +
-                                                                              input.principalId().getId() + "].")));
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId())));
 
         Role role = this.roleRepository.findById(input.roleId())
-                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.defaultMessage(
-                                               "System cannot find [" + input.roleId() + "] Role.")));
+                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId())));
 
         PrincipalRole principalRole = principal.assignRole(role);
 

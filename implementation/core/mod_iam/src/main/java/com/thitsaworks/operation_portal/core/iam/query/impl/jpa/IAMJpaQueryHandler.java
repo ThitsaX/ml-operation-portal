@@ -1,14 +1,9 @@
 package com.thitsaworks.operation_portal.core.iam.query.impl.jpa;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.data.MenuData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -42,12 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -158,7 +151,8 @@ public class IAMJpaQueryHandler implements IAMQuery {
         }
 
         var principal = this.principalRepository.findById(principalId)
-                                                .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
+                                                    principalId)));
 
         var roles = principal.getRoles();
 
@@ -185,35 +179,55 @@ public class IAMJpaQueryHandler implements IAMQuery {
     public Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId)
         throws IAMException {
 
-        var principal = this.principalRepository.findByPrincipalId(principalId).orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+        var
+            principal =
+            this.principalRepository.findByPrincipalId(principalId)
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId())));
 
         // get roles for the principal
         var roleList = principal.getRoles();
 
         // get grantedActions which not include blockedActions
         Set<Action> grantedActionList = new HashSet<>();
-        for(var role : roleList){
+        for (var role : roleList) {
             grantedActionList.addAll(role.getGrantedActions());
         }
 
         Set<Action> blockedActionList = new HashSet<>(principal.getDeniedActions());
         grantedActionList.removeAll(blockedActionList);
 
-        BooleanExpression predicate1  = this.menuGrant.Action.actionId.in(grantedActionList.stream().map(Action::getActionId).toList());
+        BooleanExpression predicate1 = this.menuGrant.Action.actionId.in(grantedActionList.stream()
+                                                                                          .map(Action::getActionId)
+                                                                                          .toList());
         var menuGrantList = (List<MenuGrant>) this.menuGrantRepository.findAll(predicate1);
 
-        Set<Menu> menuList = menuGrantList.stream().map(MenuGrant::getMenu).collect(Collectors.toSet());
+        Set<Menu>
+            menuList =
+            menuGrantList.stream()
+                         .map(MenuGrant::getMenu)
+                         .collect(Collectors.toSet());
 
-        List<MenuId>  menuIdList = menuList.stream().map(menu -> new MenuId(Long.parseLong(menu.getParentId()))).toList();
+        List<MenuId>
+            menuIdList =
+            menuList.stream()
+                    .map(menu -> new MenuId(Long.parseLong(menu.getParentId())))
+                    .toList();
 
         BooleanExpression predicate2 = this.menu.menuId.in(menuIdList);
         var parentMenuList = (List<Menu>) this.menuRepository.findAll(predicate2);
 
         menuList.addAll(parentMenuList);
 
-        List<MenuData> menuDataList = menuList.stream().map(MenuData::new).toList();
-        List<ActionData> grantedActionDataList = grantedActionList.stream().map(ActionData::new).toList();
-
+        List<MenuData>
+            menuDataList =
+            menuList.stream()
+                    .map(MenuData::new)
+                    .toList();
+        List<ActionData>
+            grantedActionDataList =
+            grantedActionList.stream()
+                             .map(ActionData::new)
+                             .toList();
 
         Map<List<MenuData>, List<ActionData>> result = new HashMap<>();
         result.put(menuDataList, grantedActionDataList);
@@ -231,7 +245,7 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var
             principal =
             this.principalRepository.findOne(predicate1)
-                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId)));
 
         var
             roleIdList =

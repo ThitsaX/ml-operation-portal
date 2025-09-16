@@ -28,14 +28,15 @@ public class RevokePrincipalActionCommandHandler implements RevokePrincipalActio
         Optional<Principal> optPrincipal = this.principalRepository.findById(input.principalId());
 
         if (optPrincipal.isEmpty()) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId()
+                                                                             .getId()));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.defaultMessage(
-                    "System cannot find Action [" + input.actionId() + "]"));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()
+                                                                          .getId()));
         }
 
         Principal principal = optPrincipal.get();

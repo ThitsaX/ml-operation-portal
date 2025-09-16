@@ -23,8 +23,7 @@ public class CreateContactHistoryCommandHandler implements CreateContactHistoryC
     public Output execute(Input input) throws ParticipantException {
 
         var contact= this.contactRepository.findById(input.contactId())
-                                                  .orElseThrow(()-> new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND.defaultMessage(
-                                                          "System cannot find the contact with provided ID [" + input.contactId().getId() + "].")));
+                                                  .orElseThrow(()-> new ParticipantException(ParticipantErrors.CONTACT_NOT_FOUND.format(input.contactId())));
 
         var history =new ContactHistory(contact.getContactId(),
                                         input.participantId(),
