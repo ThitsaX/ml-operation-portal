@@ -25,14 +25,13 @@ public class GenerateSettlementStatementReportController {
     private final GenerateSettlementStatementReport generateSettlementStatementReport;
 
     @PostMapping("/secured/generateSettlementStatementReport")
-    public ResponseEntity<GenerateStatementReportController.Response> execute(
+    public ResponseEntity<Response> execute(
         @RequestParam("fspId") String fspId,
         @RequestParam("startDate") String startDate,
         @RequestParam("endDate") String endDate,
         @RequestParam("fileType") String fileType,
         @RequestParam("currencyId") String currencyId,
-        @RequestParam("timeZoneOffset") String timeZoneOffset
-                                                                             )
+        @RequestParam("timeZoneOffset") String timeZoneOffset)
         throws DomainException, JsonProcessingException {
 
         LOG.info(
@@ -51,9 +50,9 @@ public class GenerateSettlementStatementReportController {
                                                         fileType,
                                                         currencyId,
                                                         timeZoneOffset
-                                                        ));
+            ));
 
-        var response = new GenerateStatementReportController.Response(output.statementData());
+        var response = new Response(output.statementData());
 
         LOG.info("Generate Settlement Statement Report response = [{}]", response);
 

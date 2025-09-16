@@ -37,8 +37,8 @@
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.column" value="true"/>
 	<property name="net.sf.jasperreports.export.csv.cell.locked" value="false"/>
-	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="DFSPSettlementStatement"/>
-	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="DFSPSettlementStatement"/>
+	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="DFSPSettlementStatementReport"/>
+	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="DFSPSettlementStatementReport"/>
 	<style name="Table_TH" mode="Opaque" backcolor="#F0F8FF">
 		<box>
 			<pen lineWidth="0.5" lineColor="#000000"/>
@@ -114,8 +114,11 @@
 ROUND(CASE WHEN tp.amount < 0 THEN -tp.amount END, 2) AS fundsIn,
 ROUND(CASE WHEN tp.amount > 0 THEN  tp.amount END, 2) AS fundsOut,
 		  ROUND(ppc.value, 2) AS balance, 
-		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
-		 COALESCE(texNdc.value, '0') AS ndc,
+		 COALESCE(
+    CONCAT(ROUND(REPLACE(texNdcPercent.value, '%', '') + 0, 2), '%'),
+    '-'
+) AS ndcPercent,
+		 FORMAT(COALESCE(texNdc.value, 0), 2) AS ndc,
 		 pc.currencyId AS currency,
 		 COALESCE(texBankAccount.value, '') AS settlementBankAccount
 FROM participant p
@@ -223,8 +226,11 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 ROUND(CASE WHEN tp.amount < 0 THEN -tp.amount END, 2) AS fundsIn,
 ROUND(CASE WHEN tp.amount > 0 THEN  tp.amount END, 2) AS fundsOut,
 		  ROUND(ppc.value, 2) AS balance, 
-		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
-		 COALESCE(texNdc.value, '0') AS ndc,
+		 COALESCE(
+    CONCAT(ROUND(REPLACE(texNdcPercent.value, '%', '') + 0, 2), '%'),
+    '-'
+) AS ndcPercent,
+		 FORMAT(COALESCE(texNdc.value, 0), 2) AS ndc,
 		 pc.currencyId AS currency,
 		 COALESCE(texBankAccount.value, '') AS settlementBankAccount
 FROM participant p
@@ -688,12 +694,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField>
+							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="60b42f17-953f-4554-9e86-db68753d2d71"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{fundsIn} == null ? "-" : $F{fundsIn}.toString()]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fundsIn} == null ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsIn})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -715,12 +721,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField>
-								<reportElement x="0" y="0" width="93" height="17" uuid="60b42f17-953f-4554-9e86-db68753d2d71"/>
+							<textField pattern="#,##0.00#">
+								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{fundsOut} == null ? "-" : $F{fundsOut}.toString()]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{fundsOut} == null ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsOut})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -742,7 +748,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField>
+							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="88b84be4-e2ec-4805-b03f-2915e986df24"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
