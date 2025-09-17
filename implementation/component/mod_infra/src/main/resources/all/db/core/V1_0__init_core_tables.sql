@@ -375,14 +375,14 @@ INSERT INTO tbl_role (role_id,name,active,is_dfsp,created_date,updated_date) VAL
 	 (5,'DFSP-Admin',1,1,1758083048,1758083048),
 	 (6,'DFSP-Operation',1,1,1758083048,1758083048);
 
+INSERT INTO tbl_action (action_id,action_code,created_date,updated_date,`scope`,description) VALUES
+	 (1,'GrantRoleActions',1757501222,1757501229,'OPERATION_PORTAL','Automatically registered action for use case: GrantRoleActionsHandler');
+
 INSERT INTO tbl_principal_role (principal_role_id,role_id,principal_id,created_date,updated_date) VALUES
 	 (1,1,1111111111111111,1758083048,1758083048);
 
 INSERT INTO tbl_role_grant (grant_id,role_id,action_id,created_date,updated_date) VALUES
 	 (1,1,1,1758083048,1758083048);
-
-INSERT INTO tbl_action (action_id,action_code,created_date,updated_date,`scope`,description) VALUES
-	 (1,'GrantRoleActions',1757501222,1757501229,'OPERATION_PORTAL','Automatically registered action for use case: GrantRoleActionsHandler');
 
 INSERT INTO tbl_menu (menu_id,name,parent_id,is_active,created_date,updated_date) VALUES
 	 (1,'Operational Portal','0',1,1757501222,1757501222),
