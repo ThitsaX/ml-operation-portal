@@ -76,10 +76,19 @@ public class GetParticipantPositionsHandler
     protected Output onExecute(Input input) throws DomainException {
 
         final UserData userData = userCache.get(input.userId());
-        if (userData == null) {throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);}
+        if (userData == null) {
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
+                                                                                        .getId()
+                                                                                        .toString()));
+        }
 
         final ParticipantData userParticipant = participantCache.get(userData.participantId());
-        if (userParticipant == null) {throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);}
+
+        if (userParticipant == null) {
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(userData.participantId()
+                                                                                                  .getId()
+                                                                                                  .toString()));
+        }
 
         final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId().getId()));
         final String fspName = isDfspUser
