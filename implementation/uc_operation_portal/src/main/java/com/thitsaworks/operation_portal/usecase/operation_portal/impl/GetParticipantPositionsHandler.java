@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
@@ -12,8 +14,10 @@ import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,92 +27,136 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GetParticipantPositionsHandler
-    extends OperationPortalUseCase<GetParticipantPositions.Input, GetParticipantPositions.Output>
-    implements GetParticipantPositions {
+        extends OperationPortalUseCase<GetParticipantPositions.Input, GetParticipantPositions.Output>
+        implements GetParticipantPositions {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
 
+    private static final String allDfsp = "All";
+
+    private static final BigDecimal roundingValue = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+
     private final GetParticipantPositionsDataQuery getParticipantPositionsDataQuery;
-
     private final ParticipantCache participantCache;
-
     private final UserCache userCache;
-
     private final ParticipantNDCQuery participantNDCQuery;
 
-    public GetParticipantPositionsHandler(PrincipalCache principalCache,
-                                          GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
-                                          ParticipantCache participantCache,
-                                          UserCache userCache,
-                                          ParticipantNDCQuery participantNDCQuery,
-                                          ActionAuthorizationManager actionAuthorizationManager) {
+    private final UserPermissionManager userPermissionManager;
+
+    private final ParticipantQuery participantQuery;
+
+    public GetParticipantPositionsHandler(
+            PrincipalCache principalCache,
+            GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
+            ParticipantCache participantCache,
+            UserCache userCache,
+            ParticipantNDCQuery participantNDCQuery,
+            ActionAuthorizationManager actionAuthorizationManager,
+            UserPermissionManager userPermissionManager,
+            ParticipantQuery participantQuery) {
 
         super(principalCache, actionAuthorizationManager);
 
-        this.getParticipantPositionsDataQuery = getParticipantPositionsDataQuery;
-        this.participantCache = participantCache;
-        this.userCache = userCache;
-        this.participantNDCQuery = participantNDCQuery;
+        this.getParticipantPositionsDataQuery = Objects.requireNonNull(getParticipantPositionsDataQuery);
+        this.participantCache = Objects.requireNonNull(participantCache);
+        this.userCache = Objects.requireNonNull(userCache);
+        this.participantNDCQuery = Objects.requireNonNull(participantNDCQuery);
+        this.userPermissionManager = Objects.requireNonNull(userPermissionManager);
+        this.participantQuery = Objects.requireNonNull(participantQuery);
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        UserData userData = this.userCache.get(input.userId());
+        final UserData userData = userCache.get(input.userId());
+        if (userData == null) {throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);}
 
-        if (userData == null) {
+        final ParticipantData userParticipant = participantCache.get(userData.participantId());
+        if (userParticipant == null) {throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);}
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
+        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId().getId()));
+        final String fspName = isDfspUser
+                ? userParticipant.participantName().getValue()
+                : allDfsp;
+
+        final GetParticipantPositionsDataQuery.Output output =
+                getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(fspName));
+
+        final var rows = Optional.ofNullable(output.getFinancialData()).orElseGet(List::of);
+        final List<FinancialData> result = new ArrayList<>(rows.size());
+
+        final Map<String, ParticipantData> participantDescCache = new ConcurrentHashMap<>();
+
+        for (var dto : rows) {
+
+            final BigDecimal ndcPercent = participantNDCQuery.get(dto.dfspId(), dto.currency())
+                                                             .map(ParticipantNDCData::ndcPercent)
+                                                             .map(v -> v.setScale(2, RoundingMode.HALF_UP))
+                                                             .orElse(roundingValue);
+
+            final ParticipantData resolved = isDfspUser
+                    ? userParticipant
+                    : participantDescCache.computeIfAbsent(dto.dfspId(), id -> resolveParticipantDescription(id));
+
+            final ParticipantId participantId = resolved.participantId();
+
+            final String displayName = isDfspUser ? userParticipant.description() : resolved.description();
+
+            final FinancialData updated = new FinancialData(
+                    participantId,
+                    dto.dfspId(),
+                    displayName,
+                    dto.currency(),
+                    dto.balance(),
+                    dto.currentPosition(),
+                    ndcPercent,
+                    dto.ndc(),
+                    dto.ndcUsed(),
+                    dto.participantSettlementCurrencyId(),
+                    dto.participantPositionCurrencyId()
+            );
+
+            result.add(updated);
         }
 
-        ParticipantData participantData = this.participantCache.get(userData.participantId());
-
-        if (participantData == null) {
-
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
-        }
-
-        String
-            fspName =
-            participantData.participantName()
-                           .getValue();
-
-        GetParticipantPositionsDataQuery.Output
-            output =
-            this.getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(fspName));
-
-        List<FinancialData> updatedList = new ArrayList<>();
-
-        for (var dto : output.getFinancialData()) {
-
-            Optional<ParticipantNDCData> participantNDCData = this.participantNDCQuery.get(dto.dfspId(),
-                                                                                           dto.currency());
-
-            BigDecimal ndcPercent =
-                participantNDCData.map(ParticipantNDCData::ndcPercent)
-                                  .orElse(BigDecimal.ZERO)
-                                  .setScale(2,
-                                            RoundingMode.HALF_UP);
-
-            FinancialData updated = new FinancialData(dto.dfspId(),
-                                                      participantData.description(),
-                                                      dto.currency(),
-                                                      dto.balance(),
-                                                      dto.currentPosition(),
-                                                      ndcPercent,
-                                                      dto.ndc(),
-                                                      dto.ndcUsed(),
-                                                      dto.participantSettlementCurrencyId(),
-                                                      dto.participantPositionCurrencyId());
-
-            updatedList.add(updated);
-        }
-
-        return new GetParticipantPositions.Output(updatedList);
+        return new GetParticipantPositions.Output(result);
     }
 
+    private ParticipantData resolveParticipantDescription(String dfspId) {
+
+        try {
+
+            return participantQuery.get(dfspId)
+                                   .orElseGet(() -> {
+                                       LOG.warn("Participant not found for dfspId={}", dfspId);
+                                       return unknownParticipant(dfspId);
+                                   });
+        } catch (Exception ex) {
+
+            LOG.error("Error resolving participant for dfspId={}", dfspId, ex);
+            return unknownParticipant(dfspId);
+        }
+    }
+
+    private ParticipantData unknownParticipant(String dfspId) {
+
+        return new ParticipantData(
+                new ParticipantId(1L),
+                "",
+                null,
+                "",
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 }

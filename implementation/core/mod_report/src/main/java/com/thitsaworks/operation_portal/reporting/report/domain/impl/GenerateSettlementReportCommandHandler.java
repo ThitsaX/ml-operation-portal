@@ -11,7 +11,10 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         Map<String, Object> params = new HashMap<String, Object>();
 
         params.put("dfspId", input.fspId());
+        params.put("dfspName", input.fspName());
         params.put("settlementId", input.settlementId());
         params.put("timezoneoffset", input.timezoneOffset());
 
@@ -67,6 +71,14 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+
+                SimpleXlsxReportConfiguration cfg = new SimpleXlsxReportConfiguration();
+                cfg.setDetectCellType(true);
+                cfg.setWhitePageBackground(false);
+                cfg.setOnePagePerSheet(false);
+                cfg.setCollapseRowSpan(false);
+                xlsxExporter.setConfiguration(cfg);
+
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
@@ -77,6 +89,18 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
                 pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+
+                SimplePdfReportConfiguration pdfReportCfg = new SimplePdfReportConfiguration();
+                pdfReportCfg.setSizePageToContent(true);   // trims empty page whitespace
+                pdfReportCfg.setForceSvgShapes(false);     // keep text as text (crisper)
+                pdfExporter.setConfiguration(pdfReportCfg);
+
+                SimplePdfExporterConfiguration pdfExportCfg = new SimplePdfExporterConfiguration();
+                pdfExportCfg.setMetadataTitle("Settlement Report");
+                pdfExportCfg.setMetadataAuthor("Hub Operator");
+
+                pdfExporter.setConfiguration(pdfExportCfg);
+
                 pdfExporter.exportReport();
                 rptBytes = pdfReport.toByteArray();
 

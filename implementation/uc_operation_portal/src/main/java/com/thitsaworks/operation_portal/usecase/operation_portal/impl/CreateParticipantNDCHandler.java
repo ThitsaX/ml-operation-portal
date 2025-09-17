@@ -67,8 +67,7 @@ public class CreateParticipantNDCHandler
             CreateParticipantNDCCommand.Output output =
                 this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.dfspCode(),
                                                                                                input.currency(),
-                                                                                               input.ndcPercent(),
-                                                                                               input.ndcAmount()));
+                                                                                               input.ndcPercent()));
 
             return new Output(output.participantNDCId());
 
@@ -77,9 +76,7 @@ public class CreateParticipantNDCHandler
             ModifyParticipantNDCCommand.Output output =
                 this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(
                     optionalParticipantNDCData.get()
-                                              .participantNDCId(),
-                    input.ndcPercent(),
-                    input.ndcAmount()));
+                                              .participantNDCId(), input.ndcPercent()));
 
             return new Output(output.participantNDCId());
         }

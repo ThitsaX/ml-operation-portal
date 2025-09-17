@@ -20,6 +20,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.thitsaworks.operation_portal.component</groupId>
+            <artifactId>mod_misc</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.thitsaworks.operation_portal.core</groupId>
             <artifactId>mod_hub_services</artifactId>
         </dependency>

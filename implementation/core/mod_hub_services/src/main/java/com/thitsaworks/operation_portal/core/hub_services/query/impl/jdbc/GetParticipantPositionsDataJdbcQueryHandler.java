@@ -37,7 +37,9 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
                         "LEFT JOIN participantLimit pl ON pc.participantCurrencyId = pl.participantCurrencyId AND pl.isActive = 1 \n" +
                         "LEFT JOIN participantPosition pb ON pb.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 2 \n" +
                         "LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 1 \n" +
-                        "WHERE NAME =? AND pc.isActive = 1 GROUP BY pc.currencyId;", new FinancialDataMapper(),
+                        "WHERE (? = 'All' OR p.name = ?) AND pc.isActive = 1 GROUP BY p.participantId, p.name, p.description, pc.currencyId  ORDER BY p.name, pc.currencyId;",
+                new FinancialDataMapper(),
+                input.getFspID(),
                 input.getFspID());
 
         if (result == null || result.isEmpty()) {

@@ -49,8 +49,7 @@ public class ModifyParticipantNDCHandler
         //TODO: To call mojaloop api and calculate ndcamount logic
         ModifyParticipantNDCCommand.Output output =
             this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(input.participantNDCId(),
-                                                                                           input.ndcPercent(),
-                                                                                           input.ndcAmount()));
+                                                                                           input.ndcPercent()));
 
         return new Output(output.participantNDCId());
     }
