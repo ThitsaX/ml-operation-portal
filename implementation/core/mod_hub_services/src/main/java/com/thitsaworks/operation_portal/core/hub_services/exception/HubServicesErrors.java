@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 public class HubServicesErrors {
 
     //@@formatter:off
-    public static final ErrorMessage CONNECTION_ERROR = new ErrorMessage("CONNECTION_ERROR", "Failed connect to the hub service!");
+    public static final ErrorMessage CONNECTION_ERROR = new ErrorMessage("CONNECTION_ERROR", "Failed to connect to the hub service!");
     public static final ErrorMessage HUB_TRANSFER_ERROR = new ErrorMessage("HUB_TRANSFER_ERROR", "Failed to process the operation for Transaction on Hub.");
     public static final ErrorMessage HUB_CURRENCY_ERROR = new ErrorMessage("HUB_CURRENCY_ERROR", "Failed to process the operation for Currency on Hub.");
     public static final ErrorMessage PARTY_IDENTIFIER_TYPE_ID  = new ErrorMessage("PARTY_IDENTIFIER_TYPE_ID", "Failed to process the operation for Party Identifier Type on Hub.");
