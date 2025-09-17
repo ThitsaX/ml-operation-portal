@@ -23,6 +23,7 @@ public class IAMErrors {
     public static final ErrorMessage PERMISSION_DENIED = new ErrorMessage("PERMISSION_DENIED", "Access denied: You do not have permission to perform this action : [{0}].");
 
     public static final ErrorMessage INVALID_ROLE_NAME = new ErrorMessage("INVALID_ROLE_NAME", "Role Name is required and must NOT be blank or empty.");
+    public static final ErrorMessage SELF_APPROVAL_NOT_ALLOWED = new ErrorMessage("SELF_APPROVAL_NOT_ALLOWED", "You cannot approve or reject your own request. Please ask another authorized user.");
 
 
     //@@formatter:on

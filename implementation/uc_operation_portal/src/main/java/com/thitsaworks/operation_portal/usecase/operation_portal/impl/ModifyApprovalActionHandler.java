@@ -22,6 +22,8 @@ import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesE
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
@@ -101,6 +103,10 @@ public class ModifyApprovalActionHandler
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
+
+        if (this.isSelfApprovalAttempt(approvalRequestData.requestedBy(), input.responseUserId())) {
+            throw new IAMException(IAMErrors.SELF_APPROVAL_NOT_ALLOWED);
+        }
 
         final String requested = approvalRequestData.requestedAction();
         final PositionActionType actionType = parsePositionAction(requested);
@@ -262,6 +268,12 @@ public class ModifyApprovalActionHandler
                                                                                                       .participantNDCId(),
                                                                                            ndcAmount));
         }
+    }
+
+    private boolean isSelfApprovalAttempt(UserId requestedByUserId, UserId respondedByUserId) {
+
+        return requestedByUserId.getId()
+                                .equals(respondedByUserId.getId());
     }
 
 }
