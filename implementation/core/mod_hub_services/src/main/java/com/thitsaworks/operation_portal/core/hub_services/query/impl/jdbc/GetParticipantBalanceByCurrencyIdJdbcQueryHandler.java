@@ -46,7 +46,7 @@ public class GetParticipantBalanceByCurrencyIdJdbcQueryHandler implements GetPar
                                                       input.getParticipantCurrencyId());
         } catch (Exception e) {
 
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_BALANCE_ERROR.description(e.getMessage()));
         }
 
         return new Output(result);

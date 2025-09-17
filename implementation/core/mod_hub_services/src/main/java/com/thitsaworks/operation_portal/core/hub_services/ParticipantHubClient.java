@@ -63,7 +63,7 @@ public class ParticipantHubClient {
     public PostParticipantBalance.Response postParticipantBalance(String participantId,
                                                                   String accountId,
                                                                   PostParticipantBalance.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PostParticipantBalance.Response response;
 
@@ -80,7 +80,7 @@ public class ParticipantHubClient {
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation
-                        errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.code(errorInformation.getErrorCode())
                                                                                       .description(errorInformation.getErrorDescription()));
@@ -100,7 +100,7 @@ public class ParticipantHubClient {
 
     public PutUpdateParticipantLimit.Response putUpdateParticipantLimit(String participantId,
                                                                         PutUpdateParticipantLimit.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PutUpdateParticipantLimit.Response response;
 
@@ -111,13 +111,12 @@ public class ParticipantHubClient {
                                              this.hubApiErrorDecoder)
                                      .body();
 
-
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation
-                        errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.code(errorInformation.getErrorCode())
                                                                                       .description(errorInformation.getErrorDescription()));
@@ -132,32 +131,31 @@ public class ParticipantHubClient {
 
             }
         }
-        return  response;
+        return response;
     }
 
     public PutParticipantStatus.Response putParticipantStatus(PutParticipantStatus.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PutParticipantStatus.Response response;
 
         try {
 
-
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.putParticipantStatus(request.participantName(),
-                                                                              request.participantCurrencyId(), new RequestToHub(
-                                                     request.isActive())),
+                                                                              request.participantCurrencyId(),
+                                                                              new RequestToHub(
+                                                                                  request.isActive())),
                                              this.hubApiErrorDecoder)
                                      .body();
-
 
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation
-                        errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.code(errorInformation.getErrorCode())
                                                                                       .description(errorInformation.getErrorDescription()));
@@ -174,21 +172,19 @@ public class ParticipantHubClient {
         }
         return response;
 
-
     }
 
     public GetParticipant.Response getParticipant(GetParticipant.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         GetParticipant.Response response;
 
         try {
 
-
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.getParticipant(request.participantName()
-                                                                              ),
+                                                                       ),
                                              this.hubApiErrorDecoder)
                                      .body();
 
@@ -197,7 +193,7 @@ public class ParticipantHubClient {
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation
-                        errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.code(errorInformation.getErrorCode())
                                                                                       .description(errorInformation.getErrorDescription()));
@@ -216,7 +212,7 @@ public class ParticipantHubClient {
     }
 
     public GetParticipantAccountBalance.Response getParticipantAccountBalance(GetParticipantAccountBalance.Request request)
-            throws HubServicesException, HubServicesApiException {
+        throws HubServicesException {
 
         GetParticipantAccountBalance.Response response;
 
@@ -232,7 +228,11 @@ public class ParticipantHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                ErrorInformation
+                    errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.code(errorInformation.getErrorCode())
+                                                                                      .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -240,14 +240,15 @@ public class ParticipantHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.description(e.getMessage()));
 
             }
         }
+        
         return response;
     }
 
-   public record RequestToHub(
+    public record RequestToHub(
 
         boolean isActive
     ) {
