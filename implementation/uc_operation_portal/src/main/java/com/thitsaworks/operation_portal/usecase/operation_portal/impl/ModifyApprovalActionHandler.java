@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Currency;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
@@ -9,6 +10,7 @@ import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TransferIdGenerator;
 import com.thitsaworks.operation_portal.core.approval.command.ModifyApprovalActionCommand;
+import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -16,8 +18,16 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
@@ -26,7 +36,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.ConnectException;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ModifyApprovalActionHandler
@@ -43,6 +58,14 @@ public class ModifyApprovalActionHandler
 
     private final Utility utility;
 
+    private final CreateParticipantNDCCommand createParticipantNDCCommand;
+
+    private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
+
+    private final ParticipantNDCQuery participantNDCQuery;
+
+    private final GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery;
+
     public ModifyApprovalActionHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -52,7 +75,11 @@ public class ModifyApprovalActionHandler
                                        ModifyApprovalActionCommand modifyApprovalActionCommand,
                                        ApprovalRequestQuery approvalRequestQuery,
                                        ParticipantHubClient participantHubClient,
-                                       Utility utility) {
+                                       Utility utility,
+                                       CreateParticipantNDCCommand createParticipantNDCCommand,
+                                       ModifyParticipantNDCCommand modifyParticipantNDCCommand,
+                                       ParticipantNDCQuery participantNDCQuery,
+                                       GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -65,6 +92,10 @@ public class ModifyApprovalActionHandler
         this.approvalRequestQuery = approvalRequestQuery;
         this.participantHubClient = participantHubClient;
         this.utility = utility;
+        this.createParticipantNDCCommand = createParticipantNDCCommand;
+        this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
+        this.participantNDCQuery = participantNDCQuery;
+        this.getParticipantBalanceByCurrencyIdQuery = getParticipantBalanceByCurrencyIdQuery;
     }
 
     @Override
@@ -72,18 +103,22 @@ public class ModifyApprovalActionHandler
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
 
-        String action = "Deposit".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
-                SettlementAction.recordFundsIn.toString() :
-                            "Withdraw".equalsIgnoreCase(approvalRequestData.requestedAction()) ?
-                                    SettlementAction.recordFundsOutPrepareReserve.toString() :
-                                    approvalRequestData.requestedAction();
+        final String requested = approvalRequestData.requestedAction();
+        final PositionActionType actionType = parsePositionAction(requested);
 
+        final String action = switch (actionType) {
+            case DEPOSIT -> SettlementAction.recordFundsIn.name();
+            case WITHDRAW -> SettlementAction.recordFundsOutPrepareReserve.name();
+            case UPDATE_NDC_FIXED -> SettlementAction.NET_DEBIT_CAP.name();
+            case UPDATE_NDC_PERCENTAGE -> SettlementAction.NET_DEBIT_CAP.name();
+            default -> requested;
+        };
 
-        Money
-            money =
-            new Money().currency(Currency.valueOf(approvalRequestData.currency()))
-                       .amount(approvalRequestData.amount()
-                                                  .toString());
+        final String dfsp = approvalRequestData.participantId();
+        final String currency = approvalRequestData.currency();
+
+        Money money = new Money().currency(Currency.valueOf(approvalRequestData.currency()))
+                                 .amount(approvalRequestData.amount().toString());
 
         ExtensionList extensionList = new ExtensionList();
         Extension extension = new Extension();
@@ -95,30 +130,24 @@ public class ModifyApprovalActionHandler
                                                                                   .getId())));
         extensionList.addExtensionItem(extension);
 
-        if ("Change Net Debit Cap".equalsIgnoreCase(approvalRequestData.requestedAction())) {
+        if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
 
-           var request = new PutUpdateParticipantLimit.Request(
-                approvalRequestData.currency(),
-                new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
-                                                                             approvalRequestData.amount().intValue(),
-                                                                             10));
+            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_FIXED, approvalRequestData, dfsp, currency);
 
-           this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantId(),
-                                                               request);
+        } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
 
-        }else{
+            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE, approvalRequestData, dfsp, currency);
 
+        } else {
 
-        PostParticipantBalance.Request
-            request =
-            new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
+            PostParticipantBalance.Request request =
+                    new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
                                                this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                                       .getId())),
                                                action,
                                                "Admin portal funds in request",
                                                money,
-                                               extensionList
-            );
+                                                       extensionList);
 
         PostParticipantBalance.Response
             response =
@@ -126,6 +155,7 @@ public class ModifyApprovalActionHandler
                                                              approvalRequestData.participantCurrencyId(),
                                                              request);
         }
+
         var
             output =
             this.modifyApprovalActionCommand.execute(new ModifyApprovalActionCommand.Input(input.approvalRequestId(),
@@ -133,6 +163,97 @@ public class ModifyApprovalActionHandler
                                                                                            input.responseUserId()));
 
         return new Output(output.approvalRequestId());
+    }
+
+    private static PositionActionType parsePositionAction(String value) {
+
+        if (value == null) {return null;}
+
+        try {
+
+            return PositionActionType.valueOf(value.trim().toUpperCase(Locale.ROOT));
+
+        } catch (IllegalArgumentException ex) {
+
+            return null;
+        }
+    }
+
+    private static int computeNdcAmount(ApprovalRequestData req, GetParticipantBalanceByCurrencyIdQuery.Output out) {
+
+        if (out == null) {return 0;}
+
+        var data = out.getParticipantBalanceData();
+        if (data == null) {return 0;}
+
+        var amount = req.amount();
+        if (amount == null || amount.signum() <= 0) {return 0;}
+
+        if (!Objects.equals(data.currency(), req.currency())) {return 0;}
+        if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(data.ledgerAccountType()))) {return 0;}
+
+        var balance = Optional.ofNullable(data.value()).orElse(BigDecimal.ZERO).abs();
+
+        try {
+
+            return balance.multiply(amount).divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValueExact();
+
+        } catch (ArithmeticException ex) {
+
+            return balance.multiply(amount).divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).intValue();
+
+        }
+    }
+
+    private void handleUpdateNdc(PositionActionType actionType,
+                                 ApprovalRequestData approvalRequestData,
+                                 String dfsp,
+                                 String currency) throws
+                                                  HubServicesException,
+                                                  HubServicesApiException,
+                                                  ConnectException,
+                                                  ParticipantException,
+                                                  ParticipantNDCException {
+
+        int limitValue = switch (actionType) {
+
+            case UPDATE_NDC_FIXED -> approvalRequestData.amount().intValue();
+            case UPDATE_NDC_PERCENTAGE -> {
+
+                int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
+                var balanceInfo =
+                        this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
+                                participantCurrencyId));
+                yield computeNdcAmount(approvalRequestData, balanceInfo);
+            }
+            default -> throw new IllegalArgumentException("Unsupported actionType: " + actionType);
+        };
+
+        var request = new PutUpdateParticipantLimit.Request(approvalRequestData.currency(),
+                                                            new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
+                                                                                                limitValue,
+                                                                                                10));
+
+        this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantId(), request);
+
+        var optionalNdc = this.participantNDCQuery.get(dfsp, currency);
+
+        if (optionalNdc.isEmpty()) {
+
+            BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
+                    approvalRequestData.amount();
+
+            this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(dfsp, currency, ndcAmount));
+
+        } else {
+
+            BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
+                    approvalRequestData.amount();
+
+            this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(optionalNdc.get()
+                                                                                                      .participantNDCId(),
+                                                                                           ndcAmount));
+        }
     }
 
 }

@@ -21,9 +21,9 @@ import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {HubServicesConfiguration.class, TestSettings.class})
-public class PostUpdateSettlementByiParticipantIT extends BaseVaultSetUpTest {
+public class PostUpdateSettlementByParticipantUT extends BaseVaultSetUpTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(PostUpdateSettlementByiParticipantIT.class);
+    private static final Logger logger = LoggerFactory.getLogger(PostUpdateSettlementByParticipantUT.class);
 
     @Autowired
     private ParticipantHubClient participantHubClient;

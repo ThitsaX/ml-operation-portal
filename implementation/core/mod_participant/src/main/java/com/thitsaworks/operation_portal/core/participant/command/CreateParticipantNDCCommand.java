@@ -11,8 +11,7 @@ public interface CreateParticipantNDCCommand {
 
     record Input(String dfspCode,
                  String currency,
-                 BigDecimal ndcPercent,
-                 BigDecimal ndcAmount) { }
+                 BigDecimal ndcPercent) {}
 
     record Output(ParticipantNDCId participantNDCId) { }
 

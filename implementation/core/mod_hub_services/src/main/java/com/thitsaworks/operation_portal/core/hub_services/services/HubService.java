@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services.services;
 
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipantAccountBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipants;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
@@ -77,5 +78,9 @@ public interface HubService {
     @PUT("/v2/settlements/{settlementId}")
     Call<PutUpdateSettlement.Response> putUpdateSettlement(@Path("settlementId") Integer settlementId,
                                                            @Body PutUpdateSettlement.Request request);
+
+    @GET("/participants/{participantId}/accounts")
+    Call<GetParticipantAccountBalance.Response> getParticipantAccountBalance(
+            @Path("participantId") String participantId);
 
 }

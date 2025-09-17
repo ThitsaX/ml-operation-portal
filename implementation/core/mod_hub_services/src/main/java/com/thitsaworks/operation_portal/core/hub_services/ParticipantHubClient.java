@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipantAccountBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
@@ -208,6 +209,38 @@ public class ParticipantHubClient {
             } else {
 
                 throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.description(e.getMessage()));
+
+            }
+        }
+        return response;
+    }
+
+    public GetParticipantAccountBalance.Response getParticipantAccountBalance(GetParticipantAccountBalance.Request request)
+            throws HubServicesException, HubServicesApiException {
+
+        GetParticipantAccountBalance.Response response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             request,
+                                             (s, r) -> s.getParticipantAccountBalance(request.participantName()),
+                                             this.hubApiErrorDecoder)
+                                     .body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(null);
 
             }
         }
