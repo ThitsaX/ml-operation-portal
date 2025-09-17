@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,28 +28,50 @@ public class GreetingQueryHandler implements GreetingQuery {
     @Override
     public List<GreetingData> getGreeting() {
 
-
         return this.greetingRepository.findAll()
                                       .stream()
-                                      .map(Greeting-> new GreetingData(Greeting.getId()
-                                          ,Greeting.getGreetingTitle(),
-                                                                       Greeting.getGreetingDetail(),
-                                                                       Greeting.isDeleted()))
+                                      .map(Greeting -> new GreetingData(Greeting.getId()
+                                              , Greeting.getGreetingTitle(),
+                                              Greeting.getGreetingDetail(),
+                                              Greeting.isDeleted(),
+                                              Greeting.getGreetingDate()
+                                      ))
                                       .collect(Collectors.toList());
     }
 
+    @Override
+    public Optional<GreetingData> getLatestGreeting() {
+
+        return this.greetingRepository.findAll()
+                                      .stream()
+                                      .filter(greeting -> !greeting.isDeleted())
+                                      .sorted((g1, g2) -> g2.getGreetingDate().compareTo(g1.getGreetingDate()))
+                                      .findFirst()
+                                      .map(greeting -> new GreetingData(
+                                              greeting.getId(),
+                                              greeting.getGreetingTitle(),
+                                              greeting.getGreetingDetail(),
+                                              greeting.isDeleted(),
+                                              greeting.getGreetingDate()
+                                      ));
+    }
 
     @Override
     public GreetingData get(GreetingId greetingId) throws ParticipantException {
-        BooleanExpression predicate = this.greeting.greetingId.eq(greetingId);
 
+        BooleanExpression predicate = this.greeting.greetingId.eq(greetingId);
 
         return this.greetingRepository.findOne(predicate)
                                       .map(Greeting -> new GreetingData(Greeting.getId(),
-                                                                        Greeting.getGreetingTitle(),
-                                                                        Greeting.getGreetingDetail(),
-                                                                        Greeting.isDeleted()))
-                                      .orElseThrow(() -> new ParticipantException(ParticipantErrors.GREETING_NOT_FOUND));
+                                              Greeting.getGreetingTitle(),
+                                              Greeting.getGreetingDetail(),
+                                              Greeting.isDeleted(),
+                                              Greeting.getGreetingDate()
+                                      ))
+                                      .orElseThrow(
+                                              () -> new ParticipantException(ParticipantErrors.GREETING_MESSAGE_NOT_FOUND.format(greetingId.getId().toString())));
+
 
     }
+
 }

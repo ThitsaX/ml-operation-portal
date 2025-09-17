@@ -7,7 +7,6 @@ import com.thitsaworks.operation_portal.core.hub_services.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.net.ConnectException;
 import java.util.UUID;
 
 @ExtendWith(SpringExtension.class)
@@ -31,7 +29,7 @@ public class PostUpdateSettlementByParticipantUT extends BaseVaultSetUpTest {
     private ParticipantHubClient participantHubClient;
 
     @Test
-    public void test() throws HubServicesException, ConnectException, HubServicesApiException {
+    public void test() throws HubServicesException {
 
         PostParticipantBalance.Request request =
                 new PostParticipantBalance.Request(UUID.randomUUID().toString(),

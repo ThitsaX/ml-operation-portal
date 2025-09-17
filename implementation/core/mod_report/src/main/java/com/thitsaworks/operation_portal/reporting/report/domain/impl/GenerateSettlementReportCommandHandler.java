@@ -120,7 +120,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.SETTLEMENT_REPORT_FAILURE_EXCEPTION);
         }
     }
 

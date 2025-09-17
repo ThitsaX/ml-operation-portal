@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
@@ -20,7 +21,9 @@ public interface GetUserListByParticipant extends
                     Email email,
                     String firstName,
                     String lastName,
+                    String jobTitle,
                     List<String> roleList,
+                    ParticipantId participantId,
                     String status,
                     Instant createdDate
     ) implements Serializable { }

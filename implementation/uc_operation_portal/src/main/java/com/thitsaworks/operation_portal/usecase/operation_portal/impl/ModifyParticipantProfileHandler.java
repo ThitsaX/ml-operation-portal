@@ -56,7 +56,8 @@ public class ModifyParticipantProfileHandler
 
         if (principalData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.participantId()
+                                                                                               .getId().toString()));
 
         } else {
 

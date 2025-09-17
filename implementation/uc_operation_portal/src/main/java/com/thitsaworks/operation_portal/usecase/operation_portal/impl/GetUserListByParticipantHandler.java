@@ -105,7 +105,9 @@ public class GetUserListByParticipantHandler
                                                                    userData.email(),
                                                                    userData.firstName(),
                                                                    userData.lastName(),
+                                                                   userData.jobTitle(),
                                                                    roleList,
+                                                                   userData.participantId(),
                                                                    principalData.principalStatus()
                                                                                 .toString(),
                                                                    Instant.ofEpochSecond(userData.createdDate())));

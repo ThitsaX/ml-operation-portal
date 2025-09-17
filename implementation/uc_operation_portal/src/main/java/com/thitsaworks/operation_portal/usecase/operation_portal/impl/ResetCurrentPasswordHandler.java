@@ -21,8 +21,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ResetCurrentPasswordHandler
-    extends OperationPortalAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output>
-    implements ResetCurrentPassword {
+        extends OperationPortalAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output>
+        implements ResetCurrentPassword {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResetCurrentPasswordHandler.class);
 
@@ -40,11 +40,11 @@ public class ResetCurrentPasswordHandler
                                        UserQuery userQuery) {
 
         super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+                createOutputAuditCommand,
+                createExceptionAuditCommand,
+                objectMapper,
+                principalCache,
+                actionAuthorizationManager);
 
         this.resetPasswordCommand = resetPasswordCommand;
         this.userQuery = userQuery;
@@ -54,21 +54,21 @@ public class ResetCurrentPasswordHandler
     protected Output onExecute(Input input) throws DomainException {
 
         UserData userData =
-            this.userQuery.get(input.email());
+                this.userQuery.get(input.email());
 
         if (userData.userId() == null) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(input.email().getValue()));
         }
 
         ResetPasswordCommand.Output resetPasswordOutput = this.resetPasswordCommand.execute(
-            new ResetPasswordCommand.Input(new PrincipalId(userData.userId()
-                                                                   .getId()),
-                                           input.password()));
+                new ResetPasswordCommand.Input(new PrincipalId(userData.userId()
+                                                                       .getId()),
+                        input.password()));
 
         return new Output(resetPasswordOutput.accessKey(),
-                          resetPasswordOutput.secretKey(),
-                          resetPasswordOutput.updated());
+                resetPasswordOutput.secretKey(),
+                resetPasswordOutput.updated());
     }
 
 }

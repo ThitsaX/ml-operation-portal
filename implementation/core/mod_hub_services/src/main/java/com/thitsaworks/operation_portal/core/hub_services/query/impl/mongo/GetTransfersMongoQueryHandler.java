@@ -228,7 +228,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
             return new Output(list);
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(e.getMessage()));
         }
     }
 

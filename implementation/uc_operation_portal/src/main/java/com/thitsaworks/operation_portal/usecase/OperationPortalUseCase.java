@@ -92,7 +92,7 @@ public abstract class OperationPortalUseCase<I, O> implements UseCase<I, O> {
                                                             new ActionCode(this.getName()))) {
 
             LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED);
+            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED.format(this.getName()));
         }
 
     }

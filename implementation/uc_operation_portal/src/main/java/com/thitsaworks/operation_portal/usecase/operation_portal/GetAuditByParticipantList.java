@@ -13,8 +13,7 @@ import java.util.List;
 public interface GetAuditByParticipantList
     extends UseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output> {
 
-    record Input(RealmId realmId,
-                 Instant fromDate,
+    record Input(Instant fromDate,
                  Instant toDate) { }
 
     record Output(List<AuditInfo> auditInfoList) {

@@ -24,7 +24,9 @@ public class ModifyPrincipalStatusCommandHandler implements ModifyPrincipalStatu
     public ModifyPrincipalStatusCommand.Output execute(Input input) throws IAMException {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
+                                                          input.principalId()
+                                                               .getId().toString())));
 
         this.principalRepository.save(principal.principalStatus(input.principalStatus()));
 

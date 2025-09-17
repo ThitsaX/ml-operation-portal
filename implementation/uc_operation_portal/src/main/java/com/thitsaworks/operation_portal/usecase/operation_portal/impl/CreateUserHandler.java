@@ -43,7 +43,6 @@ public class CreateUserHandler
 
     private final PrincipalCache principalCache;
 
-
     public CreateUserHandler(CreateInputAuditCommand createInputAuditCommand,
                              CreateOutputAuditCommand createOutputAuditCommand,
                              CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -78,7 +77,7 @@ public class CreateUserHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
 
         }
 
@@ -88,7 +87,7 @@ public class CreateUserHandler
 
             if (!input.participantId()
                       .equals(new ParticipantId(requestingPrincipalData.realmId()
-                                                             .getId()))) {
+                                                                       .getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
@@ -119,8 +118,6 @@ public class CreateUserHandler
 
         return new Output(output.created());
     }
-
-
 
 }
 

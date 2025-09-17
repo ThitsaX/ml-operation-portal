@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
@@ -15,35 +14,35 @@ import com.thitsaworks.operation_portal.core.iam.command.ModifyPrincipalStatusCo
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.RemoveUserCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveUser;
+import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUserStatus;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RemoveUserHandler
-    extends OperationPortalAuditableUseCase<RemoveUser.Input, RemoveUser.Output>
-        implements RemoveUser {
+public class ModifyUserStatusHandler
+    extends OperationPortalAuditableUseCase<ModifyUserStatus.Input, ModifyUserStatus.Output>
+    implements ModifyUserStatus {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveUserHandler.class);
-
-    private final RemoveUserCommand removeUserCommand;
+    private static final Logger LOG = LoggerFactory.getLogger(ModifyUserStatusHandler.class);
 
     private final ModifyPrincipalStatusCommand modifyPrincipalStatusCommand;
 
     private final PrincipalCache principalCache;
 
-    public RemoveUserHandler(CreateInputAuditCommand createInputAuditCommand,
-                             CreateOutputAuditCommand createOutputAuditCommand,
-                             CreateExceptionAuditCommand createExceptionAuditCommand,
-                             ObjectMapper objectMapper,
-                             PrincipalCache principalCache,
-                             ActionAuthorizationManager actionAuthorizationManager,
-                             RemoveUserCommand removeUserCommand,
-                             ModifyPrincipalStatusCommand modifyPrincipalStatusCommand) {
+    private final UserPermissionManager userPermissionManager;
+
+    public ModifyUserStatusHandler(CreateInputAuditCommand createInputAuditCommand,
+                                   CreateOutputAuditCommand createOutputAuditCommand,
+                                   CreateExceptionAuditCommand createExceptionAuditCommand,
+                                   ObjectMapper objectMapper,
+                                   PrincipalCache principalCache,
+                                   ActionAuthorizationManager actionAuthorizationManager,
+                                   ModifyPrincipalStatusCommand modifyPrincipalStatusCommand,
+                                   UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -52,9 +51,9 @@ public class RemoveUserHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.removeUserCommand = removeUserCommand;
         this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
         this.principalCache = principalCache;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
@@ -62,34 +61,34 @@ public class RemoveUserHandler
 
         SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        PrincipalData principalData =
+        PrincipalData requestingPrincipalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (principalData == null) {
+        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.userId()
+                                                                                   .getEntityId()));
 
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+        if (requestingPrincipalData == null) {
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
 
-        } else {
-
-            if (principalData.realmId() != null &&
-                    !principalData.realmId()
-                                  .getId()
-                                  .equals(input.participantId()
-                                               .getId())) {
-
-                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
-            }
         }
 
-        RemoveUserCommand.Output output = this.removeUserCommand.execute(
-            new RemoveUserCommand.Input(input.participantId(), input.userId()));
+        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
+
+        if (isDfsp) {
+
+            if (!requestingPrincipalData.realmId()
+                                        .equals(principalData.realmId())) {
+                throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
+            }
+
+        }
 
         this.modifyPrincipalStatusCommand.execute(
-            new ModifyPrincipalStatusCommand.Input(new PrincipalId(output.userId()
-                                                                         .getId()),
-                                                   PrincipalStatus.INACTIVE));
+            new ModifyPrincipalStatusCommand.Input(new PrincipalId(input.userId()
+                                                                        .getId()),
+                                                   input.activeStatus()));
 
-        return new RemoveUser.Output(output.removed(), output.userId());
+        return new Output(true, input.userId());
 
     }
 

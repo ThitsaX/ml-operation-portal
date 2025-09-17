@@ -70,7 +70,7 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
         } else {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTER);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTERED.format(input.participantName().getValue()));
         }
     }
 

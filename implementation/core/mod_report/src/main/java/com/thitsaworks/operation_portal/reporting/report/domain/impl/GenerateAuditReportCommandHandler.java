@@ -119,7 +119,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION);
         }
     }
 

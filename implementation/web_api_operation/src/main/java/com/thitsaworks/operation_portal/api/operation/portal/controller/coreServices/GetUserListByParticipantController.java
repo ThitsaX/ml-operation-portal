@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserListByParticipant;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,9 @@ public class GetUserListByParticipantController {
                                                                   .getValue(),
                                                    user.firstName(),
                                                    user.lastName(),
+                                                   user.jobTitle(),
                                                    user.roleList(),
+                                                   user.participantId().getEntityId().toString(),
                                                    user.status(),
                                                    user.createdDate()
                                                                   .getEpochSecond()));
@@ -69,7 +72,9 @@ public class GetUserListByParticipantController {
                                @JsonProperty("email") String email,
                                @JsonProperty("firstName") String firstName,
                                @JsonProperty("lastName") String lastName,
+                               @JsonProperty("jobTitle") String jobTitle,
                                @JsonProperty("roleList") List<String> roleList,
+                               @JsonProperty("participantId") String participantId,
                                @JsonProperty("status") String status,
                                @JsonProperty("createdDate") Long createdDate) implements Serializable { }
 

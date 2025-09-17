@@ -64,7 +64,8 @@ public class HubParticipantJdbcQueryHandler implements HubParticipantQuery {
                 ));
 
         if (participantDataList.isEmpty()) {
-            throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_NOT_FOUND);
+            throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
+                    "Participant with name [" + name + "] cannot find on Hub"));
         }
 
         return participantDataList.getFirst();

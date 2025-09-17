@@ -13,7 +13,7 @@ public interface UpdateGreetingCommand {
                   String greetingTitle,
                   String greetingDetail,
                   boolean isDeleted,
-                  Instant isDelete){}
+                  Instant greetDate){}
 
     record Output(GreetingId greetingId){}
 }

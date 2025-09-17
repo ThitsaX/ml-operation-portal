@@ -28,14 +28,14 @@ public class ModifyAnnouncementCommandHandler implements ModifyAnnouncementComma
 
         Announcement announcement =
                 this.announcementRepository.findById(input.announcementId()).orElseThrow(() -> new ParticipantException(
-                        ParticipantErrors.ANNOUNCEMENT_NOT_FOUND));
+                        ParticipantErrors.ANNOUNCEMENT_NOT_FOUND.format(input.announcementId().getId().toString())));
 
         Optional<Announcement> optionalAnnouncementTitle = this.announcementRepository.findOne(
                 AnnouncementRepository.Filters.findByAnnouncementTitle(input.announcementTitle()));
 
         if (optionalAnnouncementTitle.isPresent() &&
                 !optionalAnnouncementTitle.get().getAnnouncementId().equals(announcement.getAnnouncementId())) {
-            throw new ParticipantException(ParticipantErrors.ALREADY_ANNOUNCED);
+            throw new ParticipantException(ParticipantErrors.ANNOUNCEMENT_ALREADY_REGISTERED.format(input.announcementTitle()));
         }
 
         this.announcementRepository.save(announcement.announcementTitle(input.announcementTitle())

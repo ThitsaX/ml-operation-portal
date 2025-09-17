@@ -20,7 +20,7 @@ public interface IAMQuery {
 
     List<RoleData> getRolesByPrincipal(PrincipalId principalId) throws IAMException;
 
-    Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId);
+    Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId) throws IAMException;
 
     List<ActionData> getGrantedActionsByPrincipal(PrincipalId principalId) throws IAMException;
 

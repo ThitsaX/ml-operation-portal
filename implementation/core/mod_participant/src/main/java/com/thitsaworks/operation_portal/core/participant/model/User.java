@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
@@ -89,6 +90,12 @@ public class User extends JpaEntity<UserId> {
         this.lastName = lastName;
         return this;
 
+    }
+
+    public User participant(Participant participant){
+
+        this.participant = participant;
+        return this;
     }
 
     public User jobTitle(String jobTitle) {
