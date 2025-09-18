@@ -4,11 +4,11 @@ import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
+import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
-import com.thitsaworks.operation_portal.component.common.type.Email;
-import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
@@ -111,7 +111,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                              .anyMatch(c -> c.contactType.equals(contactType));
 
         if (contactExists) {
-            throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
         }
 
         this.contacts.add(contact);
@@ -140,7 +140,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                 c.contactType.equals(contactType));
 
             if (isChangingType && typeExist) {
-                throw new ParticipantException(ParticipantErrors.CONTACT_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
             }
 
             contact.name(name);
@@ -153,7 +153,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND);
+            throw new InputException(ParticipantErrors.CONTACT_NOT_FOUND.format(contactId.getId().toString()));
 
         }
     }
@@ -200,7 +200,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                profile.isActive);
 
         if (currencyExist) {
-            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.format(currency));
         }
 
         this.liquidityProfiles.add(liquidityProfile);
@@ -236,7 +236,7 @@ public class Participant extends JpaEntity<ParticipantId> {
                                                                                         profile.isActive));
 
             if (isChangingCurrency && currencyExist) {
-                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED);
+                throw new ParticipantException(ParticipantErrors.LIQUIDITY_PROFILE_ALREADY_REGISTERED.format(currency));
             }
 
             liquidityProfile.bankName(bankName);
@@ -248,7 +248,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         } else {
 
-            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND);
+            throw new InputException(ParticipantErrors.LIQUIDITY_PROFILE_NOT_FOUND.format(liquidityProfileId.getId().toString()));
 
         }
 

@@ -69,7 +69,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
+            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.format(userId.getId().toString()));
         }
 
         return new UserData(optionalUser.get());
@@ -95,7 +95,7 @@ public class UserJpaQueryHandler implements UserQuery {
 
         if (optionalUser.isEmpty()) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(email.getValue()));
         }
 
         return new UserData(optionalUser.get());

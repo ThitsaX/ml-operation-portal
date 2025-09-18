@@ -67,14 +67,17 @@ public class GetTransferListHandler
 
         if (userData == null) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
+                                                                                        .getId().toString()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND);
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                               .format(userData.participantId()
+                                                               .getId().toString()));
         }
 
         String

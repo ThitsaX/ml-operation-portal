@@ -33,13 +33,12 @@ public class ApiAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         ObjectMapper objectMapper = SpringContext.getBean(ObjectMapper.class);
 
-        Map<String, String> i18nErrorMessages = new HashMap<>();
 
-        i18nErrorMessages.put("en", SecurityErrors.AUTHENTICATION_FAILED.description());
+
 
         response.getWriter().write(objectMapper.writeValueAsString(
-                new ErrorResponse(SecurityErrors.AUTHENTICATION_FAILED.code(),
-                                  SecurityErrors.AUTHENTICATION_FAILED.description(), i18nErrorMessages)));
+                new ErrorResponse(SecurityErrors.AUTHENTICATION_FAILED.getCode(),
+                                  SecurityErrors.AUTHENTICATION_FAILED.getDefaultMessage(), SecurityErrors.AUTHENTICATION_FAILED.getDescription())));
 
     }
 

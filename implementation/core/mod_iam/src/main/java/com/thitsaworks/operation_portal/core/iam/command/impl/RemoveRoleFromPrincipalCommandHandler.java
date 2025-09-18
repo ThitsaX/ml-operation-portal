@@ -24,10 +24,13 @@ public class RemoveRoleFromPrincipalCommandHandler implements RemoveRoleFromPrin
     public Output execute(Input input) throws IAMException {
 
         Principal principal = this.principalRepository.findById(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
+                                                          input.principalId()
+                                                               .getId().toString())));
 
         Role role = this.roleRepository.findById(input.roleId())
-                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND));
+                                       .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()
+                                                                                                                .getId().toString())));
 
         var removed = principal.removeRole(role);
 

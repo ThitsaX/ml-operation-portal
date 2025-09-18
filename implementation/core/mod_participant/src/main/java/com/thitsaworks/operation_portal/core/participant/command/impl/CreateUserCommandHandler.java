@@ -19,7 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CreateUserCommandHandler implements CreateUserCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateParticipantCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateUserCommandHandler.class);
 
     private final UserRepository userRepository;
 
@@ -31,20 +31,22 @@ public class CreateUserCommandHandler implements CreateUserCommand {
 
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND));
+                                                                ParticipantErrors.PARTICIPANT_NOT_FOUND
+                                                                    .format(input.participantId().getId().toString())));
 
         Optional<User> optionalUser =
-                this.userRepository.findByEmailAndIsDeleted(input.email(), false);
+            this.userRepository.findByEmailAndIsDeleted(input.email(), false);
 
         if (optionalUser.isPresent()) {
-            throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED);
+            throw new ParticipantException(ParticipantErrors.EMAIL_ALREADY_REGISTERED.format(input.email()
+                                                                                                  .getValue()));
 
         }
 
         User user =
-                participant.addUser(input.name(), input.email(), input.firstName(), input.lastName(),
-                                    input.jobTitle());
-        
+            participant.addUser(input.name(), input.email(), input.firstName(), input.lastName(),
+                                input.jobTitle());
+
         this.participantRepository.save(participant);
 
         return new Output(true, user.getUserId());

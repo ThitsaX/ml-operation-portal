@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
+package com.thitsaworks.operation_portal.core.hub_services.query.impl.mongo;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
@@ -180,7 +180,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
         } catch (Exception e) {
 
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(e.getMessage()));
         }
     }
 

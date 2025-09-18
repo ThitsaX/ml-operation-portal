@@ -22,11 +22,11 @@ public class RemoveUserCommandHandler implements RemoveUserCommand {
     @Override
     @CoreWriteTransactional
     public RemoveUserCommand.Output execute(RemoveUserCommand.Input input)
-        throws ParticipantException {
+            throws ParticipantException {
 
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
-                                           ParticipantErrors.USER_NOT_FOUND));
+                                               ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId().toString())));
 
         this.userRepository.save(user.isDeleted(true));
 

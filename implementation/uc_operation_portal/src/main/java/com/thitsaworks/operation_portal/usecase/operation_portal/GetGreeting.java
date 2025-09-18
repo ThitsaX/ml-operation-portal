@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import java.time.Instant;
 
 public interface GetGreeting extends UseCase<GetGreeting.Input ,GetGreeting.Output> {
-    record Input(GreetingId greetingId){ }
+    record Input(){ }
 
     record Output(GreetingId greetingId,
                   String greetingTitle,

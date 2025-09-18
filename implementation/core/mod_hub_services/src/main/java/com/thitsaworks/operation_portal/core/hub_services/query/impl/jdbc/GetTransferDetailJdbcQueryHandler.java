@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 
-import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.TransferDetailDataMapper;
@@ -118,12 +117,12 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                 transferId);
 
         } catch (Exception e) {
-            throw new HubServicesException(new ErrorMessage(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION.code(),
-                                                            e.getMessage()));
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.description(e.getMessage()));
         }
 
         if (result.isEmpty()) {
-            throw new HubServicesException(HubServicesErrors.HUB_TRANSACTION_NOT_FOUND);
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.description(
+                    "Transfer with Id [" + transferId + "] cannot find on Hub"));
         }
 
         return result.getFirst();

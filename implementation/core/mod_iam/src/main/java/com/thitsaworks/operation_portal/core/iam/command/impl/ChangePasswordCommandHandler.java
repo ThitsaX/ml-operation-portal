@@ -29,7 +29,8 @@ public class ChangePasswordCommandHandler implements ChangePasswordCommand {
     public Output execute(Input input) throws IAMException, IAMIgnorableException {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                      .orElseThrow(() -> new IAMException(
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString())));
 
         AccessKey oldAccessKey = principal.getAccessKey();
 

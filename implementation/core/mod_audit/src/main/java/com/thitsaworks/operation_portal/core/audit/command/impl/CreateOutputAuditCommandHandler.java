@@ -25,7 +25,7 @@ public class CreateOutputAuditCommandHandler implements CreateOutputAuditCommand
         var
             audit =
             this.auditRepository.findById(input.auditId())
-                                .orElseThrow(() -> new AuditException(AuditErrors.AUDIT_NOT_FOUND));
+                                .orElseThrow(() -> new AuditException(AuditErrors.AUDIT_NOT_FOUND.format(input.auditId().getId().toString())));
 
         audit.outputInfo(input.outputInfo());
 

@@ -25,7 +25,7 @@ public class CreateRoleCommandHandler implements CreateRoleCommand {
 
         if (optRole.isPresent()) {
 
-            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME);
+            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME.format(input.roleId().getId().toString()));
         }
 
         var role = new Role(input.roleId(), input.name());

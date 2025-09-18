@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.hub_services.query;
 
 
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import lombok.Value;
 
 import java.util.List;
@@ -22,6 +23,6 @@ public interface GetParticipantPositionsDataQuery {
 
     }
 
-    Output execute(Input input);
+    Output execute(Input input) throws HubServicesException;
 
 }

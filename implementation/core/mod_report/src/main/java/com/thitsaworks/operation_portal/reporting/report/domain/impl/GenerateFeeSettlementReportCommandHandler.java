@@ -86,7 +86,7 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
             return new Output(rptBytes);
 
         } catch (Exception e) {
-            throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
+            throw new ReportException(ReportErrors.FEE_SETTLEMENT_REPORT_FAILURE_EXCEPTION);
         }
     }
 

@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-
 import com.thitsaworks.operation_portal.core.hub_services.data.CurrencyData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.CurrencyDataMapper;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
@@ -42,7 +41,7 @@ public class GetCurrenciesJdbcQueryHandler implements GetCurrenciesQuery {
                 new CurrencyDataMapper());
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.HUB_CURRENCY_ERROR.description(e.getMessage()));
         }
 
         if (results.isEmpty()) {

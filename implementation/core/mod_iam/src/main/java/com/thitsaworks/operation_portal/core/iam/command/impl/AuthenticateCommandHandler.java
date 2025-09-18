@@ -27,11 +27,13 @@ public class AuthenticateCommandHandler implements AuthenticateCommand {
     public Output execute(Input input) throws IAMException, IAMIgnorableException {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
-                                                      .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND));
+                                                      .orElseThrow(() -> new IAMException(
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString())));
 
         if (principal.getPrincipalStatus()
                      .equals(PrincipalStatus.INACTIVE)) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND);
+
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString()));
         }
         SecurityToken securityToken = principal.authenticate(input.passwordPlain());
 

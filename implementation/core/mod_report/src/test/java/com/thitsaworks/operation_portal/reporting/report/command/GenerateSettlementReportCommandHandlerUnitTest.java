@@ -24,6 +24,6 @@ public class GenerateSettlementReportCommandHandlerUnitTest extends EnvAwareUnit
 
         FileOutputStream fout = new FileOutputStream(new File("C:\\settlement_report.xlsx"));
 
-        generateSettlementReportCommandHandler.execute(new GenerateSettlementReportCommand.Input("mmdokdollar", "1", ".xlsx", "0630"));
+        generateSettlementReportCommandHandler.execute(new GenerateSettlementReportCommand.Input("mmdokdollar", "1", "1" , ".xlsx", "0630"));
     }
 }

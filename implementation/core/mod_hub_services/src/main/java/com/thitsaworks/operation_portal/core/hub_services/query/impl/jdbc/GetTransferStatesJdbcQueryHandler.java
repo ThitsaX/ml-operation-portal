@@ -41,7 +41,7 @@ public class GetTransferStatesJdbcQueryHandler implements GetTransferStatesQuery
                 new TransferStateDataMapper());
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.description(e.getMessage()));
         }
 
         if (results == null || results.isEmpty()) {

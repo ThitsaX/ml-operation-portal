@@ -12,7 +12,6 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlemen
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.error.HubApiErrorDecoder;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesApiException;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
@@ -65,7 +64,7 @@ public class SettlementHubClient {
     public PostCloseSettlementWindows.Response closeSettlementWindows(int windowsId,
 
                                                                       PostCloseSettlementWindows.Request request)
-            throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         PostCloseSettlementWindows.Response response;
 
@@ -83,7 +82,8 @@ public class SettlementHubClient {
 
                 ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
+                                                                                        .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -91,7 +91,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(e.getMessage()));
 
             }
         }
@@ -104,7 +104,7 @@ public class SettlementHubClient {
                                                                                     String state,
                                                                                     Integer participantId,
                                                                                     GetSettlementWindowsList.Request request)
-        throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         List<GetSettlementWindowsList.SettlementWindow> response;
 
@@ -122,7 +122,8 @@ public class SettlementHubClient {
 
                 ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
+                                                                                        .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -130,7 +131,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(e.getMessage()));
 
             }
         }
@@ -138,7 +139,7 @@ public class SettlementHubClient {
 
     }
     public PostCreateSettlement.Response createSettlement(PostCreateSettlement.Request request)
-            throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         PostCreateSettlement.Response response;
 
@@ -153,7 +154,11 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                ErrorInformation errorInformation =
+                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
+                                                                                 .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -161,7 +166,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
 
             }
         }
@@ -169,7 +174,7 @@ public class SettlementHubClient {
     }
 
     public Settlement getSettlement(Integer settlementId)
-            throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         Settlement settlement;
 
@@ -184,7 +189,11 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                ErrorInformation errorInformation =
+                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
+                                                                                 .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -192,7 +201,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
 
             }
         }
@@ -209,7 +218,7 @@ public class SettlementHubClient {
                                               String fromSettlementWindowDateTime,
                                               String toSettlementWindowDateTime)
 
-            throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         List<Settlement> settlementList;
 
@@ -231,7 +240,11 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                ErrorInformation errorInformation =
+                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
+                                                                                 .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -239,7 +252,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
 
             }
         }
@@ -247,7 +260,7 @@ public class SettlementHubClient {
     }
 
     public PutUpdateSettlement.Response putUpdateSettlement(Integer settlementId, PutUpdateSettlement.Request request)
-            throws HubServicesException, ConnectException, HubServicesApiException {
+            throws HubServicesException {
 
         PutUpdateSettlement.Response response;
 
@@ -262,7 +275,11 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                throw new HubServicesApiException(((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation());
+                ErrorInformation errorInformation =
+                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
+                                                                                 .description(errorInformation.getErrorDescription()));
 
             } else if (e.getCause() instanceof ConnectException) {
 
@@ -270,7 +287,7 @@ public class SettlementHubClient {
 
             } else {
 
-                throw new HubServicesException(null);
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
 
             }
         }

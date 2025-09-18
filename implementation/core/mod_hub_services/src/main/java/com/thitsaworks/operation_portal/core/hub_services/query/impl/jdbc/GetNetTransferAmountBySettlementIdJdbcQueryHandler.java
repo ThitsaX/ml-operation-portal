@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.core.hub_services.data.mapper.Settlement
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountBySettlementIdQuery;
-import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +77,7 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
 
         } catch (Exception e) {
 
-            throw new HubServicesException(HubServicesErrors.CENTRAL_LEDGER_FAILURE_EXCEPTION);
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
         }
 
         if (results == null || results.isEmpty()) {
