@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.ApiAuthent
 import com.thitsaworks.operation_portal.api.operation.portal.security.ApiAuthenticator;
 import com.thitsaworks.operation_portal.api.operation.portal.security.AuthFilterExceptionHandler;
 import com.thitsaworks.operation_portal.api.operation.portal.security.Authenticator;
+import org.springframework.cglib.core.Customizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -32,7 +34,11 @@ public class WebSecurityConfiguration {
                                                    .requestMatchers("/", "/public/**").permitAll()
                                                    .requestMatchers("/secured/**").authenticated())
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class);
+            .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
+            // enable CORS with default permissive settings
+            .cors(cors ->
+                      cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+                 );
         return http.build();
     }
 
