@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
@@ -19,8 +20,9 @@ public interface CreateUser extends
                  String jobTitle,
                  List<RoleId> roleIdList,
                  ParticipantId participantId,
-                 PrincipalStatus activeStatus) { }
+                 PrincipalStatus status) { }
 
-    record Output(boolean created) { }
+    record Output(UserId userId,
+                  boolean created) { }
 
 }

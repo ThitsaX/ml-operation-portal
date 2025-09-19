@@ -50,12 +50,15 @@ public class CreateUserController {
                                                                                            roleId)))
                                                                                        .toList(),
                                                                                 new ParticipantId(Long.parseLong(request.participantId())),
-                                                                                request.userStatus()
+                                                                                request.status()
                                                                                        .equalsIgnoreCase("ACTIVE") ?
                                                                                     PrincipalStatus.ACTIVE :
                                                                                     PrincipalStatus.INACTIVE));
 
-        Response response = new Response(output.created());
+        Response response = new Response(output.userId()
+                                               .getId()
+                                               .toString(),
+                                         output.created());
 
         LOG.info("Onboard user response: {}", response);
 
@@ -75,12 +78,13 @@ public class CreateUserController {
         @NotNull @JsonProperty("jobTitle") String jobTitle,
         @NotNull @JsonProperty("roleIdList") List<String> roleIdList,
         @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("userStatus") String userStatus) implements Serializable {
+        @NotNull @JsonProperty("status") String status) implements Serializable {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isCreated") boolean created) implements Serializable {
+    public record Response(@JsonProperty("userId") String userId,
+                           @JsonProperty("created") boolean created) implements Serializable {
 
     }
 

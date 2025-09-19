@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.api.operation.portal;
 
 import com.thitsaworks.operation_portal.component.infra.flyway.DatabaseMigration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -38,6 +37,12 @@ public class WebApiOperationPortalApplication {
 
         return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
 
+    }
+
+    @Bean
+    public WebConfiguration.PortalFrontEndSetting portalFrontEndSetting() {
+
+        return new WebConfiguration.PortalFrontEndSetting(System.getProperty("OPERATION_PORTAL_FRONTEND_END_POINT"));
     }
 
     @Bean
