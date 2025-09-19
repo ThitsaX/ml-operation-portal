@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +13,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(value = {"com.thitsaworks.operation_portal.api.operation.portal"})
 public class WebConfiguration implements WebMvcConfigurer {
 
+    @Autowired
+    private PortalFrontEndSetting portalFrontEndSetting;
+
     @Bean
     public WebServerFactoryCustomizer<ConfigurableWebServerFactory> webServerFactoryCustomizer(PortalPortSetting portalPortSetting) {
 
@@ -22,9 +26,12 @@ public class WebConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
 
         registry.addMapping("/**")
-                .allowedOrigins("*");
+                .allowedOrigins(portalFrontEndSetting.url())
+                .allowedMethods("*");
 
     }
+
+    public record PortalFrontEndSetting(String url) { }
 
     public record PortalPortSetting(int portNo) { }
 

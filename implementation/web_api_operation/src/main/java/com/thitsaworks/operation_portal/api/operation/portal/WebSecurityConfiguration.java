@@ -14,6 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -22,7 +26,9 @@ public class WebSecurityConfiguration {
     // @@formatter:off
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApiAuthenticationTokenFilter authenticationTokenFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   ApiAuthenticationTokenFilter authenticationTokenFilter,
+                                                   WebConfiguration.PortalFrontEndSetting portalFrontEndSetting) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement)
                                        -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -35,12 +41,29 @@ public class WebSecurityConfiguration {
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
             // enable CORS with default permissive settings
-            .cors(cors ->
-                      cors.configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues()));
+
+            .cors(cors -> cors.configurationSource(corsConfigurationSource(portalFrontEndSetting)));
+
+
         return http.build();
     }
 
     // @@formatter:on
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(WebConfiguration.PortalFrontEndSetting portalFrontEndSetting) {
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(portalFrontEndSetting.url()));     // ✅ use frontend URL
+        config.setAllowedMethods(List.of("*"));                         // allow all methods
+        config.setAllowedHeaders(List.of("*"));                         // allow all headers
+        config.setAllowCredentials(false);                                  // if cookies/sessions are needed
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 
     @Bean
     public ApiAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {

@@ -97,7 +97,7 @@ public class GetUserListByParticipantHandler
                 roleList =
                 this.iamQuery.getRolesByPrincipal(principalData.principalId())
                              .stream()
-                             .map(RoleData::name)
+                             .map(RoleData::roleId)
                              .toList();
 
             userInfoList.add(new GetUserListByParticipant.UserInfo(userData.userId(),
