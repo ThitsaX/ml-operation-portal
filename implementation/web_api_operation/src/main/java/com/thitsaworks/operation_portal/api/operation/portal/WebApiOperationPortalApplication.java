@@ -31,19 +31,13 @@ public class WebApiOperationPortalApplication {
     }
 
     @Bean
-    public WebConfiguration.PortalPortSetting portSetting() {
+    public WebConfiguration.Settings settings() {
 
-        var portNo = System.getProperty("OPERATION_PORTAL_PORT_NO");
-
-        return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
+        return new WebConfiguration.Settings(settings().getPortNo(), settings().getUrl());
 
     }
 
-    @Bean
-    public WebConfiguration.PortalFrontEndSetting portalFrontEndSetting() {
 
-        return new WebConfiguration.PortalFrontEndSetting(System.getProperty("OPERATION_PORTAL_FRONTEND_ENDPOINT"));
-    }
 
     @Bean
     public VaultConfiguration.Settings vaultSettings() {

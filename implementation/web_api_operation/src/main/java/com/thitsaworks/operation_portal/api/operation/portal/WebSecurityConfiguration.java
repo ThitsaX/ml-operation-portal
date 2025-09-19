@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -28,7 +29,7 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    ApiAuthenticationTokenFilter authenticationTokenFilter,
-                                                   WebConfiguration.PortalFrontEndSetting portalFrontEndSetting) throws Exception {
+                                                   WebConfiguration.Settings settings) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement)
                                        -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -42,7 +43,7 @@ public class WebSecurityConfiguration {
             .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
             // enable CORS with default permissive settings
 
-            .cors(cors -> cors.configurationSource(corsConfigurationSource(portalFrontEndSetting)));
+            .cors(cors -> cors.configurationSource(corsConfigurationSource(settings)));
 
 
         return http.build();
@@ -51,10 +52,10 @@ public class WebSecurityConfiguration {
     // @@formatter:on
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(WebConfiguration.PortalFrontEndSetting portalFrontEndSetting) {
+    public CorsConfigurationSource corsConfigurationSource(WebConfiguration.Settings settings) {
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(portalFrontEndSetting.url()));     // ✅ use frontend URL
+        config.setAllowedOrigins(Arrays.asList(settings.getUrl()));
         config.setAllowedMethods(List.of("*"));                         // allow all methods
         config.setAllowedHeaders(List.of("*"));                         // allow all headers
         config.setAllowCredentials(false);                                  // if cookies/sessions are needed
