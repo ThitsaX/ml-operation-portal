@@ -16,7 +16,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEx
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionList;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -33,11 +33,11 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class GetParticipantPositionsHandler
-        extends OperationPortalUseCase<GetParticipantPositions.Input, GetParticipantPositions.Output>
-        implements GetParticipantPositions {
+public class GetParticipantPositionListHandler
+        extends OperationPortalUseCase<GetParticipantPositionList.Input, GetParticipantPositionList.Output>
+    implements GetParticipantPositionList {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionListHandler.class);
 
     private static final String allDfsp = "All";
 
@@ -52,7 +52,7 @@ public class GetParticipantPositionsHandler
 
     private final ParticipantQuery participantQuery;
 
-    public GetParticipantPositionsHandler(
+    public GetParticipantPositionListHandler(
             PrincipalCache principalCache,
             GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
             ParticipantCache participantCache,
@@ -135,7 +135,7 @@ public class GetParticipantPositionsHandler
             result.add(updated);
         }
 
-        return new GetParticipantPositions.Output(result);
+        return new GetParticipantPositionList.Output(result);
     }
 
     private ParticipantData resolveParticipantDescription(String dfspId) {

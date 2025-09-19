@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.UserContex
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantPositionList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,13 +24,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetParticipantPositionsController {
+public class GetParticipantPositionsListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionsListController.class);
 
-    private final GetParticipantPositions getParticipantPositions;
+    private final GetParticipantPositionList getParticipantPositionList;
 
-    @GetMapping("/secured/getParticipantPositionsData")
+    @GetMapping("/secured/getParticipantPositionList")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         LOG.info("Get Participant Positions Request : [{}]", "");
@@ -41,8 +41,8 @@ public class GetParticipantPositionsController {
                                                .getAuthentication()
                                                .getDetails();
 
-        GetParticipantPositions.Output output =
-                this.getParticipantPositions.execute(new GetParticipantPositions.Input(new UserId(
+        GetParticipantPositionList.Output output =
+                this.getParticipantPositionList.execute(new GetParticipantPositionList.Input(new UserId(
                 userContext.userId()
                            .getEntityId())));
 
@@ -99,8 +99,8 @@ public class GetParticipantPositionsController {
         }
 
         public record ParticipantPositionsData(@JsonProperty("participantId") Long participantId,
-                                               @JsonProperty("dfspId") String dfspId,
-                                               @JsonProperty("dfspName") String dfspName,
+                                               @JsonProperty("participantName") String participantName,
+                                               @JsonProperty("description") String description,
                                                @JsonProperty("currency") String currency,
                                                @JsonProperty("balance") BigDecimal balance,
                                                @JsonProperty("currentPosition") BigDecimal currentPosition,

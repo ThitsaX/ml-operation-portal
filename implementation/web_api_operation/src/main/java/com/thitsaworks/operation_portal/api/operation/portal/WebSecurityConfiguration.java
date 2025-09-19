@@ -41,7 +41,9 @@ public class WebSecurityConfiguration {
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
             // enable CORS with default permissive settings
+
             .cors(cors -> cors.configurationSource(corsConfigurationSource(portalFrontEndSetting)));
+
 
         return http.build();
     }
