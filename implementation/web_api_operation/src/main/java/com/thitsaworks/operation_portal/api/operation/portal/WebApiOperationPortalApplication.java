@@ -31,15 +31,6 @@ public class WebApiOperationPortalApplication {
     }
 
     @Bean
-    public WebConfiguration.Settings settings() {
-
-        return new WebConfiguration.Settings(settings().getPortNo(), settings().getUrl());
-
-    }
-
-
-
-    @Bean
     public VaultConfiguration.Settings vaultSettings() {
 
         return VaultConfiguration.Settings.withPropertyOrEnv();
