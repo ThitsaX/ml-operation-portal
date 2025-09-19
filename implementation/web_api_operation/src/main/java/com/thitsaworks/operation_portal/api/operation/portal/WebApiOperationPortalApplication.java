@@ -42,7 +42,7 @@ public class WebApiOperationPortalApplication {
     @Bean
     public WebConfiguration.PortalFrontEndSetting portalFrontEndSetting() {
 
-        return new WebConfiguration.PortalFrontEndSetting(System.getProperty("OPERATION_PORTAL_FRONTEND_END_POINT"));
+        return new WebConfiguration.PortalFrontEndSetting(System.getProperty("OPERATION_PORTAL_FRONTEND_ENDPOINT"));
     }
 
     @Bean
