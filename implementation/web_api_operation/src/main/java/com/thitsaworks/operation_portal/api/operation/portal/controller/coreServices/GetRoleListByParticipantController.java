@@ -26,8 +26,6 @@ public class GetRoleListByParticipantController {
     @GetMapping("/secured/getRoleListByParticipant")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Role List By User Id Request : [{}]", "");
-
         var output = this.getRoleListByParticipant.execute(new GetRoleListByParticipant.Input());
 
         var response = new Response(output.roleList()

@@ -56,6 +56,9 @@ public class GetJobExecutionLogsController {
                                                                                   );
 
         var response = new Response(output.logs());
+
+        LOG.info("Get Job Execution Logs Response: [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

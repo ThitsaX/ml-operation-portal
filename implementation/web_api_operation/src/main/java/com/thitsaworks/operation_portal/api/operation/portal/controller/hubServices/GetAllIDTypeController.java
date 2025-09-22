@@ -29,8 +29,6 @@ public class GetAllIDTypeController {
     @GetMapping("/secured/getAllIdType")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        LOG.info("Get All ID Type Request : [{}]", "");
-
         GetIDTypeList.Output output = this.getIDTypeList.execute(new GetIDTypeList.Input());
 
         List<Response.IDTypeInfo> idTypeInfoList = new ArrayList<>();

@@ -27,7 +27,6 @@ public class GetHubCurrenciesController {
     @GetMapping("/secured/getHubCurrency")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Hub Currencies Request : [{}]", "");
 
         var output = this.getHubCurrencyList.execute(new GetHubCurrencyList.Input());
 

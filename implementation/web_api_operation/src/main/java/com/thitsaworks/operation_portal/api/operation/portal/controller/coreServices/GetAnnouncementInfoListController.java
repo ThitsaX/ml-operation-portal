@@ -32,8 +32,6 @@ public class GetAnnouncementInfoListController {
     @GetMapping(value = "/public/getAnnouncements")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Announcement Info List Request : [{}]", "");
-
         GetAnnouncementInfoList.Output
             output =
             this.getAnnouncementInfoList.execute(new GetAnnouncementInfoList.Input());

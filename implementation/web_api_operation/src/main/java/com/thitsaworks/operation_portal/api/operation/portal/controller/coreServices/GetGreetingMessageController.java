@@ -26,7 +26,6 @@ public class GetGreetingMessageController {
     @GetMapping(value = "/secured/getGreetingMessage")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Greeting Request: [{}]","");
         var output = this.getGreeting.execute(new GetGreeting.Input());
 
         var response = new Response(output.greetingId()
@@ -35,7 +34,7 @@ public class GetGreetingMessageController {
                                     output.greetingDetail(),
                                     output.isDeleted());
 
-        LOG.info("Get Greeting Response: [{}]", response);
+        LOG.info("Get Greeting Message Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

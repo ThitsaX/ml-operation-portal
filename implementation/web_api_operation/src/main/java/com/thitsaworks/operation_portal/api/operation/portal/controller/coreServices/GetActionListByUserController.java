@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
-import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUser;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,21 +25,15 @@ public class GetActionListByUserController {
     @GetMapping(value = "/secured/getActionListByUser")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Action List By User Request : [{}]", "");
-
-
-
         var input = new GetActionListByUser.Input();
         var output = this.getActionListByUser.execute(input);
 
-        List<Response.Action>
-            actionNames =
-            output.actionNames()
-                  .stream()
-                  .map(actionName -> new Response.Action(String.valueOf(actionName.actionId()
+        List<Response.Action> actionNames = output.actionNames()
+                      .stream()
+                      .map(actionName -> new Response.Action(String.valueOf(actionName.actionId()
                                                                                       .getId()),
-                                                             actionName.actionName()))
-                  .collect(Collectors.toList());
+                              actionName.actionName()))
+                      .collect(Collectors.toList());
 
         var response = new Response(actionNames);
 
@@ -53,7 +45,9 @@ public class GetActionListByUserController {
 
     public record Response(List<Action> actionList) {
 
-        public record Action(String actionId, String actionName) implements Serializable { }
+        public record Action(String actionId, String actionName) implements Serializable {
+
+        }
 
     }
 

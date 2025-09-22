@@ -28,6 +28,8 @@ public class CreateSchedulerConfigController {
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
 
+        LOG.info("Create Scheduler Config Request : [{}]" , request);
+
         CreateSchedulerConfig.Output output = this.createSchedulerConfig.execute(
             new CreateSchedulerConfig.Input(
                 request.name(),
@@ -37,6 +39,9 @@ public class CreateSchedulerConfigController {
         );
 
         var response = new Response(output.created());
+
+        LOG.info("Create Scheduler Config Response : [{}]",response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

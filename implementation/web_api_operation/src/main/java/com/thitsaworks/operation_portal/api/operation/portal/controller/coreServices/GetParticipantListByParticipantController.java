@@ -26,8 +26,6 @@ public class GetParticipantListByParticipantController {
     @GetMapping(value = "/secured/getParticipantListByParticipant")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Participant List By Participant Request : [{}]", "");
-
         var input = new GetParticipantListByParticipant.Input();
         var output = this.getParticipantListByParticipant.execute(input);
 
