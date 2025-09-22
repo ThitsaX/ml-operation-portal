@@ -33,9 +33,7 @@ public class GetAuditListByParticipantController {
         @RequestParam("toDate") String toDate) throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get Audit List Request: fromDate = [{}], toDate = [{}]",
-            fromDate,
-            toDate);
+            "Get Audit List Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
 
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(Instant.parse(fromDate),

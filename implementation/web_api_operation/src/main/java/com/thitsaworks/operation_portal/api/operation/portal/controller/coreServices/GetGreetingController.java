@@ -30,7 +30,6 @@ public class GetGreetingController {
     @GetMapping(value = "/public/getGreeting")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.info("Get Greeting Request: [{}]","");
         var output = this.getGreeting.execute(new GetGreeting.Input());
 
         var response = new Response(output.greetingId()

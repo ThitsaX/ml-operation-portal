@@ -33,8 +33,6 @@ public class GetParticipantPositionsController {
     @GetMapping("/secured/getParticipantPositionsData")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Participant Positions Request : [{}]", "");
-
         UserContext
             userContext =
             (UserContext) SecurityContextHolder.getContext()
