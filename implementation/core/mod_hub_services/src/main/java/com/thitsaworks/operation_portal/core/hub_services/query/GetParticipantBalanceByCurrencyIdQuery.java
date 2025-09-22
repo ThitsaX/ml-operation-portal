@@ -1,25 +1,22 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
-
-import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
+import com.thitsaworks.operation_portal.core.hub_services.data.ParticipantBalanceData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import lombok.Value;
 
-import java.util.List;
-
-public interface GetParticipantPositionsDataQuery {
+public interface GetParticipantBalanceByCurrencyIdQuery {
 
     @Value
     class Input {
 
-        private String fspID;
+        private int participantCurrencyId;
 
     }
 
     @Value
     class Output {
 
-        private List<FinancialData> financialData;
+        private ParticipantBalanceData participantBalanceData;
 
     }
 

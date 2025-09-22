@@ -51,7 +51,9 @@ public class GetParticipantPositionsController {
 
             for (FinancialData financialData : output.financialData()) {
 
-                participantPositionsDataList.add(new Response.ParticipantPositionsData(financialData.dfspId(),
+                participantPositionsDataList.add(new Response.ParticipantPositionsData(financialData.participantId()
+                                                                                                    .getId(),
+                                                                                       financialData.dfspId(),
                                                                                        financialData.dfspName(),
                                                                                        financialData.currency(),
                                                                                        financialData.balance(),
@@ -94,7 +96,8 @@ public class GetParticipantPositionsController {
             participantPositionsData = participantPositionsData != null ? participantPositionsData : List.of();
         }
 
-        public record ParticipantPositionsData(@JsonProperty("dfspId") String dfspId,
+        public record ParticipantPositionsData(@JsonProperty("participantId") Long participantId,
+                                               @JsonProperty("dfspId") String dfspId,
                                                @JsonProperty("dfspName") String dfspName,
                                                @JsonProperty("currency") String currency,
                                                @JsonProperty("balance") BigDecimal balance,

@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 public interface GenerateSettlementReportCommand {
 
     record Input(String fspId,
+                 String fspName,
                  String settlementId,
                  String filetype,
                  String timezoneOffset) { }

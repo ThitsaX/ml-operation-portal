@@ -5,8 +5,6 @@ import com.thitsaworks.operation_portal.core.hub_services.data.CurrencyData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.CurrencyDataMapper;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
-
-
 import com.thitsaworks.operation_portal.core.hub_services.query.GetCurrentParticipantCurrenciesQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +45,8 @@ public class GetCurrentParticipantCurrenciesJdbcQueryHandler implements GetCurre
 
         } catch (Exception e) {
             try {
-                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(e.getMessage()));
+                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.description(e.getMessage()));
+
             } catch (HubServicesException ex) {
                 throw new RuntimeException(ex);
             }

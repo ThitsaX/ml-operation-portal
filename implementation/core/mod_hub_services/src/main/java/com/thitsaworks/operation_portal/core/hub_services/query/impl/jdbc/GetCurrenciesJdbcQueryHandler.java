@@ -41,7 +41,7 @@ public class GetCurrenciesJdbcQueryHandler implements GetCurrenciesQuery {
                 new CurrencyDataMapper());
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.HUB_CURRENCY_ERROR);
+            throw new HubServicesException(HubServicesErrors.HUB_CURRENCY_ERROR.description(e.getMessage()));
         }
 
         if (results.isEmpty()) {

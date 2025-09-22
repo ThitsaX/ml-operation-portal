@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
+package com.thitsaworks.operation_portal.core.hub_services.query.impl.mongo;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;

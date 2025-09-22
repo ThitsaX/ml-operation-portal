@@ -18,8 +18,8 @@ public class ParticipantErrors {
     public static final ErrorMessage PARTICIPANT_ALREADY_REGISTERED = new ErrorMessage("PARTICIPANT_ALREADY_REGISTERED", "The Participant has already registered in the system with provided DFSP Code : [{0}].");
     public static final ErrorMessage CONTACT_TYPE_ALREADY_REGISTERED = new ErrorMessage("CONTACT_TYPE_ALREADY_REGISTERED", "The provided Contact Type : [{0}] has already registered in the system.");
     public static final ErrorMessage LIQUIDITY_PROFILE_ALREADY_REGISTERED = new ErrorMessage("LIQUIDITY_PROFILE_ALREADY_REGISTERED", "The provided Currency : [{0}] for the Liquidity profile has already registered in the system.");
-    public static final ErrorMessage ANNOUNCEMENT_ALREADY_REGISTERED = new ErrorMessage("ANNOUNCEMENT_ALREADY_REGISTERED", "The Announcement : [{0}] has already registered in the system.");
-    public static final ErrorMessage GREETING_MESSAGE_ALREADY_REGISTERED = new ErrorMessage("GREETING_MESSAGE_ALREADY_REGISTERED", "The Greeting Message : [{0}] has already registered in the system.");
+    public static final ErrorMessage ANNOUNCEMENT_ALREADY_REGISTERED = new ErrorMessage("ANNOUNCEMENT_ALREADY_REGISTERED", "The provided Announcement : [{0}] has already registered in the system.");
+    public static final ErrorMessage GREETING_MESSAGE_ALREADY_REGISTERED = new ErrorMessage("GREETING_MESSAGE_ALREADY_REGISTERED", "The provided Greeting Message : [{0}] has already registered in the system.");
 
     public static final ErrorMessage USER_NOT_ACTIVE = new ErrorMessage("USER_NOT_ACTIVE", "The user is not active.");
     //@@formatter:on

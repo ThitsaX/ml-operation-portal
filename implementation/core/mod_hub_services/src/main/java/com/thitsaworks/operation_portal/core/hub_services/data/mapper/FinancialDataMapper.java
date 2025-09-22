@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.data.mapper;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -11,7 +12,7 @@ public class FinancialDataMapper implements RowMapper<FinancialData> {
     @Override
     public FinancialData mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-        return new FinancialData(
+        return new FinancialData(new ParticipantId(1L),
                 rs.getString("dfspId"),
                 rs.getString("dfspName"),
                 rs.getString("currency"),
