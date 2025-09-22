@@ -34,7 +34,7 @@ public class GetGreetingMessageController {
                                     output.greetingDetail(),
                                     output.isDeleted());
 
-        LOG.info("Get Greeting Response: [{}]", response);
+        LOG.info("Get Greeting Message Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
