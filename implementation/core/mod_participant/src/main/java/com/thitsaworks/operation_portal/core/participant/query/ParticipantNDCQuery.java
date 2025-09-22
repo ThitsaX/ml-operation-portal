@@ -10,6 +10,6 @@ public interface ParticipantNDCQuery {
 
     ParticipantNDCData get(ParticipantNDCId participantNDCId) throws ParticipantNDCException;
 
-    Optional<ParticipantNDCData> get(String dfspCode, String currency);
+    Optional<ParticipantNDCData> get(String participantName, String currency);
 
 }

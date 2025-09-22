@@ -28,11 +28,11 @@ public class CreateParticipantNDCCommandHandler implements CreateParticipantNDCC
     @CoreWriteTransactional
     public Output execute(Input input) throws ParticipantException {
 
-        Participant participant = this.participantRepository.findByParticipantName(new ParticipantName(input.dfspCode()))
+        Participant participant = this.participantRepository.findByParticipantName(new ParticipantName(input.participantName()))
                                                             .orElseThrow(() -> new ParticipantException(
-                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.dfspCode())));
+                                                                    ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.participantName())));
 
-        ParticipantNDC participantNDC = new ParticipantNDC(input.dfspCode(),
+        ParticipantNDC participantNDC = new ParticipantNDC(input.participantName(),
                                                            input.currency(),
                                                            input.ndcPercent());
 
