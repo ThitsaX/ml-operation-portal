@@ -50,14 +50,14 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
 
         this.participantNDCId = new ParticipantNDCId(Snowflake.get()
                                                               .nextId());
-        this.dfspCode(participantName);
+        this.participantName(participantName);
         this.currency(currency);
         this.ndcPercent(ndcPercent);
     }
 
-    public ParticipantNDC dfspCode(String dfspCode) {
+    public ParticipantNDC participantName(String participantName) {
 
-        this.participantName = dfspCode;
+        this.participantName = participantName;
         return this;
     }
 
