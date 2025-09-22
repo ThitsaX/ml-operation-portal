@@ -46,7 +46,7 @@ public class ParticipantNDCJpaQueryHandler implements ParticipantNDCQuery {
     @Override
     public Optional<ParticipantNDCData> get(String dfspCode, String currency) {
 
-        BooleanExpression predicate = this.participantNDC.dfspCode.eq(dfspCode).and(this.participantNDC.currency.eq(
+        BooleanExpression predicate = this.participantNDC.participantName.eq(dfspCode).and(this.participantNDC.currency.eq(
                 currency));
 
         Optional<ParticipantNDC> optionalParticipantNDC = this.participantNDCRepository.findOne(predicate);

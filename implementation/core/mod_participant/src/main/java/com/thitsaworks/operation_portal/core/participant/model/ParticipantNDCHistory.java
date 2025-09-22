@@ -30,8 +30,8 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @JoinColumn(name = "participant_ndc_id")
     protected ParticipantNDC participantNDC;
 
-    @Column(name = "dfsp_code")
-    protected String dfspCode;
+    @Column(name = "participant_name")
+    protected String participantName;
 
     @Column(name = "currency")
     protected String currency;
@@ -44,7 +44,7 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
         this.participantNDCHistoryId = new ParticipantNDCHistoryId(Snowflake.get()
                                                                             .nextId());
         this.participantNDC(participantNDC);
-        this.dfspCode(participantNDC.getDfspCode());
+        this.dfspCode(participantNDC.getParticipantName());
         this.currency(participantNDC.getCurrency());
         this.ndcPercent(participantNDC.getNdcPercent());
 
@@ -57,7 +57,7 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
 
     public void dfspCode(String dfspCode) {
 
-        this.dfspCode = dfspCode;
+        this.participantName = dfspCode;
     }
 
     public void currency(String currency) {

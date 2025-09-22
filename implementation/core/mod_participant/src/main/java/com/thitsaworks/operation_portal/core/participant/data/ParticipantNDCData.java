@@ -14,7 +14,7 @@ public record ParticipantNDCData(ParticipantNDCId participantNDCId,
     public ParticipantNDCData(ParticipantNDC participantNDC) {
 
         this(participantNDC.getParticipantNDCId(),
-             participantNDC.getDfspCode(),
+             participantNDC.getParticipantName(),
              participantNDC.getCurrency(),
              participantNDC.getNdcPercent());
     }
