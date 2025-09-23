@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.hub_services;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.hub.HubDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.mongo.ReportingMongoConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
@@ -36,23 +36,23 @@ public class TestSettings {
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings(Vault vault) {
+    @Qualifier(PersistenceQualifiers.Hub.READ_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings(Vault vault) {
 
-        return vault.get(ReportingDataSourceConfiguration.READ_DB_SETTINGS_PATH,
-                ReportingDataSourceConfiguration.Settings.class);
+        return vault.get(HubDataSourceConfiguration.READ_DB_SETTINGS_PATH,
+                         HubDataSourceConfiguration.Settings.class);
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings(Vault vault) {
+    @Qualifier(PersistenceQualifiers.Hub.WRITE_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings(Vault vault) {
 
-        return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
-                ReportingDataSourceConfiguration.Settings.class);
+        return vault.get(HubDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
+                         HubDataSourceConfiguration.Settings.class);
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_SETTINGS)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_SETTINGS)
     public ReportingMongoConfiguration.Settings reportingMongoConfigurationReadDbSettings(Vault vault) {
 
         return vault.get(ReportingMongoConfiguration.READ_SETTINGS_PATH,
@@ -60,7 +60,7 @@ public class TestSettings {
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_SETTINGS)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_SETTINGS)
     public ReportingMongoConfiguration.Settings reportingMongoConfigurationWriteDbSettings(Vault vault) {
 
         return vault.get(ReportingMongoConfiguration.WRITE_SETTINGS_PATH,

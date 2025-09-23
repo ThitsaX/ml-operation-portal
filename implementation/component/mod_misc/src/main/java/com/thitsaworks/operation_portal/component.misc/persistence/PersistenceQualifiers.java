@@ -56,7 +56,7 @@ public class PersistenceQualifiers {
 
     }
 
-    public static class Reporting {
+    public static class Hub {
 
         public static final String WRITE_SETTINGS = "reportingWriteSettings";
 

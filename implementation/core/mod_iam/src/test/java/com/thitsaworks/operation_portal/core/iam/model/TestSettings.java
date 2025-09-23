@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.model;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.hub.HubDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
@@ -35,19 +35,19 @@ public class TestSettings {
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings(Vault vault) {
+    @Qualifier(PersistenceQualifiers.Hub.READ_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings(Vault vault) {
 
-        return vault.get(ReportingDataSourceConfiguration.READ_DB_SETTINGS_PATH,
-                ReportingDataSourceConfiguration.Settings.class);
+        return vault.get(HubDataSourceConfiguration.READ_DB_SETTINGS_PATH,
+                         HubDataSourceConfiguration.Settings.class);
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings(Vault vault) {
+    @Qualifier(PersistenceQualifiers.Hub.WRITE_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings(Vault vault) {
 
-        return vault.get(ReportingDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
-                ReportingDataSourceConfiguration.Settings.class);
+        return vault.get(HubDataSourceConfiguration.WRITE_DB_SETTINGS_PATH,
+                         HubDataSourceConfiguration.Settings.class);
     }
 
 }

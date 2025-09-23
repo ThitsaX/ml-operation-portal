@@ -39,7 +39,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
     @Autowired
     public GetTransferDetailMongoQueryHandler(
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE) MongoTemplate reportingMongoReadTemplate) {
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_TEMPLATE) MongoTemplate reportingMongoReadTemplate) {
         this.reportingMongoReadTemplate = reportingMongoReadTemplate;
     }
 

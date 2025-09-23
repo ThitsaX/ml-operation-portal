@@ -22,7 +22,7 @@ public class GetParticipantBalanceByCurrencyIdJdbcQueryHandler implements GetPar
 
     @Autowired
     public GetParticipantBalanceByCurrencyIdJdbcQueryHandler(
-            @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+            @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

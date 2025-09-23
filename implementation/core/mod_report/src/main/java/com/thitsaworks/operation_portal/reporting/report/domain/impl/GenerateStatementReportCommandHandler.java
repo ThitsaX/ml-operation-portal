@@ -30,7 +30,7 @@ public class GenerateStatementReportCommandHandler implements GenerateStatementR
 
     @Autowired
     public GenerateStatementReportCommandHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
