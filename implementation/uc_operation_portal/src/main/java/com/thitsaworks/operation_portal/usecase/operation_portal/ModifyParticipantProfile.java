@@ -13,8 +13,7 @@ public interface ModifyParticipantProfile extends
                  String address,
                  Mobile mobile,
                  String logoDataType,
-                 byte[] logo,
-                 AccessKey accessKey) { }
+                 byte[] logo) { }
 
     record Output(boolean modified, ParticipantId participantId) { }
 
