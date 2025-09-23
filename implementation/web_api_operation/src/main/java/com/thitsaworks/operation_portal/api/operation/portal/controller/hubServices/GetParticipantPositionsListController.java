@@ -40,7 +40,7 @@ public class GetParticipantPositionsListController {
                                                .getDetails();
 
         GetParticipantPositionList.Output output =
-                this.getParticipantPositionList.execute(new GetParticipantPositionList.Input(new UserId(
+            this.getParticipantPositionList.execute(new GetParticipantPositionList.Input(new UserId(
                 userContext.userId()
                            .getEntityId())));
 
@@ -52,7 +52,8 @@ public class GetParticipantPositionsListController {
             for (FinancialData financialData : output.financialData()) {
 
                 participantPositionsDataList.add(new Response.ParticipantPositionsData(financialData.participantId()
-                                                                                                    .getId(),
+                                                                                                    .getId()
+                                                                                                    .toString(),
                                                                                        financialData.dfspId(),
                                                                                        financialData.dfspName(),
                                                                                        financialData.currency(),
@@ -96,7 +97,7 @@ public class GetParticipantPositionsListController {
             participantPositionsData = participantPositionsData != null ? participantPositionsData : List.of();
         }
 
-        public record ParticipantPositionsData(@JsonProperty("participantId") Long participantId,
+        public record ParticipantPositionsData(@JsonProperty("participantId") String participantId,
                                                @JsonProperty("participantName") String participantName,
                                                @JsonProperty("description") String description,
                                                @JsonProperty("currency") String currency,
