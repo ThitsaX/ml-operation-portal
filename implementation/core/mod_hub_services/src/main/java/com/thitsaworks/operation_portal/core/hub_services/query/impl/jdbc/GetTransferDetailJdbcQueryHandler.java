@@ -117,11 +117,11 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                 transferId);
 
         } catch (Exception e) {
-            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(e.getMessage()));
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.description(e.getMessage()));
         }
 
         if (result.isEmpty()) {
-            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(
+            throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.description(
                     "Transfer with Id [" + transferId + "] cannot find on Hub"));
         }
 

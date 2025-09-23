@@ -25,7 +25,8 @@ public class RemoveContactCommandHandler implements RemoveContactCommand {
         var
             participant = this.participantRepository.findById(input.participantId())
                                                     .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
-                                                            .format(input.participantId().getId())));
+                                                                                                    .format(input.participantId()
+                                                                                                                 .getId().toString())));
 
         var removed = participant.removeContact(input.contactId());
 

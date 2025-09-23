@@ -9,10 +9,9 @@ public interface CreateParticipantNDCCommand {
 
     Output execute(Input input) throws ParticipantException;
 
-    record Input(String dfspCode,
+    record Input(String participantName,
                  String currency,
-                 BigDecimal ndcPercent,
-                 BigDecimal ndcAmount) { }
+                 BigDecimal ndcPercent) {}
 
     record Output(ParticipantNDCId participantNDCId) { }
 

@@ -29,14 +29,14 @@ public class UnblockPrincipalActionCommandHandler implements UnblockPrincipalAct
 
         if (optPrincipal.isEmpty()) {
             throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId()
-                                                                             .getId()));
+                                                                             .getId().toString()));
         }
 
         Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
             throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()
-                                                                          .getId()));
+                                                                          .getId().toString()));
         }
 
         Principal principal = optPrincipal.get();

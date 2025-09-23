@@ -56,21 +56,27 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
         if (userData == null || principalData == null) {
 
-            throw new ParticipantException( ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId()));
+            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
+                                                                                        .getId().toString()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
-                    .format(userData.participantId().getId()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(userData.participantId()
+                                                                                                  .getId().toString()));
         }
 
-        var roleList = this.iamQuery.getRolesByPrincipal(principalData.principalId()).stream().map(RoleData::name).toList();
+        var
+            roleList =
+            this.iamQuery.getRolesByPrincipal(principalData.principalId())
+                         .stream()
+                         .map(RoleData::name)
+                         .toList();
 
         var permittedMenuAndActionList =
-                this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
+            this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
 
         return new Output(userData.userId(),
                           userData.name(),
@@ -80,7 +86,8 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                           userData.jobTitle(),
                           userData.participantId(),
                           userData.createdDate(),
-                          participantData.participantName().getValue(),
+                          participantData.participantName()
+                                         .getValue(),
                           participantData.description(),
                           participantData.logoDataType(),
                           participantData.logo(),

@@ -59,16 +59,15 @@ public class CreateParticipantNDCHandler
 
         //TODO: To call mojaloop api and calculate ndcamount logic
 
-        Optional<ParticipantNDCData> optionalParticipantNDCData = this.participantNDCQuery.get(input.dfspCode(),
+        Optional<ParticipantNDCData> optionalParticipantNDCData = this.participantNDCQuery.get(input.participantName(),
                                                                                                input.currency());
 
         if (optionalParticipantNDCData.isEmpty()) {
 
             CreateParticipantNDCCommand.Output output =
-                this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.dfspCode(),
+                this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.participantName(),
                                                                                                input.currency(),
-                                                                                               input.ndcPercent(),
-                                                                                               input.ndcAmount()));
+                                                                                               input.ndcPercent()));
 
             return new Output(output.participantNDCId());
 
@@ -77,9 +76,7 @@ public class CreateParticipantNDCHandler
             ModifyParticipantNDCCommand.Output output =
                 this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(
                     optionalParticipantNDCData.get()
-                                              .participantNDCId(),
-                    input.ndcPercent(),
-                    input.ndcAmount()));
+                                              .participantNDCId(), input.ndcPercent()));
 
             return new Output(output.participantNDCId());
         }

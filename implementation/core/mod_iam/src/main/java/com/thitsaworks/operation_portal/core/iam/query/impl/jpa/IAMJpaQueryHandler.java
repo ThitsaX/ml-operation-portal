@@ -152,7 +152,7 @@ public class IAMJpaQueryHandler implements IAMQuery {
 
         var principal = this.principalRepository.findById(principalId)
                                                 .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
-                                                    principalId)));
+                                                    principalId.getId().toString())));
 
         var roles = principal.getRoles();
 
@@ -182,7 +182,7 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var
             principal =
             this.principalRepository.findByPrincipalId(principalId)
-                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId())));
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId().toString())));
 
         // get roles for the principal
         var roleList = principal.getRoles();
@@ -245,7 +245,7 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var
             principal =
             this.principalRepository.findOne(predicate1)
-                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId)));
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId().toString())));
 
         var
             roleIdList =

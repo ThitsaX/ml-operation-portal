@@ -27,7 +27,7 @@ public class ModifyLiquidityProfileCommandHandler implements ModifyLiquidityProf
             this.participantRepository.findById(input.participantId())
                                       .orElseThrow(() -> new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
                                                                                       .format(input.participantId()
-                                                                                                   .getId())));
+                                                                                                   .getId().toString())));
 
         var liquidityProfile = participant.updateLiquidityProfile(input.liquidityProfileId(),
                                                                   input.bankName(),

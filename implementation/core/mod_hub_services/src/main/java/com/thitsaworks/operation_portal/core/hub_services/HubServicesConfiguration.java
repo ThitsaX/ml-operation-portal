@@ -14,8 +14,8 @@ public class HubServicesConfiguration {
     @Bean
     public HubServicesConfiguration.Settings hubServiceConfigurationSettings() {
 
-        return new HubServicesConfiguration.Settings(System.getProperty("CENTRAL_LEDGER_END_POINT"),
-                                                     System.getProperty("SETTLEMENT_END_POINT"
+        return new HubServicesConfiguration.Settings(System.getProperty("CENTRAL_LEDGER_ENDPOINT"),
+                                                     System.getProperty("SETTLEMENT_ENDPOINT"
                                                                             ));
 
     }

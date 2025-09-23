@@ -23,7 +23,7 @@ public class RemoveMenuCommandHandler implements RemoveMenuCommand {
     public Output execute(Input input) throws IAMException {
 
         Menu menu = this.menuRepository.findById(input.menuId())
-                                       .orElseThrow(() -> new IAMException(IAMErrors.MENU_NOT_FOUND.format(input.menuId())));
+                                       .orElseThrow(() -> new IAMException(IAMErrors.MENU_NOT_FOUND.format(input.menuId().getId().toString())));
 
         this.menuRepository.delete(menu);
 

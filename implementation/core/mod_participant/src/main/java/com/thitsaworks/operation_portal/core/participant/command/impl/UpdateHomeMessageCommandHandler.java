@@ -23,7 +23,7 @@ public class UpdateHomeMessageCommandHandler implements UpdateGreetingCommand {
 
         var greeting = this.greetingRepository.findById(input.greetingId())
                                               .orElseThrow(() -> new ParticipantException(
-                                                      ParticipantErrors.GREETING_MESSAGE_NOT_FOUND.format(input.greetingId().getId())));
+                                                      ParticipantErrors.GREETING_MESSAGE_NOT_FOUND.format(input.greetingId().getId().toString())));
 
         Optional<GreetingMessage> optionalGreetingMessage = this.greetingRepository.findOne(
             GreetingRepository.Filters.findByGreetingTitle(input.greetingTitle()));

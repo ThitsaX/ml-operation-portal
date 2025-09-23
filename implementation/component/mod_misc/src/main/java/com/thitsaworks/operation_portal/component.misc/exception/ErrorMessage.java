@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.component.misc.exception;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.text.MessageFormat;
+
 @Getter
 @AllArgsConstructor
 public class ErrorMessage {
@@ -35,14 +37,7 @@ public class ErrorMessage {
 
     public ErrorMessage format(Object... args) {
 
-        if (args == null || args.length == 0) {
-            return new ErrorMessage(this.code,
-                                    this.defaultMessage.replaceAll("\\s*:\\s*\\[%s]", "")
-                                                       .trim(),
-                                    this.description);
-        }
-
-        return new ErrorMessage(this.code, String.format(this.defaultMessage, args), this.description);
+        return new ErrorMessage(this.code, MessageFormat.format(this.defaultMessage, args), this.description);
     }
 
 }

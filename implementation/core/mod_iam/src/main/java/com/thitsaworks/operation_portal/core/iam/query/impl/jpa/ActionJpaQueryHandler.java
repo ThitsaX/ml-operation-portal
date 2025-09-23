@@ -38,7 +38,7 @@ public class ActionJpaQueryHandler implements ActionQuery {
             var optFetchAction = this.actionRepository.findOne(predicate);
 
             if (optFetchAction.isEmpty()) {
-                throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(actionCode));
+                throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(actionCode.getValue()));
 
             } else {
 

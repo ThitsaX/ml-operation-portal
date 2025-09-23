@@ -30,7 +30,7 @@ public class ResetPasswordCommandHandler implements ResetPasswordCommand {
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
                                                       .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
                                                           input.principalId()
-                                                               .getId())));
+                                                               .getId().toString())));
         AccessKey oldAccessKey = principal.getAccessKey();
 
         principal.reset(input.password());

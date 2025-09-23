@@ -7,16 +7,17 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record ParticipantNDCData(ParticipantNDCId participantNDCId,
-                                 String dfspCode,
+                                 String participantName,
                                  String currency,
                                  BigDecimal ndcPercent) implements Serializable {
 
     public ParticipantNDCData(ParticipantNDC participantNDC) {
 
         this(participantNDC.getParticipantNDCId(),
-             participantNDC.getDfspCode(),
+             participantNDC.getParticipantName(),
              participantNDC.getCurrency(),
              participantNDC.getNdcPercent());
     }
+
 
 }

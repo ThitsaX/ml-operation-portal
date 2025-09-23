@@ -77,7 +77,8 @@ public class CreateUserHandler
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
         if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()
+                                                                                       .toString()));
 
         }
 
@@ -104,7 +105,7 @@ public class CreateUserHandler
                                                                              input.password(),
                                                                              new RealmId(input.participantId()
                                                                                               .getId()),
-                                                                             input.activeStatus()));
+                                                                             input.status()));
 
         var roleIdList = input.roleIdList();
 
@@ -116,7 +117,8 @@ public class CreateUserHandler
             this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, roleId));
         }
 
-        return new Output(output.created());
+        return new Output(output.userId(),
+                          output.created());
     }
 
 }

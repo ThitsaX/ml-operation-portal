@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 public interface ModifyParticipantNDC extends UseCase<ModifyParticipantNDC.Input, ModifyParticipantNDC.Output> {
 
     record Input(ParticipantNDCId participantNDCId,
-                 String dfspCode,
+                 String participantName,
                  String currency,
                  BigDecimal ndcPercent,
                  BigDecimal ndcAmount) {}

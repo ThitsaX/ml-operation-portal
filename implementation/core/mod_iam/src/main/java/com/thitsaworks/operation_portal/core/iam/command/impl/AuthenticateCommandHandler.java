@@ -28,12 +28,12 @@ public class AuthenticateCommandHandler implements AuthenticateCommand {
 
         Principal principal = this.principalRepository.findByPrincipalId(input.principalId())
                                                       .orElseThrow(() -> new IAMException(
-                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId())));
+                                                              IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString())));
 
         if (principal.getPrincipalStatus()
                      .equals(PrincipalStatus.INACTIVE)) {
 
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId()));
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(input.principalId().getId().toString()));
         }
         SecurityToken securityToken = principal.authenticate(input.passwordPlain());
 

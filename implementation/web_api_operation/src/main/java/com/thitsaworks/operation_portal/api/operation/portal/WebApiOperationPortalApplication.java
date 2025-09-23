@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.api.operation.portal;
 
 import com.thitsaworks.operation_portal.component.infra.flyway.DatabaseMigration;
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CoreDataSourceConfiguration;
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.infra.vault.VaultConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,15 +28,6 @@ public class WebApiOperationPortalApplication {
         DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
 
         SpringApplication.run(WebApiOperationPortalApplication.class, args);
-    }
-
-    @Bean
-    public WebConfiguration.PortalPortSetting portSetting() {
-
-        var portNo = System.getProperty("OPERATION_PORTAL_PORT_NO");
-
-        return new WebConfiguration.PortalPortSetting(Integer.parseInt(portNo));
-
     }
 
     @Bean

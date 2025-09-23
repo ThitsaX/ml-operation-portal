@@ -13,6 +13,12 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -21,7 +27,9 @@ public class WebSecurityConfiguration {
     // @@formatter:off
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApiAuthenticationTokenFilter authenticationTokenFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   ApiAuthenticationTokenFilter authenticationTokenFilter,
+                                                   WebConfiguration.Settings settings) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement)
                                        -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -32,11 +40,31 @@ public class WebSecurityConfiguration {
                                                    .requestMatchers("/", "/public/**").permitAll()
                                                    .requestMatchers("/secured/**").authenticated())
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class);
+            .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
+            // enable CORS with default permissive settings
+
+            .cors(cors -> cors.configurationSource(corsConfigurationSource(settings)));
+
+
         return http.build();
     }
 
     // @@formatter:on
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource(WebConfiguration.Settings settings) {
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(settings.getUrl()));
+        config.setAllowedMethods(List.of("*"));                         // allow all methods
+        config.setAllowedHeaders(List.of("*"));                         // allow all headers
+        config.setAllowCredentials(false);                                  // if cookies/sessions are needed
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
 
     @Bean
     public ApiAuthenticationTokenFilter authenticationTokenFilterBean() throws Exception {

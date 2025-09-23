@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2000" pageHeight="2000" whenNoDataType="AllSectionsNoDetail" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="AllSectionsNoDetail" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
@@ -349,7 +349,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 	<title>
 		<band height="300" splitType="Prevent">
 			<staticText>
-				<reportElement x="0" y="0" width="350" height="17" uuid="c6a46694-b85a-471f-920d-c69d331dfce2">
+				<reportElement x="0" y="0" width="180" height="17" uuid="c6a46694-b85a-471f-920d-c69d331dfce2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -364,7 +364,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[DFSP ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="30" width="350" height="17" uuid="2fa6a843-3466-4caa-9093-3f6895c3ac43">
+				<reportElement x="0" y="30" width="180" height="17" uuid="2fa6a843-3466-4caa-9093-3f6895c3ac43">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -379,7 +379,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[DFSP Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="60" width="350" height="17" uuid="2f6b6be3-6890-4758-b52a-41e8a1506dc1">
+				<reportElement x="0" y="60" width="180" height="17" uuid="2f6b6be3-6890-4758-b52a-41e8a1506dc1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -394,7 +394,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[From Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="90" width="350" height="17" uuid="05110c68-acef-4bed-a8ae-6a79a46abbb1">
+				<reportElement x="0" y="90" width="180" height="17" uuid="05110c68-acef-4bed-a8ae-6a79a46abbb1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -409,7 +409,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[To Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="120" width="350" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+				<reportElement x="0" y="120" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -424,7 +424,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[Currency]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="150" width="350" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+				<reportElement x="0" y="150" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -439,12 +439,12 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<text><![CDATA[TimeZoneOffSet]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="180" width="350" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+				<reportElement x="0" y="180" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 			</staticText>
 			<textField>
-				<reportElement x="350" y="0" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
+				<reportElement x="180" y="0" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -459,7 +459,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$P{dfspId}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="30" width="200" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
+				<reportElement x="180" y="30" width="200" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -472,7 +472,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$P{dfspName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
+				<reportElement x="180" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -485,7 +485,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$F{fromDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
+				<reportElement x="180" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -498,7 +498,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$F{toDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="350" y="120" width="200" height="17" uuid="acaf955e-c322-44b4-b96a-d6194c159c97"/>
+				<reportElement x="180" y="120" width="200" height="17" uuid="acaf955e-c322-44b4-b96a-d6194c159c97"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -511,7 +511,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy">
-				<reportElement x="350" y="150" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
+				<reportElement x="180" y="150" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -524,7 +524,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 				<textFieldExpression><![CDATA[$F{timezoneoffset}]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="210" width="1960" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
+				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="217" width="2000" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -560,21 +560,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</datasetRun>
 					<jr:column width="180" uuid="7be88b7d-b36b-4854-a45b-58b244b4eb60">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column2"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="180" height="17" backcolor="#FFFFFF" uuid="6d973096-2317-403e-a815-b4635562b487"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Date Time]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<textField pattern="d-MMM- yyyy">
@@ -588,22 +573,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="200" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="200" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[DFSP ID]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -618,22 +587,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="151" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="151" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[DFSP Name]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -648,22 +601,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Process Description]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -678,21 +615,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="8cf862af-63cd-4dd9-b8cf-1eb53759652a">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="cc016650-6f7a-4fe8-9261-f5711f7ddd37"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Funds In]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="8923edf8-8ce8-437f-8206-33be49778688">
@@ -707,21 +629,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Funds Out]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
@@ -736,21 +643,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="98fdaedf-70ce-4212-80cc-8af32a463124">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="477e5bdd-d8c7-4604-9838-f95005697f45"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Balance]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="88b84be4-e2ec-4805-b03f-2915e986df24">
@@ -765,21 +657,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[NDC%]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
@@ -794,21 +671,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[NDC]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<textField pattern="#,##0.00#">
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
@@ -823,22 +685,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="93" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="93" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Currency]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -853,22 +699,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Settlement Bank Account]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -883,22 +713,6 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 					<jr:column width="300" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
-						<jr:columnHeader style="Table_CH" height="17" rowSpan="1">
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<staticText>
-								<reportElement mode="Opaque" x="0" y="0" width="300" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
-								<box>
-									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-									<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-								</box>
-								<textElement>
-									<font fontName="Calibri" size="11" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Made By]]></text>
-							</staticText>
-						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -913,6 +727,162 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					</jr:column>
 				</jr:table>
 			</componentElement>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="200" width="180" height="17" backcolor="#FFFFFF" uuid="6d973096-2317-403e-a815-b4635562b487"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Date Time]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="180" y="200" width="200" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DFSP ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="380" y="200" width="151" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DFSP Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="531" y="200" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Process Description]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="931" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="cc016650-6f7a-4fe8-9261-f5711f7ddd37"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funds In]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1024" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Funds Out]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1117" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="477e5bdd-d8c7-4604-9838-f95005697f45"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Balance]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1210" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NDC%]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1303" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="c6760584-90da-48e0-b89a-5cc24d3f41ff"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NDC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1396" y="200" width="93" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Currency]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1489" y="200" width="400" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Settlement Bank Account]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="1889" y="200" width="300" height="17" backcolor="#FFFFFF" uuid="bee1e59a-3502-44d9-bc30-679a0fe9ee59"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Made By]]></text>
+			</staticText>
 		</band>
 	</title>
 </jasperReport>

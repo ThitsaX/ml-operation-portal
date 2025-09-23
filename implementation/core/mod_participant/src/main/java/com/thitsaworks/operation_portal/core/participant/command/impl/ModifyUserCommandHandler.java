@@ -31,11 +31,11 @@ public class ModifyUserCommandHandler implements ModifyUserCommand {
                                                             .orElseThrow(() -> new ParticipantException(
                                                                     ParticipantErrors.PARTICIPANT_NOT_FOUND
                                                                             .format(input.participantId()
-                                                                                         .getId())));
+                                                                                         .getId().toString())));
 
         User user = this.userRepository.findById(input.userId())
                                        .orElseThrow(() -> new ParticipantException(
-                                               ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId())));
+                                               ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId().toString())));
 
         this.userRepository.save(
                 user.name(input.name())

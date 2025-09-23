@@ -42,7 +42,7 @@ public class GrantMenuActionCommandHandler implements GrantMenuActionCommand {
         if (optAction.isEmpty()) {
 
             LOG.info("Action Not Found : [{}]", input.action());
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.action()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.action().getValue()));
         }
 
         Menu menu = optMenu.get();

@@ -77,7 +77,7 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
 
         } catch (Exception e) {
 
-            throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.defaultMessage(e.getMessage()));
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.description(e.getMessage()));
         }
 
         if (results == null || results.isEmpty()) {

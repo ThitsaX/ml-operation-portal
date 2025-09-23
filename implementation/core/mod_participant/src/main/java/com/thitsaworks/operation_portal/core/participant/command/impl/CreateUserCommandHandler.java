@@ -32,7 +32,7 @@ public class CreateUserCommandHandler implements CreateUserCommand {
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
                                                                 ParticipantErrors.PARTICIPANT_NOT_FOUND
-                                                                    .format(input.participantId().getId())));
+                                                                    .format(input.participantId().getId().toString())));
 
         Optional<User> optionalUser =
             this.userRepository.findByEmailAndIsDeleted(input.email(), false);

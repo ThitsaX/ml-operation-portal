@@ -41,8 +41,8 @@ public class ErrorResponseBuilder {
                             e.getBindingResult().getFieldErrors().getFirst().getDefaultMessage());
 
             var errorResponse = new ErrorResponse(SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.getCode(),
-                                                  message,
-                                                  "");
+                                                  SecurityErrors.MISSING_MANDATORY_ELEMENT_OR_SYNTAX.getDefaultMessage(),
+                                                  message);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
 

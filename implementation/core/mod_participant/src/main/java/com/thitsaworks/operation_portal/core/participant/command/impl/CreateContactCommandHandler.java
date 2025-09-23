@@ -26,7 +26,7 @@ public class CreateContactCommandHandler implements CreateContactCommand {
         Participant participant = this.participantRepository.findById(input.participantId())
                                                             .orElseThrow(() -> new ParticipantException(
                                                                 ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.participantId()
-                                                                                                                    .getId())));
+                                                                                                                    .getId().toString())));
 
         var contact = participant.addContact(input.name(), input.position(), input.email(), input.mobile(),
                                              input.contactType());

@@ -19,7 +19,8 @@ public class EditRoleCommandHandler implements EditRoleCommand {
     public Output execute(Input input) throws IAMException {
 
         var role = this.roleRepository.findById(input.roleId())
-                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId())));
+                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()
+                                                                                                               .getId().toString())));
 
         if (this.roleRepository.findOne(RoleRepository.Filters.withName(input.name())
                                                               .and(RoleRepository.Filters.withoutRoleId(input.roleId())))
