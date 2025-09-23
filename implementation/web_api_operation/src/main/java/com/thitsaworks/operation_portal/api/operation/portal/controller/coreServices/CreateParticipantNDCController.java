@@ -33,7 +33,7 @@ public class CreateParticipantNDCController {
 
         LOG.info("Create Participant NDC Request : [{}]", request);
 
-        var output = this.createParticipantNDC.execute(new CreateParticipantNDC.Input(request.dfspCode,
+        var output = this.createParticipantNDC.execute(new CreateParticipantNDC.Input(request.participantName,
                                                                                       request.currency,
                                                                                       request.ndcPercent,
                                                                                       request.ndcAmount));
@@ -47,7 +47,7 @@ public class CreateParticipantNDCController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String dfspCode,
+    public record Request(@NotNull @NotBlank String participantName,
                           @NotNull @NotBlank String currency,
                           BigDecimal ndcPercent,
                           BigDecimal ndcAmount) implements Serializable {}

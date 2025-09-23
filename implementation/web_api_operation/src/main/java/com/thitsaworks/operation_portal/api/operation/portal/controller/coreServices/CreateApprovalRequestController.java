@@ -45,8 +45,8 @@ public class CreateApprovalRequestController {
 
         var output = this.createApprovalRequest.execute(new CreateApprovalRequest.Input(request.requestedAction(),
                                                                                       request.participantName(),
-                                                                                      request.participantCurrency(),
-                                                                                      request.participantCurrencyId(),
+                                                                                      request.currencyId(),
+                                                                                      request.currencyId(),
                                                                                       request.amount(),
                                                                                       userContext.userId()));
 
@@ -63,8 +63,8 @@ public class CreateApprovalRequestController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank String requestedAction,
                           @NotNull @NotBlank String participantName,
-                          @NotNull @NotBlank String participantCurrency,
-                          @NotNull @NotBlank String participantCurrencyId,
+                          @NotNull @NotBlank String currency,
+                          @NotNull @NotBlank String currencyId,
                           BigDecimal amount) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

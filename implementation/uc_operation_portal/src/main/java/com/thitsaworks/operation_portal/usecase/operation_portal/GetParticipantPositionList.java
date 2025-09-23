@@ -6,8 +6,8 @@ import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 
 import java.util.List;
 
-public interface GetParticipantPositions extends
-                                  UseCase<GetParticipantPositions.Input, GetParticipantPositions.Output> {
+public interface GetParticipantPositionList extends
+                                  UseCase<GetParticipantPositionList.Input, GetParticipantPositionList.Output> {
 
     record Input(UserId userId) { }
 
