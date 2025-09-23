@@ -11,7 +11,7 @@ public interface CreateParticipantNDCHistoryCommand {
     Output execute(Input input) throws ParticipantException;
 
     record Input(ParticipantNDC participantNDC,
-                 String dfspCode,
+                 String participantName,
                  String currency,
                  BigDecimal ndcPercent) {}
 

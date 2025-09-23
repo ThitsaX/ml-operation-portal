@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 public interface CreateParticipantNDC extends UseCase<CreateParticipantNDC.Input, CreateParticipantNDC.Output> {
 
-    record Input(String dfspCode,
+    record Input(String participantName,
                  String currency,
                  BigDecimal ndcPercent,
                  BigDecimal ndcAmount) { }

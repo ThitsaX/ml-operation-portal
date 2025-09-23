@@ -26,43 +26,61 @@ public class GetSettlementListController {
     private final GetSettlementList getSettlementList;
 
     @GetMapping("/secured/getSettlementList")
-    public ResponseEntity<Response> execute(@RequestParam(value = "currency", required = false) String currency,
-                                            @RequestParam(value = "participantId", required = false)
+    public ResponseEntity<Response> execute(@RequestParam(
+                                                value = "currency",
+                                                required = false) String currency,
+                                            @RequestParam(
+                                                value = "participantId",
+                                                required = false)
                                             Integer participantId,
-                                            @RequestParam(value = "settlementWindowId", required = false)
+                                            @RequestParam(
+                                                value = "settlementWindowId",
+                                                required = false)
                                             Integer settlementWindowId,
-                                            @RequestParam(value = "accountId", required = false) Integer accountId,
-                                            @RequestParam(value = "state", required = false) String state,
-                                            @RequestParam(value = "fromDateTime", required = false) String fromDateTime,
-                                            @RequestParam(value = "toDateTime", required = false) String toDateTime,
-                                            @RequestParam(value = "fromSettlementWindowDateTime", required = false)
+                                            @RequestParam(
+                                                value = "accountId",
+                                                required = false) Integer accountId,
+                                            @RequestParam(
+                                                value = "state",
+                                                required = false) String state,
+                                            @RequestParam(
+                                                value = "fromDate",
+                                                required = false) String fromDate,
+                                            @RequestParam(
+                                                value = "toDate",
+                                                required = false) String toDate,
+                                            @RequestParam(
+                                                value = "fromSettlementWindowDateTime",
+                                                required = false)
                                             String fromSettlementWindowDateTime,
-                                            @RequestParam(value = "toSettlementWindowDateTime", required = false)
+                                            @RequestParam(
+                                                value = "toSettlementWindowDateTime",
+                                                required = false)
                                             String toSettlementWindowDateTime)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Get settlements by params : currency = [{}], participantId = [{}], settlementWindowId = [{}], accountId = [{}], state = [{}], fromDateTime = [{}], toDateTime = [{}], fromSettlementWindowDateTime = [{}], toSettlementWindowDateTime = [{}]",
-                currency,
-                participantId,
-                settlementWindowId,
-                accountId,
-                state,
-                fromDateTime,
-                toDateTime,
-                fromSettlementWindowDateTime,
-                toSettlementWindowDateTime);
+            "Get settlements by params : currency = [{}], participantId = [{}], settlementWindowId = [{}], accountId = [{}], state = [{}], fromDate = [{}], toDate = [{}], fromSettlementWindowDateTime = [{}], toSettlementWindowDateTime = [{}]",
+            currency,
+            participantId,
+            settlementWindowId,
+            accountId,
+            state,
+            fromDate,
+            toDate,
+            fromSettlementWindowDateTime,
+            toSettlementWindowDateTime);
 
         GetSettlementList.Output output = this.getSettlementList.execute(
-                new GetSettlementList.Input(currency,
-                                                 participantId,
-                                                 settlementWindowId,
-                                                 accountId,
-                                                 state,
-                                                 fromDateTime,
-                                                 toDateTime,
-                                                 fromSettlementWindowDateTime,
-                                                 toSettlementWindowDateTime));
+            new GetSettlementList.Input(currency,
+                                        participantId,
+                                        settlementWindowId,
+                                        accountId,
+                                        state,
+                                        fromDate,
+                                        toDate,
+                                        fromSettlementWindowDateTime,
+                                        toSettlementWindowDateTime));
 
         List<Response.Settlement> settlementList = new ArrayList<>();
 
