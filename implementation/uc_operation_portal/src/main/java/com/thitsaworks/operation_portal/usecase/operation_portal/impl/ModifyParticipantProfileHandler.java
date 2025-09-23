@@ -1,7 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -10,8 +14,6 @@ import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCommand;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -52,23 +54,21 @@ public class ModifyParticipantProfileHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        PrincipalData principalData = this.principalCache.get(input.accessKey());
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
 
-        if (principalData == null) {
+        PrincipalData requestingPrincipalData =
+            this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(input.participantId()
-                                                                                               .getId().toString()));
+        if (requestingPrincipalData == null) {
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()
+                                                                                       .toString()));
 
-        } else {
+        }
 
-            if (principalData.realmId() != null &&
-                    !principalData.realmId()
-                                  .getId()
-                                  .equals(input.participantId()
-                                               .getId())) {
-
-                throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
-            }
+        if (!input.participantId()
+                  .equals(new ParticipantId(requestingPrincipalData.realmId()
+                                                                   .getId()))) {
+            throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
         }
 
         var output = this.modifyParticipantCommand.execute(new ModifyParticipantCommand.Input(input.participantId(),
@@ -79,6 +79,19 @@ public class ModifyParticipantProfileHandler
                                                                                               input.logo()));
 
         return new Output(output.modified(), output.participantId());
+    }
+
+    @Override
+    protected void beforeExecute(Input input) throws DomainException {
+
+        Input modifiedInput = new Input(input.participantId(),
+                                        input.description(),
+                                        input.address(),
+                                        input.mobile(),
+                                        input.logoDataType(),
+                                        null);
+
+        super.beforeExecute(modifiedInput);
     }
 
 }
