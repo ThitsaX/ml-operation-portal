@@ -28,7 +28,6 @@ public class GetAllTransferStateController {
     public ResponseEntity<Response> execute() throws DomainException,
                                                      JsonProcessingException {
 
-        LOG.info("Get All Transfer State Request: [{}]", "");
 
         GetTransferStateList.Output output = this.getTransferStateList.execute(new GetTransferStateList.Input());
 

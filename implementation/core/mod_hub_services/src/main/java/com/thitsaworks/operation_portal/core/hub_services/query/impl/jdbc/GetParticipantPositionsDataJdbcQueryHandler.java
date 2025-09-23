@@ -21,7 +21,7 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
 
     @Autowired
     public GetParticipantPositionsDataJdbcQueryHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

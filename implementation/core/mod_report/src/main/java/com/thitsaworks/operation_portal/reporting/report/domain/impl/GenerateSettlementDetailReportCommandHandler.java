@@ -29,7 +29,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
     @Autowired
     public GenerateSettlementDetailReportCommandHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

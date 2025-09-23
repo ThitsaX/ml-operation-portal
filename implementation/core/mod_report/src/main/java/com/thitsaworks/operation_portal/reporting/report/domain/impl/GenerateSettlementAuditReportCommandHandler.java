@@ -35,7 +35,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
 
     @Autowired
     public GenerateSettlementAuditReportCommandHandler(
-            @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+            @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

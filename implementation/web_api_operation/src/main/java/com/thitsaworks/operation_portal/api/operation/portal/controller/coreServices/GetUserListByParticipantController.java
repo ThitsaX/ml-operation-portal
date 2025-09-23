@@ -29,7 +29,6 @@ public class GetUserListByParticipantController {
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get User List By Participant Request: [{}]", "");
 
         GetUserListByParticipant.Output output = this.getUserListByParticipant.execute(
             new GetUserListByParticipant.Input());

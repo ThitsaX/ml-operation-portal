@@ -25,7 +25,7 @@ public class GetTransferStatesJdbcQueryHandler implements GetTransferStatesQuery
 
     @Autowired
     public GetTransferStatesJdbcQueryHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

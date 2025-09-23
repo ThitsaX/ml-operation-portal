@@ -28,7 +28,7 @@ public class GetSchedulerConfigByIdController {
     @GetMapping("/secured/schedulerConfig")
     public ResponseEntity<Response> execute(@Valid @RequestParam Long configId) throws DomainException {
 
-        LOG.debug("Fetching scheduler configuration with id: {}", configId);
+        LOG.debug("Fetching scheduler configuration with id: [{}]", configId);
 
         GetSchedulerConfigById.Output output = this.getSchedulerConfigById.execute(
             new GetSchedulerConfigById.Input(configId)

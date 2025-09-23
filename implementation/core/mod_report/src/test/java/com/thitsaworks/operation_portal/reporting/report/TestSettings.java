@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report;
 
-import com.thitsaworks.operation_portal.component.infra.mysql.reporting.ReportingDataSourceConfiguration;
+import com.thitsaworks.operation_portal.component.infra.mysql.hub.HubDataSourceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -10,25 +10,25 @@ import org.springframework.context.annotation.Configuration;
 public class TestSettings {
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.READ_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
+    @Qualifier(PersistenceQualifiers.Hub.READ_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationReadDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
-                                                             "root",
-                                                             "password",
-                                                             1,
-                                                             5);
+        return new HubDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
+                                                       "root",
+                                                       "password",
+                                                       1,
+                                                       5);
     }
 
     @Bean
-    @Qualifier(PersistenceQualifiers.Reporting.WRITE_SETTINGS)
-    public ReportingDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
+    @Qualifier(PersistenceQualifiers.Hub.WRITE_SETTINGS)
+    public HubDataSourceConfiguration.Settings reportingDataSourceConfigurationWriteDbSettings() {
 
-        return new ReportingDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
-                                                             "root",
-                                                             "password",
-                                                             10,
-                                                             20);
+        return new HubDataSourceConfiguration.Settings("jdbc:mysql://localhost:3306/central_ledger",
+                                                       "root",
+                                                       "password",
+                                                       10,
+                                                       20);
     }
 
 }

@@ -25,7 +25,7 @@ public class GetIDTypesJdbcQueryHandler implements GetIDTypesQuery {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GetIDTypesJdbcQueryHandler(@Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GetIDTypesJdbcQueryHandler(@Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
