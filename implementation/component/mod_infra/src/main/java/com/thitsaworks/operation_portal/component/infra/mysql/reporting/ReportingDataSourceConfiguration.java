@@ -58,6 +58,7 @@ public class ReportingDataSourceConfiguration {
         config.setUsername(settings.username());
         config.setPassword(settings.password());
         config.setDriverClassName(com.mysql.cj.jdbc.Driver.class.getName());
+        config.setKeepaliveTime(30000);
 
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
