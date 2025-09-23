@@ -50,11 +50,27 @@ public abstract class JpaEntity<ID extends JpaId<?>> {
                    .hashCode();
     }
 
+    public void setCreatedAt(Instant createdAt) {
+
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+
+        this.updatedAt = updatedAt;
+    }
+
     @PrePersist
     public void prePersist() {
 
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+//        this.createdAt = Instant.now();
+//        this.updatedAt = Instant.now();
+        if (this.createdAt == null) {
+            this.createdAt = Instant.now();
+        }
+        if (this.updatedAt == null) {
+            this.updatedAt = Instant.now();
+        }
 
     }
 

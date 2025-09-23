@@ -45,7 +45,7 @@ public class CreateApprovalRequestController {
 
         var output = this.createApprovalRequest.execute(new CreateApprovalRequest.Input(request.requestedAction(),
                                                                                       request.participantName(),
-                                                                                      request.currencyId(),
+                                                                                      request.currency,
                                                                                       request.currencyId(),
                                                                                       request.amount(),
                                                                                       userContext.userId()));
