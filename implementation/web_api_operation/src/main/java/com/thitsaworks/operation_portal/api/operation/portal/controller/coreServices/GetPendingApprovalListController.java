@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetPendingApprovalList;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -33,11 +33,14 @@ public class GetPendingApprovalListController {
 
         var response = new Response(output.pendingApprovalList()
                                           .stream()
+                                          .sorted(Comparator.comparing(
+                                              request -> request.requestedDateTime().getEpochSecond(),
+                                              Comparator.reverseOrder()))
                                           .map(request -> new Response.PendingApproval(request.approvalRequestId()
                                                                                               .getEntityId()
                                                                                               .toString(),
                                                                                        request.requestedAction(),
-                                                                                       request.dfsp(),
+                                                                                       request.participantName(),
                                                                                        request.currency(),
                                                                                        request.amount(),
                                                                                        request.requestedBy(),
@@ -60,7 +63,7 @@ public class GetPendingApprovalListController {
 
         public record PendingApproval(String approvalRequestId,
                                       String requestedAction,
-                                      String dfsp,
+                                      String participantName,
                                       String currency,
                                       BigDecimal amount,
                                       String requestedBy,
