@@ -23,7 +23,7 @@ public interface GetUserListByParticipant extends
                     String firstName,
                     String lastName,
                     String jobTitle,
-                    List<RoleId> roleIdList,
+                    List<String> roleList,
                     ParticipantId participantId,
                     String status,
                     Instant createdDate

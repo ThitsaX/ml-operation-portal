@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -97,7 +98,8 @@ public class GetUserListByParticipantHandler
                 roleList =
                 this.iamQuery.getRolesByPrincipal(principalData.principalId())
                              .stream()
-                             .map(RoleData::roleId)
+                             .sorted(Comparator.comparingLong(r -> r.roleId().getId()))
+                             .map(RoleData::name)
                              .toList();
 
             userInfoList.add(new GetUserListByParticipant.UserInfo(userData.userId(),
