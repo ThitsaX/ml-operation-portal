@@ -119,7 +119,7 @@ public class ModifyApprovalActionHandler
             default -> requested;
         };
 
-        final String dfsp = approvalRequestData.participantId();
+        final String participantName = approvalRequestData.participantName();
         final String currency = approvalRequestData.currency();
 
         Money money = new Money().currency(Currency.valueOf(approvalRequestData.currency()))
@@ -138,11 +138,11 @@ public class ModifyApprovalActionHandler
 
         if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
 
-            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_FIXED, approvalRequestData, dfsp, currency);
+            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_FIXED, approvalRequestData, participantName, currency);
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
 
-            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE, approvalRequestData, dfsp, currency);
+            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE, approvalRequestData, participantName, currency);
 
         } else {
 
@@ -157,7 +157,7 @@ public class ModifyApprovalActionHandler
 
             PostParticipantBalance.Response
                 response =
-                this.participantHubClient.postParticipantBalance(approvalRequestData.participantId(),
+                this.participantHubClient.postParticipantBalance(approvalRequestData.participantName(),
                                                                  approvalRequestData.participantCurrencyId(),
                                                                  request);
         }
@@ -248,7 +248,7 @@ public class ModifyApprovalActionHandler
                                                                                                 limitValue,
                                                                                                 10));
 
-        this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantId(), request);
+        this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantName(), request);
 
         var optionalNdc = this.participantNDCQuery.get(dfsp, currency);
 

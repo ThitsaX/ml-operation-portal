@@ -28,7 +28,7 @@ public class GenerateDfspDailyTransactionTrendSummaryCommandHandler implements
     private final JdbcTemplate centralLedgerJdbcTemplate;
 
     public GenerateDfspDailyTransactionTrendSummaryCommandHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.centralLedgerJdbcTemplate = jdbcTemplate;
 

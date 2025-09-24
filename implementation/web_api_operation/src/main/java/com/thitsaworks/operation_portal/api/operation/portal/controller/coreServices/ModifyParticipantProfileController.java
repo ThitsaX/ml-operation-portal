@@ -50,8 +50,7 @@ public class ModifyParticipantProfileController {
                                                new Mobile(request.mobile()),
                                                request.logoDataType(),
                                                Base64.getDecoder()
-                                                     .decode(request.logoBase64()),
-                                               userContext.accessKey()));
+                                                     .decode(request.logoBase64())));
 
         var response = new Response(output.participantId()
                                           .getId()

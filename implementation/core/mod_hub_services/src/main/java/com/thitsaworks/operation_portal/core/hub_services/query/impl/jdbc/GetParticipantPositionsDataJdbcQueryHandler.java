@@ -21,7 +21,7 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
 
     @Autowired
     public GetParticipantPositionsDataJdbcQueryHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -41,7 +41,7 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
                     "LEFT JOIN participantLimit pl ON pc.participantCurrencyId = pl.participantCurrencyId AND pl.isActive = 1 \n" +
                     "LEFT JOIN participantPosition pb ON pb.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 2 \n" +
                     "LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 1 \n" +
-                    "WHERE (? = 'All' OR p.name = ?) AND pc.isActive = 1 GROUP BY p.participantId, p.name, p.description, pc.currencyId  ORDER BY p.name, pc.currencyId;",
+                    "WHERE (? = 'All' OR p.name = ?) AND p.name NOT LIKE '%HUB%' AND pc.isActive = 1 GROUP BY p.participantId, p.name, p.description, pc.currencyId  ORDER BY p.name, pc.currencyId;",
                 new FinancialDataMapper(),
                 input.getFspID(),
                 input.getFspID());

@@ -23,10 +23,7 @@ public class GetParticipantUserListByParticipantController {
     private final GetParticipantUserListByParticipant getParticipantUserListByParticipant;
 
     @GetMapping(value = "/secured/getParticipantUserListByParticipant")
-    public ResponseEntity<Response> execute()
-        throws DomainException {
-
-        LOG.info("Get Participant User List By Participant Request : [{}]", "");
+    public ResponseEntity<Response> execute() throws DomainException {
 
         GetParticipantUserListByParticipant.Input input = new GetParticipantUserListByParticipant.Input();
         GetParticipantUserListByParticipant.Output output = this.getParticipantUserListByParticipant.execute(input);

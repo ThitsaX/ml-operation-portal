@@ -27,10 +27,7 @@ public class GetParticipantListController {
     private final GetParticipantList getParticipantList;
 
     @GetMapping(value = "/secured/getParticipantList")
-    public ResponseEntity<Response> execute()
-        throws DomainException, JsonProcessingException {
-
-        LOG.info("Get Participants Request : [{}]", "");
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         GetParticipantList.Output output = this.getParticipantList.execute(
             new GetParticipantList.Input());

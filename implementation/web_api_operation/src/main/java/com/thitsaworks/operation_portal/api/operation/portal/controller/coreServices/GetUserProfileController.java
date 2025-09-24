@@ -32,7 +32,6 @@ public class GetUserProfileController {
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get User Profile Request : [{}]", "");
 
         UserContext
             userContext =

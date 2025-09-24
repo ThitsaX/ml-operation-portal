@@ -30,7 +30,7 @@ public class GenerateFeeSettlementReportCommandHandler implements GenerateFeeSet
 
     @Autowired
     public GenerateFeeSettlementReportCommandHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
