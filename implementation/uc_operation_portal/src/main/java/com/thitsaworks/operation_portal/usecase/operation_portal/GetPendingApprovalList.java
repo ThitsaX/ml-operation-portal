@@ -16,7 +16,7 @@ public interface GetPendingApprovalList extends UseCase<GetPendingApprovalList.I
 
         public record PendingApproval(ApprovalRequestId approvalRequestId,
                                       String requestedAction,
-                                      String dfsp,
+                                      String participantName,
                                       String currency,
                                       BigDecimal amount,
                                       String requestedBy,
