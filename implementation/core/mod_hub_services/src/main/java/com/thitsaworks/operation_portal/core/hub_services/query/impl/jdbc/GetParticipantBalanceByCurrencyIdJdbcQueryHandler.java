@@ -35,9 +35,9 @@ public class GetParticipantBalanceByCurrencyIdJdbcQueryHandler implements GetPar
         try {
             //@@Formatter:off
             final String query = """
-                            SELECT pc.currencyId AS currency, la.name AS ledgeraccounttype, pp.value, pp.reservedValue, pc.isActive, pp.changedDate FROM participantposition pp
-                            INNER JOIN participantcurrency pc ON pc.participantCurrencyId = pp.participantCurrencyId
-                            LEFT JOIN ledgeraccounttype la ON la.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                            SELECT pc.currencyId AS currency, la.name AS ledgerAccountType, pp.value, pp.reservedValue, pc.isActive, pp.changedDate FROM participantPosition pp
+                            INNER JOIN participantCurrency pc ON pc.participantCurrencyId = pp.participantCurrencyId
+                            LEFT JOIN ledgerAccountType la ON la.ledgerAccountTypeId = pc.ledgerAccountTypeId
                             WHERE pp.participantCurrencyId = ?
                     """;
             //@@Formatter:on
