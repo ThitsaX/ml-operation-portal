@@ -63,12 +63,13 @@ public class GetRoleListByParticipantHandler
 
         boolean isDfspUser = this.userPermissionManager.isDfsp(requestingPrincipalId);
 
-        if (isDfspUser) {
+        if (isDfspUser || !input.participantName().equalsIgnoreCase("hub")) {
             roleList = roleList.stream()
                                .filter(role -> role.name() != null && role.name()
                                                                           .startsWith("DFSP"))
                                .toList();
         }
+
 
         return new Output(roleList);
     }
