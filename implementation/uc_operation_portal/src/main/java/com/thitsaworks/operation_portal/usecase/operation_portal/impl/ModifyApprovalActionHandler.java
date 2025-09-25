@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
 import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Currency;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
@@ -11,6 +12,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.component.misc.util.TransferIdGenerator;
 import com.thitsaworks.operation_portal.core.approval.command.ModifyApprovalActionCommand;
 import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
+import com.thitsaworks.operation_portal.core.approval.exception.ApprovalException;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -108,6 +110,16 @@ public class ModifyApprovalActionHandler
             throw new IAMException(IAMErrors.SELF_APPROVAL_NOT_ALLOWED);
         }
 
+        ModifyApprovalActionCommand.Output output;
+
+        if (input.action()
+                 .equals(ApprovalActionType.REJECTED)) {
+
+            output = this.executeApprovalAction(input);
+
+            return new Output(output.approvalRequestId());
+        }
+
         final String requested = approvalRequestData.requestedAction();
         final PositionActionType actionType = parsePositionAction(requested);
 
@@ -142,7 +154,10 @@ public class ModifyApprovalActionHandler
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
 
-            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE, approvalRequestData, participantName, currency);
+            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE,
+                                 approvalRequestData,
+                                 participantName,
+                                 currency);
 
         } else {
 
@@ -162,11 +177,7 @@ public class ModifyApprovalActionHandler
                                                                  request);
         }
 
-        var
-            output =
-            this.modifyApprovalActionCommand.execute(new ModifyApprovalActionCommand.Input(input.approvalRequestId(),
-                                                                                           input.action(),
-                                                                                           input.responseUserId()));
+        output = this.executeApprovalAction(input);
 
         return new Output(output.approvalRequestId());
     }
@@ -274,6 +285,14 @@ public class ModifyApprovalActionHandler
 
         return requestedByUserId.getId()
                                 .equals(respondedByUserId.getId());
+    }
+
+    private ModifyApprovalActionCommand.Output executeApprovalAction(Input input)
+        throws ApprovalException {
+
+        return this.modifyApprovalActionCommand.execute(new ModifyApprovalActionCommand.Input(input.approvalRequestId(),
+                                                                                              input.action(),
+                                                                                              input.responseUserId()));
     }
 
 }
