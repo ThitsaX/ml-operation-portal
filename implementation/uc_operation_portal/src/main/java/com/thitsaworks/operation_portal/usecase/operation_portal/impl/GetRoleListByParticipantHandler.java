@@ -1,17 +1,13 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -23,7 +19,7 @@ import java.util.List;
 
 @Service
 public class GetRoleListByParticipantHandler
-    extends OperationPortalAuditableUseCase<GetRoleListByParticipant.Input, GetRoleListByParticipant.Output>
+    extends OperationPortalUseCase<GetRoleListByParticipant.Input, GetRoleListByParticipant.Output>
     implements GetRoleListByParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetRoleListByParticipantHandler.class);
@@ -32,20 +28,12 @@ public class GetRoleListByParticipantHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    public GetRoleListByParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                           CreateOutputAuditCommand createOutputAuditCommand,
-                                           CreateExceptionAuditCommand createExceptionAuditCommand,
-                                           ObjectMapper objectMapper,
-                                           PrincipalCache principalCache,
+    public GetRoleListByParticipantHandler(PrincipalCache principalCache,
                                            ActionAuthorizationManager actionAuthorizationManager,
                                            RoleQuery roleQuery,
                                            UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.roleQuery = roleQuery;

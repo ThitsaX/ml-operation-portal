@@ -1,14 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSchedulerConfigById;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -17,27 +13,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GetSchedulerConfigByIdHandler
-    extends OperationPortalAuditableUseCase<GetSchedulerConfigById.Input, GetSchedulerConfigById.Output>
+    extends OperationPortalUseCase<GetSchedulerConfigById.Input, GetSchedulerConfigById.Output>
     implements GetSchedulerConfigById {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSchedulerConfigByIdHandler.class);
 
     private final SchedulerConfigQuery schedulerConfigQuery;
 
-    public GetSchedulerConfigByIdHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
+    public GetSchedulerConfigByIdHandler(PrincipalCache principalCache,
                                          SchedulerConfigQuery schedulerConfigQuery,
                                          ActionAuthorizationManager actionAuthorizationManager
                                         ) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager
              );
         this.schedulerConfigQuery = schedulerConfigQuery;

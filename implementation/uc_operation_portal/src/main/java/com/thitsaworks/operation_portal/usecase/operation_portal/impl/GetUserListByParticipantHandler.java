@@ -1,21 +1,17 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUserListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -29,7 +25,7 @@ import java.util.List;
 
 @Service
 public class GetUserListByParticipantHandler
-    extends OperationPortalAuditableUseCase<GetUserListByParticipant.Input, GetUserListByParticipant.Output>
+    extends OperationPortalUseCase<GetUserListByParticipant.Input, GetUserListByParticipant.Output>
     implements GetUserListByParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserListByParticipantHandler.class);
@@ -42,21 +38,13 @@ public class GetUserListByParticipantHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    public GetUserListByParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                           CreateOutputAuditCommand createOutputAuditCommand,
-                                           CreateExceptionAuditCommand createExceptionAuditCommand,
-                                           ObjectMapper objectMapper,
-                                           PrincipalCache principalCache,
+    public GetUserListByParticipantHandler(PrincipalCache principalCache,
                                            ActionAuthorizationManager actionAuthorizationManager,
                                            UserQuery userQuery,
                                            IAMQuery iamQuery,
                                            UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.userQuery = userQuery;

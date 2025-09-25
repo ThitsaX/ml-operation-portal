@@ -1,10 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransfersQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -14,7 +10,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -26,7 +22,7 @@ import java.util.List;
 
 @Service
 public class GetTransferListHandler
-    extends OperationPortalAuditableUseCase<GetTransferList.Input, GetTransferList.Output>
+    extends OperationPortalUseCase<GetTransferList.Input, GetTransferList.Output>
     implements GetTransferList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferListHandler.class);
@@ -37,21 +33,13 @@ public class GetTransferListHandler
 
     private final UserCache userCache;
 
-    public GetTransferListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                  CreateOutputAuditCommand createOutputAuditCommand,
-                                  CreateExceptionAuditCommand createExceptionAuditCommand,
-                                  ObjectMapper objectMapper,
-                                  PrincipalCache principalCache,
+    public GetTransferListHandler(PrincipalCache principalCache,
                                   ActionAuthorizationManager actionAuthorizationManager,
                                   GetTransfersQuery getTransfersQuery,
                                   ParticipantCache participantCache,
                                   UserCache userCache) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.getTransfersQuery = getTransfersQuery;
