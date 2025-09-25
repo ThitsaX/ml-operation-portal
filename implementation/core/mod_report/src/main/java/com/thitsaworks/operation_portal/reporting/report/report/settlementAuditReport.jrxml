@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="AllSectionsNoDetail" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -87,69 +87,166 @@
 		<parameter name="currencyId" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
-			<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-		 p.name AS dfspId, p.name AS dfspName, COALESCE(tscIn.reason, tscOut.reason) AS processDescription, 
-	    (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
-		 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
-		 ppc.value AS balance, 
-		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
-		 COALESCE(texNdc.value, '0') AS ndc,
-		 pc.currencyId AS currency,
-		 COALESCE(texBankAccount.value, '') AS settlementBankAccount,
-		 COALESCE(texApprovedUser.value, '') AS madeBy, CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
-         CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
-       ,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
-FROM participant p
-INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
-INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
-INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
-INNER JOIN transferParticipantRoleType tpr ON tpr.transferParticipantRoleTypeId = tp.transferParticipantRoleTypeId
-LEFT JOIN transferStateChange tscOut ON tp.transferId = tscOut.transferId AND tscOut.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscOut1 WHERE tscOut1.transferId = tp.transferId
+			<![CDATA[WITH base AS ( 
+SELECT * FROM (
+		SELECT  tp.createdDate  AS createdDate,
+		  		  p.name AS dfspId, 
+				  IFNULL(op.description, p.name) AS dfspName, 
+				  COALESCE(tscIn.reason, tscOut.reason) AS processDescription, 
+				 (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
+				 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
+				 ppc.value AS balance, 
+				 '-' AS ndcPercent,
+				 0 AS ndc,
+				 pc.currencyId AS currency,
+				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				 IFNULL(texApproveUser.value,'') AS madeBy
+		FROM participant p
+		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
+		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+		INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
+		LEFT JOIN transferParticipantRoleType tpr ON tpr.transferParticipantRoleTypeId = tp.transferParticipantRoleTypeId
+		LEFT JOIN transferStateChange tscOut ON tp.transferId = tscOut.transferId AND tscOut.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscOut1 WHERE tscOut1.transferId = tp.transferId
 			 AND tscOut1.transferStateId in ('RESERVED', 'ABORTED_REJECTED'))
-LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
-LEFT JOIN transferStateChange tscIn ON tp.transferId = tscIn.transferId AND tscIn.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscIn1 WHERE tscIn1.transferId = tp.transferId
+		LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
+		LEFT JOIN transferStateChange tscIn ON tp.transferId = tscIn.transferId AND tscIn.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscIn1 WHERE tscIn1.transferId = tp.transferId
 			 AND tscIn1.transferStateId in ('COMMITTED', 'ABORTED_REJECTED'))
-LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
-INNER JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
-INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
-INNER JOIN currency c ON c.currencyId = pc.currencyId
-LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId 
-LEFT JOIN transferExtension texApprovedUser ON texApprovedUser.transferId = tp.transferId AND texApprovedUser.key = 'opApprovedUser'
-LEFT JOIN transferExtension texNdc ON texNdc.transferId = tp.transferId AND texNdc.key = 'opNdc'
-LEFT JOIN transferExtension texNdcPercent ON texNdcPercent.transferId = tp.transferId AND texNdcPercent.key = 'opNdcPercent'
-LEFT JOIN transferExtension texBankAccount ON texBankAccount.transferId = tp.transferId AND texBankAccount.key = 'opBankAccount'
-
-WHERE tpr.name = 'DFSP_SETTLEMENT'
-AND ($P{dfspId} ='All' OR p.name = $P{dfspId})
-AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
-AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
-AND (tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-                CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-                CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
-                AND 
-                (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-                CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-                CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
+		LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
+		LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
+		INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
+		INNER JOIN currency c ON c.currencyId = pc.currencyId
+		LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId 
+		LEFT JOIN transferExtension texApproveUser ON texApproveUser.transferId = tp.transferId AND texApproveUser.key = 'approveUser'
+		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+		LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+		
+		WHERE ($P{dfspId} ='All' OR p.name = $P{dfspId})
+		AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
+		AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
+		AND (tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+		          AND 
+		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
 			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
-
-GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
-         tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texNdcPercent.value, texNdc.value, texBankAccount.value, texApprovedUser.value
-ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
+		
+		GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
+		   tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texApproveUser.value, op.description, lp.bank_name, lp.account_name, lp.account_number
+         
+    UNION ALL
+    
+		SELECT  pl.createdDate  AS createdDate,
+				  p.name AS dfspId, 
+				  IFNULL(op.description, p.name) AS dfspName, 
+				  CASE WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update' WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' ELSE 'NDC Amount Update' END AS processDescription, 
+				  0 AS fundsIn, 
+				  0 AS fundsOut, 
+				  0 AS balance, 
+				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
+				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
+				  pc.currencyId AS currency,
+				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				  IFNULL(u.email,'') AS madeBy
+		FROM participant p
+		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
+		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId 
+		INNER JOIN currency c ON c.currencyId = pc.currencyId 
+		LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
+		LEFT JOIN (SELECT * FROM (
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
+		UNION ALL
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
+		)Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2
+		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+		LEFT JOIN operation_portal.tbl_approval_request ar ON ar.participant_name = p.name AND ar.participant_currency = pc.currencyId 
+		AND ABS(TIMESTAMPDIFF(SECOND,  FROM_UNIXTIME(ar.updated_date), pl.createdDate)) <= 2 
+		LEFT JOIN operation_portal.tbl_user u ON u.user_id = ar.responded_by
+		LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+		
+		WHERE ($P{dfspId} ='All' OR p.name = $P{dfspId}) 
+		AND (pl.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+		          AND 
+		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
+			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId}) 
+  ) Q
+),
+seq AS (
+  SELECT
+		    b.*, 
+		    SUM(CASE WHEN b.processDescription NOT LIKE 'NDC%' THEN 1 ELSE 0 END)
+		      OVER (
+				        PARTITION BY b.dfspId, b.currency
+				        ORDER BY b.createdDate
+				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+		      ) AS grp,
+		       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndc END AS ndc_anchor, 
+			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
+			      OVER (
+			        PARTITION BY b.dfspId, b.currency
+			        ORDER BY b.createdDate
+			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+			      ) AS ndc_grp,
+			       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndcPercent END AS ndc_percent_anchor, 
+			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
+			      OVER (
+			        PARTITION BY b.dfspId, b.currency
+			        ORDER BY b.createdDate
+			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+			      ) AS ndc_percent_grp
+		  FROM base b
+)
+SELECT
+		  CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		       ELSE CONVERT_TZ(createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		      END,'%Y-%m-%dT%H:%i:%s'),
+		      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
+		  dfspId,
+		  dfspName,
+		  processDescription,
+		  fundsIn,
+		  fundsOut,
+		  CASE
+		    WHEN processDescription LIKE 'NDC%' THEN
+		      COALESCE(
+		        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN balance END)
+		          OVER (PARTITION BY dfspId, currency, grp),
+		        0
+		      )
+		    ELSE balance
+		  END AS balance,
+		  COALESCE(
+	    MAX(ndc_percent_anchor) OVER (PARTITION BY dfspId, currency, ndc_percent_grp),
+	    0
+	  ) AS ndcPercent, 
+	  COALESCE(
+	    MAX(ndc_anchor) OVER (PARTITION BY dfspId, currency, ndc_grp),
+	    0
+	  ) AS ndc, 
+		  currency,
+		  settlementBankAccount,
+		  madeBy, 
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
+		,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
+FROM seq
+ORDER BY dfspId, currency, createdDate;]]>
 		</queryString>
 		<field name="createdDate" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
@@ -219,69 +316,166 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 	<parameter name="currencyId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
-		<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ(tp.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-		 p.name AS dfspId, p.name AS dfspName, COALESCE(tscIn.reason, tscOut.reason) AS processDescription, 
-	    (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
-		 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
-		 ppc.value AS balance, 
-		 COALESCE(texNdcPercent.value, '-') AS ndcPercent,
-		 COALESCE(texNdc.value, '0') AS ndc,
-		 pc.currencyId AS currency,
-		 COALESCE(texBankAccount.value, '') AS settlementBankAccount,
-		 COALESCE(texApprovedUser.value, '') AS madeBy, CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
-         CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-       CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-       ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-      END,'%Y-%m-%dT%H:%i:%s'),
-      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
-       ,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
-FROM participant p
-INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
-INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
-INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
-INNER JOIN transferParticipantRoleType tpr ON tpr.transferParticipantRoleTypeId = tp.transferParticipantRoleTypeId
-LEFT JOIN transferStateChange tscOut ON tp.transferId = tscOut.transferId AND tscOut.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscOut1 WHERE tscOut1.transferId = tp.transferId
+		<![CDATA[WITH base AS ( 
+SELECT * FROM (
+		SELECT  tp.createdDate  AS createdDate,
+		  		  p.name AS dfspId, 
+				  IFNULL(op.description, p.name) AS dfspName, 
+				  COALESCE(tscIn.reason, tscOut.reason) AS processDescription, 
+				 (CASE WHEN tp.amount < 0 THEN -tp.amount ELSE NULL END) AS fundsIn, 
+				 (CASE WHEN tp.amount > 0 THEN tp.amount ELSE NULL END) AS fundsOut, 
+				 ppc.value AS balance, 
+				 '-' AS ndcPercent,
+				 0 AS ndc,
+				 pc.currencyId AS currency,
+				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				 IFNULL(texApproveUser.value,'') AS madeBy
+		FROM participant p
+		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
+		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+		INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
+		LEFT JOIN transferParticipantRoleType tpr ON tpr.transferParticipantRoleTypeId = tp.transferParticipantRoleTypeId
+		LEFT JOIN transferStateChange tscOut ON tp.transferId = tscOut.transferId AND tscOut.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscOut1 WHERE tscOut1.transferId = tp.transferId
 			 AND tscOut1.transferStateId in ('RESERVED', 'ABORTED_REJECTED'))
-LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
-LEFT JOIN transferStateChange tscIn ON tp.transferId = tscIn.transferId AND tscIn.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscIn1 WHERE tscIn1.transferId = tp.transferId
+		LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
+		LEFT JOIN transferStateChange tscIn ON tp.transferId = tscIn.transferId AND tscIn.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscIn1 WHERE tscIn1.transferId = tp.transferId
 			 AND tscIn1.transferStateId in ('COMMITTED', 'ABORTED_REJECTED'))
-LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
-INNER JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
-INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
-INNER JOIN currency c ON c.currencyId = pc.currencyId
-LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId 
-LEFT JOIN transferExtension texApprovedUser ON texApprovedUser.transferId = tp.transferId AND texApprovedUser.key = 'opApprovedUser'
-LEFT JOIN transferExtension texNdc ON texNdc.transferId = tp.transferId AND texNdc.key = 'opNdc'
-LEFT JOIN transferExtension texNdcPercent ON texNdcPercent.transferId = tp.transferId AND texNdcPercent.key = 'opNdcPercent'
-LEFT JOIN transferExtension texBankAccount ON texBankAccount.transferId = tp.transferId AND texBankAccount.key = 'opBankAccount'
-
-WHERE tpr.name = 'DFSP_SETTLEMENT'
-AND ($P{dfspId} ='All' OR p.name = $P{dfspId})
-AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
-AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
-AND (tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-                CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-                CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
-                AND 
-                (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-                CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-                CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
+		LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
+		LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
+		INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
+		INNER JOIN currency c ON c.currencyId = pc.currencyId
+		LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId 
+		LEFT JOIN transferExtension texApproveUser ON texApproveUser.transferId = tp.transferId AND texApproveUser.key = 'approveUser'
+		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+		LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+		
+		WHERE ($P{dfspId} ='All' OR p.name = $P{dfspId})
+		AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
+		AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
+		AND (tp.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+		          AND 
+		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
 			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
-
-GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
-         tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texNdcPercent.value, texNdc.value, texBankAccount.value, texApprovedUser.value
-ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
+		
+		GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
+		   tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texApproveUser.value, op.description, lp.bank_name, lp.account_name, lp.account_number
+         
+    UNION ALL
+    
+		SELECT  pl.createdDate  AS createdDate,
+				  p.name AS dfspId, 
+				  IFNULL(op.description, p.name) AS dfspName, 
+				  CASE WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update' WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' ELSE 'NDC Amount Update' END AS processDescription, 
+				  0 AS fundsIn, 
+				  0 AS fundsOut, 
+				  0 AS balance, 
+				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
+				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
+				  pc.currencyId AS currency,
+				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				  IFNULL(u.email,'') AS madeBy
+		FROM participant p
+		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
+		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId 
+		INNER JOIN currency c ON c.currencyId = pc.currencyId 
+		LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
+		LEFT JOIN (SELECT * FROM (
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
+		UNION ALL
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
+		)Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2
+		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+		LEFT JOIN operation_portal.tbl_approval_request ar ON ar.participant_name = p.name AND ar.participant_currency = pc.currencyId 
+		AND ABS(TIMESTAMPDIFF(SECOND,  FROM_UNIXTIME(ar.updated_date), pl.createdDate)) <= 2 
+		LEFT JOIN operation_portal.tbl_user u ON u.user_id = ar.responded_by
+		LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+		
+		WHERE ($P{dfspId} ='All' OR p.name = $P{dfspId}) 
+		AND (pl.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+		          AND 
+		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
+			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId}) 
+  ) Q
+),
+seq AS (
+  SELECT
+		    b.*, 
+		    SUM(CASE WHEN b.processDescription NOT LIKE 'NDC%' THEN 1 ELSE 0 END)
+		      OVER (
+				        PARTITION BY b.dfspId, b.currency
+				        ORDER BY b.createdDate
+				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+		      ) AS grp,
+		       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndc END AS ndc_anchor, 
+			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
+			      OVER (
+			        PARTITION BY b.dfspId, b.currency
+			        ORDER BY b.createdDate
+			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+			      ) AS ndc_grp,
+			       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndcPercent END AS ndc_percent_anchor, 
+			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
+			      OVER (
+			        PARTITION BY b.dfspId, b.currency
+			        ORDER BY b.createdDate
+			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+			      ) AS ndc_percent_grp
+		  FROM base b
+)
+SELECT
+		  CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		       ELSE CONVERT_TZ(createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		      END,'%Y-%m-%dT%H:%i:%s'),
+		      CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		      ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
+		  dfspId,
+		  dfspName,
+		  processDescription,
+		  fundsIn,
+		  fundsOut,
+		  CASE
+		    WHEN processDescription LIKE 'NDC%' THEN
+		      COALESCE(
+		        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN balance END)
+		          OVER (PARTITION BY dfspId, currency, grp),
+		        0
+		      )
+		    ELSE balance
+		  END AS balance,
+		  COALESCE(
+	    MAX(ndc_percent_anchor) OVER (PARTITION BY dfspId, currency, ndc_percent_grp),
+	    0
+	  ) AS ndcPercent, 
+	  COALESCE(
+	    MAX(ndc_anchor) OVER (PARTITION BY dfspId, currency, ndc_grp),
+	    0
+	  ) AS ndc, 
+		  currency,
+		  settlementBankAccount,
+		  madeBy, 
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
+		,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
+FROM seq
+ORDER BY dfspId, currency, createdDate;]]>
 	</queryString>
 	<field name="createdDate" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
@@ -658,7 +852,7 @@ ORDER BY p.name, pc.currencyId, pc.participantCurrencyId,  tp.createdDate;]]>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField pattern="#,##0.00#">
+							<textField>
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4">
 									<printWhenExpression><![CDATA[$F{ndcPercent}!=null]]></printWhenExpression>
 								</reportElement>
