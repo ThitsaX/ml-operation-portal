@@ -1,14 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetPendingApprovalList;
 import com.thitsaworks.operation_portal.usecase.util.Utility;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -18,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class GetPendingApprovalListHandler
-    extends OperationPortalAuditableUseCase<GetPendingApprovalList.Input, GetPendingApprovalList.Output>
+    extends OperationPortalUseCase<GetPendingApprovalList.Input, GetPendingApprovalList.Output>
     implements GetPendingApprovalList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetPendingApprovalListHandler.class);
@@ -27,21 +23,13 @@ public class GetPendingApprovalListHandler
 
     private final Utility utility;
 
-    public GetPendingApprovalListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
+    public GetPendingApprovalListHandler(PrincipalCache principalCache,
                                          ActionAuthorizationManager actionAuthorizationManager,
                                          ApprovalRequestQuery approvalRequestQuery,
                                          Utility utility
                                         ) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.approvalRequestQuery = approvalRequestQuery;

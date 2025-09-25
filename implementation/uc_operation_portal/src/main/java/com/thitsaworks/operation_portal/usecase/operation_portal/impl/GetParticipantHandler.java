@@ -1,10 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
@@ -12,7 +8,7 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.core.participant.query.LiquidityProfileQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipant;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -25,7 +21,7 @@ import java.util.List;
 
 @Service
 public class GetParticipantHandler
-    extends OperationPortalAuditableUseCase<GetParticipant.Input, GetParticipant.Output>
+    extends OperationPortalUseCase<GetParticipant.Input, GetParticipant.Output>
         implements GetParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantHandler.class);
@@ -36,21 +32,13 @@ public class GetParticipantHandler
 
     private final LiquidityProfileQuery liquidityProfileQuery;
 
-    public GetParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                 CreateOutputAuditCommand createOutputAuditCommand,
-                                 CreateExceptionAuditCommand createExceptionAuditCommand,
-                                 ObjectMapper objectMapper,
-                                 PrincipalCache principalCache,
+    public GetParticipantHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  ParticipantQuery participantQuery,
                                  ContactQuery contactQuery,
                                  LiquidityProfileQuery liquidityProfileQuery) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.participantQuery = participantQuery;

@@ -1,14 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
 import com.thitsaworks.operation_portal.core.scheduler.query.JobExecutionLogQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetJobExecutionLogList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -23,7 +19,7 @@ import java.util.List;
 
 @Service
 public class GetJobExecutionLogListHandler
-    extends OperationPortalAuditableUseCase<GetJobExecutionLogList.Input, GetJobExecutionLogList.Output>
+    extends OperationPortalUseCase<GetJobExecutionLogList.Input, GetJobExecutionLogList.Output>
     implements GetJobExecutionLogList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetJobExecutionLogListHandler.class);
@@ -35,20 +31,12 @@ public class GetJobExecutionLogListHandler
     /**
      * Constructs a new handler with required dependencies.
      */
-    public GetJobExecutionLogListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                         CreateOutputAuditCommand createOutputAuditCommand,
-                                         CreateExceptionAuditCommand createExceptionAuditCommand,
-                                         ObjectMapper objectMapper,
-                                         PrincipalCache principalCache,
+    public GetJobExecutionLogListHandler(PrincipalCache principalCache,
                                          JobExecutionLogQuery jobExecutionLogQuery,
                                          ActionAuthorizationManager actionAuthorizationManager
                                         ) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.jobExecutionLogQuery = jobExecutionLogQuery;
