@@ -11,17 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CreateNewAnnouncementHandler
+public class CreateAnnouncementHandler
     extends OperationPortalUseCase<CreateAnnouncement.Input, CreateAnnouncement.Output>
     implements CreateAnnouncement {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewAnnouncementHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateAnnouncementHandler.class);
 
     private final CreateAnnouncementCommand createAnnouncementCommand;
 
-    public CreateNewAnnouncementHandler(PrincipalCache principalCache,
-                                        CreateAnnouncementCommand createAnnouncementCommand,
-                                        ActionAuthorizationManager actionAuthorizationManager) {
+    public CreateAnnouncementHandler(PrincipalCache principalCache,
+                                     CreateAnnouncementCommand createAnnouncementCommand,
+                                     ActionAuthorizationManager actionAuthorizationManager) {
 
         super(principalCache, actionAuthorizationManager);
 

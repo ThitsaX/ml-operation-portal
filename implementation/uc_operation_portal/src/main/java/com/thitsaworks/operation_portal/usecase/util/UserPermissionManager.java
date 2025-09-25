@@ -1,8 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.util;
 
+import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
+import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
+import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
@@ -24,6 +31,8 @@ public class UserPermissionManager {
     private final IAMQuery iamQuery;
 
     private final RoleQuery roleQuery;
+
+    private final PrincipalCache principalCache;
 
     public boolean isDfsp(PrincipalId principalId) throws IAMException {
 
@@ -69,5 +78,25 @@ public class UserPermissionManager {
 
     }
 
+    public PrincipalData getCurrentUser() throws IAMException {
+
+        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+
+        PrincipalData currentUser =
+            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+
+        if (currentUser == null) {
+            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()
+                                                                                       .toString()));
+
+        }
+
+        return currentUser;
+    }
+
+    public boolean isSameParticipant(ParticipantId loggedInUserParticipantId, ParticipantId requestParticipantId) {
+
+        return loggedInUserParticipantId.equals(requestParticipantId);
+    }
 
 }

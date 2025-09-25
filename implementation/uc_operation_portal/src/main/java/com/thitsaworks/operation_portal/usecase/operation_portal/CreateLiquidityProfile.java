@@ -4,8 +4,8 @@ import com.thitsaworks.operation_portal.component.common.identifier.LiquidityPro
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface CreateNewLiquidityProfile extends
-                                           UseCase<CreateNewLiquidityProfile.Input, CreateNewLiquidityProfile.Output> {
+public interface CreateLiquidityProfile extends
+                                           UseCase<CreateLiquidityProfile.Input, CreateLiquidityProfile.Output> {
 
     record Input(ParticipantId participantId,
                  String bankName,

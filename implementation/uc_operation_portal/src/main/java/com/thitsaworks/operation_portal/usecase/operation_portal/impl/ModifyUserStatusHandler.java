@@ -1,11 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -59,25 +56,17 @@ public class ModifyUserStatusHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        PrincipalData requestingPrincipalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         PrincipalData principalData = this.principalCache.get(new PrincipalId(input.userId()
                                                                                    .getEntityId()));
 
-        if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
-
-        }
-
-        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
+        var isDfsp = this.userPermissionManager.isDfsp(currentUser.principalId());
 
         if (isDfsp) {
 
-            if (!requestingPrincipalData.realmId()
-                                        .equals(principalData.realmId())) {
+            if (!currentUser.realmId()
+                            .equals(principalData.realmId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
 

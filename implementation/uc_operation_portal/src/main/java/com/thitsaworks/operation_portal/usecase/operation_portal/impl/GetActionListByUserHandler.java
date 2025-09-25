@@ -1,16 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUser;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
@@ -23,33 +18,27 @@ public class GetActionListByUserHandler
 
     private final PrincipalCache principalCache;
 
+    private final UserPermissionManager userPermissionManager;
+
     public GetActionListByUserHandler(PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
-                                      IAMQuery iamQuery) {
+                                      IAMQuery iamQuery,
+                                      UserPermissionManager userPermissionManager) {
 
         super(principalCache,
               actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
         this.principalCache = principalCache;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
-        var requestingPrincipalId = new PrincipalId(securityContext.userId());
-
-        PrincipalData principalData = this.principalCache.get(requestingPrincipalId);
-
-        if (principalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(requestingPrincipalId.getId().toString()));
-
-        }
-
-        var output = this.iamQuery.getGrantedActionsByPrincipal(new PrincipalId(principalData.principalId()
-                                                                                             .getId()))
+        var output = this.iamQuery.getGrantedActionsByPrincipal(currentUser.principalId())
                                   .stream()
                                   .map(action -> new Output.Action(action.actionId(),
                                                                    action.actionCode()

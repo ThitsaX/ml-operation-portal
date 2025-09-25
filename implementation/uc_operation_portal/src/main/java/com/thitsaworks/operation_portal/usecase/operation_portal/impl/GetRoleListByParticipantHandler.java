@@ -1,9 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
@@ -43,21 +40,19 @@ public class GetRoleListByParticipantHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         List<RoleData> roleList = this.roleQuery.getAll();
 
-        boolean isDfspUser = this.userPermissionManager.isDfsp(requestingPrincipalId);
+        boolean isDfspUser = this.userPermissionManager.isDfsp(currentUser.principalId());
 
-        if (isDfspUser || !input.participantName().equalsIgnoreCase("hub")) {
+        if (isDfspUser || !input.participantName()
+                                .equalsIgnoreCase("hub")) {
             roleList = roleList.stream()
                                .filter(role -> role.name() != null && role.name()
                                                                           .startsWith("DFSP"))
                                .toList();
         }
-
 
         return new Output(roleList);
     }

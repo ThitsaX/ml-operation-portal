@@ -4,8 +4,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -56,23 +54,17 @@ public class GetUserHandler
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         var userId = input.userId();
         var participantId = new ParticipantId(this.principalCache.get(new PrincipalId(userId.getEntityId()))
                                                                  .realmId()
                                                                  .getId());
 
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-
-        var requestingPrincipleId = new PrincipalId(securityContext.userId());
-        var requestingParticipantId = new ParticipantId(this.principalCache.get(requestingPrincipleId)
-                                                                           .realmId()
-                                                                           .getId());
-
-        if (this.userPermissionManager.isDfsp(requestingPrincipleId)) {
-
-            if (!participantId.equals(requestingParticipantId)) {
+            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
+                                                                                           .getId()), participantId)) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
         }
