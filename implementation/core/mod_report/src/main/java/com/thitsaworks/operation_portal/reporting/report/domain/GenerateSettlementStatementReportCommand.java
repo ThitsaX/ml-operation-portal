@@ -4,15 +4,14 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 
 import java.time.Instant;
 
-public interface GenerateStatementReportCommand {
+public interface GenerateSettlementStatementReportCommand {
 
-    record Input(Instant startDate,
+    record Input(String fspId,
+                 Instant startDate,
                  Instant endDate,
-                 String fspId,
-                 String accountNumber,
                  String filetype,
-                 String timeZoneOffset,
-                 String currencyId) { }
+                 String currencyId,
+                 String timeZoneOffset) { }
 
     record Output(byte[] statementRptData) { }
 

@@ -1,19 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -26,7 +22,7 @@ import java.util.List;
 
 @Service
 public class GetAuditByParticipantListHandler
-    extends OperationPortalAuditableUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
+    extends OperationPortalUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
     implements GetAuditByParticipantList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAuditByParticipantListHandler.class);
@@ -39,21 +35,13 @@ public class GetAuditByParticipantListHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    public GetAuditByParticipantListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                            CreateOutputAuditCommand createOutputAuditCommand,
-                                            CreateExceptionAuditCommand createExceptionAuditCommand,
-                                            ObjectMapper objectMapper,
-                                            PrincipalCache principalCache,
+    public GetAuditByParticipantListHandler(PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
                                             GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
                                             UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
