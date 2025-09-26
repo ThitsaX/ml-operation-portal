@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -65,8 +66,10 @@ public class ModifyUserStatusHandler
 
         if (isDfsp) {
 
-            if (!currentUser.realmId()
-                            .equals(principalData.realmId())) {
+            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
+                                                                                           .getId()),
+                                                              new ParticipantId(principalData.realmId()
+                                                                                             .getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
 
