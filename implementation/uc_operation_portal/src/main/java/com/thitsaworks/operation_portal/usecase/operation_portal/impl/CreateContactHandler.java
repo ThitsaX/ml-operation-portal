@@ -9,10 +9,9 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.participant.command.CreateContactHistoryCommand;
-import com.thitsaworks.operation_portal.core.participant.command.ModifyContactCommand;
+import com.thitsaworks.operation_portal.core.participant.command.CreateContactCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyContact;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateContact;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -20,26 +19,25 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ModifyContactHandler
-    extends OperationPortalAuditableUseCase<ModifyContact.Input, ModifyContact.Output>
-    implements ModifyContact {
+public class CreateContactHandler
+    extends OperationPortalAuditableUseCase<CreateContact.Input, CreateContact.Output>
+    implements CreateContact {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifyContactHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateContactHandler.class);
 
-    private final ModifyContactCommand modifyContactCommand;
+    private final CreateContactCommand createContactCommand;
 
-    private final CreateContactHistoryCommand createContactHistoryCommand;
+    private final PrincipalCache principalCache;
 
     private final UserPermissionManager userPermissionManager;
 
-    public ModifyContactHandler(CreateInputAuditCommand createInputAuditCommand,
+    public CreateContactHandler(CreateInputAuditCommand createInputAuditCommand,
                                 CreateOutputAuditCommand createOutputAuditCommand,
                                 CreateExceptionAuditCommand createExceptionAuditCommand,
                                 ObjectMapper objectMapper,
                                 PrincipalCache principalCache,
                                 ActionAuthorizationManager actionAuthorizationManager,
-                                ModifyContactCommand modifyContactCommand,
-                                CreateContactHistoryCommand createContactHistoryCommand,
+                                CreateContactCommand createContactCommand,
                                 UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
@@ -49,9 +47,8 @@ public class ModifyContactHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.modifyContactCommand = modifyContactCommand;
-
-        this.createContactHistoryCommand = createContactHistoryCommand;
+        this.createContactCommand = createContactCommand;
+        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
     }
 
@@ -68,19 +65,14 @@ public class ModifyContactHandler
             }
         }
 
-        this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
-            input.contactId(),
-            input.participantId()));
-
-        var output = this.modifyContactCommand.execute(new ModifyContactCommand.Input(input.participantId(),
-                                                                                      input.contactId(),
+        var output = this.createContactCommand.execute(new CreateContactCommand.Input(input.participantId(),
                                                                                       input.name(),
                                                                                       input.position(),
                                                                                       input.email(),
                                                                                       input.mobile(),
                                                                                       input.contactType()));
 
-        return new ModifyContact.Output(output.modified());
+        return new CreateContact.Output(output.created(), output.contactId());
     }
 
 }

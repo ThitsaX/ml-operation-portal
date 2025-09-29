@@ -1,12 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -49,27 +45,14 @@ public class GetParticipantProfileHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
-        PrincipalData requestingPrincipalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()
-                                                                                       .toString()));
-
-        }
-
-        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
-
-        if (isDfsp) {
-
-            if (!input.participantId()
-                      .equals(new ParticipantId(requestingPrincipalData.realmId()
-                                                                       .getId()))) {
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
+            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
+                                                                                           .getId()),
+                                                              input.participantId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
-
         }
 
         var participantData = this.participantQuery.get(input.participantId());

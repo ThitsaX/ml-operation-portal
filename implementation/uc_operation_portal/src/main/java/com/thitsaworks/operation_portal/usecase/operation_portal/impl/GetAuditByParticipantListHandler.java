@@ -1,10 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
@@ -53,20 +50,17 @@ public class GetAuditByParticipantListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
-        var requestingPrincipalId = new PrincipalId(securityContext.userId());
+        var existingRealmId = currentUser.realmId();
 
-        var existingRealmId = this.principalCache.get(requestingPrincipalId).realmId();
-
-
-        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(requestingPrincipalId)
+        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(currentUser.principalId())
                                              .stream()
                                              .map(ActionData::actionId)
                                              .toList();
 
         RealmId realmId = null;
-        if (this.userPermissionManager.isDfsp(requestingPrincipalId)) {
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
             realmId = existingRealmId;
         }
 

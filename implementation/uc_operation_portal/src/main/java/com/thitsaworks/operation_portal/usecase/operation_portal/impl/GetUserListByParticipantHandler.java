@@ -3,8 +3,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
@@ -57,17 +55,13 @@ public class GetUserListByParticipantHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        var principalId = new PrincipalId(securityContext.userId());
-        var participantId = new ParticipantId(this.principalCache.get(principalId)
-                                                                 .realmId()
-                                                                 .getId());
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         List<UserData> userDataList;
-        if (this.userPermissionManager.isDfsp(principalId)) {
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            userDataList = this.userQuery.getUsers(participantId);
+            userDataList = this.userQuery.getUsers(new ParticipantId(currentUser.realmId()
+                                                                                .getId()));
 
         } else {
             userDataList = this.userQuery.getUsers();
@@ -86,7 +80,8 @@ public class GetUserListByParticipantHandler
                 roleList =
                 this.iamQuery.getRolesByPrincipal(principalData.principalId())
                              .stream()
-                             .sorted(Comparator.comparingLong(r -> r.roleId().getId()))
+                             .sorted(Comparator.comparingLong(r -> r.roleId()
+                                                                    .getId()))
                              .map(RoleData::name)
                              .toList();
 

@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.approval.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
@@ -32,7 +33,19 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
     @Override
     public List<ApprovalRequestData> getPendingApprovalRequests() {
 
-        BooleanExpression predicate = this.approvalRequest.action.eq(ApprovalActionType.PENDING);
+        BooleanExpression predicate = this.approvalRequest.isNotNull();
+
+        var pendingApprovalRequest = (List<ApprovalRequest>) this.approvalRequestRepository.findAll(predicate);
+
+        return pendingApprovalRequest.stream()
+                                     .map(ApprovalRequestData::new)
+                                     .toList();
+    }
+
+    @Override
+    public List<ApprovalRequestData> getPendingApprovalRequestsByRequestedId(UserId userId) {
+
+        BooleanExpression predicate = this.approvalRequest.requestedBy.eq(userId);
 
         var pendingApprovalRequest = (List<ApprovalRequest>) this.approvalRequestRepository.findAll(predicate);
 
@@ -56,7 +69,8 @@ public class ApprovalRequestJpaQueryHandler implements ApprovalRequestQuery {
         return this.approvalRequestRepository.findOne(predicate)
                                              .map(ApprovalRequestData::new)
                                              .orElseThrow(() -> new ApprovalException(ApprovalErrors.APPROVAL_REQUEST_NOT_FOUND.format(
-                                                 approvalRequestId.getId().toString())));
+                                                 approvalRequestId.getId()
+                                                                  .toString())));
     }
 
 }

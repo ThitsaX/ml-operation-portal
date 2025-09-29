@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
 
-public interface CreateNewContact extends UseCase<CreateNewContact.Input, CreateNewContact.Output> {
+public interface CreateContact extends UseCase<CreateContact.Input, CreateContact.Output> {
 
     record Input(ParticipantId participantId,
                  String name,

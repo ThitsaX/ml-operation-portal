@@ -1,11 +1,15 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
+import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetContactList;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +26,32 @@ public class GetContactListHandler extends OperationPortalUseCase<GetContactList
 
     private final ContactQuery contactQuery;
 
+    private final UserPermissionManager userPermissionManager;
+
     public GetContactListHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
-                                 ContactQuery contactQuery) {
+                                 ContactQuery contactQuery,
+                                 UserPermissionManager userPermissionManager) {
 
         super(principalCache,
               actionAuthorizationManager);
 
         this.contactQuery = contactQuery;
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
+
+        var currentUser = this.userPermissionManager.getCurrentUser();
+
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
+            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
+                                                                                           .getId()),
+                                                              input.participantId())) {
+                throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
+            }
+        }
 
         List<ContactData> contactDataList = this.contactQuery.getContacts(input.participantId());
 

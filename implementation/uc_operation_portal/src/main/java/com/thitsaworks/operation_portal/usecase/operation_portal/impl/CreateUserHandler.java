@@ -1,20 +1,16 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
 import com.thitsaworks.operation_portal.core.iam.command.CreatePrincipalCommand;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateUserCommand;
@@ -71,24 +67,15 @@ public class CreateUserHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
-        PrincipalData requestingPrincipalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId()
-                                                                                       .toString()));
-
-        }
-
-        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipalData.principalId());
+        var isDfsp = this.userPermissionManager.isDfsp(currentUser.principalId());
 
         if (isDfsp) {
 
             if (!input.participantId()
-                      .equals(new ParticipantId(requestingPrincipalData.realmId()
-                                                                       .getId()))) {
+                      .equals(new ParticipantId(currentUser.realmId()
+                                                           .getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
