@@ -45,8 +45,6 @@ public class ModifyUserHandler
 
     private final ModifyPrincipalRealmIdCommand modifyPrincipalRealmIdCommand;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     private final IAMQuery iamQuery;
@@ -75,7 +73,6 @@ public class ModifyUserHandler
         this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
         this.removeRoleFromPrincipalCommand = removeRoleFromPrincipalCommand;
         this.modifyPrincipalRealmIdCommand = modifyPrincipalRealmIdCommand;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
         this.iamQuery = iamQuery;
     }

@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.event;
+package com.thitsaworks.operation_portal.component.misc.event;
 
 public interface DomainEventPublisher {
 
