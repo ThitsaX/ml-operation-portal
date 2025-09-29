@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.exception.UnauthorizedActionException;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.component.misc.persistence.TransactionContext;
 import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
@@ -16,11 +17,9 @@ import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationM
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.net.ConnectException;
+import java.util.UUID;
 
 public abstract class OperationPortalUseCase<I, O> implements UseCase<I, O> {
 
@@ -51,29 +50,29 @@ public abstract class OperationPortalUseCase<I, O> implements UseCase<I, O> {
 
         var transactionManager = SpringContext.getBean(PlatformTransactionManager.class,
                                                        PersistenceQualifiers.Core.TRANSACTION_MANAGER);
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        TransactionStatus status = transactionManager.getTransaction(def);
 
         this.beforeExecute(input);
 
         try {
 
+            TransactionContext.startNew(transactionManager, UUID.randomUUID()
+                                                                .toString());
+
             output = this.onExecute(input);
 
-            transactionManager.commit(status);
+            TransactionContext.commit();
 
             this.afterExecute(output);
 
         } catch (RuntimeException exception) {
 
-            transactionManager.rollback(status);
+            TransactionContext.rollback();
 
             throw exception;
 
         } catch (Exception exception) {
 
-            transactionManager.rollback(status);
+            TransactionContext.rollback();
 
             throw this.onException(exception);
         }

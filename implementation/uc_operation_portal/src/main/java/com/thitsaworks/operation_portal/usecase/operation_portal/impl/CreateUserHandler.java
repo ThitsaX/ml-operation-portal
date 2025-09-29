@@ -37,8 +37,6 @@ public class CreateUserHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    private final PrincipalCache principalCache;
-
     public CreateUserHandler(CreateInputAuditCommand createInputAuditCommand,
                              CreateOutputAuditCommand createOutputAuditCommand,
                              CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -61,7 +59,6 @@ public class CreateUserHandler
         this.createPrincipalCommand = createPrincipalCommand;
         this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
         this.userPermissionManager = userPermissionManager;
-        this.principalCache = principalCache;
     }
 
     @Override

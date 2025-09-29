@@ -1,9 +1,8 @@
-package com.thitsaworks.operation_portal.component.event.publisher;
+package com.thitsaworks.operation_portal.component.misc.event.publisher;
 
-import com.thitsaworks.operation_portal.component.event.DomainEvent;
-import com.thitsaworks.operation_portal.component.event.DomainEventPublisher;
+import com.thitsaworks.operation_portal.component.misc.event.DomainEvent;
+import com.thitsaworks.operation_portal.component.misc.event.DomainEventPublisher;
 import org.springframework.context.ApplicationEventPublisher;
-
 
 public class SpringDomainEventPublisher implements DomainEventPublisher {
 
