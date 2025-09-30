@@ -22,20 +22,20 @@ import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateNewAnnouncementController {
+public class CreateAnnouncementController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewAnnouncementController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateAnnouncementController.class);
 
-    private final CreateAnnouncement createNewAnnouncement;
+    private final CreateAnnouncement createAnnouncement;
 
     @PostMapping(value = "/secured/createAnnouncement")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody CreateNewAnnouncementController.Request request)
+            @Valid @RequestBody CreateAnnouncementController.Request request)
             throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info("Create Announcement Request: [{}]", request);
 
-        CreateAnnouncement.Output output = this.createNewAnnouncement.execute(
+        CreateAnnouncement.Output output = this.createAnnouncement.execute(
                 new CreateAnnouncement.Input(request.announcementTitle,
                                                 request.announcementDetail,
                                                 Instant.parse(request.announcementDate)));

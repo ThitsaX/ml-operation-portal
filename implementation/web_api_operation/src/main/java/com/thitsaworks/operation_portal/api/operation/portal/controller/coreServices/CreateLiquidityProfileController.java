@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateNewLiquidityProfile;
+import com.thitsaworks.operation_portal.usecase.operation_portal.CreateLiquidityProfile;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +21,11 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateNewLiquidityProfileController {
+public class CreateLiquidityProfileController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateNewLiquidityProfileController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CreateLiquidityProfileController.class);
 
-    private final CreateNewLiquidityProfile createNewLiquidityProfile;
+    private final CreateLiquidityProfile createLiquidityProfile;
 
     @PostMapping(value = "/secured/createLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
@@ -33,12 +33,12 @@ public class CreateNewLiquidityProfileController {
 
         LOG.info("Create New Liquidity Profile Request : [{}]", request);
 
-        CreateNewLiquidityProfile.Output output = this.createNewLiquidityProfile.execute(
-            new CreateNewLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
-                                                request.bankName(),
-                                                request.accountName(),
-                                                request.accountNumber(),
-                                                request.currency()));
+        CreateLiquidityProfile.Output output = this.createLiquidityProfile.execute(
+            new CreateLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
+                                             request.bankName(),
+                                             request.accountName(),
+                                             request.accountNumber(),
+                                             request.currency()));
 
         Response response = new Response(output.created(),
                                          output.liquidityProfileId()

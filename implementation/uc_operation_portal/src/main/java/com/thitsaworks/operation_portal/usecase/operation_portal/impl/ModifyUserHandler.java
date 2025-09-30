@@ -6,8 +6,6 @@ import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -47,8 +45,6 @@ public class ModifyUserHandler
 
     private final ModifyPrincipalRealmIdCommand modifyPrincipalRealmIdCommand;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     private final IAMQuery iamQuery;
@@ -77,7 +73,6 @@ public class ModifyUserHandler
         this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
         this.removeRoleFromPrincipalCommand = removeRoleFromPrincipalCommand;
         this.modifyPrincipalRealmIdCommand = modifyPrincipalRealmIdCommand;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
         this.iamQuery = iamQuery;
     }
@@ -85,21 +80,18 @@ public class ModifyUserHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
+        var currentUserParticipantId = new ParticipantId(currentUser.realmId()
+                                                                    .getId());
 
-        var requestingPrincipleId = new PrincipalId(securityContext.userId());
-        var requestingParticipantId = new ParticipantId(this.principalCache.get(requestingPrincipleId)
-                                                                           .realmId()
-                                                                           .getId());
-
-        var isDfsp = this.userPermissionManager.isDfsp(requestingPrincipleId);
+        var isDfsp = this.userPermissionManager.isDfsp(currentUser.principalId());
         var roleIdList = input.roleIdList();
         var userId = input.userId();
         var participantId = input.participantId();
 
         if (isDfsp) {
 
-            if (!requestingParticipantId.equals(input.participantId())) {
+            if (!this.userPermissionManager.isSameParticipant(currentUserParticipantId, input.participantId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
