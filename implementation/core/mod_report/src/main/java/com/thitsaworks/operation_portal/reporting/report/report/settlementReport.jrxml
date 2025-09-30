@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementLatest" pageWidth="1500" pageHeight="1000" columnWidth="1460" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -83,8 +83,8 @@
 		<queryString language="plsql">
 			<![CDATA[SELECT settlementId,
        settlementWindowId,
-       p.participantId,
-       p.name,
+       p.name AS participantId,
+       IFNULL(op.description,p.name) AS name,
        currencyId,
        currencyScale,
        ROUND(sentAmount,2) as sentAmount,
@@ -167,6 +167,7 @@ FROM participant p INNER JOIN
 
         GROUP BY settlementId, settlementWindowId, participantId,s2.currencyId
     ) s3 ON p.participantId = s3.participantId
+LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 WHERE p.name != 'Hub'
 ORDER BY p.name, settlementWindowId]]>
 		</queryString>
@@ -180,15 +181,15 @@ ORDER BY p.name, settlementWindowId]]>
 			<property name="com.jaspersoft.studio.field.label" value="settlementWindowId"/>
 			<property name="com.jaspersoft.studio.field.tree.path" value="settlementsettlementwindow"/>
 		</field>
-		<field name="participantId" class="java.lang.Long">
+		<field name="participantId" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="participantId"/>
 			<property name="com.jaspersoft.studio.field.label" value="participantId"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="participant"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="participantId"/>
 		</field>
 		<field name="name" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="name"/>
 			<property name="com.jaspersoft.studio.field.label" value="name"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="participant"/>
+			<property name="com.jaspersoft.studio.field.tree.path" value="name"/>
 		</field>
 		<field name="currencyId" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="currencyId"/>
@@ -252,8 +253,8 @@ ORDER BY p.name, settlementWindowId]]>
 	<queryString language="plsql">
 		<![CDATA[SELECT settlementId,
        settlementWindowId,
-       p.participantId,
-       p.name,
+       p.name AS participantId,
+       IFNULL(op.description,p.name) AS name,
        currencyId,
        currencyScale,
        ROUND(sentAmount,2) as sentAmount,
@@ -274,8 +275,7 @@ ORDER BY p.name, settlementWindowId]]>
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset,
 		DATE_FORMAT( CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		CONVERT_TZ(lastActionDate,'+00:00',CONCAT('-',SUBSTRING($P{timezoneoffset},2,2),':',SUBSTRING($P{timezoneoffset},4,2)))
-		ELSE
-		CONVERT_TZ(lastActionDate,'+00:00',CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2))) END ,'%d-%b-%Y %h:%i:%s %p')as lastActionDate
+		ELSE CONVERT_TZ(lastActionDate,'+00:00',CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2))) END ,'%d-%b-%Y %h:%i:%s %p')as lastActionDate
 FROM participant p INNER JOIN
     (
         SELECT settlementId,
@@ -337,6 +337,7 @@ FROM participant p INNER JOIN
 
         GROUP BY settlementId, settlementWindowId, participantId,s2.currencyId
     ) s3 ON p.participantId = s3.participantId
+LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 WHERE p.name != 'Hub'
 ORDER BY p.name, settlementWindowId]]>
 	</queryString>
@@ -350,15 +351,15 @@ ORDER BY p.name, settlementWindowId]]>
 		<property name="com.jaspersoft.studio.field.label" value="settlementWindowId"/>
 		<property name="com.jaspersoft.studio.field.tree.path" value="settlementsettlementwindow"/>
 	</field>
-	<field name="participantId" class="java.lang.Long">
+	<field name="participantId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="participantId"/>
 		<property name="com.jaspersoft.studio.field.label" value="participantId"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="participant"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="participantId"/>
 	</field>
 	<field name="name" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="name"/>
 		<property name="com.jaspersoft.studio.field.label" value="name"/>
-		<property name="com.jaspersoft.studio.field.tree.path" value="participant"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="name"/>
 	</field>
 	<field name="currencyId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="currencyId"/>
@@ -504,7 +505,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<property name="com.jaspersoft.studio.unit.width" value="px"/>
 								<textField>
 									<reportElement x="0" y="0" width="150" height="16" uuid="5f253340-2941-4f25-9bd5-aa409a17a5b8"/>
-									<textElement textAlignment="Right">
+									<textElement textAlignment="Left">
 										<font fontName="Calibri" size="11"/>
 									</textElement>
 									<textFieldExpression><![CDATA[$F{participantId}]]></textFieldExpression>
@@ -746,7 +747,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField>
 								<reportElement x="0" y="0" width="150" height="16" uuid="13f0f922-b3eb-49b5-9d95-343473e2652a"/>
-								<textElement textAlignment="Right">
+								<textElement textAlignment="Left">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{currencyId}]]></textFieldExpression>

@@ -42,9 +42,15 @@ public class GetOtherParticipantListHandler
         List<ParticipantInfo> participantInfoList = new ArrayList<>();
 
         for (ParticipantData participantData : participantDataList) {
-            participantInfoList.add(new ParticipantInfo(participantData.participantId(),
-                                                        participantData.participantName(),
-                                                        participantData.description()));
+
+            if (participantData.participantName() != null &&
+                    !participantData.participantName().getValue().toLowerCase().contains("hub")) {
+                participantInfoList.add(new ParticipantInfo(
+                        participantData.participantId(),
+                        participantData.participantName(),
+                        participantData.description()
+                ));
+            }
         }
 
         return new Output(participantInfoList);

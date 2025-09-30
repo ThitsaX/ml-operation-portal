@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementStatementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,7 +53,8 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
 
         InputStream settlementReport =
             this.getClass()
-                .getResourceAsStream("/com/thitsaworks/operation_portal/reporting/report/report/SettlementStatementReport.jasper");
+                .getResourceAsStream(
+                        "/com/thitsaworks/operation_portal/reporting/report/report/settlementStatementReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {

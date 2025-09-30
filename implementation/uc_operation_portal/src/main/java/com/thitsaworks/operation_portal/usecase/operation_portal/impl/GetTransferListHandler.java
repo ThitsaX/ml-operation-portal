@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransfersQuery;
@@ -12,6 +13,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +35,14 @@ public class GetTransferListHandler
 
     private final UserCache userCache;
 
+    private final UserPermissionManager userPermissionManager;
+
     public GetTransferListHandler(PrincipalCache principalCache,
                                   ActionAuthorizationManager actionAuthorizationManager,
                                   GetTransfersQuery getTransfersQuery,
                                   ParticipantCache participantCache,
-                                  UserCache userCache) {
+                                  UserCache userCache,
+                                  UserPermissionManager userPermissionManager) {
 
         super(principalCache,
               actionAuthorizationManager);
@@ -45,7 +50,7 @@ public class GetTransferListHandler
         this.getTransfersQuery = getTransfersQuery;
         this.participantCache = participantCache;
         this.userCache = userCache;
-
+        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
@@ -68,10 +73,9 @@ public class GetTransferListHandler
                                                                .getId().toString()));
         }
 
-        String
-            fspName =
-            participantData.participantName()
-                           .getValue();
+        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId().getId()));
+
+        final String fspName = isDfspUser ? participantData.participantName().getValue() : "";
 
         GetTransfersQuery.Output output = this.getTransfersQuery.execute(new GetTransfersQuery.Input(input.fromDate(),
                                                                                                      input.toDate(),
