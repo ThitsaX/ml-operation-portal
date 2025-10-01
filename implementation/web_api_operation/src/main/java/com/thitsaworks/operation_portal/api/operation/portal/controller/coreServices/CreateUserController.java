@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -36,7 +37,7 @@ public class CreateUserController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Onboard user request: {}", request);
+        LOG.info("Onboard user request: {}", MaskPassword.toMaskedString(request));
 
         CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
                                                                                 new Email(request.email()),
