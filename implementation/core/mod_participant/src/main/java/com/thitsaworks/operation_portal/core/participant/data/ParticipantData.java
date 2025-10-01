@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
 import com.thitsaworks.operation_portal.core.participant.model.User;
 
@@ -16,6 +17,7 @@ public record ParticipantData(ParticipantId participantId,
                               ParticipantName participantName,
                               String address,
                               Mobile mobile,
+                              ParticipantStatus participantStatus,
                               String logoDataType,
                               byte[] logo,
                               Long createdDate,
@@ -28,6 +30,7 @@ public record ParticipantData(ParticipantId participantId,
              participant.getParticipantName(),
              participant.getAddress(),
              participant.getMobile(),
+             participant.getParticipantStatus(),
              participant.getLogoDatatype(),
              participant.getLogoBase64(),
              participant.getCreatedAt()

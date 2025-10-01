@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -9,6 +11,7 @@ import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutParticipantStatus;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantStatusCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateParticipantStatus;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -29,6 +32,8 @@ public class UpdateParticipantStatusHandler
 
     private final ParticipantHubClient participantHubClient;
 
+    private final ModifyParticipantStatusCommand modifyParticipantStatusCommand;
+
     @Autowired
     public UpdateParticipantStatusHandler(CreateInputAuditCommand createInputAuditCommand,
                                           CreateOutputAuditCommand createOutputAuditCommand,
@@ -36,7 +41,8 @@ public class UpdateParticipantStatusHandler
                                           ObjectMapper objectMapper,
                                           PrincipalCache principalCache,
                                           ActionAuthorizationManager actionAuthorizationManager,
-                                          ParticipantHubClient participantHubClient) {
+                                          ParticipantHubClient participantHubClient,
+                                          ModifyParticipantStatusCommand modifyParticipantStatusCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,12 +52,14 @@ public class UpdateParticipantStatusHandler
               actionAuthorizationManager);
 
         this.participantHubClient = participantHubClient;
+        this.modifyParticipantStatusCommand = modifyParticipantStatusCommand;
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
         boolean isActive = "active".equalsIgnoreCase(input.activeStatus());
+        ParticipantStatus participantStatus = isActive ? ParticipantStatus.ACTIVE : ParticipantStatus.INACTIVE;
 
         PutParticipantStatus.Request request = new PutParticipantStatus.Request(input.participantName(),
                                                                                 input.participantCurrencyId(),
@@ -59,10 +67,15 @@ public class UpdateParticipantStatusHandler
 
         PutParticipantStatus.Response response = this.participantHubClient.putParticipantStatus(request);
 
+         this.modifyParticipantStatusCommand.execute(new ModifyParticipantStatusCommand.Input(new ParticipantName(input.participantName()),
+                                                                                                           participantStatus));
+
+
         GetParticipant.Response
             getParticipantResponse =
             this.participantHubClient.getParticipant(new GetParticipant.Request(input.participantName()));
 
+        
         List<GetParticipant.Response.Account> accounts = getParticipantResponse.accounts();
 
         String status = accounts.stream()

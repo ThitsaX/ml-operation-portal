@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model.command;
 
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.core.participant.ParticipantConfiguration;
@@ -30,6 +31,7 @@ public class CreateParticipantCommandUnitTest {
                                                                                  "Vision Fund",
                                                                                  "address",
                                                                                  new Mobile("+959250661838"),
+                                                                                 ParticipantStatus.ACTIVE,
                                                                                  null,
                                                                                  null));
 

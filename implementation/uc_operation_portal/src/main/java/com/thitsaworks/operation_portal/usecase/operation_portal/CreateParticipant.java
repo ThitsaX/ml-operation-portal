@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
@@ -17,6 +18,7 @@ public interface CreateParticipant
                  String description,
                  String address,
                  Mobile mobile,
+                 ParticipantStatus status,
                  List<ContactInfo> contactInfoList,
                  List<LiquidityProfileInfo> liquidityProfileInfoList
     ) implements Serializable {

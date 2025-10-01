@@ -34,7 +34,8 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
             Participant participant = new Participant(input.participantName(),
                                                       input.description(),
                                                       input.address(),
-                                                      input.mobile());
+                                                      input.mobile(),
+                                                      input.participantStatus());
 
             //For ContactInfo
             if (input.contactInfoList() != null && !input.contactInfoList()
