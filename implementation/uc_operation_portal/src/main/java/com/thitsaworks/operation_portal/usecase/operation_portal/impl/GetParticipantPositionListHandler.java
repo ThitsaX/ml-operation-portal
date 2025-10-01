@@ -163,7 +163,7 @@ public class GetParticipantPositionListHandler
                 null,
                 "",
                 null,
-                ParticipantStatus.ACTIVE,
+                null,
                 null,
                 null,
                 null,
