@@ -1,15 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -17,19 +11,18 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GetUserHandler
-    extends OperationPortalAuditableUseCase<GetUser.Input, GetUser.Output>
+    extends OperationPortalUseCase<GetUser.Input, GetUser.Output>
     implements GetUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserHandler.class);
@@ -43,21 +36,13 @@ public class GetUserHandler
     private final UserPermissionManager userPermissionManager;
 
     @Autowired
-    public GetUserHandler(CreateInputAuditCommand createInputAuditCommand,
-                          CreateOutputAuditCommand createOutputAuditCommand,
-                          CreateExceptionAuditCommand createExceptionAuditCommand,
-                          ObjectMapper objectMapper,
-                          PrincipalCache principalCache,
+    public GetUserHandler(PrincipalCache principalCache,
                           ActionAuthorizationManager actionAuthorizationManager,
                           UserQuery userQuery,
                           IAMQuery iamQuery,
                           UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.userQuery = userQuery;
@@ -69,23 +54,17 @@ public class GetUserHandler
     @Override
     public Output onExecute(Input input) throws DomainException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         var userId = input.userId();
         var participantId = new ParticipantId(this.principalCache.get(new PrincipalId(userId.getEntityId()))
                                                                  .realmId()
                                                                  .getId());
 
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-
-        var requestingPrincipleId = new PrincipalId(securityContext.userId());
-        var requestingParticipantId = new ParticipantId(this.principalCache.get(requestingPrincipleId)
-                                                                           .realmId()
-                                                                           .getId());
-
-        if (this.userPermissionManager.isDfsp(requestingPrincipleId)) {
-
-            if (!participantId.equals(requestingParticipantId)) {
+            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
+                                                                                           .getId()), participantId)) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
         }

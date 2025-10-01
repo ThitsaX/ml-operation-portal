@@ -42,8 +42,7 @@ public class GetOtherParticipantListController {
             participantInfoList.add(new Response.ParticipantInfo(participant.participantId()
                                                                             .getId()
                                                                             .toString(),
-                                                                 participant.participantName()
-                                                                            .toString(),
+                                                                 participant.participantName().getValue(),
                                                                  participant.description()));
         }
 

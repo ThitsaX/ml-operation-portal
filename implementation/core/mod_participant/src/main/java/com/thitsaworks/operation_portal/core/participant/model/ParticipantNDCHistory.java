@@ -47,6 +47,8 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
         this.participantName(participantNDC.getParticipantName());
         this.currency(participantNDC.getCurrency());
         this.ndcPercent(participantNDC.getNdcPercent());
+        this.setCreatedAt(participantNDC.getCreatedAt());
+        this.setUpdatedAt(participantNDC.getUpdatedAt());
 
     }
 

@@ -28,7 +28,7 @@ public class GrantMenuActionCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
         var result = this.grantMenuActionCommand.execute(new GrantMenuActionCommand.Input("Home",
-                                                                                         new ActionCode("CreateNewContact")));
+                                                                                         new ActionCode("CreateContact")));
 
         LOGGER.info("Boolean{}",result.resultCode());
     }

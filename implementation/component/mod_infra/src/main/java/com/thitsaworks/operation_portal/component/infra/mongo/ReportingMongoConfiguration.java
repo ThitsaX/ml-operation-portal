@@ -26,9 +26,9 @@ public class ReportingMongoConfiguration {
 
     // ---- READ ----
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_READ_CLIENT)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_CLIENT)
-    public MongoClient readMongoClient(@Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_SETTINGS) Settings s) {
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_READ_CLIENT)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_CLIENT)
+    public MongoClient readMongoClient(@Qualifier(PersistenceQualifiers.Hub.MONGO_READ_SETTINGS) Settings s) {
 
         MongoClientSettings settings = baseClientSettings(s)
                 .readPreference(resolveReadPref(s.readPreference(), ReadPreference.secondaryPreferred()))
@@ -36,29 +36,29 @@ public class ReportingMongoConfiguration {
         return MongoClients.create(settings);
     }
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_READ_FACTORY)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_FACTORY)
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_READ_FACTORY)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_FACTORY)
     public MongoDatabaseFactory readFactory(
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_CLIENT) MongoClient client,
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_SETTINGS) Settings s) {
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_CLIENT) MongoClient client,
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_SETTINGS) Settings s) {
 
         return new SimpleMongoClientDatabaseFactory(client, s.database());
     }
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_TEMPLATE)
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_READ_TEMPLATE)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_TEMPLATE)
     @Primary
     public MongoTemplate reportingMongoReadTemplate(
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_READ_FACTORY) MongoDatabaseFactory reportingMongoReadFactory) {
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_FACTORY) MongoDatabaseFactory reportingMongoReadFactory) {
 
         return new MongoTemplate(reportingMongoReadFactory);
     }
 
     // ---- WRITE ----
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_WRITE_CLIENT)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_CLIENT)
-    public MongoClient writeMongoClient(@Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_SETTINGS) Settings s) {
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_WRITE_CLIENT)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_CLIENT)
+    public MongoClient writeMongoClient(@Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_SETTINGS) Settings s) {
 
         MongoClientSettings settings = baseClientSettings(s)
                 .readPreference(resolveReadPref(s.readPreference(), ReadPreference.primary()))
@@ -67,20 +67,20 @@ public class ReportingMongoConfiguration {
     }
 
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_WRITE_FACTORY)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_FACTORY)
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_WRITE_FACTORY)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_FACTORY)
     @Primary
     public MongoDatabaseFactory writeFactory(
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_CLIENT) MongoClient client,
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_SETTINGS) Settings s) {
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_CLIENT) MongoClient client,
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_SETTINGS) Settings s) {
 
         return new SimpleMongoClientDatabaseFactory(client, s.database());
     }
 
-    @Bean(name = PersistenceQualifiers.Reporting.MONGO_WRITE_TEMPLATE)
-    @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_TEMPLATE)
+    @Bean(name = PersistenceQualifiers.Hub.MONGO_WRITE_TEMPLATE)
+    @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_TEMPLATE)
     public MongoTemplate writeTemplate(
-            @Qualifier(PersistenceQualifiers.Reporting.MONGO_WRITE_FACTORY) MongoDatabaseFactory factory) {
+            @Qualifier(PersistenceQualifiers.Hub.MONGO_WRITE_FACTORY) MongoDatabaseFactory factory) {
 
         return new MongoTemplate(factory);
     }

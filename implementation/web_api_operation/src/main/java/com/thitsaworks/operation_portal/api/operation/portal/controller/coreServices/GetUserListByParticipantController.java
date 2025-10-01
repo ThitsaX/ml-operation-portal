@@ -45,12 +45,7 @@ public class GetUserListByParticipantController {
                                                    user.firstName(),
                                                    user.lastName(),
                                                    user.jobTitle(),
-                                                   user.roleIdList()
-                                                       .stream()
-                                                       .map(id -> id.getId()
-                                                                    .toString())
-                                                       .sorted()
-                                                       .toList(),
+                                                   user.roleList(),
                                                    user.participantId()
                                                        .getEntityId()
                                                        .toString(),
@@ -76,7 +71,7 @@ public class GetUserListByParticipantController {
                                @JsonProperty("firstName") String firstName,
                                @JsonProperty("lastName") String lastName,
                                @JsonProperty("jobTitle") String jobTitle,
-                               @JsonProperty("roleIdList") List<String> roleIdList,
+                               @JsonProperty("roleList") List<String> roleList,
                                @JsonProperty("participantId") String participantId,
                                @JsonProperty("status") String status,
                                @JsonProperty("createdDate") long createdDate) implements Serializable { }

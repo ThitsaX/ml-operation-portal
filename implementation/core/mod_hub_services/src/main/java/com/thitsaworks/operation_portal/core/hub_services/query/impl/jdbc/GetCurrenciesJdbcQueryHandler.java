@@ -25,7 +25,7 @@ public class GetCurrenciesJdbcQueryHandler implements GetCurrenciesQuery {
 
     @Autowired
     public GetCurrenciesJdbcQueryHandler(
-        @Qualifier(PersistenceQualifiers.Reporting.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }

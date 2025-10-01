@@ -1,22 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.security.SecurityContext;
-import com.thitsaworks.operation_portal.component.misc.usecase.UseCaseContext;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -29,7 +19,7 @@ import java.util.Set;
 
 @Service
 public class GetParticipantUserListByParticipantHandler
-    extends OperationPortalAuditableUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
+    extends OperationPortalUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
     implements GetParticipantUserListByParticipant {
 
     private final UserQuery userQuery;
@@ -38,20 +28,12 @@ public class GetParticipantUserListByParticipantHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    public GetParticipantUserListByParticipantHandler(CreateInputAuditCommand createInputAuditCommand,
-                                                      CreateOutputAuditCommand createOutputAuditCommand,
-                                                      CreateExceptionAuditCommand createExceptionAuditCommand,
-                                                      ObjectMapper objectMapper,
-                                                      PrincipalCache principalCache,
+    public GetParticipantUserListByParticipantHandler(PrincipalCache principalCache,
                                                       ActionAuthorizationManager actionAuthorizationManager,
                                                       UserQuery userQuery,
                                                       UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.userQuery = userQuery;
@@ -62,24 +44,16 @@ public class GetParticipantUserListByParticipantHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        SecurityContext securityContext = (SecurityContext) UseCaseContext.get();
-
-        PrincipalData requestingPrincipalData =
-            this.principalCache.get(new AccessKey(securityContext.accessKey()));
-
-        if (requestingPrincipalData == null) {
-            throw new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(securityContext.userId().toString()));
-
-        }
+        var currentUser = this.userPermissionManager.getCurrentUser();
 
         Set<Output.User> madeByUsers = new HashSet<>();
 
         List<UserData> userDataList;
 
-        if (this.userPermissionManager.isDfsp(requestingPrincipalData.principalId())) {
+        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            userDataList = this.userQuery.getUsers(new ParticipantId(requestingPrincipalData.realmId()
-                                                                                  .getId()));
+            userDataList = this.userQuery.getUsers(new ParticipantId(currentUser.realmId()
+                                                                                .getId()));
 
             for (var userData : userDataList) {
 

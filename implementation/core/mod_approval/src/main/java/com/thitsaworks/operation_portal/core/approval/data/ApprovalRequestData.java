@@ -10,7 +10,7 @@ import java.time.Instant;
 
 public record ApprovalRequestData(ApprovalRequestId approvalRequestId,
                                   String requestedAction,
-                                  String participantId,
+                                  String participantName,
                                   String currency,
                                   String participantCurrencyId,
 

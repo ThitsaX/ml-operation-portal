@@ -27,6 +27,7 @@ public class CoreDataSourceConfiguration {
         config.setUsername(settings.username());
         config.setPassword(settings.password());
         config.setDriverClassName(com.mysql.cj.jdbc.Driver.class.getName());
+        config.setKeepaliveTime(30000);
 
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
@@ -38,6 +39,7 @@ public class CoreDataSourceConfiguration {
         config.addDataSourceProperty("cacheServerConfiguration", true);
         config.addDataSourceProperty("elideSetAutoCommits", true);
         config.addDataSourceProperty("maintainTimeStats", false);
+
 
         config.setMaximumPoolSize(settings.maxPoolSize());
         config.setAutoCommit(false);
