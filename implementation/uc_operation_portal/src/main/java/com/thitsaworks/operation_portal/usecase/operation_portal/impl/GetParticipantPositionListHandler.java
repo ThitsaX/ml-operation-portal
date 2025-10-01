@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
@@ -162,6 +163,7 @@ public class GetParticipantPositionListHandler
                 null,
                 "",
                 null,
+                ParticipantStatus.ACTIVE,
                 null,
                 null,
                 null,

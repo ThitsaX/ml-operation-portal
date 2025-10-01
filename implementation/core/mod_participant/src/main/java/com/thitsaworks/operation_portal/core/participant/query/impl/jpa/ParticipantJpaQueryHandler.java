@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.participant.query.impl.jpa;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
@@ -24,7 +25,6 @@ import java.util.Optional;
 @CoreReadTransactional
 public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ParticipantJpaQueryHandler.class);
 
     private final ParticipantRepository participantRepository;
@@ -34,7 +34,7 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public List<ParticipantData> getParticipants() {
 
-        BooleanExpression predicate = this.participant.isNotNull();
+        BooleanExpression predicate = this.participant.participantStatus.eq(ParticipantStatus.ACTIVE);
 
         List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
 
@@ -45,7 +45,10 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public ParticipantData get(ParticipantId participantId) throws ParticipantException {
 
-        BooleanExpression predicate = this.participant.participantId.eq(participantId);
+        BooleanExpression predicate = this.participant.participantId.eq(participantId)
+                                                                    .and(this.participant.participantStatus.eq(
+                                                                            ParticipantStatus.ACTIVE));
+        ;
 
         Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
 
@@ -61,7 +64,9 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public List<ParticipantData> getOtherParticipants(ParticipantId participantId) {
 
-        BooleanExpression predicate = this.participant.participantId.ne(participantId);
+        BooleanExpression predicate = this.participant.participantId.ne(participantId)
+                                                                    .and(this.participant.participantStatus.eq(
+                                                                            ParticipantStatus.ACTIVE));
 
         List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
 
@@ -72,12 +77,13 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public Optional<ParticipantData> get(String participantName) {
 
-        BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName));
+        BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName))
+                                                                      .and(this.participant.participantStatus.eq(
+                                                                              ParticipantStatus.ACTIVE));
 
         Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
 
-        if(optionalParticipant.isEmpty())
-        {
+        if (optionalParticipant.isEmpty()) {
             return Optional.empty();
         }
 
