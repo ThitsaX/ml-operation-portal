@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.core.audit.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 
 import java.io.Serializable;
@@ -16,14 +15,21 @@ public interface GetAllAuditByParticipantQuery {
     record Input(RealmId realmId,
                  Instant fromDate,
                  Instant toDate,
-                 List<ActionId> grantedActionList) { }
+                 List<ActionId> grantedActionList,
+                 int page,
+                 int size
+        ) { }
 
-    record Output(List<AuditInfo> auditInfoList) {
+    record Output(List<AuditInfo> auditInfoList,
+                  long totalElements,
+                  int totalPages
+    ) {
 
         public record AuditInfo(Instant date,
                                 String action,
                                 Email madeBy) implements Serializable { }
 
     }
+
 
 }

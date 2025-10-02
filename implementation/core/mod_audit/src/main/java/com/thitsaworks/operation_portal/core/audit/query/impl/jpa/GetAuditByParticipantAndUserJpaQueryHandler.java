@@ -11,6 +11,8 @@ import com.thitsaworks.operation_portal.core.iam.model.QAction;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
 import com.thitsaworks.operation_portal.core.participant.model.QUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -35,62 +37,64 @@ public class GetAuditByParticipantAndUserJpaQueryHandler implements GetAuditByPa
         var actionCode = input.getActionName() == null ? null : new ActionCode(input.getActionName());
 
         JPAQuery<Tuple> tupleSQLQuery =
-            this.readQueryFactory.select(participant.description,
-                                         user.name,
-                                         action.actionCode,
-                                         audit.inputInfo,
-                                         audit.outputInfo,
-                                         audit.createdAt)
-                                 .from(audit)
-                                 .join(participant)
-                                 .on(participant.participantId.id.eq(audit.realmId.id))
-                                 .leftJoin(user)
-                                 .on(user.userId.id.eq(audit.userId.id))
-                                 .join(action)
-                                 .on(action.actionId.eq(audit.actionId))
-                                 .where(input.getRealmId() == null ?
-                                            audit.realmId.eq(audit.realmId) :
-                                            audit.realmId.id.eq(input.getRealmId()
-                                                                     .getId())
-                                                            .and(input.getUserId() ==
+                this.readQueryFactory.select(participant.description,
+                            user.name,
+                            action.actionCode,
+                            audit.inputInfo,
+                            audit.outputInfo,
+                            audit.createdAt)
+                                     .from(audit)
+                                     .join(participant)
+                                     .on(participant.participantId.id.eq(audit.realmId.id))
+                                     .leftJoin(user)
+                                     .on(user.userId.id.eq(audit.userId.id))
+                                     .join(action)
+                                     .on(action.actionId.eq(audit.actionId))
+                                     .where(input.getRealmId() == null ?
+                                             audit.realmId.eq(audit.realmId) :
+                                             audit.realmId.id.eq(input.getRealmId()
+                                                                      .getId())
+                                                             .and(input.getUserId() ==
                                                                      null ?
                                                                      audit.userId.eq(
-                                                                         audit.userId) :
+                                                                             audit.userId) :
                                                                      audit.userId.id.eq(
-                                                                         input.getUserId()
-                                                                              .getId()))
-                                                            .and(input.getFromDate() == null ||
+                                                                             input.getUserId()
+                                                                                  .getId()))
+                                                             .and(input.getFromDate() == null ||
                                                                      input.getToDate() == null ?
                                                                      audit.createdAt.eq(audit.createdAt) :
                                                                      audit.createdAt.between(input.getFromDate(),
-                                                                                             input.getToDate()))
-                                                            .and(actionCode == null
+                                                                             input.getToDate()))
+                                                             .and(actionCode == null
                                                                      ? action.actionCode.isNotNull()
                                                                      : action.actionCode.eq(actionCode)));
 
-        QueryResults<Tuple> results = tupleSQLQuery.fetchResults();
+        int page = input.getPage() > 0 ? input.getPage() - 1 : 0;
+        Pageable pageable = PageRequest.of(page, input.getSize());
 
-        if (results == null || results.isEmpty()) {
 
-            return new Output(new ArrayList<>());
-        }
+        QueryResults<Tuple> results = tupleSQLQuery
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
-
         for (Tuple tuple : results.getResults()) {
-
-            auditInfoList.add(new Output.AuditInfo(tuple.get(participant.description),
-                                                   tuple.get(user.name),
-                                                   Objects.requireNonNull(tuple.get(action.actionCode))
-                                                          .getValue(),
-                                                   tuple.get(audit.inputInfo),
-                                                   tuple.get(audit.outputInfo),
-                                                   Instant.ofEpochSecond(tuple.get(audit.createdAt)
-                                                                              .getEpochSecond())));
+            auditInfoList.add(new Output.AuditInfo(
+                    tuple.get(participant.description),
+                    tuple.get(user.name),
+                    Objects.requireNonNull(tuple.get(action.actionCode)).getValue(),
+                    tuple.get(audit.inputInfo),
+                    tuple.get(audit.outputInfo),
+                    Instant.ofEpochSecond(tuple.get(audit.createdAt)
+                                               .getEpochSecond())));
         }
 
-        return new Output(auditInfoList);
+        long total = results.getTotal();
+        int totalPages = (int) Math.ceil((double) total / pageable.getPageSize());
 
+        return new Output(auditInfoList, total, totalPages);
     }
 
 }

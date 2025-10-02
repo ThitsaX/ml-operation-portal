@@ -1,8 +1,5 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
-import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
@@ -14,9 +11,14 @@ public interface GetAuditByParticipantList
     extends UseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output> {
 
     record Input(Instant fromDate,
-                 Instant toDate) { }
+                 Instant toDate,
+                 Integer page,
+                 Integer pageSize) { }
 
-    record Output(List<AuditInfo> auditInfoList) {
+    record Output(List<AuditInfo> auditInfoList,
+                  Long total,
+                  Integer totalPages
+                  ) {
 
         public record AuditInfo(Instant date,
                                 String action,
