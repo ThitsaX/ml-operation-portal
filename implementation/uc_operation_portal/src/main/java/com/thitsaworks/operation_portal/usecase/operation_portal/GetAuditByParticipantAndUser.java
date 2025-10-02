@@ -8,15 +8,21 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetAuditList extends UseCase<GetAuditList.Input, GetAuditList.Output> {
+public interface GetAuditByParticipantAndUser
+        extends UseCase<GetAuditByParticipantAndUser.Input, GetAuditByParticipantAndUser.Output> {
 
     record Input(RealmId realmId,
                  UserId userId,
                  Instant fromDate,
                  Instant toDate,
-                 String actionName) { }
+                 String actionName ,
+                 Integer page,
+                 Integer pageSize)
+    { }
 
-    record Output(List<AuditInfo> auditInfoList) {
+    record Output(List<AuditInfo> auditInfoList,
+                  long total,
+                  Integer totalPages) {
 
         public record AuditInfo(String participantName,
                                 String userName,
@@ -24,9 +30,9 @@ public interface GetAuditList extends UseCase<GetAuditList.Input, GetAuditList.O
                                 String inputInfo,
                                 String outputInfo,
                                 Instant actionDate) implements Serializable {
-
         }
-
     }
 
 }
+
+
