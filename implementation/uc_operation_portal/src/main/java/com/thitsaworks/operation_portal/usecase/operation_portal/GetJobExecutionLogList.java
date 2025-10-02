@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
 import jakarta.validation.constraints.NotNull;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * This use case supports:
  * <ul>
  *     <li>Filtering by job name</li>
- *     <li>Filtering by status</li>
+ *     <li>Filtering by jobStatus</li>
  *     <li>Filtering by date range</li>
  *     <li>Sorting by any field with configurable direction</li>
  * </ul>
@@ -31,7 +32,7 @@ public interface GetJobExecutionLogList
      * Input parameters for the use case.
      *
      * @param jobName      optional filter for job name
-     * @param status       optional filter for job status
+     * @param jobStatus       optional filter for job jobStatus
      * @param startDate    optional start date for filtering logs (inclusive)
      * @param endDate      optional end date for filtering logs (inclusive)
      * @param sortBy       the field to sort by, defaults to {@value #DEFAULT_SORT_FIELD}
@@ -39,7 +40,7 @@ public interface GetJobExecutionLogList
      */
     record Input(
         Optional<String> jobName,
-        Optional<String> status,
+        Optional<JobStatus> jobStatus,
         Optional<String> startDate,
         Optional<String> endDate,
         Optional<@NotNull String> sortBy,

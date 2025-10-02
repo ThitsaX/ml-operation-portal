@@ -24,7 +24,7 @@ public class CreateSchedulerConfigController {
 
     private final CreateSchedulerConfig createSchedulerConfig;
 
-    @PostMapping("/secured/schedulerConfig")
+    @PostMapping("/secured/createSchedulerConfig")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException {
 
@@ -33,6 +33,7 @@ public class CreateSchedulerConfigController {
         CreateSchedulerConfig.Output output = this.createSchedulerConfig.execute(
             new CreateSchedulerConfig.Input(
                 request.name(),
+                request.jobName(),
                 request.cronExpression(),
                 request.description()
             )
@@ -48,6 +49,7 @@ public class CreateSchedulerConfigController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
         @NotBlank @JsonProperty("name") String name,
+        @NotBlank @JsonProperty("jobName") String jobName,
         @NotBlank @JsonProperty("cronExpression") String cronExpression,
         @NotBlank @JsonProperty("description") String description
     ) {}

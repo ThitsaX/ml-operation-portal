@@ -56,11 +56,11 @@ public class GetJobExecutionLogListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        LOG.info("Fetching job execution logs with filters: jobName={}, status={}, startDate={}, endDate={}",
+        LOG.info("Fetching job execution logs with filters: jobName={}, jobStatus={}, startDate={}, endDate={}",
                  input.jobName()
                       .orElse("<none>"),
-                 input.status()
-                      .orElse("<none>"),
+                 input.jobStatus()
+                      .orElse(null),
                  input.startDate()
                       .orElse("<none>"),
                  input.endDate()
@@ -87,11 +87,11 @@ public class GetJobExecutionLogListHandler
                 sort
                                                                     );
         }
-        // Case 2: Filter by status if specified
-        else if (input.status()
+        // Case 2: Filter by jobStatus if specified
+        else if (input.jobStatus()
                       .isPresent()) {
             logs = jobExecutionLogQuery.getJobExecutionLogsByStatus(
-                input.status()
+                input.jobStatus()
                      .get(),
                 sort
                                                                    );

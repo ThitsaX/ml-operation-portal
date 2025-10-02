@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySchedulerConfig;
 import jakarta.validation.Valid;
@@ -12,10 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -26,16 +25,18 @@ public class ModifySchedulerConfigController {
 
     private final ModifySchedulerConfig modifySchedulerConfig;
 
-    @PutMapping("/secured/schedulerConfig")
+    @PostMapping("/secured/modifySchedulerConfig")
     public ResponseEntity<Response> execute(
-        @Valid @RequestParam Long configId,
         @Valid @RequestBody Request request
     ) throws DomainException {
-        LOG.debug("Updating scheduler configuration with id: {}", configId);
+
+        LOG.debug("Updating scheduler configuration with schedulerConfigId: {}", request.schedulerConfigId());
 
         ModifySchedulerConfig.Output output = this.modifySchedulerConfig.execute(
             new ModifySchedulerConfig.Input(
+                    new SchedulerConfigId(request.schedulerConfigId()),
                 request.name(),
+                    request.jobName(),
                 request.cronExpression(),
                 request.description(),
                 request.active()
@@ -48,7 +49,9 @@ public class ModifySchedulerConfigController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
+            @NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId,
         @NotBlank @JsonProperty("name") String name,
+            @NotBlank @JsonProperty("jobName") String jobName,
         @NotBlank @JsonProperty("cronExpression") String cronExpression,
         @NotBlank @JsonProperty("description") String description,
         @NotNull @JsonProperty("active") Boolean active

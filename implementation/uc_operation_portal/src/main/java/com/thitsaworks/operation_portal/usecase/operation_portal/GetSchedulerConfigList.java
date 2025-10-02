@@ -13,7 +13,7 @@ import java.util.Optional;
  * <p>
  * This use case supports:
  * <ul>
- *     <li>Filtering by active status</li>
+ *     <li>Filtering by active jobStatus</li>
  *     <li>Sorting by any field with configurable direction</li>
  * </ul>
  */
@@ -28,7 +28,7 @@ public interface GetSchedulerConfigList
     /**
      * Input parameters for the use case.
      *
-     * @param active        optional filter for active/inactive status
+     * @param active        optional filter for active/inactive jobStatus
      * @param sortBy        the field to sort by, defaults to {@value #DEFAULT_SORT_FIELD}
      * @param sortDirection the sort direction, defaults to ASC
      */

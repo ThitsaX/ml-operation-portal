@@ -2,18 +2,17 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSchedulerConfigById;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,10 +27,10 @@ public class GetSchedulerConfigByIdController {
     @GetMapping("/secured/schedulerConfig")
     public ResponseEntity<Response> execute(@Valid @RequestParam Long configId) throws DomainException {
 
-        LOG.debug("Fetching scheduler configuration with id: [{}]", configId);
+        LOG.debug("Fetching scheduler configuration with schedulerConfigId: [{}]", configId);
 
         GetSchedulerConfigById.Output output = this.getSchedulerConfigById.execute(
-            new GetSchedulerConfigById.Input(configId)
+                new GetSchedulerConfigById.Input(new SchedulerConfigId(configId))
                                                                                   );
 
         var response = new Response(output.config());

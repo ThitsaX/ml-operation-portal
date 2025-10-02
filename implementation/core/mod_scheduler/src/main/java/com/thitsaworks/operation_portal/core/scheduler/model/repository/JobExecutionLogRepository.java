@@ -1,8 +1,11 @@
 package com.thitsaworks.operation_portal.core.scheduler.model.repository;
 
+import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.core.scheduler.model.JobExecutionLog;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -12,7 +15,8 @@ import java.util.List;
  * Repository for {@link JobExecutionLog} entities providing data access operations.
  */
 @Repository
-public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog, Long> {
+public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog, JobExecutionLogId>,
+                                                   QuerydslPredicateExecutor<JobExecutionLog> {
     
     /**
      * Find the top 5 most recent job execution logs, ordered by start time descending.
@@ -39,21 +43,21 @@ public interface JobExecutionLogRepository extends JpaRepository<JobExecutionLog
     List<JobExecutionLog> findByJobName(String jobName, Sort sort);
     
     /**
-     * Find all job execution logs with a specific status.
+     * Find all job execution logs with a specific jobStatus.
      *
-     * @param status the status to filter by
-     * @return a list of job execution logs with the specified status
+     * @param status the jobStatus to filter by
+     * @return a list of job execution logs with the specified jobStatus
      */
-    List<JobExecutionLog> findByStatus(String status);
+    List<JobExecutionLog> findByJobStatus(JobStatus jobStatus);
     
     /**
-     * Find all job execution logs with a specific status with sorting.
+     * Find all job execution logs with a specific jobStatus with sorting.
      *
-     * @param status the status to filter by
+     * @param status the jobStatus to filter by
      * @param sort the sort specification
-     * @return a sorted list of job execution logs with the specified status
+     * @return a sorted list of job execution logs with the specified jobStatus
      */
-    List<JobExecutionLog> findByStatus(String status, Sort sort);
+    List<JobExecutionLog> findByJobStatus(JobStatus jobStatus, Sort sort);
     
     /**
      * Find all job execution logs within a specific date range.

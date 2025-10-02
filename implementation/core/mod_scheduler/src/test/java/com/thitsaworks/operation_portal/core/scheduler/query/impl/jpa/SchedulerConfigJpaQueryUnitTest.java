@@ -1,13 +1,12 @@
 package com.thitsaworks.operation_portal.core.scheduler.query.impl.jpa;
 
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.scheduler.SchedulerConfiguration;
 import com.thitsaworks.operation_portal.core.scheduler.TestSettings;
-import com.thitsaworks.operation_portal.core.scheduler.exception.ResourceNotFoundException;
-import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -43,9 +42,9 @@ public class SchedulerConfigJpaQueryUnitTest extends BaseVaultSetUpTest {
     }
     
     @Test
-    void get_ShouldReturnConfigWhenExists() {
+    void get_ShouldReturnConfigWhenExists() throws DomainException {
 
-        var result = queryHandler.get(1L);
+        var result = queryHandler.get(new SchedulerConfigId(1L));
 
         LOG.info("Config: {}", result);
         
@@ -54,8 +53,8 @@ public class SchedulerConfigJpaQueryUnitTest extends BaseVaultSetUpTest {
     @Test
     void get_ShouldThrowWhenConfigNotFound() {
         // Act & Assert
-        assertThrows(ResourceNotFoundException.class, () -> {
-            queryHandler.get(999L);
+        assertThrows(DomainException.class, () -> {
+            queryHandler.get(new SchedulerConfigId(999L));
         });
     }
 }

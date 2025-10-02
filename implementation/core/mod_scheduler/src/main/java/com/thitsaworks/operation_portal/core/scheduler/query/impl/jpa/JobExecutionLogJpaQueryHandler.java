@@ -1,8 +1,12 @@
 package com.thitsaworks.operation_portal.core.scheduler.query.impl.jpa;
 
+import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
-import com.thitsaworks.operation_portal.core.scheduler.exception.ResourceNotFoundException;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerErrors;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerException;
 import com.thitsaworks.operation_portal.core.scheduler.model.JobExecutionLog;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.JobExecutionLogRepository;
 import com.thitsaworks.operation_portal.core.scheduler.query.JobExecutionLogQuery;
@@ -49,10 +53,10 @@ public class JobExecutionLogJpaQueryHandler implements JobExecutionLogQuery {
     }
 
     @Override
-    public List<JobExecutionLogData> getJobExecutionLogsByStatus(String status, Sort sort) {
+    public List<JobExecutionLogData> getJobExecutionLogsByStatus(JobStatus jobStatus, Sort sort) {
         List<JobExecutionLog> logs = sort == null
-                ? jobExecutionLogRepository.findByStatus(status)
-                : jobExecutionLogRepository.findByStatus(status, sort);
+                ? jobExecutionLogRepository.findByJobStatus(jobStatus)
+                : jobExecutionLogRepository.findByJobStatus(jobStatus, sort);
                 
         return logs.stream()
                 .map(JobExecutionLogData::new)
@@ -75,14 +79,14 @@ public class JobExecutionLogJpaQueryHandler implements JobExecutionLogQuery {
     }
 
     @Override
-    public JobExecutionLogData getJobExecutionLog(Long logId) {
-        return findJobExecutionLogById(logId)
-                .orElseThrow(() -> new ResourceNotFoundException("JobExecutionLog not found with id: " + logId));
+    public JobExecutionLogData getJobExecutionLog(JobExecutionLogId jobExecutionLogId) throws DomainException {
+        return findJobExecutionLogById(jobExecutionLogId)
+                .orElseThrow(() -> new SchedulerException(SchedulerErrors.JOB_EXECUTION_LOG_NOT_FOUND.format(jobExecutionLogId.getId())));
     }
 
     @Override
-    public Optional<JobExecutionLogData> findJobExecutionLogById(Long logId) {
-        return jobExecutionLogRepository.findById(logId)
+    public Optional<JobExecutionLogData> findJobExecutionLogById(JobExecutionLogId jobExecutionLogId) {
+        return jobExecutionLogRepository.findById(jobExecutionLogId)
                 .map(JobExecutionLogData::new);
     }
 }

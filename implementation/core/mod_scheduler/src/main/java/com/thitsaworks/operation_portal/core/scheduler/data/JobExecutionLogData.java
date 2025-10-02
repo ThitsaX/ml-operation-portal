@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.scheduler.data;
 
 import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.core.scheduler.model.JobExecutionLog;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 public record JobExecutionLogData(
         JobExecutionLogId jobExecutionLogId,
         String jobName,
-        String status,
+        JobStatus status,
         LocalDateTime startTime,
         LocalDateTime endTime,
         String executionMessage
@@ -26,7 +27,7 @@ public record JobExecutionLogData(
         this(
                 log.getJobExecutionLogId(),
                 log.getJobName(),
-                log.getStatus(),
+                log.getJobStatus(),
                 log.getStartTime(),
                 log.getEndTime(),
                 log.getExecutionMessage()
