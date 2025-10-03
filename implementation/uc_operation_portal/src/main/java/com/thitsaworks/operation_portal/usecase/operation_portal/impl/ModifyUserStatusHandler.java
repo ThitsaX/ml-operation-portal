@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -75,9 +76,14 @@ public class ModifyUserStatusHandler
 
         }
 
+        if (currentUser.principalId()
+                       .equals(principalData.principalId()) && input.activeStatus()
+                                                                    .equals(PrincipalStatus.INACTIVE)) {
+            throw new IAMException(IAMErrors.INACTIVE_STATUS_CHANGE_NOT_ALLOWED);
+        }
+
         this.modifyPrincipalStatusCommand.execute(
-            new ModifyPrincipalStatusCommand.Input(new PrincipalId(input.userId()
-                                                                        .getId()),
+            new ModifyPrincipalStatusCommand.Input(principalData.principalId(),
                                                    input.activeStatus()));
 
         return new Output(true, input.userId());

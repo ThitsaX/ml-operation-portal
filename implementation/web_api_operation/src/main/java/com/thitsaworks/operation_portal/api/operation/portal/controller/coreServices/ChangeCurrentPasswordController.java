@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ChangeCurrentPassword;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +34,7 @@ public class ChangeCurrentPasswordController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Change Current Password Request : [{}]", request);
+        LOG.info("Change Current Password Request : [{}]", MaskPassword.toMaskedString(request));
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -51,7 +52,7 @@ public class ChangeCurrentPasswordController {
                                           .toString(),
                                     output.secretKey());
 
-        LOG.info("Change Current Password Response : [{}]", response);
+        LOG.info("Change Current Password Response : [{}]", MaskPassword.toMaskedString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

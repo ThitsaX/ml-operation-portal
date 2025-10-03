@@ -24,7 +24,7 @@ public class IAMErrors {
 
     public static final ErrorMessage INVALID_ROLE_NAME = new ErrorMessage("INVALID_ROLE_NAME", "Role Name is required and must NOT be blank or empty.");
     public static final ErrorMessage SELF_APPROVAL_NOT_ALLOWED = new ErrorMessage("SELF_APPROVAL_NOT_ALLOWED", "You cannot approve or reject your own request. Please ask another authorized user.");
-
+    public static final ErrorMessage INACTIVE_STATUS_CHANGE_NOT_ALLOWED = new ErrorMessage("INACTIVE_STATUS_CHANGE_NOT_ALLOWED", "You cannot change your own inactive status.");
 
     //@@formatter:on
 }
