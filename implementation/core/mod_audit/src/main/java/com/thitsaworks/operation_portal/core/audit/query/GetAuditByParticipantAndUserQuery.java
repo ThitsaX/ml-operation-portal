@@ -12,23 +12,20 @@ public interface GetAuditByParticipantAndUserQuery {
 
     @Value
     class Input {
-
         private RealmId realmId;
-
         private UserId userId;
-
         private Instant fromDate;
-
         private Instant toDate;
-
         private String actionName;
-
+        private int page;   // new
+        private int size;   // new
     }
 
     @Value
     class Output {
-
         private List<AuditInfo> auditInfoList;
+        private long totalElements; // new
+        private int totalPages;     // new
 
         @Value
         public static class AuditInfo implements Serializable

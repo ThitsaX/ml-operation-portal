@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -85,6 +86,7 @@ public class SyncHubParticipantsToPortalHandler
                                                                                              hubParticipant.description(),
                                                                                              null,
                                                                                              null,
+                                                                                             ParticipantStatus.ACTIVE,
 
                                                                                              null,
                                                                                              null));

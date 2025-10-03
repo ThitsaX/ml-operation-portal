@@ -35,7 +35,9 @@ public class GetAuditByParticipantAndUserQueryUnitTest extends BaseVaultSetUpTes
                                                                                                            "2025-02-01T00:00:00Z"),
                                                                                                        Instant.parse(
                                                                                                            "2025-08-31T23:59:59Z"),
-                                                                                                       null
+                                                                                                       null,
+                    1,
+                    10
             ));
 
         LOG.info("[{}]", output.getAuditInfoList());

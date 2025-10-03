@@ -69,7 +69,7 @@ public class GetAuditByParticipantListHandler
                 realmId,
                 input.fromDate(),
                 input.toDate(),
-                grantedActionList));
+                grantedActionList,input.page(),input.pageSize()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
@@ -80,7 +80,7 @@ public class GetAuditByParticipantListHandler
                                                    data.madeBy()));
         }
 
-        return new Output(auditInfoList);
+        return new Output(auditInfoList ,output.totalElements(),output.totalPages());
     }
 
 }

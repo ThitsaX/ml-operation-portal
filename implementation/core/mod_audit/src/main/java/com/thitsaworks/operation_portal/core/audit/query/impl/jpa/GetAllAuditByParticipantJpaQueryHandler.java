@@ -11,6 +11,8 @@ import com.thitsaworks.operation_portal.core.iam.model.QAction;
 import com.thitsaworks.operation_portal.core.participant.model.QParticipant;
 import com.thitsaworks.operation_portal.core.participant.model.QUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -57,15 +59,18 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                                             .and(action.actionId.in(input.grantedActionList())))
                                  .orderBy(audit.createdAt.desc());
 
-        QueryResults<Tuple> results = tupleSQLQuery.fetchResults();
 
-        if (results == null || results.isEmpty()) {
 
-            return new Output(new ArrayList<>());
-        }
+        int page = input.page() > 0 ? input.page() - 1 : 0;
+        Pageable pageable = PageRequest.of(page, input.size());
+
+
+        QueryResults<Tuple> results = tupleSQLQuery
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
-
         for (Tuple tuple : results.getResults()) {
 
             auditInfoList.add(new Output.AuditInfo(
@@ -74,8 +79,11 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                        .getValue(),
                 tuple.get(user.email)));
         }
+        long total = results.getTotal();
+        int totalPages = (int) Math.ceil((double) total / pageable.getPageSize());
 
-        return new Output(auditInfoList);
+
+        return new Output(auditInfoList,total,totalPages);
 
     }
 
