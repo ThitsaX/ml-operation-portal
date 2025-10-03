@@ -9,6 +9,8 @@ import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class GetActionListByUserHandler
     extends OperationPortalUseCase<GetActionListByUser.Input, GetActionListByUser.Output>
@@ -16,9 +18,9 @@ public class GetActionListByUserHandler
 
     private final IAMQuery iamQuery;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
+
+    private final ActionAuthorizationManager actionAuthorizationManager;
 
     public GetActionListByUserHandler(PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
@@ -29,8 +31,8 @@ public class GetActionListByUserHandler
               actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
+        this.actionAuthorizationManager = actionAuthorizationManager;
     }
 
     @Override
@@ -38,14 +40,21 @@ public class GetActionListByUserHandler
 
         var currentUser = this.userPermissionManager.getCurrentUser();
 
-        var output = this.iamQuery.getGrantedActionsByPrincipal(currentUser.principalId())
-                                  .stream()
-                                  .map(action -> new Output.Action(action.actionId(),
-                                                                   action.actionCode()
-                                                                         .getValue()))
-                                  .toList();
+        var auditableActionNames = this.actionAuthorizationManager.findAuditableActions();
 
-        return new Output(output);
+        List<Output.Action> actionList = this.iamQuery
+                                             .getGrantedActionsByPrincipal(currentUser.principalId())
+                                             .stream()
+                                             .filter(action -> auditableActionNames.contains(action.actionCode()
+                                                                                                   .getValue()))
+                                             .map(action -> new Output.Action(
+                                                 action.actionId(),
+                                                 action.actionCode()
+                                                       .getValue()
+                                             ))
+                                             .toList();
+
+        return new Output(actionList);
 
     }
 
