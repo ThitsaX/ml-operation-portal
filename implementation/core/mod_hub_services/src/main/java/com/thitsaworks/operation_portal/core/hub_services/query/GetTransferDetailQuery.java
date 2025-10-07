@@ -5,6 +5,6 @@ import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesE
 
 public interface GetTransferDetailQuery {
 
-    TransferDetailData execute(String transferId) throws HubServicesException;
+    TransferDetailData execute(String transferId, String timeZone) throws HubServicesException;
 
 }

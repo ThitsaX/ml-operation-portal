@@ -87,10 +87,10 @@ public class GetTransfersJdbcQueryHandler implements GetTransfersQuery {
 
         if (results == null || results.isEmpty()) {
 
-            return new Output(new ArrayList<>());
+            return new Output(new ArrayList<>(),0);
         }
 
-        return new Output(results);
+        return new Output(results,0);
     }
 
 }

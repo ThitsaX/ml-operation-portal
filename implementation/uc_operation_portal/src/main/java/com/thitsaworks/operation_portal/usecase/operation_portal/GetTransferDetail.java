@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailDat
 public interface GetTransferDetail
     extends UseCase<GetTransferDetail.Input, GetTransferDetail.Output> {
 
-    record Input(String transferId) { }
+    record Input(String transferId, String timeZone) {}
 
     record Output(TransferDetailData transferDetailData) { }
 

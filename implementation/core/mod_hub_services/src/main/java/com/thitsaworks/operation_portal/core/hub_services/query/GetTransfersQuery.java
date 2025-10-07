@@ -40,12 +40,18 @@ public interface GetTransfersQuery {
 
         private String timeZone;
 
+        private Integer page;
+
+        private Integer pageSize;
+
     }
 
     @Value
     class Output {
 
         private List<TransferData> transferInfoList;
+
+        private long totalCount;
 
         @Value
         public static class TransferInfo implements Serializable {

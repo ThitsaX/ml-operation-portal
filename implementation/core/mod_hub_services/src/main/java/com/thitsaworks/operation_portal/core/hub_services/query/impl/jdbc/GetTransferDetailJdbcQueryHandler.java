@@ -30,7 +30,7 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
     }
 
     @Override
-    public TransferDetailData execute(String transferId) throws HubServicesException {
+    public TransferDetailData execute(String transferId, String timeZone) throws HubServicesException {
 
         List<TransferDetailData> result;
 
@@ -40,6 +40,7 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                  IFNULL(q.quoteId,'') AS quoteId,
                  IFNULL(tst.enumeration,'') AS transferState,
                  IFNULL(ts.name,'') AS transferType,
+                 IFNULL(ss.name,'') AS subScenario,
                  IFNULL(t.currencyId,'') AS currency,
                  IFNULL(at.name,'') AS amountType,
                  IF(q.amount IS NOT NULL, FORMAT(ROUND(q.amount, 2), 2), '') AS quoteAmount,
@@ -88,6 +89,7 @@ public class GetTransferDetailJdbcQueryHandler implements GetTransferDetailQuery
                 LEFT JOIN quoteResponse qres ON qres.quoteId = q.quoteId
                 LEFT JOIN amountType at ON at.amountTypeId = q.amountTypeId
                 LEFT JOIN transactionScenario ts ON ts.transactionScenarioId = q.transactionScenarioId
+                LEFT JOIN transactionsubscenario ss ON ss.transactionSubScenarioId = q.transactionSubScenarioId
                 
                 LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
                 LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId

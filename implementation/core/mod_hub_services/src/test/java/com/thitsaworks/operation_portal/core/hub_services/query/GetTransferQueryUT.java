@@ -37,9 +37,7 @@ public class GetTransferQueryUT extends BaseVaultSetUpTest {
             null,
             null,
             null,
-            null,
-                "0900"
-
+            null, "0900", 1, 20
         );
 
         var output = getTransfersQuery.execute(input);

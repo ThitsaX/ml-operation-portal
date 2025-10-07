@@ -21,8 +21,10 @@ public interface GetTransferList extends
                  String currencyId,
                  String transferStateId,
                  UserId userId,
-                 String timeZone) { }
+                 String timeZone,
+                 Integer page,
+                 Integer pageSize) {}
 
-    record Output(List<TransferData> transferInfoList) { }
+    record Output(List<TransferData> transferInfoList, Long totalPage) { }
 
 }

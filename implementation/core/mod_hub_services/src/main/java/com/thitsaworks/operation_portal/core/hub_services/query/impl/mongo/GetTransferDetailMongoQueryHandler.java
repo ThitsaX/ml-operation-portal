@@ -16,16 +16,19 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.aggregation.ConditionalOperators;
 import org.springframework.data.mongodb.core.aggregation.ConvertOperators;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.ProjectionOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.text.DecimalFormat;
+import java.time.DateTimeException;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Objects;
-import java.util.TimeZone;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
@@ -37,6 +40,8 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
     private final MongoTemplate reportingMongoReadTemplate;
 
+    private static final DateTimeFormatter WITH_OFFSET = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+
     @Autowired
     public GetTransferDetailMongoQueryHandler(
             @Qualifier(PersistenceQualifiers.Hub.MONGO_READ_TEMPLATE) MongoTemplate reportingMongoReadTemplate) {
@@ -44,14 +49,10 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
     }
 
     @Override
-    public TransferDetailData execute(String transferId) throws HubServicesException {
+    public TransferDetailData execute(String transferId, String timeZone) throws HubServicesException {
 
         try {
 
-            final String tz = "UTC";
-            final TimeZone tzObj = TimeZone.getTimeZone(tz);
-
-            // 1) Normalize createdAt to a BSON Date (safe even if it's already a Date)
             AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
                                                                       .addFieldWithValue("_createdAt",
                                                                                          ConvertOperators.ToDate.toDate(
@@ -120,6 +121,8 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                              .as("transferState")
                              .and(ConditionalOperators.IfNull.ifNull("transactionType").then(""))
                              .as("transferType")
+                             .and(ConditionalOperators.IfNull.ifNull("transactionTypeDetail.subScenario").then(""))
+                             .as("subScenario")
                              .and(ConditionalOperators.IfNull.ifNull("sourceCurrency").then(""))
                              .as("currency")
                              .and(ConditionalOperators.IfNull.ifNull("quoteRequest.amountType").then(""))
@@ -134,11 +137,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                              .as("payeeDfspFeeAmount")
                              .and("transferTerms.payeeFspCommission.amount")
                              .as("payeeDfspCommissionAmount")
-                             .and(
-                                     DateOperators.DateToString.dateOf("$_createdAt")
-                                                               .toString("%Y-%m-%d %H:%M:%S")
-                                                               .withTimezone(DateOperators.Timezone.valueOf(tzObj.getID()))
-                                 ).as("submittedOnDate")
+                             .and("createdAt").as("submittedOnDate")
                              .and(ConditionalOperators.IfNull.ifNull("transferSettlementWindowId").then(""))
                              .as("windowId")
                              .and(ConditionalOperators.IfNull.ifNull("$settlementMatch.settlementId").then(""))
@@ -176,7 +175,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
                 return null;
             }
-            return TransferProjection.from(d);
+            return TransferProjection.from(d, timeZone);
 
         } catch (Exception e) {
 
@@ -188,7 +187,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
 
         private static final DecimalFormat TWO_DP = new DecimalFormat("0.00");
 
-        public static TransferDetailData from(Document d) {
+        public static TransferDetailData from(Document d, String timeZone) {
 
             TransferDetailData.PartyInfoData payerInformation = new TransferDetailData.PartyInfoData(str(d.get(
                     "payerIdType")), str(d.get("payerIdValue")), str(d.get("payerDspId")), str(d.get("payerName")));
@@ -199,10 +198,20 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
             TransferDetailData.TransferErrorInfo errorInfo = new TransferDetailData.TransferErrorInfo(str(d.get(
                     "errorCode")), str(d.get("errorDescription")));
 
+            final Object submitted = d.get("submittedOnDate");
+
+            final ZoneId zone = parseZoneFlexible(timeZone);
+
+            final String submittedOnDate =
+                    (submitted instanceof Date dateVal)
+                            ? WITH_OFFSET.format(dateVal.toInstant().atZone(zone))
+                            : String.valueOf(submitted);
+
             return new TransferDetailData(str(d.get("transferId")),
                                           str(d.get("quoteId")),
                                           str(d.get("transferState")),
                                           str(d.get("transferType")),
+                                          str(d.get("subScenario")),
                                           str(d.get("currency")),
                                           str(d.get("amountType")),
                                           money(d.get("quoteAmount")),
@@ -210,7 +219,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                                           money(d.get("payeeReceivedAmount")),
                                           money(d.get("payeeDfspFeeAmount")),
                                           money(d.get("payeeDfspCommissionAmount")),
-                                          str(d.get("submittedOnDate")),
+                                          submittedOnDate,
                                           str(d.get("windowId")),
                                           str(d.get("settlementId")),
                                           payerInformation,
@@ -232,6 +241,36 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                 return TWO_DP.format(((Number) v).doubleValue());
             }
             return Objects.toString(v, "");
+        }
+
+    }
+
+    private static ZoneId parseZoneFlexible(String raw) {
+
+        if (raw == null || raw.isBlank()) {return ZoneOffset.UTC;}
+        String s = raw.trim();
+
+        if (s.equalsIgnoreCase("Z") || s.equalsIgnoreCase("UTC") || s.equalsIgnoreCase("GMT")) {return ZoneOffset.UTC;}
+
+        try {return ZoneId.of(s);} catch (Exception ignored) {}
+
+        String sign = (s.startsWith("+") || s.startsWith("-")) ? s.substring(0, 1) : "+";
+        String digits = s.startsWith("+") || s.startsWith("-") ? s.substring(1) : s;
+        digits = digits.replace(":", "");
+
+        if (digits.length() == 4) {
+            int hh = Integer.parseInt(digits.substring(0, 2));
+            int mm = Integer.parseInt(digits.substring(2, 4));
+            return ZoneOffset.ofHoursMinutes(sign.equals("-") ? -hh : hh, sign.equals("-") ? -mm : mm);
+        } else if (digits.length() == 2) {
+
+            int hh = Integer.parseInt(digits);
+            return ZoneOffset.ofHours(sign.equals("-") ? -hh : hh);
+        } else {
+
+            try {return ZoneOffset.of(s);} catch (DateTimeException e) {
+                throw new IllegalArgumentException("Unrecognized timezone/offset: " + raw, e);
+            }
         }
 
     }

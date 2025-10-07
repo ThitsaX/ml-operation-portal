@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetail;
 import jakarta.validation.Valid;
@@ -34,31 +33,17 @@ public class GetTransferDetailsController {
 
         LOG.info("Get Transfer Detail Request : transferId =[{}], timezone = [{}]", transferId, timezone);
 
-        GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(transferId));
+        GetTransferDetail.Output output = this.getTransferDetail.execute(new GetTransferDetail.Input(transferId,
+                                                                                                     timezone));
 
         TransferDetailData transferDetailData = output.transferDetailData();
-
-        String showTimezone;
-
-        String convertedDate;
-
-        if (timezone.startsWith("-")) {
-            showTimezone = timezone.replaceFirst(".", "+");
-        } else {
-            showTimezone = timezone.replaceFirst(".", "-");
-        }
-
-        convertedDate = (TimeZoneConverter.convertTimeZone(transferDetailData.submittedOnDate()
-                                                                             .replace(" ", "T") + "Z",
-                                                           showTimezone) + timezone).replace("T", " ")
-                                                                                    .replace("Z",
-                                                                                             " ");
 
         TransferInfo transferInfo =
             new TransferInfo(transferDetailData.transferId(),
                              transferDetailData.quoteId(),
                              transferDetailData.transferState(),
                              transferDetailData.transferType(),
+                             transferDetailData.subScenario(),
                              transferDetailData.currency(),
                              transferDetailData.amountType(),
                              transferDetailData.quoteAmount(),
@@ -66,7 +51,7 @@ public class GetTransferDetailsController {
                              transferDetailData.payeeReceivedAmount(),
                              transferDetailData.payeeDfspFee(),
                              transferDetailData.payeeDfspCommission(),
-                             convertedDate,
+                             transferDetailData.submittedOnDate(),
                              transferDetailData.windowId(),
                              transferDetailData.settlementId());
 
@@ -113,6 +98,7 @@ public class GetTransferDetailsController {
                                @JsonProperty("quoteId") String quoteId,
                                @JsonProperty("transferState") String transferState,
                                @JsonProperty("transferType") String transferType,
+                               @JsonProperty("subScenario") String subScenario,
                                @JsonProperty("currency") String currency,
                                @JsonProperty("amountType") String amountType,
                                @JsonProperty("quoteAmount") String quoteAmount,

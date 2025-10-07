@@ -89,7 +89,9 @@ public class GetTransferListHandler
                                                                                                      input.currencyId(),
                                                                                                      input.transferStateId(),
                                                                                                      fspName,
-                                                                                                     input.timeZone()));
+                                                                                                     input.timeZone(),
+                                                                                                     input.page(),
+                                                                                                     input.pageSize()));
 
         List<TransferData> transferDataList = new ArrayList<>();
 
@@ -109,7 +111,7 @@ public class GetTransferListHandler
                     data.getSubmittedOnDate()));
         }
 
-        return new GetTransferList.Output(transferDataList);
+        return new GetTransferList.Output(transferDataList, output.getTotalCount());
 
     }
 

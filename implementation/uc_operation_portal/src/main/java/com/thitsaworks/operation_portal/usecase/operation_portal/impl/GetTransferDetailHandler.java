@@ -33,7 +33,8 @@ public class GetTransferDetailHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        TransferDetailData transferDetailData = this.getTransferDetailQuery.execute(input.transferId());
+        TransferDetailData transferDetailData = this.getTransferDetailQuery.execute(input.transferId(),
+                                                                                    input.timeZone());
 
         return new Output(transferDetailData);
     }

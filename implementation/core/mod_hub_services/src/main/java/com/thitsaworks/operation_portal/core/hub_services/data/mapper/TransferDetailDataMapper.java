@@ -35,6 +35,7 @@ public class TransferDetailDataMapper implements RowMapper<TransferDetailData> {
                 rs.getString("quoteId"),
                 rs.getString("transferState"),
                 rs.getString("transferType"),
+                rs.getString("subScenario"),
                 rs.getString("currency"),
                 rs.getString("amountType"),
                 rs.getString("quoteAmount"),

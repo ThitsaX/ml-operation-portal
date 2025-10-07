@@ -1,8 +1,5 @@
 package com.thitsaworks.operation_portal.core.hub_services.data;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 public record TransferDetailData(
 
         String transferId,
@@ -12,6 +9,8 @@ public record TransferDetailData(
         String transferState,
 
         String transferType,
+
+        String subScenario,
 
         String currency,
 

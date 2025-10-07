@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementStatementReport" pageWidth="2000" pageHeight="2000" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="01654381-ad33-4c9a-a022-cebcbf0334eb">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettleStatement" pageWidth="2500" pageHeight="10000" whenNoDataType="AllSectionsNoDetail" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
+	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
+	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet" value="false"/>
+	<property name="net.sf.jasperreports.export.xlsx.repeat.column.headers" value="false"/>
+	<property name="net.sf.jasperreports.export.xlsx.repeat.headers" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.columns" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="pageHeader"/>
+	<property name="net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.2" value="background"/>
 	<property name="net.sf.jasperreports.export.xls.exclude.origin.band.3" value="lastPageFooter"/>
 	<property name="net.sf.jasperreports.export.xls.remove.empty.space.between.rows" value="true"/>
@@ -13,7 +17,6 @@
 	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.ignore.graphics" value="false"/>
 	<property name="net.sf.jasperreports.export.xls.ignore.cell.border" value="true"/>
-	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="pageHeader"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="background"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="lastPageFooter"/>
 	<property name="net.sf.jasperreports.export.xlsx.remove.empty.space.between.rows" value="true"/>
@@ -21,18 +24,16 @@
 	<property name="net.sf.jasperreports.export.xlsx.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.graphics" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.ignore.cell.border" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="true"/>
+	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet " value="false"/>
 	<property name="net.sf.jasperreports.export.pdf.create.batch.mode.bookmarks" value="true"/>
-	<property name="net.sf.jasperreports.export.xls.exclude.origin.group.1" value="break"/>
-	<property name="net.sf.jasperreports.export.pdf.exclude.origin.band.1" value="background"/>
-	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="true"/>
+	<property name="net.sf.jasperreports.export.xls.collapse.row.span" value="false"/>
 	<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet " value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.group.1" value="break"/>
-	<property name="net.sf.jasperreports.export.xlsx.collapse.row.span" value="true"/>
+	<property name="net.sf.jasperreports.export.xlsx.collapse.row.span" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.row" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.auto.fit.column" value="true"/>
@@ -946,7 +947,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{balance} == null || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{balance})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

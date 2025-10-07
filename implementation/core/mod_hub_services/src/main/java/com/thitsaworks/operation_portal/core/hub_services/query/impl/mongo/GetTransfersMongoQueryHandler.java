@@ -27,17 +27,17 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DateTimeException;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
 @Service
@@ -46,7 +46,15 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
     private static final String COLLECTION = "transaction";
 
+    private static final int DEFAULT_PAGE = 1;
+
+    private static final int DEFAULT_PAGE_SIZE = 25;
+
+    private static final int MAX_PAGE_SIZE = 500;
+
     private final MongoTemplate reportingMongoReadTemplate;
+
+    private static final DateTimeFormatter WITH_OFFSET = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
 
     @Autowired
     public GetTransfersMongoQueryHandler(
@@ -59,61 +67,63 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
     public Output execute(Input input) throws HubServicesException {
 
         try {
-            // 1) Parse required dates with timezone
-            ZoneId zone = parseZoneOrDefault(input.getTimeZone(), ZoneOffset.UTC);
-            Instant from = parseInstant(input.getFromDate(), zone);
-            Instant to = parseInstantInclusiveEnd(input.getToDate(), zone);
 
-            Date fromDate = Date.from(from);
-            Date toDate = Date.from(to);
+            final int page = normalizePage(input.getPage());
+            final int pageSize = normalizePageSize(input.getPageSize());
+            final long skipN = (long) (page - 1) * pageSize;
 
-            // 2) Normalize createdAt to a BSON Date -> _createdAt
-            AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
-                                                                      .addFieldWithValue("_createdAt",
-                                                                                         ConvertOperators.ToDate.toDate(
-                                                                                                 "$createdAt"))
-                                                                      .build();
+            final AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
+                                                                            .addFieldWithValue("_createdAt",
+                                                                                               ConvertOperators.ToDate.toDate(
+                                                                                                       "$createdAt"))
+                                                                            .build();
 
-            // 3) Build match (append optional filters if present)
-            Criteria root = Criteria.where("_createdAt").gte(fromDate).lte(toDate);
+            final Instant start = Instant.parse(input.getFromDate());
+
+            final Instant endInclusive = Instant.parse(input.getToDate());
+
+            final Instant endEx = endInclusive.plusNanos(1);
+
+            final Criteria baseDate = Criteria.where("_createdAt").gte(Date.from(start)).lt(Date.from(endEx));
+
+            final List<Criteria> filters = new ArrayList<>();
+            filters.add(baseDate);
 
             if (StringUtils.isNotBlank(input.getTransferId())) {
-                root = and(root, Criteria.where("transferId").is(input.getTransferId()));
+                filters.add(Criteria.where("transferId").is(input.getTransferId()));
             }
-
             if (StringUtils.isNotBlank(input.getFspName())) {
-                root = and(root,
-                           new Criteria().orOperator(Criteria.where("payerDFSP").is(input.getFspName()),
-                                                     Criteria.where("payeeDFSP").is(input.getFspName())));
+                filters.add(new Criteria().orOperator(Criteria.where("payerDFSP").is(input.getFspName()),
+                                                      Criteria.where("payeeDFSP").is(input.getFspName())));
             }
             if (StringUtils.isNotBlank(input.getPayerFspId())) {
-                root = and(root, Criteria.where("payerDFSP").is(input.getPayerFspId()));
+                filters.add(Criteria.where("payerDFSP").is(input.getPayerFspId()));
             }
             if (StringUtils.isNotBlank(input.getPayeeFspId())) {
-                root = and(root, Criteria.where("payeeDFSP").is(input.getPayeeFspId()));
+                filters.add(Criteria.where("payeeDFSP").is(input.getPayeeFspId()));
             }
             if (StringUtils.isNotBlank(input.getPayerIdentifierTypeId())) {
-                root = and(root, Criteria.where("payerParty.partyIdType").is(input.getPayerIdentifierTypeId()));
+                filters.add(Criteria.where("payerParty.partyIdType").is(input.getPayerIdentifierTypeId()));
             }
             if (StringUtils.isNotBlank(input.getPayerIdentifierValue())) {
-                root = and(root, Criteria.where("payerParty.partyIdentifier").is(input.getPayerIdentifierValue()));
+                filters.add(Criteria.where("payerParty.partyIdentifier").is(input.getPayerIdentifierValue()));
             }
             if (StringUtils.isNotBlank(input.getPayeeIdentifierTypeId())) {
-                root = and(root, Criteria.where("payeeParty.partyIdType").is(input.getPayeeIdentifierTypeId()));
+                filters.add(Criteria.where("payeeParty.partyIdType").is(input.getPayeeIdentifierTypeId()));
             }
             if (StringUtils.isNotBlank(input.getPayeeIdentifierValue())) {
-                root = and(root, Criteria.where("payeeParty.partyIdentifier").is(input.getPayeeIdentifierValue()));
+                filters.add(Criteria.where("payeeParty.partyIdentifier").is(input.getPayeeIdentifierValue()));
             }
             if (StringUtils.isNotBlank(input.getCurrencyId())) {
-                root = and(root, Criteria.where("transferTerms.transferAmount.currency").is(input.getCurrencyId()));
+                filters.add(Criteria.where("transferTerms.transferAmount.currency").is(input.getCurrencyId()));
             }
             if (StringUtils.isNotBlank(input.getTransferStateId())) {
-                root = and(root, Criteria.where("transferStateEnum").is(input.getTransferStateId()));
+                filters.add(Criteria.where("transferStateEnum").is(input.getTransferStateId()));
             }
 
-            MatchOperation match = match(root);
+            final MatchOperation match = match(new Criteria().andOperator(filters.toArray(new Criteria[0])));
 
-            AggregationOperation lookupSettlement = context -> {
+            final AggregationOperation lookupSettlement = context -> {
                 Document stage = new Document("$lookup", new Document().append("from", "settlement")
                                                                        .append("let",
                                                                                new Document("winId",
@@ -150,14 +160,11 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                 return context.getMappedObject(stage);
             };
 
-            AddFieldsOperation addFirstSettlement = AddFieldsOperation.builder()
-                                                                      .addFieldWithValue("settlementMatch",
-                                                                                         new Document("$first",
-                                                                                                      "$settlementMatches"))
-                                                                      .build();
+            final AddFieldsOperation addFirstSettlement = AddFieldsOperation.builder().addFieldWithValue(
+                    "settlementMatch",
+                    new Document("$arrayElemAt", Arrays.asList("$settlementMatches", 0))).build();
 
-            // 5) Project (use normalized _createdAt for submittedOnDate)
-            ProjectionOperation project =
+            final ProjectionOperation project =
                     project().and("transferId")
                              .as("transferId")
                              .and(ConditionalOperators.IfNull.ifNull("transferStateEnum").then(""))
@@ -180,108 +187,87 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                              .and("_createdAt")
                              .as("submittedOnDate");
 
-            SortOperation sort = sort(Sort.Direction.DESC, "submittedOnDate");
+            final SortOperation sort = sort(Sort.Direction.DESC, "submittedOnDate");
 
-            Aggregation agg = newAggregation(normalizeCreatedAt,
-                                             match,
-                                             lookupSettlement,
-                                             addFirstSettlement,
-                                             project, sort);
+            final Aggregation agg = newAggregation(normalizeCreatedAt, match, facet(lookupSettlement,
+                                                                                    addFirstSettlement,
+                                                                                    project,
+                                                                                    sort,
+                                                                                    skip(skipN),
+                                                                                    limit(pageSize)).as("items")
+                                                                                                    .and(count().as(
+                                                                                                            "total"))
+                                                                                                    .as("meta"));
 
-            AggregationResults<Document> results = reportingMongoReadTemplate.aggregate(agg,
-                                                                                        COLLECTION,
-                                                                                        Document.class);
+            final AggregationResults<Document> aggResults = reportingMongoReadTemplate.aggregate(agg,
+                                                                                                 COLLECTION,
+                                                                                                 Document.class);
 
-            // 6) Map to TransferData (replace with your real mapper)
-            List<TransferData> list = new ArrayList<>();
-            DateTimeFormatter isoFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(zone);
-
-            for (Document d : results) {
-                String transferId = str(d.get("transferId"));
-                String state = str(d.get("state"));
-                String type = str(d.get("type"));
-                String currency = str(d.get("currency"));
-                BigDecimal amount = toBigDecimal(d.get("amount"));
-                String payerDfsp = str(d.get("payerDfsp"));
-                String payeeDfsp = str(d.get("payeeDfsp"));
-                String windowId = str(d.get("windowId"));
-                String settlementBatch = str(d.get("settlementBatch"));
-
-                Object submitted = d.get("submittedOnDate");
-                String submittedOnDate =
-                        (submitted instanceof Date) ? isoFormatter.format(((Date) submitted).toInstant()) : str(
-                                submitted);
-
-                TransferData row = mapToTransferData(transferId,
-                                                     state,
-                                                     type,
-                                                     currency,
-                                                     amount,
-                                                     payerDfsp,
-                                                     payeeDfsp,
-                                                     windowId,
-                                                     settlementBatch,
-                                                     submittedOnDate);
-                list.add(row);
+            final Document rootDoc = aggResults.getUniqueMappedResult();
+            if (rootDoc == null) {
+                return new Output(emptyList(), 0);
             }
 
-            return new Output(list);
+            @SuppressWarnings("unchecked") final List<Document> items = (List<Document>) rootDoc.getOrDefault("items",
+                                                                                                              emptyList());
+
+            @SuppressWarnings("unchecked") final List<Document> meta = (List<Document>) rootDoc.getOrDefault("meta",
+                                                                                                             emptyList());
+
+            final long total = meta.isEmpty() ? 0L : ((Number) meta.get(0).get("total")).longValue();
+
+            final List<TransferData> list = new ArrayList<>(items.size());
+
+            for (Document d : items) {
+                final String transferId = str(d.get("transferId"));
+                final String state = str(d.get("state"));
+                final String type = str(d.get("type"));
+                final String currency = str(d.get("currency"));
+                final BigDecimal amount = toBigDecimal(d.get("amount"));
+                final String payerDfsp = str(d.get("payerDfsp"));
+                final String payeeDfsp = str(d.get("payeeDfsp"));
+                final String windowId = str(d.get("windowId"));
+                final String settlementBatch = str(d.get("settlementBatch"));
+
+                final Object submitted = d.get("submittedOnDate");
+
+                final ZoneId zone = parseZoneFlexible(input.getTimeZone());
+
+                final String submittedOnDate =
+                        (submitted instanceof Date dateVal)
+                                ? WITH_OFFSET.format(dateVal.toInstant().atZone(zone))
+                                : String.valueOf(submitted);
+
+                list.add(mapToTransferData(transferId,
+                                           state,
+                                           type,
+                                           currency,
+                                           amount,
+                                           payerDfsp,
+                                           payeeDfsp,
+                                           windowId,
+                                           settlementBatch,
+                                           submittedOnDate));
+            }
+
+            return new Output(list, total);
 
         } catch (Exception e) {
+
             throw new HubServicesException(HubServicesErrors.HUB_TRANSFER_ERROR.defaultMessage(e.getMessage()));
         }
     }
 
-    // ----------------- Helpers -----------------
+    private static int normalizePage(Integer page) {
 
-    private static Criteria and(Criteria base, Criteria extra) {
-
-        return new Criteria().andOperator(base, extra);
+        if (page == null || page < 1) {return DEFAULT_PAGE;}
+        return page;
     }
 
-    private static ZoneId parseZoneOrDefault(String tz, ZoneId def) {
+    private static int normalizePageSize(Integer pageSize) {
 
-        try {
-            if (StringUtils.isBlank(tz)) {return def;}
-            return ZoneId.of(tz);
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    private static Instant parseInstant(String text, ZoneId zone) {
-
-        if (StringUtils.isBlank(text)) {
-            throw new IllegalArgumentException("Date string must not be blank");
-        }
-        // Accept full ISO or date-only (yyyy-MM-dd)
-        try {
-            return Instant.parse(text);
-        } catch (Exception ignore) {
-        }
-        try {
-            LocalDate ld = LocalDate.parse(text);
-            return ZonedDateTime.of(ld.atStartOfDay(), zone).toInstant();
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unparseable date: " + text, e);
-        }
-    }
-
-    private static Instant parseInstantInclusiveEnd(String text, ZoneId zone) {
-        // If it's ISO instant -> pass through. If it's date-only, go to end-of-day 23:59:59.999
-        if (StringUtils.isBlank(text)) {
-            throw new IllegalArgumentException("Date string must not be blank");
-        }
-        try {
-            return Instant.parse(text);
-        } catch (Exception ignore) {
-        }
-        try {
-            LocalDate ld = LocalDate.parse(text);
-            return ZonedDateTime.of(ld.plusDays(1).atStartOfDay(), zone).toInstant().minusNanos(1_000_000); // ~.999
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Unparseable date: " + text, e);
-        }
+        if (pageSize == null || pageSize < 1) {return DEFAULT_PAGE_SIZE;}
+        return Math.min(pageSize, MAX_PAGE_SIZE);
     }
 
     private static String str(Object o) {
@@ -293,7 +279,13 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
         if (o == null) {return null;}
         if (o instanceof BigDecimal bd) {return bd.setScale(2, RoundingMode.HALF_UP);}
-        if (o instanceof Number n) {return BigDecimal.valueOf(n.doubleValue()).setScale(2, RoundingMode.HALF_UP);}
+        if (o instanceof Integer || o instanceof Long) {
+            return BigDecimal.valueOf(((Number) o).longValue()).setScale(2, RoundingMode.HALF_UP);
+        }
+        if (o instanceof Number n) {
+
+            return BigDecimal.valueOf(n.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+        }
         try {
             return new BigDecimal(o.toString()).setScale(2, RoundingMode.HALF_UP);
         } catch (Exception e) {
@@ -301,10 +293,6 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
         }
     }
 
-    /**
-     * TODO: Replace this mapper with your actual TransferData construction.
-     * This shows which fields are available from the aggregation.
-     */
     private static TransferData mapToTransferData(String transferId,
                                                   String state,
                                                   String type,
@@ -326,6 +314,36 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                                 windowId,
                                 settlementBatch,
                                 submittedOnDate);
+    }
+
+    private static ZoneId parseZoneFlexible(String raw) {
+
+        if (raw == null || raw.isBlank()) {return ZoneOffset.UTC;}
+        String s = raw.trim();
+
+        if (s.equalsIgnoreCase("Z") || s.equalsIgnoreCase("UTC") || s.equalsIgnoreCase("GMT")) {return ZoneOffset.UTC;}
+
+        try {return ZoneId.of(s);} catch (Exception ignored) {}
+
+        String sign = (s.startsWith("+") || s.startsWith("-")) ? s.substring(0, 1) : "+";
+        String digits = s.startsWith("+") || s.startsWith("-") ? s.substring(1) : s;
+        digits = digits.replace(":", "");
+
+        if (digits.length() == 4) {
+            int hh = Integer.parseInt(digits.substring(0, 2));
+            int mm = Integer.parseInt(digits.substring(2, 4));
+            return ZoneOffset.ofHoursMinutes(sign.equals("-") ? -hh : hh, sign.equals("-") ? -mm : mm);
+        } else if (digits.length() == 2) {
+
+            int hh = Integer.parseInt(digits);
+            return ZoneOffset.ofHours(sign.equals("-") ? -hh : hh);
+        } else {
+
+            try {return ZoneOffset.of(s);} catch (DateTimeException e) {
+                throw new IllegalArgumentException("Unrecognized timezone/offset: " + raw, e);
+            }
+        }
+
     }
 
 }

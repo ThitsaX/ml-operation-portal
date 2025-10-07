@@ -26,7 +26,7 @@ public class GetTranferDetailQueryUT extends BaseVaultSetUpTest {
     @Test
     public void testGetTransferDetail() throws HubServicesException {
 
-        TransferDetailData output = getTransferDetailQuery.execute("01K18F29HYWRH2P8PYX4SZ7MDQ");
+        TransferDetailData output = getTransferDetailQuery.execute("01K18F29HYWRH2P8PYX4SZ7MDQ","0630");
 
         ObjectMapper mapper = new ObjectMapper();
 

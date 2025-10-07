@@ -39,14 +39,22 @@ public class GetAllTransferController {
         String payeeIdentifierValue,
         String currencyId,
         String transferStateId,
-        String timezone) throws DomainException, ParseException, JsonProcessingException {
+        String timezone,
+        Integer pageIndex,
+        Integer pageSize) throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info("Get All Transfer Request for fromDate = [{}], toDate = [{}], transferId = [{}], " +
                      "payerFspId = [{}], payeeFspId = [{}], payerIdentifierTypeId = [{}], " +
                      "payeeIdentifierTypeId = [{}], " + "payerIdentifierValue = [{}], " +
-                     "payeeIdentifierValue = [{}], currencyId = [{}], transferStateId = [{}], timezone = [{}]",
+                         "payeeIdentifierValue = [{}], currencyId = [{}], transferStateId = [{}], timezone = [{}], pageIndex = [{}], pageSize = [{}]",
                  fromDate, toDate, transferId, payerFspId, payeeFspId, payerIdentifierTypeId, payeeIdentifierTypeId,
-                 payerIdentifierValue, payeeIdentifierValue, currencyId, transferStateId, timezone);
+                 payerIdentifierValue,
+                 payeeIdentifierValue,
+                 currencyId,
+                 transferStateId,
+                 timezone,
+                 pageIndex,
+                 pageSize);
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -57,28 +65,22 @@ public class GetAllTransferController {
 
         String localToDate = TimeZoneConverter.convertTimeZone(toDate, timezone);
 
-        String showTimezone;
-        if (timezone.startsWith("-")) {
-            showTimezone = timezone.replaceFirst(".", "+");
-        } else {
-            showTimezone = timezone.replaceFirst(".", "-");
-        }
-
-        GetTransferList.Output output = this.getTransferList.execute(
-            new GetTransferList.Input(
-                localFromDate,
-                localToDate,
-                transferId,
-                payerFspId,
-                payeeFspId,
-                payerIdentifierTypeId,
-                payeeIdentifierTypeId,
-                payerIdentifierValue,
-                payeeIdentifierValue,
-                currencyId,
-                transferStateId,
-                new UserId(userContext.userId().getId()),
-                timezone));
+        GetTransferList.Output output = this.getTransferList.execute(new GetTransferList.Input(localFromDate,
+                                                                                               localToDate,
+                                                                                               transferId,
+                                                                                               payerFspId,
+                                                                                               payeeFspId,
+                                                                                               payerIdentifierTypeId,
+                                                                                               payeeIdentifierTypeId,
+                                                                                               payerIdentifierValue,
+                                                                                               payeeIdentifierValue,
+                                                                                               currencyId,
+                                                                                               transferStateId,
+                                                                                               new UserId(userContext.userId()
+                                                                                                                     .getId()),
+                                                                                               timezone,
+                                                                                               pageIndex,
+                                                                                               pageSize));
 
         List<Response.TransferInfo> transferInfoList = new ArrayList<>();
 
@@ -92,23 +94,19 @@ public class GetAllTransferController {
                 transferInfo.getAmount(),
                 transferInfo.getPayerDfsp(),
                 transferInfo.getPayeeDfsp(),
-                transferInfo.getWindowId(),
-                transferInfo.getSettlementBatch(),
-                (TimeZoneConverter.convertTimeZone(transferInfo.getSubmittedOnDate()
-                                                               .replace(" ", "T") + "Z",
-                                                   showTimezone) + timezone).replace("T", " ")
-                                                                            .replace("Z", " ")));
+                transferInfo.getWindowId(), transferInfo.getSettlementBatch(), transferInfo.getSubmittedOnDate()));
 
         }
 
-        var response = new Response(transferInfoList);
+        var response = new Response(transferInfoList, output.totalPage());
 
         LOG.info("Get All Transfer Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    public record Response(@JsonProperty("transferInfoList") List<TransferInfo> transferInfoList) {
+    public record Response(@JsonProperty("transferInfoList") List<TransferInfo> transferInfoList,
+                           @JsonProperty("totalPage") Long totalPage) {
 
         public record TransferInfo(
             @JsonProperty("transferId") String transferId,
@@ -116,9 +114,8 @@ public class GetAllTransferController {
             @JsonProperty("type") String type,
             @JsonProperty("currency") String currency,
             @JsonProperty("amount") BigDecimal amount,
-            @JsonProperty("payerDfsp") String payerDfsp,
-            @JsonProperty("payeeDfsp") String payeeDfsp,
-            @JsonProperty("window_Id") String windowId,
+            @JsonProperty("payerDfsp") String payerDfsp, @JsonProperty("payeeDfsp") String payeeDfsp,
+            @JsonProperty("windowId") String windowId,
             @JsonProperty("settlementBatch") String settlementBatch,
             @JsonProperty("submittedOnDate") String submittedOnDate
         ) { }
