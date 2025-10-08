@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.SchedulerCon
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 
 public record SchedulerConfigData(SchedulerConfigId schedulerConfigId, String name, String jobName,
-                                  String cronExpression, String description, boolean active) {
+                                  String cronExpression, String description, String zoneId, boolean active) {
 
     public SchedulerConfigData(SchedulerConfig config) {
 
@@ -13,6 +13,7 @@ public record SchedulerConfigData(SchedulerConfigId schedulerConfigId, String na
              config.getJobName(),
              config.getCronExpression(),
              config.getDescription(),
+             config.getZoneId(),
              config.isActive());
     }
 

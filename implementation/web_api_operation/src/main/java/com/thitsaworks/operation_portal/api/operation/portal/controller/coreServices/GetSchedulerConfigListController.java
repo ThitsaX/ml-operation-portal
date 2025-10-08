@@ -26,13 +26,13 @@ public class GetSchedulerConfigListController {
 
     private final GetSchedulerConfigList getSchedulerConfigList;
 
-    @GetMapping("/secured/schedulerConfigs")
+    @GetMapping("/secured/getSchedulerConfigList")
     public ResponseEntity<Response> execute(
         @RequestParam(value = "active", required = false) Boolean active,
         @RequestParam(value = "sortBy", required = false) String sortBy,
         @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
     ) throws DomainException {
-        LOG.debug("Fetching all scheduler configurations with active={}, sortBy={}, sortDirection={}", 
+        LOG.debug("Fetching all scheduler configurations with active={}, sortBy={}, sortDirection={}",
                  active, sortBy, sortDirection);
 
         GetSchedulerConfigList.Output output = this.getSchedulerConfigList.execute(

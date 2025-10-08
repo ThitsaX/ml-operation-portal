@@ -51,7 +51,7 @@ public class SchedulerEngine {
         // Validate cron first
         CronExpression expr = CronExpression.parse(schedulerConfigData.cronExpression());
 
-        ZoneId zone = ZoneId.systemDefault();
+        ZoneId zone = ZoneId.of(schedulerConfigData.zoneId());
 
         ScheduledJob job = applicationContext.getBean(schedulerConfigData.jobName(), ScheduledJob.class);
 

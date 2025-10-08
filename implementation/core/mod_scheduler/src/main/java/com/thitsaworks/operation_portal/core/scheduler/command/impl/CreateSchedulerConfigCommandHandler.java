@@ -31,8 +31,9 @@ public class CreateSchedulerConfigCommandHandler implements CreateSchedulerConfi
 
         SchedulerConfig schedulerConfig = new SchedulerConfig(input.name(),
                                                               input.jobName(),
+                                                              input.description(),
                                                               input.cronExpression(),
-                                                              input.description());
+                                                              input.zoneId());
 
         this.schedulerConfigRepository.save(schedulerConfig);
 

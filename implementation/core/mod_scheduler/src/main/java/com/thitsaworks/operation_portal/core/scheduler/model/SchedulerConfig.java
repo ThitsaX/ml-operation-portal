@@ -25,22 +25,26 @@ public class SchedulerConfig extends JpaEntity<SchedulerConfigId> {
     @Column(name = "job_name")
     private String jobName;
 
-    @Column(name = "cron_expression")
-    private String cronExpression;
-    
     @Column(name = "description")
     private String description;
+
+    @Column(name = "cron_expression")
+    private String cronExpression;
+
+    @Column(name = "zone_id")
+    private String zoneId;
 
     @Column(name = "is_active")
     private boolean active;
 
-    public SchedulerConfig(String name, String jobName, String cronExpression, String description) {
+    public SchedulerConfig(String name, String jobName, String description, String cronExpression, String zoneId) {
 
         this.schedulerConfigId = new SchedulerConfigId(Snowflake.get().nextId());
         this.name = name;
         this.jobName = jobName;
-        this.cronExpression = cronExpression;
         this.description = description;
+        this.cronExpression = cronExpression;
+        this.zoneId = zoneId;
         this.active = true;
     }
 
@@ -65,6 +69,12 @@ public class SchedulerConfig extends JpaEntity<SchedulerConfigId> {
     public SchedulerConfig cronExpression(String cronExpression) {
 
         this.cronExpression = cronExpression;
+        return this;
+    }
+
+    public SchedulerConfig zoneId(String zoneId) {
+
+        this.zoneId = zoneId;
         return this;
     }
 

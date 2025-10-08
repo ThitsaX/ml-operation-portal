@@ -6,8 +6,8 @@ import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 
 public interface ModifySchedulerConfigCommand {
 
-    record Input(SchedulerConfigId schedulerConfigId, String name, String jobName, String cronExpression,
-                 String description, boolean active) {}
+    record Input(SchedulerConfigId schedulerConfigId, String name, String jobName, String description,
+                 String cronExpression, String zoneId, boolean active) {}
 
     record Output(SchedulerConfigData schedulerConfigData) {}
 

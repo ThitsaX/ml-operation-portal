@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.ZoneId;
+
 @RestController
 @RequiredArgsConstructor
 public class ModifySchedulerConfigController {
@@ -35,11 +37,12 @@ public class ModifySchedulerConfigController {
         ModifySchedulerConfig.Output output = this.modifySchedulerConfig.execute(
             new ModifySchedulerConfig.Input(
                     new SchedulerConfigId(request.schedulerConfigId()),
-                request.name(),
+                    request.name(),
                     request.jobName(),
-                request.cronExpression(),
-                request.description(),
-                request.active()
+                    request.description(),
+                    request.cronExpression(),
+                    ZoneId.of(request.zoneId()),
+                    request.active()
             )
         );
 
@@ -50,11 +53,12 @@ public class ModifySchedulerConfigController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
             @NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId,
-        @NotBlank @JsonProperty("name") String name,
+            @NotBlank @JsonProperty("name") String name,
             @NotBlank @JsonProperty("jobName") String jobName,
-        @NotBlank @JsonProperty("cronExpression") String cronExpression,
-        @NotBlank @JsonProperty("description") String description,
-        @NotNull @JsonProperty("active") Boolean active
+            @NotBlank @JsonProperty("description") String description,
+            @NotBlank @JsonProperty("cronExpression") String cronExpression,
+            @NotNull @JsonProperty("zoneId") String zoneId,
+            @NotNull @JsonProperty("active") Boolean active
     ) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -30,9 +30,10 @@ public class CreateSchedulerConfigCommandUnitTest extends BaseVaultSetUpTest {
         String cronExpression = "0 0/8 * * * ?";
         String description = "Test scheduled task";
         boolean active = true;
+        String zoneId = "+06:30";
 
         CreateSchedulerConfigCommand.Input input = new CreateSchedulerConfigCommand.Input(
-                configName, taskName, cronExpression, description, active
+                configName, taskName, description, cronExpression, zoneId
         );
         
         // Act

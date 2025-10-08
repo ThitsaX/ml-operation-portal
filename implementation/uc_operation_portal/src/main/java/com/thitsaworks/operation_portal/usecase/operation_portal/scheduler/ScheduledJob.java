@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @RequiredArgsConstructor
 public abstract class ScheduledJob {
@@ -53,9 +54,10 @@ public abstract class ScheduledJob {
 
     protected void beforeExecute(SchedulerConfigData schedulerConfigData) throws DomainException {
 
-        LocalDateTime startTime = LocalDateTime.now();
+        LocalDateTime startTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()));
 
-        LOG.info("Scheduler Job: [{}] initiated at: [{}]", schedulerConfigData.name(), startTime);
+        LOG.info("Scheduler Job: [{}] initiated at: [{} ({})]",
+                 schedulerConfigData.name(), startTime, schedulerConfigData.zoneId());
 
         var jobExecutionLogOutput = this.createJobExecutionLogCommand.execute(new CreateJobExecutionLogCommand.Input(
                 schedulerConfigData.name(),
@@ -68,15 +70,16 @@ public abstract class ScheduledJob {
 
     protected void afterExecute(SchedulerConfigData schedulerConfigData) throws DomainException {
 
-        LocalDateTime endTime = LocalDateTime.now();
+        LocalDateTime endTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()));
 
-        LOG.info("Scheduler Job: [{}] executed successfully at: [{}]", schedulerConfigData.name(), endTime);
+        LOG.info("Scheduler Job: [{}] executed successfully at: [{} ({})]",
+                 schedulerConfigData.name(), endTime, schedulerConfigData.zoneId());
 
         JobExecutionLogId jobExecutionLogId = ScheduledJob.jobExecutionLogId.get();
 
-        String jobExecutionMessage = String.format("Job [%s] executed successfully at [%s]",
+        String jobExecutionMessage = String.format("Job [%s] executed successfully at [%s (%s)]",
                                                    schedulerConfigData.name(),
-                                                   endTime);
+                                                   endTime, schedulerConfigData.zoneId());
 
         this.modifyJobExecutionLogCommand.execute(new ModifyJobExecutionLogCommand.Input(jobExecutionLogId,
                                                                                          JobStatus.COMPLETED,

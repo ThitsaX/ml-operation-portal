@@ -24,13 +24,13 @@ public class GetSchedulerConfigByIdController {
 
     private final GetSchedulerConfigById getSchedulerConfigById;
 
-    @GetMapping("/secured/schedulerConfig")
-    public ResponseEntity<Response> execute(@Valid @RequestParam Long configId) throws DomainException {
+    @GetMapping("/secured/getSchedulerConfigById")
+    public ResponseEntity<Response> execute(@Valid @RequestParam Long schedulerConfigId) throws DomainException {
 
-        LOG.debug("Fetching scheduler configuration with schedulerConfigId: [{}]", configId);
+        LOG.debug("Fetching scheduler configuration with schedulerConfigId: [{}]", schedulerConfigId);
 
         GetSchedulerConfigById.Output output = this.getSchedulerConfigById.execute(
-                new GetSchedulerConfigById.Input(new SchedulerConfigId(configId))
+                new GetSchedulerConfigById.Input(new SchedulerConfigId(schedulerConfigId))
                                                                                   );
 
         var response = new Response(output.config());

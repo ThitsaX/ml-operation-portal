@@ -29,8 +29,9 @@ public class ModifySchedulerConfigCommandHandler implements ModifySchedulerConfi
 
         this.schedulerConfigRepository.save(schedulerConfig.name(input.name())
                                                            .jobName(input.jobName())
-                                                           .cronExpression(input.cronExpression())
                                                            .description(input.description())
+                                                           .cronExpression(input.cronExpression())
+                                                           .zoneId(input.zoneId())
                                                            .active(input.active()));
 
         return new Output(new SchedulerConfigData(schedulerConfig));

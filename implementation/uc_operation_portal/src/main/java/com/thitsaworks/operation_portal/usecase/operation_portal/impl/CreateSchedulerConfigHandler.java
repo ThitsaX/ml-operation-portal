@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+
 @Service
 public class CreateSchedulerConfigHandler
     extends OperationPortalAuditableUseCase<CreateSchedulerConfig.Input, CreateSchedulerConfig.Output>
@@ -53,9 +55,9 @@ public class CreateSchedulerConfigHandler
             output =
                 this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
                                                                                                  input.jobName(),
-                                                                                                 input.cronExpression(),
                                                                                                  input.description(),
-                                                                                                 true));
+                                                                                                 input.cronExpression(),
+                                                                                                 input.zoneId().getId()));
 
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 

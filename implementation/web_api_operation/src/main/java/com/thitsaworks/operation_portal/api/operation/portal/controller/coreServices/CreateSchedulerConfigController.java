@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSchedulerConfig;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.ZoneId;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,8 +35,9 @@ public class CreateSchedulerConfigController {
             new CreateSchedulerConfig.Input(
                 request.name(),
                 request.jobName(),
+                request.description(),
                 request.cronExpression(),
-                request.description()
+                ZoneId.of(request.zoneId())
             )
         );
 
@@ -50,8 +52,10 @@ public class CreateSchedulerConfigController {
     public record Request(
         @NotBlank @JsonProperty("name") String name,
         @NotBlank @JsonProperty("jobName") String jobName,
+        @NotBlank @JsonProperty("description") String description,
         @NotBlank @JsonProperty("cronExpression") String cronExpression,
-        @NotBlank @JsonProperty("description") String description
+        @NotBlank @JsonProperty("zoneId") String zoneId
+
     ) {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)

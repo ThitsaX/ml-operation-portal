@@ -55,8 +55,9 @@ public class ModifySchedulerConfigHandler
                 this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommandHandler.Input(input.schedulerConfigId(),
                                                                                                         input.name(),
                                                                                                         input.jobName(),
-                                                                                                        input.cronExpression(),
                                                                                                         input.description(),
+                                                                                                        input.cronExpression(),
+                                                                                                        input.zoneId().getId(),
                                                                                                         input.active()));
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 
