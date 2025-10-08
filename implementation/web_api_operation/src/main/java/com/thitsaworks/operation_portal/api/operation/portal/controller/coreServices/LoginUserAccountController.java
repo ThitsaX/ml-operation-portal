@@ -2,9 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.LoginUserAccount;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -31,9 +30,9 @@ public class LoginUserAccountController {
 
     @PostMapping("/public/loginUserAccount")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-        throws DomainException, JsonProcessingException {
+        throws Exception {
 
-        LOG.info("Login User Account Request: [{}]", request);
+        LOG.info("Login User Account Request: [{}]", MaskPassword.toMaskedString(request));
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
             new LoginUserAccount.Input(new Email(request.email), request.password));
@@ -42,7 +41,7 @@ public class LoginUserAccountController {
                                           .getId()
                                           .toString(), output.secretKey());
 
-        LOG.info("Login User Account Response: [{}]", response);
+        LOG.info("Login User Account Response: [{}]", MaskPassword.toMaskedString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
