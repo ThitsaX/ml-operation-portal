@@ -21,11 +21,9 @@ public class DFSPGenerateSettlementDetailReportCommandHandlerUnitTest {
     @Test
     public void testGenerateReportSuccessfully() throws Exception {
 
-//        FileOutputStream fout = new FileOutputStream(new File(
-//                "C:\\Workspace\\Development\\settlement_detail_report.xlsx"));
-
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(new GenerateSettlementDetailReportCommand.Input("1",
                                                                                                            "all",
+                                                                                                           "All",
                                                                                                            ".xlsx",
                                                                                                            "0630"));
 

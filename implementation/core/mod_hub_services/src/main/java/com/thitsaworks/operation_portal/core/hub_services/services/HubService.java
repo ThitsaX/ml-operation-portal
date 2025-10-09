@@ -39,9 +39,7 @@ public interface HubService {
                                                              @Body ParticipantHubClient.RequestToHub request);
 
     @GET("/participants/{participantId}")
-    Call<GetParticipant.Response> getParticipant(@Path("participantId") String participantId
-
-    );
+    Call<GetParticipant.Response> getParticipant(@Path("participantId") String participantId);
 
     @GET("/participants")
     Call<GetParticipants.Response> getParticipants();

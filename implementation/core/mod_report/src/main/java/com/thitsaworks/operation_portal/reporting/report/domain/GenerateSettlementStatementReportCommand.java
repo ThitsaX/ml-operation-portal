@@ -7,6 +7,7 @@ import java.time.Instant;
 public interface GenerateSettlementStatementReportCommand {
 
     record Input(String fspId,
+                 String dfspName,
                  Instant startDate,
                  Instant endDate,
                  String filetype,

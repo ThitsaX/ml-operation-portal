@@ -1,12 +1,13 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
@@ -23,13 +24,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GenerateSettlementDetailReportCommandHandler implements GenerateSettlementDetailReportCommand {
+public class GenerateSettlementBankReportCommandHandler implements GenerateSettlementBankReportCommand {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenerateSettlementDetailReportCommandHandler(
-        @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+    public GenerateSettlementBankReportCommandHandler(
+            @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -40,15 +41,14 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
         Map<String, Object> params = new HashMap<String, Object>();
 
         params.put("settlementId", input.settlementId());
-        params.put("fspId", input.fspId());
-        params.put("dfspName", input.dfspName());
+        params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timezoneOffset());
 
         InputStream
-            detailReport =
-            this.getClass()
-                .getResourceAsStream(
-                    "/com/thitsaworks/operation_portal/reporting/report/report/dfspSettlementDetailReport.jasper");
+                detailReport =
+                this.getClass()
+                    .getResourceAsStream(
+                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
@@ -58,7 +58,8 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
             byte[] rptBytes = new byte[0];
 
-            if (input.fileType().equalsIgnoreCase("xlsx")) {
+            if (input.fileType()
+                     .equalsIgnoreCase("xlsx")  ) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -67,7 +68,18 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
-            } else if (input.fileType().equalsIgnoreCase("csv")) {
+            } else if (input.fileType()
+                            .equalsIgnoreCase("pdf")) {
+
+                JRPdfExporter pdfExporter = new JRPdfExporter();
+                ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
+                pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+                pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+                pdfExporter.exportReport();
+                rptBytes = pdfReport.toByteArray();
+
+            } else if (input.fileType()
+                            .equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
