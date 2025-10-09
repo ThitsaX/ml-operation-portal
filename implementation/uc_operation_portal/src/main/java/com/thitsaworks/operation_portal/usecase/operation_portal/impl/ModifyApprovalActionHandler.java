@@ -219,12 +219,12 @@ public class ModifyApprovalActionHandler
         try {
 
             return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).abs();
+                          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN).abs();
 
         } catch (ArithmeticException ex) {
 
             return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).abs();
+                          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN).abs();
 
         }
     }

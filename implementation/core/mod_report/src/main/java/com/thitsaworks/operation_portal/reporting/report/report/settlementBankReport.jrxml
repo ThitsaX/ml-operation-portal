@@ -249,7 +249,7 @@
 				<text><![CDATA[TimeZoneOffSet]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="181" y="0" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
+				<reportElement x="180" y="0" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -264,7 +264,7 @@
 				<textFieldExpression><![CDATA[$P{settlementId}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="181" y="30" width="200" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
+				<reportElement x="180" y="30" width="200" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -277,7 +277,7 @@
 				<textFieldExpression><![CDATA[$F{createdDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="181" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
+				<reportElement x="180" y="60" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -290,7 +290,7 @@
 				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="181" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
+				<reportElement x="180" y="90" width="200" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -472,7 +472,7 @@
 				</jr:table>
 			</componentElement>
 			<staticText>
-				<reportElement x="0" y="118" width="150" height="17" uuid="dbbd13fe-597c-4fdb-bb63-904e237a43a0">
+				<reportElement x="0" y="118" width="180" height="17" uuid="dbbd13fe-597c-4fdb-bb63-904e237a43a0">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
