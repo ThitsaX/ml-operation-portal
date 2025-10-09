@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.scheduler.model.repository;
 
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import java.util.Optional;
  * Repository for {@link SchedulerConfig} entities providing data access operations.
  */
 @Repository
-public interface SchedulerConfigRepository extends JpaRepository<SchedulerConfig, Long>,
+public interface SchedulerConfigRepository extends JpaRepository<SchedulerConfig, SchedulerConfigId>,
                                                    QuerydslPredicateExecutor<SchedulerConfig> {
     
     /**

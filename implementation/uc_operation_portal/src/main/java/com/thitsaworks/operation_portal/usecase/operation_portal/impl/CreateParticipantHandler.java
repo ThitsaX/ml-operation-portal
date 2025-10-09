@@ -51,6 +51,7 @@ public class CreateParticipantHandler
                                                input.description(),
                                                input.address(),
                                                input.mobile(),
+                                               input.status(),
                                                input.contactInfoList()
                                                     .stream()
                                                     .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),

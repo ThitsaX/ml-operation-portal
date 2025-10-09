@@ -1,13 +1,14 @@
 package com.thitsaworks.operation_portal.core.scheduler.command.impl;
 
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.command.DeleteSchedulerConfigCommand;
-import com.thitsaworks.operation_portal.core.scheduler.command.ScheduleTaskCommand;
-import com.thitsaworks.operation_portal.core.scheduler.exception.ResourceNotFoundException;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerErrors;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerException;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.ScheduledAnnotationBeanPostProcessor;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +20,14 @@ public class DeleteSchedulerConfigCommandHandler implements DeleteSchedulerConfi
 
     private final ScheduledAnnotationBeanPostProcessor scheduler;
 
-    private final ScheduleTaskCommand schedulerTaskCommand;
 
     @Override
     @CoreWriteTransactional
-    public Output execute(Long input) {
+    public Output execute(SchedulerConfigId schedulerConfigId) throws DomainException {
 
-        SchedulerConfig config = schedulerConfigRepository.findById(input)
-                                                          .orElseThrow(() -> new ResourceNotFoundException(
-                                                              "SchedulerConfig not found with id: " + input));
-
-        // Stop the task before deleting
-        scheduler.postProcessBeforeDestruction(schedulerTaskCommand, config.getName());
+        SchedulerConfig config = schedulerConfigRepository.findById(schedulerConfigId)
+                                                          .orElseThrow(() -> new SchedulerException(SchedulerErrors.SCHEDULER_CONFIG_NOT_FOUND.format(
+                                                                  schedulerConfigId.getId())));
 
         schedulerConfigRepository.delete(config);
 

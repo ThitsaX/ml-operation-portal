@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
 import jakarta.validation.Valid;
@@ -67,7 +68,7 @@ public class CreateParticipantController {
                     new CreateParticipant.Input.LiquidityProfileInfo(liquidityProfile.accountName(),
                                                                      liquidityProfile.accountNumber(),
                                                                      liquidityProfile.currency(),
-                                                                     liquidityProfile.participantStatus()));
+                                                                     liquidityProfile.isActive()));
             }
         }
 
@@ -76,6 +77,7 @@ public class CreateParticipantController {
                                         request.description(),
                                         request.address(),
                                         new Mobile(request.mobile()),
+                                        ParticipantStatus.valueOf(request.participantStatus()),
                                         contactInfoList,
                                         liquidityProfileInfoList));
 
@@ -95,6 +97,7 @@ public class CreateParticipantController {
         @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
         @NotNull @JsonProperty("mobile") String mobile,
+        @NotNull @JsonProperty("status") String participantStatus,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileList") List<LiquidityProfileInfo> liquidityProfileInfoList)
         implements Serializable {
@@ -114,7 +117,7 @@ public class CreateParticipantController {
             @NotNull @JsonProperty("accountName") String accountName,
             @NotNull @JsonProperty("accountNumber") String accountNumber,
             @NotNull @JsonProperty("currency") String currency,
-            @JsonProperty("participantStatus") Boolean participantStatus) implements Serializable {
+            @JsonProperty("isActive") Boolean isActive) implements Serializable {
         }
 
     }

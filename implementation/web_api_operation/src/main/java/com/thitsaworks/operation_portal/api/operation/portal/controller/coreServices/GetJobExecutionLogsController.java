@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetJobExecutionLogList;
@@ -33,7 +34,7 @@ public class GetJobExecutionLogsController {
     @GetMapping
     public ResponseEntity<Response> execute(
         @RequestParam(value = "jobName", required = false) String jobName,
-        @RequestParam(value = "status", required = false) String status,
+        @RequestParam(value = "jobStatus", required = false) String status,
         @RequestParam(value = "startDate", required = false)
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
         @RequestParam(value = "endDate", required = false)
@@ -41,13 +42,13 @@ public class GetJobExecutionLogsController {
         @RequestParam(value = "sortBy", required = false) String sortBy,
         @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
                                            ) throws DomainException {
-        LOG.debug("Fetching job execution logs with jobName={}, status={}, startDate={}, endDate={}, sortBy={}, sortDirection={}",
+        LOG.debug("Fetching job execution logs with jobName={}, jobStatus={}, startDate={}, endDate={}, sortBy={}, sortDirection={}",
                   jobName, status, startDate, endDate, sortBy, sortDirection);
 
         GetJobExecutionLogList.Output output = this.getJobExecutionLogList.execute(
             new GetJobExecutionLogList.Input(
                 Optional.ofNullable(jobName),
-                Optional.ofNullable(status),
+                Optional.ofNullable(JobStatus.valueOf(status)),
                 Optional.ofNullable(startDate).map(LocalDateTime::toString),
                 Optional.ofNullable(endDate).map(LocalDateTime::toString),
                 Optional.ofNullable(sortBy),

@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditByParticipantAndUserQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantAndUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetAuditListHandler extends OperationPortalUseCase<GetAuditList.Input, GetAuditList.Output>
-    implements GetAuditList {
+public class GetAuditListHandler extends OperationPortalUseCase<GetAuditByParticipantAndUser.Input, GetAuditByParticipantAndUser.Output>
+    implements GetAuditByParticipantAndUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAuditListHandler.class);
 
@@ -26,7 +26,7 @@ public class GetAuditListHandler extends OperationPortalUseCase<GetAuditList.Inp
                                GetAuditByParticipantAndUserQuery getAuditByParticipantAndUserQuery) {
 
         super(principalCache,
-              actionAuthorizationManager);
+                actionAuthorizationManager);
 
         this.getAuditQuery = getAuditByParticipantAndUserQuery;
     }
@@ -34,26 +34,29 @@ public class GetAuditListHandler extends OperationPortalUseCase<GetAuditList.Inp
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetAuditByParticipantAndUserQuery.Output output =
-            this.getAuditQuery.execute(new GetAuditByParticipantAndUserQuery.Input(input.realmId(),
-                                                                                   input.userId(),
-                                                                                   input.fromDate(),
-                                                                                   input.toDate(),
-                                                                                   input.actionName()));
+        var output = this.getAuditQuery.execute(new GetAuditByParticipantAndUserQuery.Input(
+                input.realmId(),
+                input.userId(),
+                input.fromDate(),
+                input.toDate(),
+                input.actionName(),
+                input.page(),
+                input.pageSize()
+        ));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
-
-        for (GetAuditByParticipantAndUserQuery.Output.AuditInfo data : output.getAuditInfoList()) {
-
-            auditInfoList.add(new Output.AuditInfo(data.getParticipantName(),
-                                                   data.getUserName(),
-                                                   data.getActionName(),
-                                                   data.getInputInfo(),
-                                                   data.getOutputInfo(),
-                                                   data.getActionDate()));
+        for (var data : output.getAuditInfoList()) {
+            auditInfoList.add(new Output.AuditInfo(
+                    data.getParticipantName(),
+                    data.getUserName(),
+                    data.getActionName(),
+                    data.getInputInfo(),
+                    data.getOutputInfo(),
+                    data.getActionDate()
+            ));
         }
 
-        return new Output(auditInfoList);
+        return new Output(auditInfoList , output.getTotalElements(),output.getTotalPages());
     }
 
 }

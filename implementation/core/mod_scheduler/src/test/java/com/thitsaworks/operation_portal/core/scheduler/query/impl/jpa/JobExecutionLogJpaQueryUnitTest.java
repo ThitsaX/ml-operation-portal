@@ -1,13 +1,13 @@
 package com.thitsaworks.operation_portal.core.scheduler.query.impl.jpa;
 
+import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
+import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration;
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.scheduler.SchedulerConfiguration;
 import com.thitsaworks.operation_portal.core.scheduler.TestSettings;
-import com.thitsaworks.operation_portal.core.scheduler.model.JobExecutionLog;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.JobExecutionLogRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -58,9 +58,9 @@ public class JobExecutionLogJpaQueryUnitTest extends BaseVaultSetUpTest {
     @Test
     void getJobExecutionLogsByStatus_ShouldReturnMatchingLogs() {
         // Act
-        var result = queryHandler.getJobExecutionLogsByStatus("COMPLETED", Sort.by("startTime"));
+        var result = queryHandler.getJobExecutionLogsByStatus(JobStatus.COMPLETED, Sort.by("startTime"));
 
-        LOG.info("JobExecutionLog by status: {}", result);
+        LOG.info("JobExecutionLog by jobStatus: {}", result);
     }
 
     @Test
@@ -77,9 +77,9 @@ public class JobExecutionLogJpaQueryUnitTest extends BaseVaultSetUpTest {
     }
 
     @Test
-    void getJobExecutionLog_ShouldReturnLogWhenFound() {
+    void getJobExecutionLog_ShouldReturnLogWhenFound() throws DomainException {
         // Act
-        var result = queryHandler.getJobExecutionLog(1001L);
+        var result = queryHandler.getJobExecutionLog(new JobExecutionLogId());
 
         assertNotNull(result);
         assertEquals(1001L, result.jobExecutionLogId());
@@ -89,13 +89,13 @@ public class JobExecutionLogJpaQueryUnitTest extends BaseVaultSetUpTest {
     @Test
     void getJobExecutionLog_ShouldThrowWhenNotFound() {
         // Act & Assert
-        assertThrows(Exception.class, () -> queryHandler.getJobExecutionLog(9999L));
+        assertThrows(Exception.class, () -> queryHandler.getJobExecutionLog(new JobExecutionLogId(9999L)));
     }
 
     @Test
     void findJobExecutionLogById_ShouldReturnEmptyWhenNotFound() {
         // Act
-        var result = queryHandler.findJobExecutionLogById(9999L);
+        var result = queryHandler.findJobExecutionLogById(new JobExecutionLogId(9999L));
 
         // Assert
         assertTrue(result.isEmpty());

@@ -34,8 +34,8 @@ public class GetSchedulerConfigByIdHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        LOG.info("Fetching scheduler configuration with ID: {}", input.configId());
-        SchedulerConfigData config = schedulerConfigQuery.get(input.configId());
+        LOG.info("Fetching scheduler configuration with ID: {}", input.schedulerConfigId());
+        SchedulerConfigData config = schedulerConfigQuery.get(input.schedulerConfigId());
         return new Output(config);
     }
 

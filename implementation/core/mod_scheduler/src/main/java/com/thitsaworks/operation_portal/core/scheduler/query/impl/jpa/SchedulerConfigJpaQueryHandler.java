@@ -1,8 +1,11 @@
 package com.thitsaworks.operation_portal.core.scheduler.query.impl.jpa;
 
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.core.scheduler.exception.ResourceNotFoundException;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerErrors;
+import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerException;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
 import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
@@ -44,14 +47,17 @@ public class SchedulerConfigJpaQueryHandler implements SchedulerConfigQuery {
     }
 
     @Override
-    public SchedulerConfigData get(Long configId) {
-        return findById(configId)
-                .orElseThrow(() -> new ResourceNotFoundException("SchedulerConfig not found with id: " + configId));
+    public SchedulerConfigData get(SchedulerConfigId schedulerConfigId) throws DomainException {
+
+        return findById(schedulerConfigId)
+                .orElseThrow(() -> new SchedulerException(SchedulerErrors.SCHEDULER_CONFIG_NOT_FOUND.format(
+                        schedulerConfigId)));
     }
 
     @Override
-    public Optional<SchedulerConfigData> findById(Long configId) {
-        return schedulerConfigRepository.findById(configId)
+    public Optional<SchedulerConfigData> findById(SchedulerConfigId schedulerConfigId) {
+
+        return schedulerConfigRepository.findById(schedulerConfigId)
                 .map(SchedulerConfigData::new);
     }
 }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -31,7 +32,7 @@ public class ResetCurrentPasswordController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Reset Current Password Request: [{}]", request);
+        LOG.info("Reset Current Password Request: [{}]", MaskPassword.toMaskedString(request));
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
             new ResetCurrentPassword.Input(new Email(request.email()), request.password()));

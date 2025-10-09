@@ -6,9 +6,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.scheduler.command.CreateOrUpdateSchedulerConfigCommand;
+import com.thitsaworks.operation_portal.core.scheduler.command.ModifySchedulerConfigCommand;
+import com.thitsaworks.operation_portal.core.scheduler.command.impl.ModifySchedulerConfigCommandHandler;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySchedulerConfig;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,14 +23,17 @@ public class ModifySchedulerConfigHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifySchedulerConfigHandler.class);
 
-    private final CreateOrUpdateSchedulerConfigCommand updateSchedulerConfigCommand;
+    private final ModifySchedulerConfigCommand modifySchedulerConfigCommand;
+
+    private final SchedulerEngine schedulerEngine;
 
     public ModifySchedulerConfigHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
+                                        SchedulerEngine schedulerEngine,
                                         ObjectMapper objectMapper,
                                         PrincipalCache principalCache,
-                                        CreateOrUpdateSchedulerConfigCommand updateSchedulerConfigCommand,
+                                        ModifySchedulerConfigCommand modifySchedulerConfigCommand,
                                         ActionAuthorizationManager actionAuthorizationManager) {
 
         super(createInputAuditCommand,
@@ -38,7 +43,8 @@ public class ModifySchedulerConfigHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.updateSchedulerConfigCommand = updateSchedulerConfigCommand;
+        this.modifySchedulerConfigCommand = modifySchedulerConfigCommand;
+        this.schedulerEngine = schedulerEngine;
     }
 
     @Override
@@ -46,11 +52,16 @@ public class ModifySchedulerConfigHandler
 
         var
             output =
-            this.updateSchedulerConfigCommand.execute(new CreateOrUpdateSchedulerConfigCommand.Input(input.name(),
-                                                                                                     input.cronExpression(),
-                                                                                                     input.description(),
-                                                                                                     input.active()));
-        return new Output(output.created());
+                this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommandHandler.Input(input.schedulerConfigId(),
+                                                                                                        input.name(),
+                                                                                                        input.jobName(),
+                                                                                                        input.description(),
+                                                                                                        input.cronExpression(),
+                                                                                                        input.zoneId().getId(),
+                                                                                                        input.active()));
+        this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
+
+        return new Output(true);
     }
 
 }
