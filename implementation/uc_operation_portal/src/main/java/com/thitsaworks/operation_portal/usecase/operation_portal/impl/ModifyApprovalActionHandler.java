@@ -197,18 +197,18 @@ public class ModifyApprovalActionHandler
         }
     }
 
-    private static int computeNdcAmount(ApprovalRequestData req, GetParticipantBalanceByCurrencyIdQuery.Output out) {
+    private static BigDecimal computeNdcAmount(ApprovalRequestData req, GetParticipantBalanceByCurrencyIdQuery.Output out) {
 
-        if (out == null) { return 0; }
+        if (out == null) { return new BigDecimal(0); }
 
         var data = out.getParticipantBalanceData();
-        if (data == null) { return 0; }
+        if (data == null) { return new BigDecimal(0); }
 
         var amount = req.amount();
-        if (amount == null || amount.signum() <= 0) { return 0; }
+        if (amount == null || amount.signum() <= 0) { return new BigDecimal(0); }
 
-        if (!Objects.equals(data.currency(), req.currency())) { return 0; }
-        if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(data.ledgerAccountType()))) { return 0; }
+        if (!Objects.equals(data.currency(), req.currency())) { return new BigDecimal(0); }
+        if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(data.ledgerAccountType()))) { return new BigDecimal(0); }
 
         var
             balance =
@@ -219,14 +219,12 @@ public class ModifyApprovalActionHandler
         try {
 
             return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP)
-                          .intValueExact();
+                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).abs();
 
         } catch (ArithmeticException ex) {
 
             return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP)
-                          .intValue();
+                          .divide(BigDecimal.valueOf(100), 0, RoundingMode.HALF_UP).abs();
 
         }
     }
@@ -239,10 +237,9 @@ public class ModifyApprovalActionHandler
                                                   ParticipantException,
                                                   ParticipantNDCException {
 
-        int limitValue = switch (actionType) {
+        BigDecimal limitValue = switch (actionType) {
 
-            case UPDATE_NDC_FIXED -> approvalRequestData.amount()
-                                                        .intValue();
+            case UPDATE_NDC_FIXED -> approvalRequestData.amount();
             case UPDATE_NDC_PERCENTAGE -> {
 
                 int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
