@@ -13,6 +13,7 @@ public class ReportErrors {
     public static final ErrorMessage FEE_SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("FEE_SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract fee settlement report.");
     public static final ErrorMessage STATEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("STATEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract statement report.");
 
+    public static final ErrorMessage FILE_FORMAT_NOT_ALLOWED = new ErrorMessage("FILE_FORMAT_NOT_ALLOWED", "The file format is required or the requested file format is not allowed.");
     public static final ErrorMessage SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement Fee report.");
 
     //@@formatter:on

@@ -25,10 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,10 +52,13 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             var timeOffset = input.timezoneoffset();
 
-
             params.put("timezoneoffset", timeOffset);
-            params.put("fromDate", input.fromDate().getEpochSecond());
-            params.put("toDate", input.toDate().getEpochSecond());
+            params.put("fromDate",
+                       input.fromDate()
+                            .getEpochSecond());
+            params.put("toDate",
+                       input.toDate()
+                            .getEpochSecond());
 
             if (input.realmId() != null) {
                 params.put("realmId", input.realmId());
@@ -74,7 +73,6 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             }
 
             params.put("grantedActionList", input.grantedActionList());
-
 
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
@@ -98,7 +96,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
-                
+
             } else if (input.fileType()
                             .equalsIgnoreCase("csv")) {
 
@@ -112,6 +110,10 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 csvContent = "\n" + csvContent;
 
                 rptBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+
+            } else {
+
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
             }
 
             return new Output(rptBytes);
@@ -122,6 +124,5 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             throw new ReportException(ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION);
         }
     }
-
 
 }
