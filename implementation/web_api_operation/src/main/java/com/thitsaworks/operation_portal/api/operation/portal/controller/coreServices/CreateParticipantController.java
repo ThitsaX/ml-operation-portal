@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipant;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -93,11 +94,11 @@ public class CreateParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participantName") String participantName,
+        @NotNull @NotBlank @JsonProperty("participantName") String participantName,
         @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,
-        @NotNull @JsonProperty("mobile") String mobile,
-        @NotNull @JsonProperty("status") String participantStatus,
+        @NotNull @NotBlank @JsonProperty("mobile") String mobile,
+        @NotNull @NotBlank @JsonProperty("status") String participantStatus,
         @NotNull @JsonProperty("contactInfoList") List<ContactInfo> contactInfoList,
         @JsonProperty("liquidityProfileList") List<LiquidityProfileInfo> liquidityProfileInfoList)
         implements Serializable {

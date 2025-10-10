@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -45,8 +46,8 @@ public class ResetCurrentPasswordController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("email") String email,
-                          @NotNull @JsonProperty("newPassword") String password) implements Serializable { }
+    public record Request(@NotBlank @JsonProperty("email") String email,
+                          @NotBlank @JsonProperty("newPassword") String password) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("updated") boolean updated) implements Serializable { }

@@ -61,8 +61,8 @@ public class ModifyUserController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
                           @NotNull @JsonProperty("name") String name,
-                          @NotNull @JsonProperty("firstName") String firstName,
-                          @NotNull @JsonProperty("lastName") String lastName,
+                          @NotNull @NotBlank @JsonProperty("firstName") String firstName,
+                          @NotNull @NotBlank @JsonProperty("lastName") String lastName,
                           @NotNull @NotBlank @JsonProperty("participantId") String participantId,
                           @NotNull @JsonProperty("jobTitle") String jobTitle,
                           @NotNull @JsonProperty("roleIdList") List<String> roleIdList

@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveContact;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -45,8 +46,8 @@ public class RemoveContactController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
-                          @NotNull @JsonProperty("contactId") String contactId) implements Serializable { }
+    public record Request(@NotNull @NotBlank @JsonProperty("participantId") String participantId,
+                          @NotNull @NotBlank @JsonProperty("contactId") String contactId) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("removed") boolean removed) implements Serializable { }

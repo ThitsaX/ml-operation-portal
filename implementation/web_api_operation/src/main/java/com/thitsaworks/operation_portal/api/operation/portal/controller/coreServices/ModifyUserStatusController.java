@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyUserStatus;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -49,8 +50,8 @@ public class ModifyUserStatusController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("userId") String userId,
-                          @NotNull @JsonProperty("userStatus") String userStatus)
+    public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
+                          @NotNull @NotBlank @JsonProperty("userStatus") String userStatus)
         implements Serializable {
     }
 

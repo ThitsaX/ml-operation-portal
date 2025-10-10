@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.Announcement
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyAnnouncement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -50,10 +51,10 @@ public class ModifyAnnouncementController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("announcementId") String announcementId,
+    public record Request(@NotNull @NotBlank @JsonProperty("announcementId") String announcementId,
                           @NotNull @JsonProperty("announcementTitle") String announcementTitle,
                           @NotNull @JsonProperty("announcementDetail") String announcementDetail,
-                          @NotNull @JsonProperty("announcementDate") String announcementDate,
+                          @NotNull @NotBlank @JsonProperty("announcementDate") String announcementDate,
                           @NotNull @JsonProperty("isDeleted") boolean isDeleted) implements Serializable {
     }
 

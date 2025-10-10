@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateGreetingMessage;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -35,8 +36,8 @@ public class CreateGreetingMessageController {
         var input = new CreateGreetingMessage.Input(
             request.greetingTitle(),
             request.greetingDetail(),
-            Instant.parse(request.greetingDate())
-                         );
+            Instant.parse(request.greetingDate()));
+
         var output = this.createGreetingMessage.execute(input);
 
         var response = new Response(output.created());
@@ -54,11 +55,10 @@ public class CreateGreetingMessageController {
 
         @NotNull
         @JsonProperty("greetingDetail")
-        String greetingDetail ,
+        String greetingDetail,
 
-        @NotNull @JsonProperty("greetingDate")
-        String greetingDate
-        ) implements Serializable {
+        @NotNull @NotBlank @JsonProperty("greetingDate")
+        String greetingDate) implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -66,9 +66,6 @@ public class CreateGreetingMessageController {
         @JsonProperty("isCreated")
         boolean isCreated) implements Serializable {
 
-
-
-
-
     }
+
 }
