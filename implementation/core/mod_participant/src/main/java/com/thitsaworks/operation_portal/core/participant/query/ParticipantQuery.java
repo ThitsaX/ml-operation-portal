@@ -9,7 +9,9 @@ import java.util.Optional;
 
 public interface ParticipantQuery {
 
-    List<ParticipantData> getParticipants();
+    List<ParticipantData> getActiveParticipants();
+
+    List<ParticipantData> getAllParticipants();
 
     ParticipantData get(ParticipantId participantId) throws ParticipantException;
 
