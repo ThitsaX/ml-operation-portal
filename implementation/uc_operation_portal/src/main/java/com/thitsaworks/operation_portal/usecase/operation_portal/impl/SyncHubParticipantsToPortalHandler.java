@@ -69,7 +69,7 @@ public class SyncHubParticipantsToPortalHandler
 
         Set<String>
             existingParticipantNames =
-            this.participantQuery.getParticipants()
+            this.participantQuery.getAllParticipants()
                                  .stream()
                                  .map(pd -> pd.participantName()
                                               .getValue())

@@ -27,7 +27,7 @@ public class GetParticipantsUnitTest {
     @Test
     public void test_getParticipantsSuccessfully() {
 
-        List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+        List<ParticipantData> participantDataList = this.participantQuery.getActiveParticipants();
 
         if (participantDataList.isEmpty()) {
             LOG.info("No record");
