@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 
 public interface DeleteSchedulerConfigCommand {
 
-    record Output(boolean deleted) {}
+    record Output(boolean deleted, SchedulerConfigId schedulerConfigId) {}
 
     Output execute(SchedulerConfigId input) throws DomainException;
 

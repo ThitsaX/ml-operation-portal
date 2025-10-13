@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWind
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifyJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
+import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.ScheduledJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,28 +25,32 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsScheduler.class);
 
+    private final SettlementModelQuery settlementModelQuery;
+
     private final SettlementHubClient settlementHubClient;
 
     public CloseSettlementWindowsScheduler(CreateJobExecutionLogCommand createJobExecutionLogCommand,
                                            ModifyJobExecutionLogCommand modifyJobExecutionLogCommand,
+                                           SettlementModelQuery settlementModelQuery,
                                            SettlementHubClient settlementHubClient) {
 
         super(createJobExecutionLogCommand, modifyJobExecutionLogCommand);
 
+        this.settlementModelQuery = settlementModelQuery;
         this.settlementHubClient = settlementHubClient;
     }
 
     @Override
     protected void onExecute(SchedulerConfigData schedulerConfigData) throws DomainException, InterruptedException {
 
-        //TODO: call actual dynamic getSettlementModels when settlementModels are implemented
-        String settlementModel = "DEFERREDNET";
+        SettlementModelData settlementModelData =
+                this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
 
         List<GetSettlementWindowsList.SettlementWindow> settlementWindowList =
                 this.settlementHubClient.getSettlementWindowsList(
                         null,
                         null,
-                        null,
+                        settlementModelData.currencyId(),
                         SettlementWindowState.OPEN.toString(),
                         null,
                         new GetSettlementWindowsList.Request());
@@ -64,7 +70,7 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
         }
 
         //Create a new settlement with closed windows
-        this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModel,
+        this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
                                                                                    "",
                                                                                    settlementWindowIdList));
 
