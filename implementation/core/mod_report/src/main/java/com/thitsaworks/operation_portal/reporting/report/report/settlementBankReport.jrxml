@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementBankReport" pageWidth="2000" pageHeight="2000" whenNoDataType="AllSectionsNoDetail" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -89,8 +89,9 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL(op.description, '')),'') AS participant,
-			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL('', '')),'') AS participant,
+			/*IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,*/
+			''  AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
@@ -100,12 +101,15 @@
 			INNER JOIN transferParticipant tp          ON  tp.transferId = tf.transferId
 			INNER JOIN participantCurrency pc          ON  tp.participantCurrencyId = pc.participantCurrencyId
 			INNER JOIN participant p                   ON  p.participantId = pc.participantId
+			/*
 			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
-			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id 
+			*/
 			INNER JOIN ledgerAccountType lat           ON  lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
 			WHERE s.settlementId = $P{settlementId} AND lat.name = 'POSITION'
 			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
-			GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number, op.description;]]>
+			GROUP BY p.name, pc.participantCurrencyId 
+			/*, lp.bank_name, lp.account_name, lp.account_number, op.description; */]]>
 		</queryString>
 		<field name="participant" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="participant"/>
@@ -141,8 +145,9 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL(op.description, '')),'') AS participant,
-			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL('', '')),'') AS participant,
+			/*IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,*/
+			''  AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
@@ -152,12 +157,15 @@
 			INNER JOIN transferParticipant tp          ON  tp.transferId = tf.transferId
 			INNER JOIN participantCurrency pc          ON  tp.participantCurrencyId = pc.participantCurrencyId
 			INNER JOIN participant p                   ON  p.participantId = pc.participantId
+			/*
 			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
-			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
+			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id 
+			*/
 			INNER JOIN ledgerAccountType lat           ON  lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
 			WHERE s.settlementId = $P{settlementId} AND lat.name = 'POSITION'
 			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
-			GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number, op.description;]]>
+			GROUP BY p.name, pc.participantCurrencyId 
+			/*, lp.bank_name, lp.account_name, lp.account_number, op.description; */]]>
 	</queryString>
 	<field name="participant" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="participant"/>
