@@ -48,7 +48,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
             detailReport =
             this.getClass()
                 .getResourceAsStream(
-                    "/com/thitsaworks/operation_portal/reporting/report/report/dfspSettlementDetailReport.jasper");
+                    "com/thitsaworks/operation_portal/reporting/report/report/dfspSettlementDetailReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {

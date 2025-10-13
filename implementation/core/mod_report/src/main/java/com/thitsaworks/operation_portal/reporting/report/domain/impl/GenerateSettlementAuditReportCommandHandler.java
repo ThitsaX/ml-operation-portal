@@ -57,7 +57,7 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
         InputStream settlementAuditReport =
                 this.getClass()
                     .getResourceAsStream(
-                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
+                            "com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
