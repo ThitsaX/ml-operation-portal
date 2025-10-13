@@ -9,9 +9,12 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.core.settlement.command.AddSettlementSchedulerCommand;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
+import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
+import com.thitsaworks.operation_portal.core.settlement.exception.SettlementException;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementScheduler;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,8 @@ public class CreateSettlementSchedulerHandler
         implements CreateSettlementScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementSchedulerHandler.class);
+
+    private final SchedulerEngine schedulerEngine;
 
     private final SettlementModelQuery settlementModelQuery;
 
@@ -36,6 +41,7 @@ public class CreateSettlementSchedulerHandler
                                             ObjectMapper objectMapper,
                                             PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
+                                            SchedulerEngine schedulerEngine,
                                             SettlementModelQuery settlementModelQuery,
                                             CreateSchedulerConfigCommand createSchedulerConfigCommand,
                                             AddSettlementSchedulerCommand addSettlementSchedulerCommand) {
@@ -47,6 +53,7 @@ public class CreateSettlementSchedulerHandler
               principalCache,
               actionAuthorizationManager);
 
+        this.schedulerEngine = schedulerEngine;
         this.settlementModelQuery = settlementModelQuery;
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
         this.addSettlementSchedulerCommand = addSettlementSchedulerCommand;
@@ -57,7 +64,12 @@ public class CreateSettlementSchedulerHandler
 
         SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
 
-        var schedulerConfigData =
+        if (!settlementModelData.autoCloseWindow()) {
+            throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_NOT_AUTO_CLOSE_WINDOW.format(
+                    settlementModelData.name()));
+        }
+
+        var schedulerConfigOutput =
                 this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
                                                                                                  "CloseSettlementWindowsScheduler",
                                                                                                  input.description(),
@@ -66,8 +78,10 @@ public class CreateSettlementSchedulerHandler
 
         var output =
                 this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
-                                                                                                   schedulerConfigData.schedulerConfigData()
+                                                                                                   schedulerConfigOutput.schedulerConfigData()
                                                                                                                       .schedulerConfigId()));
+
+        this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
 
         return new Output(output.created(), output.schedulerConfigId());
     }

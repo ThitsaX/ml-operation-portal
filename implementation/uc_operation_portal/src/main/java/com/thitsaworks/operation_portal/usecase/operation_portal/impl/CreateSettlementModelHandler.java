@@ -15,6 +15,7 @@ import com.thitsaworks.operation_portal.core.settlement.exception.SettlementExce
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementModel;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,8 @@ public class CreateSettlementModelHandler
 
     private final CreateSchedulerConfigCommand createSchedulerConfigCommand;
 
+    private final SchedulerEngine schedulerEngine;
+
     private final ObjectMapper objectMapper;
 
     public CreateSettlementModelHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -47,7 +50,8 @@ public class CreateSettlementModelHandler
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SettlementModelQuery settlementModelQuery,
                                         CreateSettlementModelCommand createSettlementModelCommand,
-                                        CreateSchedulerConfigCommand createSchedulerConfigCommand) {
+                                        CreateSchedulerConfigCommand createSchedulerConfigCommand,
+                                        SchedulerEngine schedulerEngine) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -59,6 +63,7 @@ public class CreateSettlementModelHandler
         this.settlementModelQuery = settlementModelQuery;
         this.createSettlementModelCommand = createSettlementModelCommand;
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
+        this.schedulerEngine = schedulerEngine;
         this.objectMapper = objectMapper;
     }
 
@@ -87,6 +92,8 @@ public class CreateSettlementModelHandler
                                 schedulerConfigInfo.cronExpression(),
                                 schedulerConfigInfo.zoneId()));
 
+                this.schedulerEngine.scheduleOrReschedule(schedulerOutput.schedulerConfigData());
+
                 schedulerConfigIdList.add(schedulerOutput.schedulerConfigData().schedulerConfigId());
             }
 
@@ -95,6 +102,7 @@ public class CreateSettlementModelHandler
         var output = this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
 
                 input.settlementModelName(),
+                input.modelType(),
                 input.currencyID(),
                 true,
                 input.autoCloseWindow(),

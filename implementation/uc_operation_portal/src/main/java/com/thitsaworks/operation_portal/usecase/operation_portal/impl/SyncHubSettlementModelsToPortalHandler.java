@@ -82,6 +82,7 @@ public class SyncHubSettlementModelsToPortalHandler
                 CreateSettlementModelCommand.Output output =
                         this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
                                 hubSettlementModel.name(),
+                                "",
                                 hubSettlementModel.currencyId(),
                                 hubSettlementModel.isActive(),
                                 false, // set Manual as default

@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,19 +61,30 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
 
         List<SettlementWindowId> settlementWindowIdList = new ArrayList<>();
 
+        LocalDateTime runningTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
+
+        String reason =
+                String.format("Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
+                              schedulerConfigData.name(),
+                              settlementModelData.name(),
+                              runningTime,
+                              schedulerConfigData.zoneId());
+
         //Close each settlement window
         for (var settlementWindow : settlementWindowList) {
 
+
             this.settlementHubClient.closeSettlementWindows(settlementWindow.settlementWindowId(),
                                                             new PostCloseSettlementWindows.Request(
-                                                                    "CLOSED", ""));
+                                                                    SettlementWindowState.CLOSED.toString(),
+                                                                    reason));
 
             settlementWindowIdList.add(new SettlementWindowId(settlementWindow.settlementWindowId()));
         }
 
         //Create a new settlement with closed windows
         this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
-                                                                                   "",
+                                                                                   reason,
                                                                                    settlementWindowIdList));
 
     }

@@ -12,6 +12,7 @@ import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveSettlementScheduler;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ public class RemoveSettlementSchedulerHandler
         implements RemoveSettlementScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveSettlementSchedulerHandler.class);
+
+    private final SchedulerEngine schedulerEngine;
 
     private final SettlementModelQuery settlementModelQuery;
 
@@ -36,9 +39,11 @@ public class RemoveSettlementSchedulerHandler
                                             ObjectMapper objectMapper,
                                             PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
+                                            SchedulerEngine schedulerEngine,
                                             SettlementModelQuery settlementModelQuery,
                                             DeleteSchedulerConfigCommand deleteSchedulerConfigCommand,
-                                            RemoveSettlementSchedulerCommand removeSettlementSchedulerCommand) {
+                                            RemoveSettlementSchedulerCommand removeSettlementSchedulerCommand
+                                           ) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -47,6 +52,7 @@ public class RemoveSettlementSchedulerHandler
               principalCache,
               actionAuthorizationManager);
 
+        this.schedulerEngine = schedulerEngine;
         this.settlementModelQuery = settlementModelQuery;
         this.deleteSchedulerConfigCommand = deleteSchedulerConfigCommand;
         this.removeSettlementSchedulerCommand = removeSettlementSchedulerCommand;
@@ -57,13 +63,15 @@ public class RemoveSettlementSchedulerHandler
 
         SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
 
-        var schedulerConfigData =
+        var schedulerConfigOutput =
                 this.deleteSchedulerConfigCommand.execute(input.schedulerConfigId());
+
+        this.schedulerEngine.cancel(schedulerConfigOutput.schedulerConfigData().schedulerConfigId().getId());
 
         var output =
                 this.removeSettlementSchedulerCommand.execute(new RemoveSettlementSchedulerCommand.Input(
                         settlementModelData.settlementModelId(),
-                        schedulerConfigData.schedulerConfigId()));
+                        schedulerConfigOutput.schedulerConfigData().schedulerConfigId()));
 
         return new Output(output.removed(), output.schedulerConfigId());
     }

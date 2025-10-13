@@ -14,6 +14,7 @@ import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySettlementModel;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,8 @@ public class ModifySettlementModelHandler
 
     private final ModifySchedulerConfigStatusCommand modifySchedulerConfigStatusCommand;
 
+    private final SchedulerEngine schedulerEngine;
+
     private final ObjectMapper objectMapper;
 
     public ModifySettlementModelHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -42,7 +45,8 @@ public class ModifySettlementModelHandler
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SettlementModelQuery settlementModelQuery,
                                         ModifySettlementModelCommand modifySettlementModelCommand,
-                                        ModifySchedulerConfigStatusCommand modifySchedulerConfigStatusCommand) {
+                                        ModifySchedulerConfigStatusCommand modifySchedulerConfigStatusCommand,
+                                        SchedulerEngine schedulerEngine) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -54,6 +58,7 @@ public class ModifySettlementModelHandler
         this.settlementModelQuery = settlementModelQuery;
         this.modifySettlementModelCommand = modifySettlementModelCommand;
         this.modifySchedulerConfigStatusCommand = modifySchedulerConfigStatusCommand;
+        this.schedulerEngine = schedulerEngine;
         this.objectMapper = objectMapper;
     }
 
@@ -66,9 +71,14 @@ public class ModifySettlementModelHandler
         if (input.autoCloseWindow() != settlementModelData.autoCloseWindow()) {
 
             for (SchedulerConfigId schedulerConfigId : settlementModelData.schedulerConfigIds()) {
-                this.modifySchedulerConfigStatusCommand.execute(new ModifySchedulerConfigStatusCommand.Input(
+
+                var schedulerConfigStatusOutput =
+                        this.modifySchedulerConfigStatusCommand.execute(new ModifySchedulerConfigStatusCommand.Input(
                         schedulerConfigId,
                         input.autoCloseWindow()));
+
+                this.schedulerEngine.scheduleOrReschedule(schedulerConfigStatusOutput.schedulerConfigData());
+
             }
 
         }
@@ -76,6 +86,7 @@ public class ModifySettlementModelHandler
         var output = this.modifySettlementModelCommand.execute(new ModifySettlementModelCommandHandler.Input(
                 settlementModelData.settlementModelId(),
                 input.settlementModelName(),
+                input.modelType(),
                 input.currencyID(),
                 input.isActive(),
                 input.autoCloseWindow()));

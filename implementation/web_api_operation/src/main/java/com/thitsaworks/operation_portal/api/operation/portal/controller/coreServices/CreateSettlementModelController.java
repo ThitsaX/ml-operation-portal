@@ -36,7 +36,8 @@ public class CreateSettlementModelController {
         CreateSettlementModel.Output output = this.createSettlementModel.execute(
                 new CreateSettlementModel.Input(request.name(),
                                                 request.modelType(),
-                                                request.currencyID(),
+                                                (request.currencyID().isEmpty() || request.currencyID().isBlank()) ?
+                                                        null : request.currencyID(),
                                                 true,
                                                 request.autoCloseWindow(),
                                                 request.requireLiquidityCheck(),

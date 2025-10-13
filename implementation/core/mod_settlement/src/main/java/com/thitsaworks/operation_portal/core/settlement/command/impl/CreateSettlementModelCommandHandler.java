@@ -34,6 +34,7 @@ public class CreateSettlementModelCommandHandler implements CreateSettlementMode
         }
 
         SettlementModel settlementModel = new SettlementModel(input.name(),
+                                                              input.type(),
                                                               input.currencyId(),
                                                               input.isActive(),
                                                               input.autoCloseWindow(),

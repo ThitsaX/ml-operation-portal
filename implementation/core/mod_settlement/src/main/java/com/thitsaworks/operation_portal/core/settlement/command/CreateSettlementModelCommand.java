@@ -9,6 +9,7 @@ import java.util.List;
 public interface CreateSettlementModelCommand {
 
     record Input(String name,
+                 String type,
                  String currencyId,
                  boolean isActive,
                  boolean autoCloseWindow,
