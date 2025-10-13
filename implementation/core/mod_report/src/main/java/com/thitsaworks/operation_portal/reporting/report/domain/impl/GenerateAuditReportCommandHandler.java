@@ -50,7 +50,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
-            var timeOffset = input.timezoneoffset();
+            var timeOffset = input.timezoneOffset();
 
             params.put("timezoneoffset", timeOffset);
             params.put("fromDate",
