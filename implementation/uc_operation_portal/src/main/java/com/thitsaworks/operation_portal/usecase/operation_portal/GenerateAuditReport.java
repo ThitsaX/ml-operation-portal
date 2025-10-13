@@ -11,10 +11,9 @@ import java.time.Instant;
 
 public interface GenerateAuditReport extends UseCase<GenerateAuditReport.Input, GenerateAuditReport.Output> {
 
-    record Input(RealmId realmId,
-                 Instant fromDate,
+    record Input(Instant fromDate,
                  Instant toDate,
-                 String timezoneoffset,
+                 String timezoneOffset,
                  UserId userId,
                  ActionId actionId,
                  String fileType) { }

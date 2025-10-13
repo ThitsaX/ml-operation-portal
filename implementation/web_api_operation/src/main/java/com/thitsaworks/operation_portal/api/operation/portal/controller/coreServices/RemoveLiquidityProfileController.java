@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveLiquidityProfile;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -47,8 +48,8 @@ public class RemoveLiquidityProfileController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
-                          @NotNull @JsonProperty("liquidityProfileId") String liquidityProfileId)
+    public record Request(@NotNull @NotBlank @JsonProperty("participantId") String participantId,
+                          @NotNull @NotBlank @JsonProperty("liquidityProfileId") String liquidityProfileId)
         implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAnnouncement;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,18 +31,18 @@ public class CreateAnnouncementController {
 
     @PostMapping(value = "/secured/createAnnouncement")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody CreateAnnouncementController.Request request)
-            throws DomainException, ParseException, JsonProcessingException {
+        @Valid @RequestBody CreateAnnouncementController.Request request)
+        throws DomainException, ParseException, JsonProcessingException {
 
         LOG.info("Create Announcement Request: [{}]", request);
 
         CreateAnnouncement.Output output = this.createAnnouncement.execute(
-                new CreateAnnouncement.Input(request.announcementTitle,
-                                                request.announcementDetail,
-                                                Instant.parse(request.announcementDate)));
+            new CreateAnnouncement.Input(request.announcementTitle,
+                                         request.announcementDetail,
+                                         Instant.parse(request.announcementDate)));
 
         Response response = new Response(
-                output.created());
+            output.created());
 
         LOG.info("Create Announcement Response: [{}]", response);
 
@@ -50,23 +51,23 @@ public class CreateAnnouncementController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull
-            @JsonProperty("announcementTitle")
-            String announcementTitle,
+        @NotNull @NotBlank
+        @JsonProperty("announcementTitle")
+        String announcementTitle,
 
-            @NotNull
-            @JsonProperty("announcementDetail")
-            String announcementDetail,
+        @NotNull @NotBlank
+        @JsonProperty("announcementDetail")
+        String announcementDetail,
 
-            @NotNull
-            @JsonProperty("announcementDate")
-            String announcementDate
-    ) implements Serializable {}
+        @NotNull @NotBlank
+        @JsonProperty("announcementDate")
+        String announcementDate
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("created")
-            boolean created
-    ) implements Serializable {}
+        @JsonProperty("created")
+        boolean created
+    ) implements Serializable { }
 
 }

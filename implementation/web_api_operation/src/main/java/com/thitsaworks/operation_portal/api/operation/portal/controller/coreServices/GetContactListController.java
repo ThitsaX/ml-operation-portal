@@ -42,10 +42,12 @@ public class GetContactListController {
                                                                                           .toString(),
                                                                                    contact.name(),
                                                                                    contact.position(),
-                                                                                   contact.email()
-                                                                                          .getValue(),
-                                                                                   contact.mobile()
-                                                                                          .getValue(),
+                                                                                   contact.email() != null ?
+                                                                                       contact.email()
+                                                                                              .getValue() : null,
+                                                                                   contact.mobile() != null ?
+                                                                                       contact.mobile()
+                                                                                              .getValue() : null,
                                                                                    contact.contactType()))
                                           .toList());
 

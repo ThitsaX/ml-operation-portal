@@ -49,7 +49,7 @@ public class LoginUserAccountController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull
+        @NotNull @NotBlank
         @Pattern(
             regexp = Email.FORMAT,
             message = "Email must be with valid format.")

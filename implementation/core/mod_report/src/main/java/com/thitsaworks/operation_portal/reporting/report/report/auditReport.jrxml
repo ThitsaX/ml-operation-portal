@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.21.2.final using JasperReports Library version 6.21.2-8434a0bd7c3bbc37cbf916f2968d35e4b165821a  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AuditReport" pageWidth="2000" pageHeight="2000" whenNoDataType="AllSectionsNoDetail" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="AuditReport" pageWidth="2000" pageHeight="2000" whenNoDataType="NoPages" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
     <property name="com.jaspersoft.studio.data.sql.tables" value=""/>
     <property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
     <property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet" value="false"/>
@@ -353,7 +353,7 @@ ORDER BY ta.created_date DESC]]>
                     <property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageHeader"/>
                     <property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="pageFooter"/>
                 </reportElement>
-                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
+                <jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="Blank">
                     <datasetRun subDataset="auditDB" uuid="5dc97863-31cc-4bc9-a30e-c14e01e7cee0">
                         <datasetParameter name="fromDate">
                             <datasetParameterExpression><![CDATA[$P{fromDate}]]></datasetParameterExpression>
