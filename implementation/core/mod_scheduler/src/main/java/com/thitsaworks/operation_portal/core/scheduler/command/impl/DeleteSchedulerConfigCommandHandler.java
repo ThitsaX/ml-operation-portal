@@ -31,7 +31,7 @@ public class DeleteSchedulerConfigCommandHandler implements DeleteSchedulerConfi
 
         schedulerConfigRepository.delete(config);
 
-        return new Output(true);
+        return new Output(true, schedulerConfigId);
     }
 
 }

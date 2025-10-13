@@ -17,6 +17,7 @@
         <module name="mod_pending_approval" />
         <module name="mod_hub_services" />
         <module name="mod_scheduler" />
+        <module name="mod_settlement" />
         <module name="mod_misc" />
         <module name="mod_report" />
         <module name="uc_operation_portal" />
@@ -78,6 +79,7 @@
       <module name="mod_report (1) (com.thitsaworks.operation_portal.reporting)" options="-parameters" />
       <module name="mod_report_querydsl" options="-parameters" />
       <module name="mod_scheduler" options="-parameters" />
+      <module name="mod_settlement" options="-parameters" />
       <module name="mod_test_iam" options="-parameters" />
       <module name="mod_vault" options="-parameters" />
       <module name="mojaloop-dfsp-portal" options="-parameters" />

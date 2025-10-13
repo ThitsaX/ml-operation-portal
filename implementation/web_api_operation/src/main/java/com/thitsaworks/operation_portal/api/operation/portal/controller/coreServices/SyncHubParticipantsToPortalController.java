@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.api.operation.portal.controller;
+package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

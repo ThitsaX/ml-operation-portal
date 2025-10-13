@@ -1,0 +1,52 @@
+package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
+import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
+import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubSettlementModelsToPortal;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class SyncHubSettlementModelsToPortalController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(SyncHubSettlementModelsToPortalController.class);
+
+    private final SyncHubSettlementModelsToPortal syncHubSettlementModelsToPortal;
+
+    private final ObjectMapper objectMapper;
+
+    @PostMapping(value = "/secured/syncHubSettlementModelsToPortal")
+    public ResponseEntity<Response> execute()
+            throws DomainException, JsonProcessingException {
+
+        UserContext userContext =
+                (UserContext) SecurityContextHolder.getContext().getAuthentication().getDetails();
+
+        SyncHubSettlementModelsToPortal.Output output = this.syncHubSettlementModelsToPortal.execute(
+                new SyncHubSettlementModelsToPortal.Input());
+
+        var response = new Response(output.synced());
+
+        LOG.info("Sync hub settlement models to portal response : {}", objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public record Response(
+            @JsonProperty("isSynced") boolean isSynced
+    ) {}
+
+}
