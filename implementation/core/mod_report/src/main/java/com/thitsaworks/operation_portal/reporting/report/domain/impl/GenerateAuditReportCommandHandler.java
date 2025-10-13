@@ -85,6 +85,11 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
                                                                    conn);
 
+            if (jasperPrint.getPages() == null || jasperPrint.getPages()
+                                                             .isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+            }
+
             byte[] rptBytes = new byte[0];
 
             if (input.fileType()
@@ -118,6 +123,9 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             return new Output(rptBytes);
 
+        } catch (ReportException e) {
+
+            throw e;
         } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
