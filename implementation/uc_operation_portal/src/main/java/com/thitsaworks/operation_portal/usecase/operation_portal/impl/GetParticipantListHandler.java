@@ -43,16 +43,20 @@ public class GetParticipantListHandler
 
         for (ParticipantData participantData : participantDataList) {
 
-            participantInfoList.add(
-                new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
-                                                              participantData.participantName()
-                                                                             .getValue(),
-                                                              participantData.description(),
-                                                              participantData.address(),
-                                                              participantData.mobile(),
-                                                              participantData.logoDataType(),
-                                                              participantData.logo(),
-                                                              Instant.ofEpochSecond(participantData.createdDate())));
+            if (participantData.participantName() != null &&
+                    !participantData.participantName().getValue().toLowerCase().contains("hub")) {
+                
+                participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
+                                                                                      participantData.participantName()
+                                                                                                     .getValue(),
+                                                                                      participantData.description(),
+                                                                                      participantData.address(),
+                                                                                      participantData.mobile(),
+                                                                                      participantData.logoDataType(),
+                                                                                      participantData.logo(),
+                                                                                      Instant.ofEpochSecond(
+                                                                                              participantData.createdDate())));
+            }
         }
 
         return new GetParticipantList.Output(participantInfoList);
