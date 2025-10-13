@@ -32,7 +32,7 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     private final QParticipant participant = QParticipant.participant;
 
     @Override
-    public List<ParticipantData> getParticipants() {
+    public List<ParticipantData> getActiveParticipants() {
 
         BooleanExpression predicate = this.participant.participantStatus.eq(ParticipantStatus.ACTIVE);
 
@@ -40,6 +40,16 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         return participants.stream().map(ParticipantData::new).toList();
 
+    }
+
+    @Override
+    public List<ParticipantData> getAllParticipants() {
+
+        BooleanExpression predicate = this.participant.isNotNull();
+
+        List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
+
+        return participants.stream().map(ParticipantData::new).toList();
     }
 
     @Override

@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ModifySettlementModelCommandHandler implements ModifySettlementModelCommand {
@@ -28,7 +30,17 @@ public class ModifySettlementModelCommandHandler implements ModifySettlementMode
                                               .orElseThrow(() -> new SettlementException(SettlementErrors.SETTLEMENT_MODEL_NOT_FOUND.format(
                                                       input.settlementModelId().getId().toString())));
 
+        if (!input.name().equals(settlementModel.getName())) {
+            Optional<SettlementModel> optionalSettlementModel = this.settlementModelRepository.findOne(
+                    SettlementModelRepository.Filters.findByName(input.name()));
+
+            if (optionalSettlementModel.isPresent()) {
+                throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_ALREADY_REGISTERED.format(input.name()));
+            }
+        }
+
         settlementModel.name(input.name())
+                       .type(input.type())
                        .currencyId(input.currencyId())
                        .isActive(input.isActive())
                        .autoCloseWindow(input.autoCloseWindow());

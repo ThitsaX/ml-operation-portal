@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.SchedulerCon
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.command.DeleteSchedulerConfigCommand;
+import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerErrors;
 import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerException;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
@@ -25,13 +26,13 @@ public class DeleteSchedulerConfigCommandHandler implements DeleteSchedulerConfi
     @CoreWriteTransactional
     public Output execute(SchedulerConfigId schedulerConfigId) throws DomainException {
 
-        SchedulerConfig config = schedulerConfigRepository.findById(schedulerConfigId)
+        SchedulerConfig schedulerConfig = schedulerConfigRepository.findById(schedulerConfigId)
                                                           .orElseThrow(() -> new SchedulerException(SchedulerErrors.SCHEDULER_CONFIG_NOT_FOUND.format(
                                                                   schedulerConfigId.getId())));
 
-        schedulerConfigRepository.delete(config);
+        schedulerConfigRepository.delete(schedulerConfig);
 
-        return new Output(true, schedulerConfigId);
+        return new Output(true, new SchedulerConfigData(schedulerConfig));
     }
 
 }

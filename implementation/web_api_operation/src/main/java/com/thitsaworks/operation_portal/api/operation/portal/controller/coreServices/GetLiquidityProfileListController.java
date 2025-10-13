@@ -62,7 +62,7 @@ public class GetLiquidityProfileListController {
                                            @JsonProperty("accountName") String accountName,
                                            @JsonProperty("accountNumber") String accountNumber,
                                            @JsonProperty("currency") String currency,
-                                           @JsonProperty("isActive") Boolean isActive) implements Serializable {
+                                           @JsonProperty("isActive") boolean isActive) implements Serializable {
         }
 
     }

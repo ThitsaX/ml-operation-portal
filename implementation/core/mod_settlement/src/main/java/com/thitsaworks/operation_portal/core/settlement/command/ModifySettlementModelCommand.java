@@ -7,6 +7,7 @@ public interface ModifySettlementModelCommand {
 
     record Input(SettlementModelId settlementModelId,
                  String name,
+                 String type,
                  String currencyId,
                  boolean isActive,
                  boolean autoCloseWindow) {}

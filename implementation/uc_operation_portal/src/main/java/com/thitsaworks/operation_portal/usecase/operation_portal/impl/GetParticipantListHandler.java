@@ -37,7 +37,7 @@ public class GetParticipantListHandler
     @Override
     public GetParticipantList.Output onExecute(GetParticipantList.Input input) throws DomainException {
 
-        List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+        List<ParticipantData> participantDataList = this.participantQuery.getActiveParticipants();
 
         List<GetParticipantList.Output.ParticipantInfo> participantInfoList = new ArrayList<>();
 
@@ -45,7 +45,7 @@ public class GetParticipantListHandler
 
             if (participantData.participantName() != null &&
                     !participantData.participantName().getValue().toLowerCase().contains("hub")) {
-                
+
                 participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
                                                                                       participantData.participantName()
                                                                                                      .getValue(),

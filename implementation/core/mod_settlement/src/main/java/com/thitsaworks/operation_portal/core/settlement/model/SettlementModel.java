@@ -31,6 +31,9 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
     @Column(name = "name")
     protected String name;
 
+    @Column(name = "type")
+    protected String type;
+
     @Column(name = "currency_id")
     protected String currencyId;
 
@@ -53,6 +56,7 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
     Set<SettlementSchedulerConfig> settlementSchedulerConfigs = new HashSet<>();
 
     public SettlementModel(String name,
+                           String type,
                            String currencyId,
                            boolean isActive,
                            boolean autoCloseWindow,
@@ -64,6 +68,7 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
 
         this.settlementModelId = new SettlementModelId(Snowflake.get().nextId());
         this.name = name;
+        this.type = type;
         this.currencyId = currencyId;
         this.isActive = isActive;
         this.autoCloseWindow = autoCloseWindow;
@@ -103,6 +108,13 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
     public SettlementModel name(String name) {
 
         this.name = name;
+
+        return this;
+    }
+
+    public SettlementModel type(String type) {
+
+        this.type = type;
 
         return this;
     }

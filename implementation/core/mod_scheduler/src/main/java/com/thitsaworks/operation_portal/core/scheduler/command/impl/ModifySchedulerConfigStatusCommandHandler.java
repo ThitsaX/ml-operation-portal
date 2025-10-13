@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.scheduler.command.impl;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifySchedulerConfigStatusCommand;
+import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerErrors;
 import com.thitsaworks.operation_portal.core.scheduler.exception.SchedulerException;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
@@ -28,7 +29,7 @@ public class ModifySchedulerConfigStatusCommandHandler implements ModifySchedule
 
         this.schedulerConfigRepository.save(schedulerConfig.active(input.active()));
 
-        return new Output(true, input.schedulerConfigId());
+        return new Output(true, new SchedulerConfigData(schedulerConfig));
     }
 
 }
