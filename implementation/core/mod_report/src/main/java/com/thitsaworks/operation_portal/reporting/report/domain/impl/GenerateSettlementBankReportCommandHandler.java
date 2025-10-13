@@ -4,14 +4,20 @@ import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQu
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -26,6 +32,7 @@ import java.util.Map;
 @Service
 public class GenerateSettlementBankReportCommandHandler implements GenerateSettlementBankReportCommand {
 
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportCommandHandler.class);
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -44,16 +51,24 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timezoneOffset());
 
-        InputStream
-                detailReport =
-                this.getClass()
-                    .getResourceAsStream(
-                            "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
+//        InputStream
+//                settlementBankReport =
+//                this.getClass()
+//                    .getResourceAsStream(
+//                            "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
+
+        InputStream jrxmlStream = getClass().getClassLoader()
+                                            .getResourceAsStream(
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(detailReport, params,
+            JasperDesign design = JRXmlLoader.load(jrxmlStream);
+            design.setName("settlementBankReport");
+            JasperReport settlementBankReport = JasperCompileManager.compileReport(design);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementBankReport, params,
                                                                    conn);
 
             byte[] rptBytes = new byte[0];
@@ -93,7 +108,8 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
         } catch (Exception e) {
 
-            throw new ReportException(ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION);
+            LOG.info("Error : [{}]", e.getMessage());
+            throw new ReportException(ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION);
 
         }
     }

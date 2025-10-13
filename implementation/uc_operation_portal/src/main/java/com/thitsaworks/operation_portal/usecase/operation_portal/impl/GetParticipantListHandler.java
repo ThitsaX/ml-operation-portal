@@ -45,7 +45,7 @@ public class GetParticipantListHandler
 
             if (participantData.participantName() != null &&
                     !participantData.participantName().getValue().toLowerCase().contains("hub")) {
-                
+
                 participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
                                                                                       participantData.participantName()
                                                                                                      .getValue(),
