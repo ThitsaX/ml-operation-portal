@@ -32,8 +32,7 @@ public class GenerateAuditReportController {
     private final GenerateAuditReport generateAuditReport;
 
     @PostMapping("/secured/generateAuditReport")
-    public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId,
-                                            @RequestParam("fromDate") String fromDate,
+    public ResponseEntity<Response> execute(@RequestParam("fromDate") String fromDate,
                                             @RequestParam("toDate") String toDate,
                                             @RequestParam("timezoneOffset") String timezoneOffset,
                                             @RequestParam(
@@ -45,9 +44,9 @@ public class GenerateAuditReportController {
                                             @RequestParam("fileType") String fileType)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Generate Audit Report Request : participantId = [{}], fromDate = [{}], toDate = [{}], " +
+        LOG.info("Generate Audit Report Request : fromDate = [{}], toDate = [{}], " +
                      "timezoneOffset = [{}], userId = [{}], actionId = [{}], fileType = [{}]",
-                 participantId, fromDate, toDate, timezoneOffset, userId, actionId, fileType);
+                 fromDate, toDate, timezoneOffset, userId, actionId, fileType);
 
         String showTimezone = timezoneOffset;
 
@@ -58,7 +57,6 @@ public class GenerateAuditReportController {
         showTimezone = TimeZoneOffsetFormater.normalizeOffset(showTimezone);
 
         var output = this.generateAuditReport.execute(new GenerateAuditReport.Input(
-            new RealmId(Long.parseLong(participantId)),
             Instant.parse(fromDate),
             Instant.parse(toDate),
             showTimezone,

@@ -74,7 +74,8 @@ public class GetParticipantPositionsListController {
                                                                                            financialData.ndcUsed() :
                                                                                            BigDecimal.ZERO,
                                                                                        financialData.participantSettlementCurrencyId(),
-                                                                                       financialData.participantPositionCurrencyId()));
+                                                                                       financialData.participantPositionCurrencyId(),
+                                                                                       financialData.isActive()));
             }
 
             var response = new Response(participantPositionsDataList);
@@ -107,7 +108,8 @@ public class GetParticipantPositionsListController {
                                                @JsonProperty("ndc") BigDecimal ndc,
                                                @JsonProperty("ndcUsed") BigDecimal ndcUsed,
                                                @JsonProperty("participantSettlementCurrencyId") Integer participantSettlementCurrencyId,
-                                               @JsonProperty("participantPositionCurrencyId") Integer participantPositionCurrencyId) {
+                                               @JsonProperty("participantPositionCurrencyId") Integer participantPositionCurrencyId,
+                                               @JsonProperty("isActive") boolean isActive) {
         }
 
     }

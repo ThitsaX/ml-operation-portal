@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateLiquidityProfile;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -52,11 +53,11 @@ public class CreateLiquidityProfileController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("bankName") String bankName,
-        @NotNull @JsonProperty("accountName") String accountName,
-        @NotNull @JsonProperty("accountNumber") String accountNumber,
-        @NotNull @JsonProperty("currency") String currency) implements Serializable {
+        @NotNull @NotBlank @JsonProperty("participantId") String participantId,
+        @NotNull @NotBlank @JsonProperty("bankName") String bankName,
+        @NotNull @NotBlank @JsonProperty("accountName") String accountName,
+        @NotNull @NotBlank @JsonProperty("accountNumber") String accountNumber,
+        @NotNull @NotBlank @JsonProperty("currency") String currency) implements Serializable {
 
     }
 

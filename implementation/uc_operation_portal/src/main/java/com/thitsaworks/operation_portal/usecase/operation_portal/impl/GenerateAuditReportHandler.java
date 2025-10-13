@@ -61,9 +61,7 @@ public class GenerateAuditReportHandler
 
         String realmId = null;
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
-            realmId = input.realmId()
-                           .getEntityId()
-                           .toString();
+            realmId = currentUser.realmId().toString();
         }
 
         var
@@ -84,7 +82,7 @@ public class GenerateAuditReportHandler
         var output = this.generateAuditReportCommand.execute(new GenerateAuditReportCommand.Input(realmId,
                                                                                                   input.fromDate(),
                                                                                                   input.toDate(),
-                                                                                                  input.timezoneoffset(),
+                                                                                                  input.timezoneOffset(),
                                                                                                   userId,
                                                                                                   actionId,
                                                                                                   input.fileType(),

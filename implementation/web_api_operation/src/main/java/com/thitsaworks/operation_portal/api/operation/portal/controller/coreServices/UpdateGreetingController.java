@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateGreeting;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -49,11 +50,12 @@ public class UpdateGreetingController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("greetingId") String greetingId,
-                          @NotNull @JsonProperty("greetingTitle") String greetingTitle,
-                          @NotNull @JsonProperty("greetingDetail") String greetingDetail,
+    public record Request(@NotNull @NotBlank @JsonProperty("greetingId") String greetingId,
+                          @NotNull @NotBlank @JsonProperty("greetingTitle") String greetingTitle,
+                          @NotNull @NotBlank @JsonProperty("greetingDetail") String greetingDetail,
                           @NotNull @JsonProperty("isDeleted") boolean isDeleted,
-                          @NotNull @JsonProperty("greetingDate") String greetingDate) implements Serializable { }
+                          @NotNull @NotBlank @JsonProperty("greetingDate") String greetingDate)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("greetingId") String greetingId) implements Serializable { }

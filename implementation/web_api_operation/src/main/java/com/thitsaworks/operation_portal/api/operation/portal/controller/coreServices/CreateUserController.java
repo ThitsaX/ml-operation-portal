@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -70,16 +71,16 @@ public class CreateUserController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
         @NotNull @JsonProperty("name") String name,
-        @NotNull @Pattern(
+        @NotNull @NotBlank @Pattern(
             regexp = Email.FORMAT,
             message = "Email must be with valid format.") @JsonProperty("email") String email,
-        @NotNull @JsonProperty("password") String password,
-        @NotNull @JsonProperty("firstName") String firstName,
-        @NotNull @JsonProperty("lastName") String lastName,
+        @NotNull @NotBlank @JsonProperty("password") String password,
+        @NotNull @NotBlank @JsonProperty("firstName") String firstName,
+        @NotNull @NotBlank @JsonProperty("lastName") String lastName,
         @NotNull @JsonProperty("jobTitle") String jobTitle,
         @NotNull @JsonProperty("roleIdList") List<String> roleIdList,
-        @NotNull @JsonProperty("participantId") String participantId,
-        @NotNull @JsonProperty("status") String status) implements Serializable {
+        @NotNull @NotBlank @JsonProperty("participantId") String participantId,
+        @NotNull @NotBlank @JsonProperty("status") String status) implements Serializable {
 
     }
 

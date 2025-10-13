@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyContact;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -42,8 +43,8 @@ public class ModifyContactController {
                                     new ContactId(Long.parseLong(request.contactId())),
                                     request.name(),
                                     request.position(),
-                                    new Email(request.email()),
-                                    new Mobile(request.mobile()),
+                                    request.email() != null ? new Email(request.email()) : null,
+                                    request.mobile() !=  null ? new Mobile(request.mobile()) : null,
                                     ContactType.valueOf(request.contactType()
                                                                .toUpperCase())));
 
@@ -56,13 +57,13 @@ public class ModifyContactController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
-                          @NotNull @JsonProperty("contactId") String contactId,
+    public record Request(@NotNull @NotBlank @JsonProperty("participantId") String participantId,
+                          @NotNull @NotBlank @JsonProperty("contactId") String contactId,
                           @NotNull @JsonProperty("name") String name,
                           @NotNull @JsonProperty("position") String position,
                           @NotNull @JsonProperty("email") String email,
                           @NotNull @JsonProperty("mobile") String mobile,
-                          @NotNull @JsonProperty("contactType") String contactType) implements Serializable { }
+                          @NotNull @NotBlank @JsonProperty("contactType") String contactType) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("modified") boolean modified) implements Serializable {

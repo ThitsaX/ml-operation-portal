@@ -37,22 +37,26 @@ public class GetParticipantListHandler
     @Override
     public GetParticipantList.Output onExecute(GetParticipantList.Input input) throws DomainException {
 
-        List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+        List<ParticipantData> participantDataList = this.participantQuery.getActiveParticipants();
 
         List<GetParticipantList.Output.ParticipantInfo> participantInfoList = new ArrayList<>();
 
         for (ParticipantData participantData : participantDataList) {
 
-            participantInfoList.add(
-                new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
-                                                              participantData.participantName()
-                                                                             .getValue(),
-                                                              participantData.description(),
-                                                              participantData.address(),
-                                                              participantData.mobile(),
-                                                              participantData.logoDataType(),
-                                                              participantData.logo(),
-                                                              Instant.ofEpochSecond(participantData.createdDate())));
+            if (participantData.participantName() != null &&
+                    !participantData.participantName().getValue().toLowerCase().contains("hub")) {
+
+                participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
+                                                                                      participantData.participantName()
+                                                                                                     .getValue(),
+                                                                                      participantData.description(),
+                                                                                      participantData.address(),
+                                                                                      participantData.mobile(),
+                                                                                      participantData.logoDataType(),
+                                                                                      participantData.logo(),
+                                                                                      Instant.ofEpochSecond(
+                                                                                              participantData.createdDate())));
+            }
         }
 
         return new GetParticipantList.Output(participantInfoList);

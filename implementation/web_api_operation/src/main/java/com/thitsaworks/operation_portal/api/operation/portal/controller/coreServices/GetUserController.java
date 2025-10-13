@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class GetUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("userId") String userId
+    public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

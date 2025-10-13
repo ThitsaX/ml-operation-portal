@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class ModifyParticipantProfileController {
             new ModifyParticipantProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                                request.description(),
                                                request.address(),
-                                               new Mobile(request.mobile()),
+                                               request.mobile() != null ? new Mobile(request.mobile()) : null,
                                                request.logoDataType(),
                                                Base64.getDecoder()
                                                      .decode(request.logoBase64())));
@@ -62,12 +63,12 @@ public class ModifyParticipantProfileController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
+    public record Request(@NotNull @NotBlank @JsonProperty("participantId") String participantId,
                           @NotNull @JsonProperty("description") String description,
                           @NotNull @JsonProperty("address") String address,
                           @NotNull @JsonProperty("mobile") String mobile,
-                          @JsonProperty("logoDataType") String logoDataType,
-                          @JsonProperty("logo") String logoBase64
+                          @NotNull @JsonProperty("logoDataType") String logoDataType,
+                          @NotNull @JsonProperty("logo") String logoBase64
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

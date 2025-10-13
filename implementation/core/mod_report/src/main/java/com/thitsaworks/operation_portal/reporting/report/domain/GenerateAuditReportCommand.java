@@ -12,7 +12,7 @@ public interface GenerateAuditReportCommand {
     record Input(String realmId,
                  Instant fromDate,
                  Instant toDate,
-                 String timezoneoffset,
+                 String timezoneOffset,
                  String userId,
                  String actionId,
                  String fileType,

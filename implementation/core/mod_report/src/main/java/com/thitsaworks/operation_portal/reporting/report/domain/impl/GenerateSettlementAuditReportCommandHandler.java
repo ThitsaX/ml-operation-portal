@@ -4,11 +4,15 @@ import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQu
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
@@ -54,13 +58,21 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
 
         LOG.info("Params : {}", params);
 
-        InputStream settlementAuditReport =
-                this.getClass()
-                    .getResourceAsStream(
-                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
+        InputStream jrxmlStream = getClass().getClassLoader()
+                                            .getResourceAsStream(
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jrxml");
+
+//        InputStream settlementAuditReport =
+//                this.getClass()
+//                    .getResourceAsStream(
+//                            "com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
+
+            JasperDesign design = JRXmlLoader.load(jrxmlStream);
+            design.setName("settlementAuditReport");
+            JasperReport settlementAuditReport = JasperCompileManager.compileReport(design);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(settlementAuditReport, params,
                                                                    conn);

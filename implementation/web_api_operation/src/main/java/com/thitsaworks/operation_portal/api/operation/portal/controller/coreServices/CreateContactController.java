@@ -10,6 +10,7 @@ import com.thitsaworks.operation_portal.component.common.type.Mobile;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateContact;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class CreateContactController {
                                     new Email(request.email()),
                                     new Mobile(request.mobile()),
                                     ContactType.valueOf(request.contactType()
-                                                                  .toUpperCase())));
+                                                               .toUpperCase())));
 
         var response = new Response(output.created(),
                                     output.contactId()
@@ -58,14 +59,14 @@ public class CreateContactController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("participantId") String participantId,
-                          @NotNull @JsonProperty("name") String name,
+    public record Request(@NotNull @NotBlank @JsonProperty("participantId") String participantId,
+                          @NotNull @NotBlank @JsonProperty("name") String name,
                           @NotNull @JsonProperty("position") String position,
-                          @NotNull @JsonProperty("email") @Pattern(
+                          @NotNull @NotBlank @JsonProperty("email") @Pattern(
                               regexp = Email.FORMAT,
                               message = "Email must be with valid format.") String email,
-                          @NotNull @JsonProperty("mobile") String mobile,
-                          @NotNull @JsonProperty("contactType") String contactType) implements Serializable {
+                          @NotNull @NotBlank @JsonProperty("mobile") String mobile,
+                          @NotNull @NotBlank @JsonProperty("contactType") String contactType) implements Serializable {
 
     }
 

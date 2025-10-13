@@ -13,16 +13,17 @@ public class FinancialDataMapper implements RowMapper<FinancialData> {
     public FinancialData mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         return new FinancialData(new ParticipantId(1L),
-                rs.getString("dfspId"),
-                rs.getString("dfspName"),
-                rs.getString("currency"),
-                rs.getBigDecimal("balance"),
-                rs.getBigDecimal("currentPosition"),
-                rs.getBigDecimal("ndcPercent"),
-                rs.getBigDecimal("ndc"),
-                rs.getBigDecimal("ndcUsed"),
-                rs.getInt("participantSettlementCurrencyId"),
-                rs.getInt("participantPositionCurrencyID"));
+                                 rs.getString("dfspId"),
+                                 rs.getString("dfspName"),
+                                 rs.getString("currency"),
+                                 rs.getBigDecimal("balance"),
+                                 rs.getBigDecimal("currentPosition"),
+                                 rs.getBigDecimal("ndcPercent"),
+                                 rs.getBigDecimal("ndc"),
+                                 rs.getBigDecimal("ndcUsed"),
+                                 rs.getInt("participantSettlementCurrencyId"),
+                                 rs.getInt("participantPositionCurrencyID"),
+                                 rs.getBoolean("isActive"));
 
     }
 

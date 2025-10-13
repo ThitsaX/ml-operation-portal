@@ -36,12 +36,13 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
                     "IFNULL(ROUND(((SUM(IFNULL(pp.value,0))/SUM(IFNULL(pl.value,0))) * 100),2),0) AS ndcUsed\n" +
                     ",MIN(CASE WHEN pc.ledgerAccountTypeId = 2 THEN pb.participantCurrencyId END) AS participantSettlementCurrencyId\n" +
                     ",MIN(CASE WHEN pc.ledgerAccountTypeId = 1 THEN pp.participantCurrencyId END) AS participantPositionCurrencyId\n" +
+                    ",MIN(CASE WHEN pc.ledgerAccountTypeId = 1 THEN pc.isActive END) AS isActive\n" +
                     "FROM participant p \n" +
                     "LEFT JOIN participantCurrency pc ON pc.participantId = p.participantId \n" +
                     "LEFT JOIN participantLimit pl ON pc.participantCurrencyId = pl.participantCurrencyId AND pl.isActive = 1 \n" +
                     "LEFT JOIN participantPosition pb ON pb.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 2 \n" +
                     "LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId AND pc.ledgerAccountTypeId = 1 \n" +
-                    "WHERE (? = 'All' OR p.name = ?) AND p.name NOT LIKE '%HUB%' AND pc.isActive = 1 GROUP BY p.participantId, p.name, p.description, pc.currencyId  ORDER BY p.name, pc.currencyId;",
+                    "WHERE (? = 'All' OR p.name = ?) AND p.name NOT LIKE '%HUB%' GROUP BY p.participantId, p.name, p.description, pc.currencyId  ORDER BY p.name, pc.currencyId;",
                 new FinancialDataMapper(),
                 input.getFspID(),
                 input.getFspID());

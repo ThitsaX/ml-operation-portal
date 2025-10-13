@@ -25,10 +25,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,12 +50,15 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
-            var timeOffset = input.timezoneoffset();
-
+            var timeOffset = input.timezoneOffset();
 
             params.put("timezoneoffset", timeOffset);
-            params.put("fromDate", input.fromDate().getEpochSecond());
-            params.put("toDate", input.toDate().getEpochSecond());
+            params.put("fromDate",
+                       input.fromDate()
+                            .getEpochSecond());
+            params.put("toDate",
+                       input.toDate()
+                            .getEpochSecond());
 
             if (input.realmId() != null) {
                 params.put("realmId", input.realmId());
@@ -75,7 +74,6 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             params.put("grantedActionList", input.grantedActionList());
 
-
             InputStream jrxmlStream = getClass().getClassLoader()
                                                 .getResourceAsStream(
                                                     "com/thitsaworks/operation_portal/reporting/report/report/auditReport.jrxml");
@@ -86,6 +84,11 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
                                                                    conn);
+
+            if (jasperPrint.getPages() == null || jasperPrint.getPages()
+                                                             .isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+            }
 
             byte[] rptBytes = new byte[0];
 
@@ -98,7 +101,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
-                
+
             } else if (input.fileType()
                             .equalsIgnoreCase("csv")) {
 
@@ -112,16 +115,22 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 csvContent = "\n" + csvContent;
 
                 rptBytes = csvContent.getBytes(StandardCharsets.UTF_8);
+
+            } else {
+
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
             }
 
             return new Output(rptBytes);
 
+        } catch (ReportException e) {
+
+            throw e;
         } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION);
         }
     }
-
 
 }

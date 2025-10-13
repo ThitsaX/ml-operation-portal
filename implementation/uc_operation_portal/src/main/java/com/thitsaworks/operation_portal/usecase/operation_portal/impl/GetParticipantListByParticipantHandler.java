@@ -58,7 +58,7 @@ public class GetParticipantListByParticipantHandler
 
         } else {
 
-            List<ParticipantData> participantDataList = this.participantQuery.getParticipants();
+            List<ParticipantData> participantDataList = this.participantQuery.getActiveParticipants();
 
             for (ParticipantData participantData : participantDataList) {
                 participantInfoList.add(

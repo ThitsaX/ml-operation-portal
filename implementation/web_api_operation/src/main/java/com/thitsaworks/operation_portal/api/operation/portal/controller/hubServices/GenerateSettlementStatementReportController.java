@@ -31,7 +31,7 @@ public class GenerateSettlementStatementReportController {
         @RequestParam("endDate") String endDate,
         @RequestParam("fileType") String fileType,
         @RequestParam("currencyId") String currencyId,
-        @RequestParam("timeZoneOffset") String timeZoneOffset)
+        @RequestParam("timezoneOffset") String timeZoneOffset)
         throws DomainException, JsonProcessingException {
 
         LOG.info(
