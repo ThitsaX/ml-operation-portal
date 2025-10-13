@@ -48,7 +48,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
                 detailReport =
                 this.getClass()
                     .getResourceAsStream(
-                            "/com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
+                            "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
