@@ -15,5 +15,5 @@ public record FinancialData(ParticipantId participantId,
                             BigDecimal ndc,
                             BigDecimal ndcUsed,
                             Integer participantSettlementCurrencyId,
-
-                            Integer participantPositionCurrencyId) implements Serializable {}
+                            Integer participantPositionCurrencyId,
+                            boolean isActive) implements Serializable {}

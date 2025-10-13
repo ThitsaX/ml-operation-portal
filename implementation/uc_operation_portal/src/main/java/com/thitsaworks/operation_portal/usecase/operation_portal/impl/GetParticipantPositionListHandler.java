@@ -130,7 +130,8 @@ public class GetParticipantPositionListHandler
                     dto.ndc(),
                     dto.ndcUsed(),
                     dto.participantSettlementCurrencyId(),
-                    dto.participantPositionCurrencyId()
+                    dto.participantPositionCurrencyId(),
+                    dto.isActive()
             );
 
             result.add(updated);
