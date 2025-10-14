@@ -52,7 +52,7 @@ public class GetParticipantListHandler
                                                                                       participantData.description(),
                                                                                       participantData.address(),
                                                                                       participantData.mobile(),
-                                                                                      participantData.logoDataType(),
+                                                                                      participantData.logoFileType(),
                                                                                       participantData.logo(),
                                                                                       Instant.ofEpochSecond(
                                                                                               participantData.createdDate())));

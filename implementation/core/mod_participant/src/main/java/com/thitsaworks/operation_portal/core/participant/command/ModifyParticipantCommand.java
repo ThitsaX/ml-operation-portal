@@ -10,7 +10,7 @@ public interface ModifyParticipantCommand {
                  String description,
                  String address,
                  Mobile mobile,
-                 String logoDataType,
+                 String logoFileType,
                  byte[] logo) { }
 
     record Output(boolean modified,

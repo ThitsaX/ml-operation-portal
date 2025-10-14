@@ -89,7 +89,7 @@ public class GetParticipantHandler
                           participantData.description(),
                           participantData.address(),
                           participantData.mobile(),
-                          participantData.logoDataType(),
+                          participantData.logoFileType(),
                           participantData.logo(),
                           Instant.ofEpochSecond(participantData.createdDate()),
                           contactInfoList,

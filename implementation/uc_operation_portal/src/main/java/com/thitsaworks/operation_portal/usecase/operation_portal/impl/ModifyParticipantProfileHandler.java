@@ -66,7 +66,7 @@ public class ModifyParticipantProfileHandler
                                                                                               input.description(),
                                                                                               input.address(),
                                                                                               input.mobile(),
-                                                                                              input.logoDataType(),
+                                                                                              input.logoFileType(),
                                                                                               input.logo()));
 
         return new Output(output.modified(), output.participantId());
@@ -79,7 +79,7 @@ public class ModifyParticipantProfileHandler
                                         input.description(),
                                         input.address(),
                                         input.mobile(),
-                                        input.logoDataType(),
+                                        input.logoFileType(),
                                         null);
 
         super.beforeExecute(modifiedInput);

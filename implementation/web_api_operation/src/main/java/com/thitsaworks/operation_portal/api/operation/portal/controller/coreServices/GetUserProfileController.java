@@ -73,7 +73,7 @@ public class GetUserProfileController {
                                     output.jobTitle(),
                                     output.participantName(),
                                     output.description(),
-                                    output.logoDataType(),
+                                    output.logoFileType(),
                                     output.logoBase64() == null ? null : Base64.getEncoder()
                                                                          .encodeToString(output.logoBase64()),
                                     output.roleList(),

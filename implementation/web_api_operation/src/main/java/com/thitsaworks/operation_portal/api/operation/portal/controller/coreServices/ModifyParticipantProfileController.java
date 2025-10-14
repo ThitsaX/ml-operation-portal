@@ -49,7 +49,7 @@ public class ModifyParticipantProfileController {
                                                request.description(),
                                                request.address(),
                                                request.mobile() != null ? new Mobile(request.mobile()) : null,
-                                               request.logoDataType(),
+                                               request.logoFileType(),
                                                Base64.getDecoder()
                                                      .decode(request.logoBase64())));
 
@@ -67,7 +67,7 @@ public class ModifyParticipantProfileController {
                           @NotNull @JsonProperty("description") String description,
                           @NotNull @JsonProperty("address") String address,
                           @NotNull @JsonProperty("mobile") String mobile,
-                          @NotNull @JsonProperty("logoDataType") String logoDataType,
+                          @NotNull @JsonProperty("logoFileType") String logoFileType,
                           @NotNull @JsonProperty("logo") String logoBase64
     ) implements Serializable { }
 

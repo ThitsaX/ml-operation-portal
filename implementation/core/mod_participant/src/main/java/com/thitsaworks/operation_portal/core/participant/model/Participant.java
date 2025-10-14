@@ -63,8 +63,8 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Enumerated(EnumType.STRING)
     protected ParticipantStatus participantStatus;
 
-    @Column(name = "logo_data_type")
-    protected String logoDatatype;
+    @Column(name = "logo_file_type")
+    protected String logoFiletype;
 
     @Lob
     @Column(
@@ -337,9 +337,9 @@ public class Participant extends JpaEntity<ParticipantId> {
 
     }
 
-    public Participant logoDataType(String logoDatatype) {
+    public Participant logoFileType(String logoFiletype) {
 
-        this.logoDatatype = logoDatatype;
+        this.logoFiletype = logoFiletype;
         return this;
     }
 
