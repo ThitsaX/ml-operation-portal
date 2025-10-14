@@ -1,6 +1,5 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
-import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
@@ -12,7 +11,7 @@ public interface ModifyParticipantProfile extends
                  String description,
                  String address,
                  Mobile mobile,
-                 String logoDataType,
+                 String logoFileType,
                  byte[] logo) { }
 
     record Output(boolean modified, ParticipantId participantId) { }

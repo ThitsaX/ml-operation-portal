@@ -25,8 +25,6 @@ public class GetParticipantProfileHandler
 
     private final ParticipantQuery participantQuery;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     public GetParticipantProfileHandler(PrincipalCache principalCache,
@@ -38,7 +36,6 @@ public class GetParticipantProfileHandler
               actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
     }
 
@@ -63,7 +60,7 @@ public class GetParticipantProfileHandler
                           participantData.description(),
                           participantData.address(),
                           participantData.mobile(),
-                          participantData.logoDataType(),
+                          participantData.logoFileType(),
                           participantData.logo(),
                           Instant.ofEpochSecond(participantData.createdDate()));
     }
@@ -76,7 +73,7 @@ public class GetParticipantProfileHandler
                                            output.description(),
                                            output.address(),
                                            output.mobile(),
-                                           output.logoDataType(),
+                                           output.logoFileType(),
                                            null,
                                            output.createdDate());
 

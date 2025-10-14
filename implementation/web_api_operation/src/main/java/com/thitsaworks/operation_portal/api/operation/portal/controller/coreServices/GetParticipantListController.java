@@ -41,7 +41,7 @@ public class GetParticipantListController {
                                                                             .toString(),
                                                                  participant.participantName(),
                                                                  participant.description(),
-                                                                 participant.logoDataType(),
+                                                                 participant.logoFileType(),
                                                                  participant.logo() == null ? null : Base64.getEncoder()
                                                                                                            .encodeToString(
                                                                                                                participant.logo())));

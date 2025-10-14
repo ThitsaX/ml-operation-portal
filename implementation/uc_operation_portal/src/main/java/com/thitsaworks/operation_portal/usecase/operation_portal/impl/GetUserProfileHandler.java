@@ -89,7 +89,7 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
                           participantData.participantName()
                                          .getValue(),
                           participantData.description(),
-                          participantData.logoDataType(),
+                          participantData.logoFileType(),
                           participantData.logo(),
                           roleList,
                           permittedMenuAndActionList);
