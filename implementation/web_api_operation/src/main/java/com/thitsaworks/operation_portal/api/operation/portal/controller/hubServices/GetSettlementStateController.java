@@ -37,6 +37,8 @@ public class GetSettlementStateController {
 
         var response = new Response(settlementStateDataList);
 
+        LOGGER.info("Get Settlement State Response : [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

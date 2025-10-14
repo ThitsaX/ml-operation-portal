@@ -37,6 +37,8 @@ public class GetSettlementWindowStateController {
 
         var response = new Response(settlementWindowStateDataList);
 
+        LOG.info("Get Settlement Window State Response : [{}]", response);
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
