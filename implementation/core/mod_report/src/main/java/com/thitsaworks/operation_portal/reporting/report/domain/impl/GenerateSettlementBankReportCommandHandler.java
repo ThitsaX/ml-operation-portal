@@ -79,6 +79,11 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
             JasperPrint jasperPrint = JasperFillManager.fillReport(settlementBankReport, params,
                                                                    conn);
 
+            if (jasperPrint.getPages() == null || jasperPrint.getPages()
+                                                             .isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+            }
+
             byte[] rptBytes = new byte[0];
 
             if (input.fileType()
@@ -110,6 +115,9 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
                 csvExporter.exportReport();
                 rptBytes = csvReport.toByteArray();
+            } else {
+
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
             }
 
             return new Output(rptBytes);

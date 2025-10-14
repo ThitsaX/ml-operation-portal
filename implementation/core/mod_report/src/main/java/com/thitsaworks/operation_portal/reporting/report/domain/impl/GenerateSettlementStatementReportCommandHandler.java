@@ -4,11 +4,15 @@ import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQu
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementStatementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,16 +57,32 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timeZoneOffset());
 
-        InputStream settlementReport =
-            this.getClass()
+        InputStream jrxmlStream =
+                this.getClass().getClassLoader()
                 .getResourceAsStream(
-                        "com/thitsaworks/operation_portal/reporting/report/report/settlementStatementReport.jasper");
+                        "com/thitsaworks/operation_portal/reporting/report/report/settlementStatementReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
+            DatabaseMetaData md = conn.getMetaData();
+            LOG.info("URL={} | user={} | driver={} {}",
+                     md.getURL(),
+                     md.getUserName(),
+                     md.getDriverName(),
+                     md.getDriverVersion());
+
+            JasperDesign design = JRXmlLoader.load(jrxmlStream);
+            design.setName("settlementStatementReport");
+            JasperReport settlementStatementReport = JasperCompileManager.compileReport(design);
+
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementStatementReport, params,
                                                                    conn);
+
+            if (jasperPrint.getPages() == null || jasperPrint.getPages()
+                                                             .isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+            }
 
             byte[] rptBytes = new byte[0];
 
@@ -94,6 +115,10 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
                 csvExporter.exportReport();
                 rptBytes = csvReport.toByteArray();
+
+            } else {
+
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
             }
 
             return new Output(rptBytes);

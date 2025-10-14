@@ -62,11 +62,6 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                                             .getResourceAsStream(
                                                     "com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jrxml");
 
-//        InputStream settlementAuditReport =
-//                this.getClass()
-//                    .getResourceAsStream(
-//                            "com/thitsaworks/operation_portal/reporting/report/report/settlementAuditReport.jasper");
-
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
 
@@ -76,6 +71,10 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(settlementAuditReport, params,
                                                                    conn);
+            if (jasperPrint.getPages() == null || jasperPrint.getPages()
+                                                             .isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+            }
 
             byte[] rptBytes = new byte[0];
 
@@ -118,6 +117,9 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
                 csvExporter.exportReport();
                 rptBytes = csvReport.toByteArray();
+            } else {
+
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
             }
 
             return new Output(rptBytes);
