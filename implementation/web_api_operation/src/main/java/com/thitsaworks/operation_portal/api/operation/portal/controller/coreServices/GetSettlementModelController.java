@@ -28,31 +28,33 @@ public class GetSettlementModelController {
     @GetMapping("/secured/getSettlementModel")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        LOG.debug("Fetching all settlement models");
-
         var output = this.getSettlementModel.execute(new GetSettlementModel.Input());
 
-        List<Response.SettlementModelData> settlementModels = output.settlementModels().stream()
-                                                                    .map(settlementModel -> new Response.SettlementModelData(
-                                                                            settlementModel.settlementModelId()
-                                                                                           .getEntityId().toString(),
-                                                                            settlementModel.name(),
-                                                                            settlementModel.currencyId(),
-                                                                            settlementModel.isActive(),
-                                                                            settlementModel.autoCloseWindow(),
-                                                                            settlementModel.requireLiquidityCheck(),
-                                                                            settlementModel.autoPositionReset(),
-                                                                            settlementModel.adjustPosition(),
-                                                                            settlementModel.schedulerConfigIds()
-                                                                                           .stream()
-                                                                                           .map(SchedulerConfigId::getEntityId)
-                                                                                           .collect(Collectors.toSet())
-                                                                    ))
-                                                                    .toList();
+        List<Response.SettlementModelData>
+            settlementModels =
+            output.settlementModels()
+                  .stream()
+                  .map(settlementModel -> new Response.SettlementModelData(
+                      settlementModel.settlementModelId()
+                                     .getEntityId()
+                                     .toString(),
+                      settlementModel.name(),
+                      settlementModel.currencyId(),
+                      settlementModel.isActive(),
+                      settlementModel.autoCloseWindow(),
+                      settlementModel.requireLiquidityCheck(),
+                      settlementModel.autoPositionReset(),
+                      settlementModel.adjustPosition(),
+                      settlementModel.schedulerConfigIds()
+                                     .stream()
+                                     .map(SchedulerConfigId::getEntityId)
+                                     .collect(Collectors.toSet())
+                  ))
+                  .toList();
 
         Response response = new Response(settlementModels);
 
-        LOG.debug("Fetched all settlement models");
+        LOG.debug("Get all settlement models:", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -61,15 +63,15 @@ public class GetSettlementModelController {
     public record Response(List<SettlementModelData> settlementModels) {
 
         public record SettlementModelData(
-                @JsonProperty("settlementModelId") String settlementModelId,
-                @JsonProperty("name") String name,
-                @JsonProperty("currencyId") String currencyId,
-                @JsonProperty("isActive") boolean isActive,
-                @JsonProperty("autoCloseWindow") boolean autoCloseWindow,
-                @JsonProperty("requireLiquidityCheck") boolean requireLiquidityCheck,
-                @JsonProperty("autoPositionReset") boolean autoPositionReset,
-                @JsonProperty("adjustPosition") boolean adjustPosition,
-                @JsonProperty("schedulerConfigIds") Set<Long> schedulerConfigIds) {
+            @JsonProperty("settlementModelId") String settlementModelId,
+            @JsonProperty("name") String name,
+            @JsonProperty("currencyId") String currencyId,
+            @JsonProperty("isActive") boolean isActive,
+            @JsonProperty("autoCloseWindow") boolean autoCloseWindow,
+            @JsonProperty("requireLiquidityCheck") boolean requireLiquidityCheck,
+            @JsonProperty("autoPositionReset") boolean autoPositionReset,
+            @JsonProperty("adjustPosition") boolean adjustPosition,
+            @JsonProperty("schedulerConfigIds") Set<Long> schedulerConfigIds) {
 
         }
 

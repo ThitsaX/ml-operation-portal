@@ -32,7 +32,7 @@ public class HubSettlementModelJdbcQueryHandler implements HubSettlementModelQue
     public List<HubSettlementModelData> getSettlementModelList() {
 
         return this.jdbcTemplate.query(
-                "SELECT settlementModelId, name, isActive, settlementGranularityId, settlementInterchangeId, settlementDelayId, currencyId, requireLiquidityCheck, ledgerAccountTypeId, autoPositionReset, adjustPosition, settlementAccountTypeId FROM settlementmodel",
+                "SELECT settlementModelId, name, isActive, settlementGranularityId, settlementInterchangeId, settlementDelayId, currencyId, requireLiquidityCheck, ledgerAccountTypeId, autoPositionReset, adjustPosition, settlementAccountTypeId FROM settlementModel",
                 (rs, rowNum) -> new HubSettlementModelData(
                         rs.getInt("settlementModelId"),
                         rs.getString("name"),
