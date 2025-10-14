@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
@@ -24,28 +23,28 @@ public class SyncHubParticipantsToPortalController {
 
     private final SyncHubParticipantsToPortal syncHubParticipantsToPortal;
 
-    private final ObjectMapper objectMapper;
-
     @PostMapping(value = "/secured/syncHubParticipantsToPortal")
     public ResponseEntity<Response> execute()
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         UserContext userContext =
-                (UserContext) SecurityContextHolder.getContext().getAuthentication().getDetails();
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
 
         SyncHubParticipantsToPortal.Output output = this.syncHubParticipantsToPortal.execute(
-                new SyncHubParticipantsToPortal.Input());
+            new SyncHubParticipantsToPortal.Input());
 
         var response = new Response(output.synced());
 
-        LOG.info("Sync hub participants to portal response : {}", objectMapper.writeValueAsString(response));
+        LOG.info("Sync hub participants to portal response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("isSynced") boolean isSynced
-    ) {}
+        @JsonProperty("isSynced") boolean isSynced
+    ) { }
 
 }

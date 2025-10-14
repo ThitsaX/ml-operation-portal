@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.SettlementMo
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementScheduler;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,23 +31,24 @@ public class CreateSettlementSchedulerController {
 
     @PostMapping("/secured/createSettlementScheduler")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create New Settlement Scheduler Request: [{}]", request);
+        LOG.info("Create Settlement Scheduler Request: [{}]", request);
 
         CreateSettlementScheduler.Output output = this.createSettlementScheduler.execute(
-                new CreateSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
-                                                    request.name(),
-                                                    request.description(),
-                                                    request.cronExpression(),
-                                                    request.zoneId()));
+            new CreateSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
+                                                request.schedulerConfigInfoList()
+                                                       .stream()
+                                                       .map(config -> new CreateSettlementScheduler.Input.SchedulerConfigInfo(
+                                                           config.name(),
+                                                           config.description(),
+                                                           config.cronExpression(),
+                                                           config.zoneId()))
+                                                       .toList()));
 
-        var response = new Response(output.created(),
-                                    output.schedulerConfigId()
-                                          .getEntityId()
-                                          .toString());
+        var response = new Response(output.created());
 
-        LOG.info("Create New Settlement Scheduler Response: [{}]", response);
+        LOG.info("Create Settlement Scheduler Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -53,16 +56,19 @@ public class CreateSettlementSchedulerController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @JsonProperty("settlementModelId") String settlementModelId,
-                          @NotNull @JsonProperty("name") String name,
-                          @NotNull @JsonProperty("description") String description,
-                          @NotNull @JsonProperty("cronExpression") String cronExpression,
-                          @NotNull @JsonProperty("zoneId") String zoneId
+                          @NotNull @JsonProperty("schedulerConfigInfoList") List<SchedulerConfigInfo> schedulerConfigInfoList
     ) implements Serializable {
+
+        public record SchedulerConfigInfo(@NotBlank @JsonProperty("name") String name,
+                                          @NotBlank @JsonProperty("description") String description,
+                                          @NotBlank @JsonProperty("cronExpression") String cronExpression,
+                                          @NotBlank @JsonProperty("zoneId") String zoneId)
+            implements Serializable { }
+
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isCreated") boolean isCreated,
-                           @JsonProperty("schedulerConfigId") String schedulerConfigId) implements Serializable {
+    public record Response(@JsonProperty("isCreated") boolean isCreated) implements Serializable {
     }
 
 }
