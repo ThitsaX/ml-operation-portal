@@ -3,8 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hub_services.data.SettlementStateData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementState;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementStateList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +17,22 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetSettlementStateController {
+public class GetSettlementStateListController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementStateController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementStateListController.class);
 
-    private final GetSettlementState getSettlementState;
+    private final GetSettlementStateList getSettlementStateList;
 
-    @GetMapping("/secured/getSettlementState")
+    @GetMapping("/secured/getSettlementStateList")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        var output = this.getSettlementState.execute(new GetSettlementState.Input());
+        var output = this.getSettlementStateList.execute(new GetSettlementStateList.Input());
 
         List<Response.SettlementStateData> settlementStateDataList = new ArrayList<>();
 
-        for (SettlementStateData data : output.settlementStates()) {
-            settlementStateDataList.add(new Response.SettlementStateData(data.settlementStateId(), data.enumeration()));
+        for (var settlementStateData : output.settlementStates()) {
+            settlementStateDataList.add(new Response.SettlementStateData(settlementStateData.settlementStateId(),
+                    settlementStateData.enumeration()));
         }
 
         var response = new Response(settlementStateDataList);
@@ -43,12 +43,12 @@ public class GetSettlementStateController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("settlementState") List<SettlementStateData> settlementStateDataList){
+    public record Response(@JsonProperty("settlementState") List<SettlementStateData> settlementStateDataList) {
 
         public record SettlementStateData(
                 @JsonProperty("settlementStateId") String settlementStateId,
                 @JsonProperty("enumeration") String enumeration
-        ){
+        ) {
 
         }
 

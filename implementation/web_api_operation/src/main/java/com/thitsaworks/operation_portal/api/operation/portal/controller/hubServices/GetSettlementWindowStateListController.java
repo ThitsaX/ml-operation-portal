@@ -3,8 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowStateData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowState;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowStateList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +17,22 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetSettlementWindowStateController {
+public class GetSettlementWindowStateListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementWindowStateController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetSettlementWindowStateListController.class);
 
-    private final GetSettlementWindowState getSettlementWindowState;
+    private final GetSettlementWindowStateList getSettlementWindowStateList;
 
-    @GetMapping("/secured/getSettlementWindowState")
+    @GetMapping("/secured/getSettlementWindowStateList")
     public ResponseEntity<Response> execute() throws DomainException {
 
-        var output = this.getSettlementWindowState.execute(new GetSettlementWindowState.Input());
+        var output = this.getSettlementWindowStateList.execute(new GetSettlementWindowStateList.Input());
 
         List<Response.SettlementWindowStateData> settlementWindowStateDataList = new ArrayList<>();
 
-        for (SettlementWindowStateData data : output.settlementWindowStates()) {
-            settlementWindowStateDataList.add(new Response.SettlementWindowStateData(data.settlementWindowStateId(), data.enumeration()));
+        for (var settlementWindowStateData : output.settlementWindowStates()) {
+            settlementWindowStateDataList.add(new Response.SettlementWindowStateData(settlementWindowStateData.settlementWindowId(),
+                    settlementWindowStateData.enumeration()));
         }
 
         var response = new Response(settlementWindowStateDataList);

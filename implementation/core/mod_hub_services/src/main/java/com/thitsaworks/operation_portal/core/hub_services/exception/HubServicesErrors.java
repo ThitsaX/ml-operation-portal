@@ -14,6 +14,8 @@ public class HubServicesErrors {
     public static final ErrorMessage HUB_PARTICIPANT_ERROR = new ErrorMessage("HUB_PARTICIPANT_ERROR", "Failed to process the operation for Participant on Hub.");
     public static final ErrorMessage HUB_PARTICIPANT_BALANCE_ERROR = new ErrorMessage("HUB_PARTICIPANT_BALANCE_ERROR", "Failed to get the participant's balance on Hub.");
     public static final ErrorMessage HUB_PARTICIPANT_POSITION_ERROR = new ErrorMessage("HUB_PARTICIPANT_POSITION_ERROR", "Failed to get the participant's position data on Hub.");
+    public static final ErrorMessage SETTLEMENT_WINDOW_STATE_ERROR = new ErrorMessage("SETTLEMENT_WINDOW_STATE_ERROR", "Failed to get settlement window states.");
+    public static final ErrorMessage SETTLEMENT_STATE_ERROR = new ErrorMessage("SETTLEMENT_STATE_ERROR", "Failed to get settlement states.");
 
     //@@formatter:on
 }

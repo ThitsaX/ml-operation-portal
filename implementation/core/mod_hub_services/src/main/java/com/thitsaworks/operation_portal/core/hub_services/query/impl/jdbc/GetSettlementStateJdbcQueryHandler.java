@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.SettlementStateData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.SettlementStateDataMapper;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetSettlementStateQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,16 +31,16 @@ public class GetSettlementStateJdbcQueryHandler implements GetSettlementStateQue
     }
 
     @Override
-    public Output execute(Input input) {
+    public Output execute(Input input) throws HubServicesException {
 
         List<SettlementStateData> results;
         try {
             results = this.jdbcTemplate.query(
-                    "SELECT DISTINCT settlementStateId, enumeration FROM settlementState WHERE enumeration IN ('ABORTED','PENDING_SETTLEMENT','PS_TRANSFERS_COMMITTED','PS_TRANSFERS_RECORDED','PS_TRANSFERS_RESERVED','SETTLED','SETTLING');",
+                    "SELECT DISTINCT settlementStateId, enumeration FROM settlementState WHERE isActive = 1;",
                     new SettlementStateDataMapper());
         } catch (Exception e) {
             // Handle exception
-            throw new RuntimeException("Error fetching settlement states", e);
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_STATE_ERROR.description(e.getMessage()));
         }
         if (results == null || results.isEmpty()) {
             return new Output(new ArrayList<>());

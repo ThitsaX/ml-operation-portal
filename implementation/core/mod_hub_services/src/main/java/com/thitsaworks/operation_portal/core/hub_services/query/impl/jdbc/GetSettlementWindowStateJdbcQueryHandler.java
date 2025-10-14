@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowStateData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.SettlementWindowStateDataMapper;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetSettlementWindowStateQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,15 +29,14 @@ public class GetSettlementWindowStateJdbcQueryHandler implements GetSettlementWi
     }
 
     @Override
-    public Output execute(Input input) {
+    public Output execute(Input input) throws HubServicesException {
         List<SettlementWindowStateData> results;
         try {
             results = this.jdbcTemplate.query(
-                    "SELECT DISTINCT settlementWindowStateId, enumeration FROM settlementWindowState WHERE enumeration IN ('ABORTED','CLOSED','FAILED','OPEN','PENDING_SETTLEMENT','PROCESSING','SETTLED');",
+                    "SELECT DISTINCT settlementWindowStateId, enumeration FROM settlementWindowState WHERE isActive = 1",
                     new SettlementWindowStateDataMapper());
         } catch (Exception e) {
-            // Handle exception
-            throw new RuntimeException("Error fetching settlement window states", e);
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_STATE_ERROR.description(e.getMessage()));
         }
         if (results == null || results.isEmpty()) {
             return new Output(new ArrayList<>());
