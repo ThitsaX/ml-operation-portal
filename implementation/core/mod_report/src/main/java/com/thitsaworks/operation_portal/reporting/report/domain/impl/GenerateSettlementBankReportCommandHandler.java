@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
     @Autowired
     public GenerateSettlementBankReportCommandHandler(
-            @Qualifier(PersistenceQualifiers.Hub.WRITE_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+            @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -63,6 +64,13 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
+
+            DatabaseMetaData md = conn.getMetaData();
+            LOG.info("URL={} | user={} | driver={} {}",
+                     md.getURL(),
+                     md.getUserName(),
+                     md.getDriverName(),
+                     md.getDriverVersion());
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("settlementBankReport");
@@ -108,7 +116,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
         } catch (Exception e) {
 
-            LOG.info("Error : [{}]", e.getMessage());
+            LOG.error("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION);
 
         }
