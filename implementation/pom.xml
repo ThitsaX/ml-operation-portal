@@ -247,6 +247,16 @@
                 <artifactId>mod_approval</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal.core</groupId>
+                <artifactId>mod_scheduler</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.thitsaworks.operation_portal.core</groupId>
+                <artifactId>mod_settlement</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
 
             <dependency>

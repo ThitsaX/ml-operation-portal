@@ -4,10 +4,12 @@ import com.thitsaworks.operation_portal.component.common.identifier.SchedulerCon
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 
-public interface DeleteSchedulerConfigCommand {
+public interface ModifySchedulerConfigStatusCommand {
 
-    record Output(boolean deleted, SchedulerConfigData schedulerConfigData) {}
+    record Input(SchedulerConfigId schedulerConfigId, boolean active) {}
 
-    Output execute(SchedulerConfigId input) throws DomainException;
+    record Output(boolean modified, SchedulerConfigData schedulerConfigData) {}
+
+    Output execute(Input input) throws DomainException;
 
 }

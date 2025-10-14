@@ -54,7 +54,7 @@ public abstract class ScheduledJob {
 
     protected void beforeExecute(SchedulerConfigData schedulerConfigData) throws DomainException {
 
-        LocalDateTime startTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()));
+        LocalDateTime startTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
 
         LOG.info("Scheduler Job: [{}] initiated at: [{} ({})]",
                  schedulerConfigData.name(), startTime, schedulerConfigData.zoneId());
@@ -70,7 +70,7 @@ public abstract class ScheduledJob {
 
     protected void afterExecute(SchedulerConfigData schedulerConfigData) throws DomainException {
 
-        LocalDateTime endTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()));
+        LocalDateTime endTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
 
         LOG.info("Scheduler Job: [{}] executed successfully at: [{} ({})]",
                  schedulerConfigData.name(), endTime, schedulerConfigData.zoneId());
