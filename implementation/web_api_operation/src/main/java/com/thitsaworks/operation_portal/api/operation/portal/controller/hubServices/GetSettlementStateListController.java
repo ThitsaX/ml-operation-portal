@@ -43,7 +43,7 @@ public class GetSettlementStateListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("settlementState") List<SettlementStateData> settlementStateDataList) {
+    public record Response(@JsonProperty("settlementStateList") List<SettlementStateData> settlementStateDataList) {
 
         public record SettlementStateData(
                 @JsonProperty("settlementStateId") String settlementStateId,

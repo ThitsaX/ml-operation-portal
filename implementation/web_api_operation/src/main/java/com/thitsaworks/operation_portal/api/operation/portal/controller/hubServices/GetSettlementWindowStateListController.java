@@ -43,7 +43,7 @@ public class GetSettlementWindowStateListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response( @JsonProperty("settlementWindowStateDataList") List<SettlementWindowStateData> settlementWindowStateDataList) {
+    public record Response( @JsonProperty("settlementWindowStateList") List<SettlementWindowStateData> settlementWindowStateDataList) {
 
         public record SettlementWindowStateData(@JsonProperty("settlementWindowStateId") String settlementWindowStateId,
                                                 @JsonProperty("enumeration") String enumeration) {
