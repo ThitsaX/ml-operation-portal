@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CreateSettlementSchedulerHandler
-        extends OperationPortalAuditableUseCase<CreateSettlementScheduler.Input, CreateSettlementScheduler.Output>
-        implements CreateSettlementScheduler {
+    extends OperationPortalAuditableUseCase<CreateSettlementScheduler.Input, CreateSettlementScheduler.Output>
+    implements CreateSettlementScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementSchedulerHandler.class);
 
@@ -66,24 +66,26 @@ public class CreateSettlementSchedulerHandler
 
         if (!settlementModelData.autoCloseWindow()) {
             throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_NOT_AUTO_CLOSE_WINDOW.format(
-                    settlementModelData.name()));
+                settlementModelData.name()));
         }
 
-        var schedulerConfigOutput =
-                this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
+        for (var config : input.schedulerConfigInfoList()) {
+            var schedulerConfigOutput =
+                this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(config.name(),
                                                                                                  "CloseSettlementWindowsScheduler",
-                                                                                                 input.description(),
-                                                                                                 input.cronExpression(),
-                                                                                                 input.zoneId()));
+                                                                                                 config.description(),
+                                                                                                 config.cronExpression(),
+                                                                                                 config.zoneId()));
 
-        var output =
-                this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
-                                                                                                   schedulerConfigOutput.schedulerConfigData()
-                                                                                                                      .schedulerConfigId()));
+            this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
+                                                                                               schedulerConfigOutput.schedulerConfigData()
+                                                                                                                    .schedulerConfigId()));
 
-        this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
+            this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
 
-        return new Output(output.created(), output.schedulerConfigId());
+        }
+
+        return new Output(true);
     }
 
 }

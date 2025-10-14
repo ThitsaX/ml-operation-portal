@@ -28,11 +28,17 @@ public class GetSchedulerConfigListController {
 
     @GetMapping("/secured/getSchedulerConfigList")
     public ResponseEntity<Response> execute(
-        @RequestParam(value = "active", required = false) Boolean active,
-        @RequestParam(value = "sortBy", required = false) String sortBy,
-        @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
-    ) throws DomainException {
-        LOG.debug("Fetching all scheduler configurations with active={}, sortBy={}, sortDirection={}",
+        @RequestParam(
+            value = "active",
+            required = false) Boolean active,
+        @RequestParam(
+            value = "sortBy",
+            required = false) String sortBy,
+        @RequestParam(
+            value = "sortDirection",
+            required = false) Sort.Direction sortDirection) throws DomainException {
+
+        LOG.info("Get Scheduler Config List : active=[{}], sortBy=[{}], sortDirection=[{}]",
                  active, sortBy, sortDirection);
 
         GetSchedulerConfigList.Output output = this.getSchedulerConfigList.execute(
@@ -51,10 +57,14 @@ public class GetSchedulerConfigListController {
     public record Response(
         @JsonProperty("configs") List<@NotNull SchedulerConfigData> configs
     ) {
+
         public Response {
+
             if (configs == null) {
                 throw new IllegalArgumentException("Configs list cannot be null");
             }
         }
+
     }
+
 }

@@ -5,7 +5,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementModel;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementModelList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,17 +15,17 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
-public class GetSettlementModelHandler
-        extends OperationPortalUseCase<GetSettlementModel.Input, GetSettlementModel.Output>
-        implements GetSettlementModel {
+public class GetSettlementModelListHandler
+        extends OperationPortalUseCase<GetSettlementModelList.Input, GetSettlementModelList.Output>
+    implements GetSettlementModelList {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementModelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementModelListHandler.class);
 
     private final SettlementModelQuery settlementModelQuery;
 
-    public GetSettlementModelHandler(PrincipalCache principalCache,
-                                     ActionAuthorizationManager actionAuthorizationManager,
-                                     SettlementModelQuery settlementModelQuery) {
+    public GetSettlementModelListHandler(PrincipalCache principalCache,
+                                         ActionAuthorizationManager actionAuthorizationManager,
+                                         SettlementModelQuery settlementModelQuery) {
 
         super(principalCache, actionAuthorizationManager);
         this.settlementModelQuery = settlementModelQuery;

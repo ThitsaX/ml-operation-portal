@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import java.util.List;
 import java.util.Set;
 
-public interface GetSettlementModel extends UseCase<GetSettlementModel.Input, GetSettlementModel.Output> {
+public interface GetSettlementModelList extends UseCase<GetSettlementModelList.Input, GetSettlementModelList.Output> {
 
     public record Input() {
 
