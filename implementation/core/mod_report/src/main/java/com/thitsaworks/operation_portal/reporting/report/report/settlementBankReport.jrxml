@@ -89,9 +89,8 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL('', '')),'') AS participant,
-			/*IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,*/
-			''  AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), '-', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
+			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
@@ -101,15 +100,13 @@
 			INNER JOIN transferParticipant tp          ON  tp.transferId = tf.transferId
 			INNER JOIN participantCurrency pc          ON  tp.participantCurrencyId = pc.participantCurrencyId
 			INNER JOIN participant p                   ON  p.participantId = pc.participantId
-			/*
-			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
-			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id 
-			*/
+			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI  = p.name COLLATE UTF8MB4_UNICODE_CI 
+			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI  = pc.currencyId COLLATE UTF8MB4_UNICODE_CI  AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI  = lp.participant_id  COLLATE UTF8MB4_UNICODE_CI 
 			INNER JOIN ledgerAccountType lat           ON  lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
 			WHERE s.settlementId = $P{settlementId} AND lat.name = 'POSITION'
-			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
+			AND ($P{currencyId} = 'All' COLLATE UTF8MB4_UNICODE_CI  OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = $P{currencyId} COLLATE UTF8MB4_UNICODE_CI )
 			GROUP BY p.name, pc.participantCurrencyId 
-			/*, lp.bank_name, lp.account_name, lp.account_number, op.description; */]]>
+			 , lp.bank_name, lp.account_name, lp.account_number, op.description;]]>
 		</queryString>
 		<field name="participant" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="participant"/>
@@ -145,9 +142,8 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name, ''), '-', IFNULL('', '')),'') AS participant,
-			/*IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,*/
-			''  AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), '-', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
+			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
@@ -157,15 +153,13 @@
 			INNER JOIN transferParticipant tp          ON  tp.transferId = tf.transferId
 			INNER JOIN participantCurrency pc          ON  tp.participantCurrencyId = pc.participantCurrencyId
 			INNER JOIN participant p                   ON  p.participantId = pc.participantId
-			/*
-			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
-			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id 
-			*/
+			LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI  = p.name COLLATE UTF8MB4_UNICODE_CI 
+			LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI  = pc.currencyId COLLATE UTF8MB4_UNICODE_CI  AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI  = lp.participant_id  COLLATE UTF8MB4_UNICODE_CI 
 			INNER JOIN ledgerAccountType lat           ON  lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
 			WHERE s.settlementId = $P{settlementId} AND lat.name = 'POSITION'
-			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
+			AND ($P{currencyId} = 'All' COLLATE UTF8MB4_UNICODE_CI  OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = $P{currencyId} COLLATE UTF8MB4_UNICODE_CI )
 			GROUP BY p.name, pc.participantCurrencyId 
-			/*, lp.bank_name, lp.account_name, lp.account_number, op.description; */]]>
+			 , lp.bank_name, lp.account_name, lp.account_number, op.description;]]>
 	</queryString>
 	<field name="participant" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="participant"/>
