@@ -18,6 +18,7 @@ public interface GetSettlementModelList extends UseCase<GetSettlementModelList.I
         public record SettlementModelData(
                 SettlementModelId settlementModelId,
                 String name,
+                String type,
                 String currencyId,
                 boolean isActive,
                 boolean autoCloseWindow,

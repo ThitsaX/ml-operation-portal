@@ -32,13 +32,15 @@ public class HubSettlementModelJdbcQueryHandler implements HubSettlementModelQue
     public List<HubSettlementModelData> getSettlementModelList() {
 
         return this.jdbcTemplate.query(
-                "SELECT settlementModelId, name, isActive, settlementGranularityId, settlementInterchangeId, settlementDelayId, currencyId, requireLiquidityCheck, ledgerAccountTypeId, autoPositionReset, adjustPosition, settlementAccountTypeId FROM settlementModel",
+                "SELECT sm.settlementModelId, sm.name, sm.isActive, sg.name AS settlementGranularityName, si.name AS settlementInterchangeName, sm.settlementDelayId, sm.currencyId, sm.requireLiquidityCheck, sm.ledgerAccountTypeId, sm.autoPositionReset, sm.adjustPosition, sm.settlementAccountTypeId \n" +
+                    "FROM settlementModel AS sm JOIN settlementInterchange AS si ON sm.settlementInterchangeId = si.settlementInterchangeId \n" +
+                    "JOIN settlementGranularity AS sg ON sm.settlementGranularityId = sg.settlementGranularityId",
                 (rs, rowNum) -> new HubSettlementModelData(
                         rs.getInt("settlementModelId"),
                         rs.getString("name"),
                         rs.getBoolean("isActive"),
-                        rs.getInt("settlementGranularityId"),
-                        rs.getInt("settlementInterchangeId"),
+                        rs.getString("settlementGranularityName"),
+                        rs.getString("settlementInterchangeName"),
                         rs.getInt("settlementDelayId"),
                         rs.getString("currencyId"),
                         rs.getBoolean("requireLiquidityCheck"),
@@ -54,14 +56,16 @@ public class HubSettlementModelJdbcQueryHandler implements HubSettlementModelQue
     public HubSettlementModelData getByName(String name) throws HubServicesException {
 
         List<HubSettlementModelData> hubSettlementModelDataList = this.jdbcTemplate.query(
-                "SELECT settlementModelId, name, isActive, settlementGranularityId, settlementInterchangeId, settlementDelayId, currencyId, requireLiquidityCheck, ledgerAccountTypeId, autoPositionReset, adjustPosition, settlementAccountTypeId FROM settlementmodel WHERE name = ?",
+            "SELECT sm.settlementModelId, sm.name, sm.isActive, sg.name as settlementGranularityName, si.name as settlementInterchangeName, sm.settlementDelayId, sm.currencyId, sm.requireLiquidityCheck, sm.ledgerAccountTypeId, sm.autoPositionReset, sm.adjustPosition, sm.settlementAccountTypeId \n" +
+                "FROM settlementModel as sm JOIN settlementInterchange as si ON sm.settlementInterchangeId = si.settlementInterchangeId \n" +
+                "JOIN settlementGranularity as sg ON sm.settlementGranularityId = sg.settlementGranularityId WHERE name = ?",
                 new Object[]{name},
                 (rs, rowNum) -> new HubSettlementModelData(
                         rs.getInt("settlementModelId"),
                         rs.getString("name"),
                         rs.getBoolean("isActive"),
-                        rs.getInt("settlementGranularityId"),
-                        rs.getInt("settlementInterchangeId"),
+                        rs.getString("settlementGranularityName"),
+                        rs.getString("settlementInterchangeName"),
                         rs.getInt("settlementDelayId"),
                         rs.getString("currencyId"),
                         rs.getBoolean("requireLiquidityCheck"),

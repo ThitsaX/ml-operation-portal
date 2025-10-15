@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +40,7 @@ public class GetSettlementModelListController {
                                      .getEntityId()
                                      .toString(),
                       settlementModel.name(),
+                      settlementModel.type(),
                       settlementModel.currencyId(),
                       settlementModel.isActive(),
                       settlementModel.autoCloseWindow(),
@@ -60,20 +62,19 @@ public class GetSettlementModelListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(List<SettlementModelData> settlementModels) {
+    public record Response(List<SettlementModelData> settlementModels) implements Serializable {
 
         public record SettlementModelData(
             @JsonProperty("settlementModelId") String settlementModelId,
             @JsonProperty("name") String name,
+            @JsonProperty("type") String type,
             @JsonProperty("currencyId") String currencyId,
             @JsonProperty("isActive") boolean isActive,
             @JsonProperty("autoCloseWindow") boolean autoCloseWindow,
             @JsonProperty("requireLiquidityCheck") boolean requireLiquidityCheck,
             @JsonProperty("autoPositionReset") boolean autoPositionReset,
             @JsonProperty("adjustPosition") boolean adjustPosition,
-            @JsonProperty("schedulerConfigIds") Set<Long> schedulerConfigIds) {
-
-        }
+            @JsonProperty("schedulerConfigIds") Set<Long> schedulerConfigIds) implements Serializable { }
 
     }
 

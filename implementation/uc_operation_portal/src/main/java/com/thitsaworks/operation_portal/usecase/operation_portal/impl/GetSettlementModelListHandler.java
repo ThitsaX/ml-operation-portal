@@ -40,6 +40,7 @@ public class GetSettlementModelListHandler
                                                    .map(settlementModelData -> new Output.SettlementModelData(
                                                            settlementModelData.settlementModelId(),
                                                            settlementModelData.name(),
+                                                           settlementModelData.type(),
                                                            settlementModelData.currencyId(),
                                                            settlementModelData.isActive(),
                                                            settlementModelData.autoCloseWindow(),
