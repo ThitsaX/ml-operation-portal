@@ -54,7 +54,7 @@ public class GetSettlementModelListController {
 
         Response response = new Response(settlementModels);
 
-        LOG.debug("Get all settlement model List: [{}]", response);
+        LOG.info("Get All Settlement Model List: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

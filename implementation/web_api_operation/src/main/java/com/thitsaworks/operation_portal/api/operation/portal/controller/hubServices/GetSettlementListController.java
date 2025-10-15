@@ -60,7 +60,7 @@ public class GetSettlementListController {
         throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Get settlements by params : currency = [{}], participantId = [{}], settlementWindowId = [{}], accountId = [{}], state = [{}], fromDate = [{}], toDate = [{}], fromSettlementWindowDateTime = [{}], toSettlementWindowDateTime = [{}]",
+            "Get Settlements By Params : currency = [{}], participantId = [{}], settlementWindowId = [{}], accountId = [{}], state = [{}], fromDate = [{}], toDate = [{}], fromSettlementWindowDateTime = [{}], toSettlementWindowDateTime = [{}]",
             currency,
             participantId,
             settlementWindowId,

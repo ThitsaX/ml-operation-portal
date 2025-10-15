@@ -51,9 +51,7 @@ public class GetContactListController {
                                                                                    contact.contactType()))
                                           .toList());
 
-        LOG.info("Get Contact List Response : [{}]",
-                 response.contactInfoList()
-                         .size());
+        LOG.info("Get Contact List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

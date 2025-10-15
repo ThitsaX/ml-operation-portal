@@ -37,7 +37,7 @@ public class SyncHubParticipantsToPortalController {
 
         var response = new Response(output.synced());
 
-        LOG.info("Sync hub participants to portal response : [{}]", response);
+        LOG.info("Sync Hub Participants To Portal Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

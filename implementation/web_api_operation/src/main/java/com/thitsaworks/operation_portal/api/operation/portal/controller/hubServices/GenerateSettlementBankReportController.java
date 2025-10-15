@@ -31,7 +31,7 @@ public class GenerateSettlementBankReportController {
             throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Generate settlement bank report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
+                "Generate Settlement Bank Report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
                 settlementId,
                 currencyId,
                 fileType,
@@ -42,7 +42,7 @@ public class GenerateSettlementBankReportController {
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate settlement bank report Response: [{}]", response);
+        LOG.info("Generate Settlement Bank Report Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

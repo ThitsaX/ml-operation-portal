@@ -50,6 +50,9 @@ public class GetSchedulerConfigListController {
                                                                                   );
 
         var response = new Response(output.configs());
+
+        LOG.info("Get Scheduler Config List Response :[{}]" ,response );
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

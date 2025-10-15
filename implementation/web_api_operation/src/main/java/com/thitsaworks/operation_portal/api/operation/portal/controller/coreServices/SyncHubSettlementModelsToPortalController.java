@@ -30,7 +30,7 @@ public class SyncHubSettlementModelsToPortalController {
 
         var response = new Response(output.synced());
 
-        LOG.info("Sync hub settlement models to portal response : [{}]", response);
+        LOG.info("Sync Hub Settlement Models To Portal Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
