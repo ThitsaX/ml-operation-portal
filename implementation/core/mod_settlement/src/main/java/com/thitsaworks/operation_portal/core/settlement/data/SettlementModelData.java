@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 public record SettlementModelData(SettlementModelId settlementModelId,
                                   String name,
+                                  String type,
                                   String currencyId,
                                   boolean isActive,
                                   boolean autoCloseWindow,
@@ -22,6 +23,7 @@ public record SettlementModelData(SettlementModelId settlementModelId,
 
         this(settlementModel.getSettlementModelId(),
              settlementModel.getName(),
+             settlementModel.getType(),
              settlementModel.getCurrencyId(),
              settlementModel.isActive(),
              settlementModel.isAutoCloseWindow(),

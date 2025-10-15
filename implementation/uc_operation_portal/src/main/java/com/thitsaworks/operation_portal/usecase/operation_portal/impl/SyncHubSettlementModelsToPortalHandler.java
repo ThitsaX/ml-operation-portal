@@ -12,7 +12,6 @@ import com.thitsaworks.operation_portal.core.settlement.command.CreateSettlement
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubSettlementModelsToPortal;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -26,8 +25,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class SyncHubSettlementModelsToPortalHandler
-        extends OperationPortalAuditableUseCase<SyncHubSettlementModelsToPortal.Input, SyncHubSettlementModelsToPortal.Output>
-        implements SyncHubSettlementModelsToPortal {
+    extends OperationPortalAuditableUseCase<SyncHubSettlementModelsToPortal.Input, SyncHubSettlementModelsToPortal.Output>
+    implements SyncHubSettlementModelsToPortal {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncHubSettlementModelsToPortalHandler.class);
 
@@ -36,8 +35,6 @@ public class SyncHubSettlementModelsToPortalHandler
     private final SettlementModelQuery settlementModelQuery;
 
     private final CreateSettlementModelCommand createSettlementModelCommand;
-
-    private final ObjectMapper objectMapper;
 
     public SyncHubSettlementModelsToPortalHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
@@ -59,7 +56,6 @@ public class SyncHubSettlementModelsToPortalHandler
         this.hubSettlementModelQuery = hubSettlementModelQuery;
         this.settlementModelQuery = settlementModelQuery;
         this.createSettlementModelCommand = createSettlementModelCommand;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -68,11 +64,11 @@ public class SyncHubSettlementModelsToPortalHandler
         List<HubSettlementModelData> hubSettlementModelList = this.hubSettlementModelQuery.getSettlementModelList();
 
         Set<String>
-                existingSettlementModelNames =
-                this.settlementModelQuery.getSettlementModels()
-                                         .stream()
-                                         .map(SettlementModelData::name)
-                                         .collect(Collectors.toSet());
+            existingSettlementModelNames =
+            this.settlementModelQuery.getSettlementModels()
+                                     .stream()
+                                     .map(SettlementModelData::name)
+                                     .collect(Collectors.toSet());
 
         List<CreatedSettlementModelInfo> createdSettlementModelInfoList = new ArrayList<>();
 
@@ -80,34 +76,36 @@ public class SyncHubSettlementModelsToPortalHandler
             if (!existingSettlementModelNames.contains(hubSettlementModel.name())) {
 
                 CreateSettlementModelCommand.Output output =
-                        this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
-                                hubSettlementModel.name(),
-                                "",
-                                hubSettlementModel.currencyId(),
-                                hubSettlementModel.isActive(),
-                                false, // set Manual as default
-                                hubSettlementModel.requireLiquidityCheck(),
-                                hubSettlementModel.autoPositionReset(),
-                                hubSettlementModel.adjustPosition(),
-                                new ArrayList<>()));
+                    this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
+                        hubSettlementModel.name(),
+                        hubSettlementModel.settlementInterchangeName() + "_" + hubSettlementModel.name() + "_" +
+                            hubSettlementModel.settlementGranularityName(),
+                        hubSettlementModel.currencyId(),
+                        hubSettlementModel.isActive(),
+                        false, // set Manual as default
+                        hubSettlementModel.requireLiquidityCheck(),
+                        hubSettlementModel.autoPositionReset(),
+                        hubSettlementModel.adjustPosition(),
+                        new ArrayList<>()));
 
-                createdSettlementModelInfoList.add(new CreatedSettlementModelInfo(output.settlementModelId().getId(),
+                createdSettlementModelInfoList.add(new CreatedSettlementModelInfo(output.settlementModelId()
+                                                                                        .getId(),
                                                                                   hubSettlementModel.name()));
 
             }
         }
 
         try {
-            LOG.info("Created settlement models : {}",
-                     this.objectMapper.writeValueAsString(createdSettlementModelInfoList));
+            LOG.info("Created settlement models : [{}]",
+                     createdSettlementModelInfoList);
 
         } catch (Exception e) {
-            LOG.info("Something went wrong: {}", e.getMessage());
+            LOG.info("Something went wrong: [{}]", e.getMessage());
         }
 
         return new Output(true);
     }
 
-    record CreatedSettlementModelInfo(Long settlementModelId, String name) {}
+    record CreatedSettlementModelInfo(Long settlementModelId, String name) { }
 
 }
