@@ -77,6 +77,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
             if (jasperPrint.getPages() == null || jasperPrint.getPages()
                                                              .isEmpty()) {
+
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
             }
 
@@ -107,7 +108,11 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
 
             return new Output(rptBytes);
 
-        } catch (Exception e) {
+        } catch (ReportException e) {
+
+            throw e;
+
+        }  catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION);

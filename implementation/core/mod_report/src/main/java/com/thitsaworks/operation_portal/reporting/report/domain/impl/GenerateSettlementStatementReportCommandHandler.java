@@ -41,8 +41,7 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
     public GenerateSettlementStatementReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
-        this.jdbcTemplate =
-            jdbcTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -81,6 +80,7 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
 
             if (jasperPrint.getPages() == null || jasperPrint.getPages()
                                                              .isEmpty()) {
+
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
             }
 
@@ -123,9 +123,13 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
 
             return new Output(rptBytes);
 
+        } catch (ReportException e) {
+
+            throw e;
+
         } catch (Exception e) {
 
-            LOG.info("Error : [{}]", e.getMessage());
+            LOG.error("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.REPORT_FAILURE_EXCEPTION);
         }
     }

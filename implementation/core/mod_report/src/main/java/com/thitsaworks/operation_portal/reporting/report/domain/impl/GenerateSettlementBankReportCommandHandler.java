@@ -52,12 +52,6 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timezoneOffset());
 
-//        InputStream
-//                settlementBankReport =
-//                this.getClass()
-//                    .getResourceAsStream(
-//                            "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jasper");
-
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(
                                                     "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
@@ -81,6 +75,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
             if (jasperPrint.getPages() == null || jasperPrint.getPages()
                                                              .isEmpty()) {
+
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
             }
 
@@ -121,6 +116,10 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
             }
 
             return new Output(rptBytes);
+
+        } catch (ReportException e) {
+
+            throw e;
 
         } catch (Exception e) {
 

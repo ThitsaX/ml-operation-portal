@@ -143,7 +143,11 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
             return new Output(rptBytes);
 
-        } catch (Exception e) {
+        } catch (ReportException e) {
+
+            throw e;
+
+        }  catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.SETTLEMENT_REPORT_FAILURE_EXCEPTION);

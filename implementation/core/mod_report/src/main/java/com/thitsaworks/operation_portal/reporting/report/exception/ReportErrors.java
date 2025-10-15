@@ -16,7 +16,7 @@ public class ReportErrors {
     public static final ErrorMessage SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement bank report.");
     public static final ErrorMessage FILE_FORMAT_NOT_ALLOWED = new ErrorMessage("FILE_FORMAT_NOT_ALLOWED", "The file format is required or the requested file format is not allowed.");
     public static final ErrorMessage RESULT_NOT_FOUND = new ErrorMessage("RESULT_NOT_FOUND", "The results for the selected periods or criteria were not found.");
-    public static final ErrorMessage SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement Fee report.");
+    public static final ErrorMessage SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement summary report.");
 
     //@@formatter:on
 }

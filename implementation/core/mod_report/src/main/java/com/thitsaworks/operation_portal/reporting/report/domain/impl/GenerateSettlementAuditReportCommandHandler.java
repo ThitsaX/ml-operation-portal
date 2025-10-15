@@ -69,10 +69,11 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
             design.setName("settlementAuditReport");
             JasperReport settlementAuditReport = JasperCompileManager.compileReport(design);
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementAuditReport, params,
-                                                                   conn);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementAuditReport, params, conn);
+
             if (jasperPrint.getPages() == null || jasperPrint.getPages()
                                                              .isEmpty()) {
+
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
             }
 
@@ -123,6 +124,10 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
             }
 
             return new Output(rptBytes);
+
+        } catch (ReportException e) {
+
+            throw e;
 
         } catch (Exception e) {
 
