@@ -43,7 +43,7 @@ public class GetAllTransferController {
         Integer pageIndex,
         Integer pageSize) throws DomainException, ParseException, JsonProcessingException {
 
-        LOG.info("Get All Transfer Request for fromDate = [{}], toDate = [{}], transferId = [{}], " +
+        LOG.info("Get All Transfer Request For fromDate = [{}], toDate = [{}], transferId = [{}], " +
                      "payerFspId = [{}], payeeFspId = [{}], payerIdentifierTypeId = [{}], " +
                      "payeeIdentifierTypeId = [{}], " + "payerIdentifierValue = [{}], " +
                          "payeeIdentifierValue = [{}], currencyId = [{}], transferStateId = [{}], timezone = [{}], pageIndex = [{}], pageSize = [{}]",

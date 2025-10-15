@@ -30,7 +30,7 @@ public class GenerateSettlementDetailReportController {
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Generate detail report : settlementId = [{}], fspId = [{}], fileType = [{}], timezoneOffset = [{}]",
+        LOG.info("Generate Detail Report : settlementId = [{}], fspId = [{}], fileType = [{}], timezoneOffset = [{}]",
                  settlementId, fspId, fileType, timezoneOffset);
 
         GenerateDetailReport.Output output = this.generateDetailReport.execute(
@@ -38,7 +38,7 @@ public class GenerateSettlementDetailReportController {
 
         var response = new Response(output.detailReportData());
 
-        LOG.info("Generate detail report Response: [{}]", response);
+        LOG.info("Generate Detail Report Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

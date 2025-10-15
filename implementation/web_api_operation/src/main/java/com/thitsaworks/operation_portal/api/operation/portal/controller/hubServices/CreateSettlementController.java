@@ -34,7 +34,7 @@ public class CreateSettlementController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
             throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Settlement request : [{}]", request);
+        LOG.info("Create Settlement Request : [{}]", request);
 
         UserContext userContext =
                 (UserContext) SecurityContextHolder.getContext()

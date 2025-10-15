@@ -42,7 +42,7 @@ public class GetJobExecutionLogsController {
         @RequestParam(value = "sortBy", required = false) String sortBy,
         @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
                                            ) throws DomainException {
-        LOG.debug("Fetching job execution logs with jobName={}, jobStatus={}, startDate={}, endDate={}, sortBy={}, sortDirection={}",
+        LOG.info("Fetching Job Execution Logs With jobName={}, jobStatus={}, startDate={}, endDate={}, sortBy={}, sortDirection={}",
                   jobName, status, startDate, endDate, sortBy, sortDirection);
 
         GetJobExecutionLogList.Output output = this.getJobExecutionLogList.execute(

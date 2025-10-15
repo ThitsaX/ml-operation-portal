@@ -28,7 +28,7 @@ public class GetParticipantCurrenciesController {
     public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Participant Currencies Request for dfspId = [{}]", dfspId);
+        LOG.info("Get Participant Currencies Request For dfspId = [{}]", dfspId);
 
         var output = this.getParticipantCurrencies.execute(new GetParticipantCurrencies.Input(dfspId));
 

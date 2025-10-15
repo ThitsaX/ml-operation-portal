@@ -34,8 +34,7 @@ public class GetAuditListController {
         @RequestParam("page") Integer page,
         @RequestParam("pageSize")Integer pageSize) throws DomainException, JsonProcessingException {
 
-        LOG.info(
-            "Get Audit List Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
+        LOG.info("Get Audit List Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
 
         GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
             new GetAuditByParticipantList.Input(Instant.parse(fromDate),
