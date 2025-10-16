@@ -1,18 +1,14 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantCommand;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubParticipantsToPortal;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -26,7 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class SyncHubParticipantsToPortalHandler
-    extends OperationPortalAuditableUseCase<SyncHubParticipantsToPortal.Input, SyncHubParticipantsToPortal.Output>
+    extends OperationPortalUseCase<SyncHubParticipantsToPortal.Input, SyncHubParticipantsToPortal.Output>
     implements SyncHubParticipantsToPortal {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncHubParticipantsToPortalHandler.class);
@@ -37,29 +33,17 @@ public class SyncHubParticipantsToPortalHandler
 
     private final CreateParticipantCommand createParticipantCommand;
 
-    private final ObjectMapper objectMapper;
-
-    public SyncHubParticipantsToPortalHandler(CreateInputAuditCommand createInputAuditCommand,
-                                              CreateOutputAuditCommand createOutputAuditCommand,
-                                              CreateExceptionAuditCommand createExceptionAuditCommand,
-                                              ObjectMapper objectMapper,
-                                              PrincipalCache principalCache,
+    public SyncHubParticipantsToPortalHandler(PrincipalCache principalCache,
                                               ActionAuthorizationManager actionAuthorizationManager,
                                               HubParticipantQuery hubParticipantQuery,
                                               ParticipantQuery participantQuery,
                                               CreateParticipantCommand createParticipantCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.hubParticipantQuery = hubParticipantQuery;
         this.participantQuery = participantQuery;
         this.createParticipantCommand = createParticipantCommand;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -101,8 +85,7 @@ public class SyncHubParticipantsToPortalHandler
         }
 
         try {
-            LOG.info("Created participants : {}",
-                     this.objectMapper.writeValueAsString(createdParticipantInfoList));
+            LOG.info("Created participants : [{}]", createdParticipantInfoList);
 
         } catch (Exception e) {
             LOG.info("Something went wrong: {}", e.getMessage());

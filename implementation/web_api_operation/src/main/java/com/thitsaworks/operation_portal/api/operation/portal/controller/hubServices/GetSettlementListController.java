@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -134,6 +135,10 @@ public class GetSettlementListController {
                                                        settlement.getChangedDate(),
                                                        settlementWindowsList,
                                                        participantList));
+
+            settlementList.sort(Comparator.comparing(Response.Settlement::createdDate)
+                                          .reversed());
+
         }
 
         var response = new Response(settlementList);

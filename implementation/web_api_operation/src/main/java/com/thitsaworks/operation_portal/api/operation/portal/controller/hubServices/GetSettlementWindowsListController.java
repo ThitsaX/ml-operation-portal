@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -25,25 +26,35 @@ public class GetSettlementWindowsListController {
 
     @GetMapping("/secured/getSettlementWindowsList")
     public ResponseEntity<Response> execute(
-            @RequestParam("fromDate") String fromDate,
-            @RequestParam("toDate") String toDate,
-            @RequestParam(value = "currency", required = false) String currency,
-            @RequestParam(value = "state", required = false) String state,
-            @RequestParam(value = "participantId", required = false) Integer participantId
-    )
-            throws DomainException {
+        @RequestParam("fromDate") String fromDate,
+        @RequestParam("toDate") String toDate,
+        @RequestParam(
+            value = "currency",
+            required = false) String currency,
+        @RequestParam(
+            value = "state",
+            required = false) String state,
+        @RequestParam(
+            value = "participantId",
+            required = false) Integer participantId
+                                           )
+        throws DomainException {
 
         LOG.info(
-                "Get Settlement Windows By Params Request: FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
-                fromDate, toDate, currency, state, participantId);
+            "Get Settlement Windows By Params Request: FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
+            fromDate,
+            toDate,
+            currency,
+            state,
+            participantId);
 
         var output = this.getSettlementWindowsList.execute(
-                new GetSettlementWindowsList.Input(fromDate,
-                        toDate,
-                        currency,
-                        state,
-                        participantId)
-        );
+            new GetSettlementWindowsList.Input(fromDate,
+                                               toDate,
+                                               currency,
+                                               state,
+                                               participantId)
+                                                          );
 
         List<Response.SettlementWindow> settlementWindowList = new ArrayList<>();
 
@@ -53,19 +64,22 @@ public class GetSettlementWindowsListController {
 
             for (var content : settlementWindow.content()) {
                 contentList.add(new Response.Content(content.getId(),
-                        content.getState(),
-                        content.getLedgerAccountType(),
-                        content.getCurrencyId(),
-                        content.getCreatedDate(),
-                        content.getChangedDate()));
+                                                     content.getState(),
+                                                     content.getLedgerAccountType(),
+                                                     content.getCurrencyId(),
+                                                     content.getCreatedDate(),
+                                                     content.getChangedDate()));
             }
 
             settlementWindowList.add(new Response.SettlementWindow(settlementWindow.settlementWindowId(),
-                    settlementWindow.state(),
-                    settlementWindow.reason(),
-                    settlementWindow.createdDate(),
-                    settlementWindow.changedDate(),
-                    contentList));
+                                                                   settlementWindow.state(),
+                                                                   settlementWindow.reason(),
+                                                                   settlementWindow.createdDate(),
+                                                                   settlementWindow.changedDate(),
+                                                                   contentList));
+
+            settlementWindowList.sort(Comparator.comparing(Response.SettlementWindow::createdDate)
+                                                .reversed());
 
         }
         LOG.info("Get Settlement Windows By Params Response: [{}]", settlementWindowList);
@@ -77,23 +91,23 @@ public class GetSettlementWindowsListController {
     public record Response(List<SettlementWindow> settlementWindowList) {
 
         public record SettlementWindow(
-                Integer settlementWindowId,
-                String state,
-                String reason,
-                String createdDate,
-                String changedDate,
-                List<Content> contentList
+            Integer settlementWindowId,
+            String state,
+            String reason,
+            String createdDate,
+            String changedDate,
+            List<Content> contentList
         ) implements Serializable {
 
         }
 
         public record Content(
-                Integer contentId,
-                String state,
-                String ledgerAccountType,
-                String currencyId,
-                String createdDate,
-                String changedDate
+            Integer contentId,
+            String state,
+            String ledgerAccountType,
+            String currencyId,
+            String createdDate,
+            String changedDate
         ) implements Serializable {
 
         }
