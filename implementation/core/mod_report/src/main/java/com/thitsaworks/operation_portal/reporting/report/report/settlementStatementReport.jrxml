@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettleStatement" pageWidth="2500" pageHeight="10000" whenNoDataType="AllSectionsNoDetail" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -247,6 +247,18 @@ SELECT
 	  currency,
 	  settlementBankAccount,
 	  CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
+	  ,CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
 FROM seq
 ORDER BY dfspId, currency, createdDate;]]>
 		</queryString>
@@ -308,6 +320,14 @@ ORDER BY dfspId, currency, createdDate;]]>
 		<field name="timezoneoffset" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="timezoneoffset"/>
 			<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
+		</field>
+		<field name="fromDate" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="fromDate"/>
+			<property name="com.jaspersoft.studio.field.label" value="fromDate"/>
+		</field>
+		<field name="toDate" class="java.lang.String">
+			<property name="com.jaspersoft.studio.field.name" value="toDate"/>
+			<property name="com.jaspersoft.studio.field.label" value="toDate"/>
 		</field>
 	</subDataset>
 	<parameter name="dfspId" class="java.lang.String"/>
@@ -458,6 +478,18 @@ SELECT
 	  currency,
 	  settlementBankAccount,
 	  CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
+		,CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{startDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{startDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
+		CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		CONVERT_TZ($P{endDate}, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+		ELSE CONVERT_TZ($P{endDate}, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+		END,'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
 FROM seq
 ORDER BY dfspId, currency, createdDate;]]>
 	</queryString>
@@ -519,6 +551,14 @@ ORDER BY dfspId, currency, createdDate;]]>
 	<field name="timezoneoffset" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="timezoneoffset"/>
 		<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
+	</field>
+	<field name="fromDate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="fromDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="fromDate"/>
+	</field>
+	<field name="toDate" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="toDate"/>
+		<property name="com.jaspersoft.studio.field.label" value="toDate"/>
 	</field>
 	<background>
 		<band splitType="Stretch"/>
@@ -663,13 +703,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{startDate}.toString().replace("Z","+" + 
-        (
-            ($P{timezoneoffset}.toString().length() == 4)
-                ? $P{timezoneoffset}.toString().substring(0,2) + ":" + $P{timezoneoffset}.toString().substring(2)
-                : $P{timezoneoffset}.toString()
-        )
-    )]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{fromDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="90" width="200" height="17" uuid="0e3e79a0-147c-4b04-9cb5-5d4dea0e40c1"/>
@@ -682,13 +716,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 				<textElement textAlignment="Left">
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{endDate}.toString().replace("Z","+" + 
-        (
-            ($P{timezoneoffset}.toString().length() == 4)
-                ? $P{timezoneoffset}.toString().substring(0,2) + ":" + $P{timezoneoffset}.toString().substring(2)
-                : $P{timezoneoffset}.toString()
-        )
-    )]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{toDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="180" y="120" width="200" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
@@ -906,7 +934,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{fundsIn} == null || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsIn})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsIn} == null || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsIn})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -933,7 +961,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{fundsOut} == null || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0.00)? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsOut})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsOut} == null || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0.00)? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsOut})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
