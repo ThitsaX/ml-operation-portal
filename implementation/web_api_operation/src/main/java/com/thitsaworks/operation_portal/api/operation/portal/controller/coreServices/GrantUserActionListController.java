@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantUserActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantUserActionList;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -23,16 +23,16 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GrantUserActionsController {
+public class GrantUserActionListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantUserActionsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantUserActionListController.class);
 
-    private final GrantUserActions grantUserActions;
+    private final GrantUserActionList grantUserActionList;
 
-    @PostMapping("/secured/grantUserActions")
+    @PostMapping("/secured/grantUserActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Grant User Actions Request : [{}]", request);
+        LOG.info("Grant User Action List Request : [{}]", request);
 
         List<ActionId> actionIdList = new ArrayList<>();
         request.actionIdList()
@@ -40,12 +40,12 @@ public class GrantUserActionsController {
 
         var
             output =
-            this.grantUserActions.execute(new GrantUserActions.Input(new PrincipalId(Long.parseLong(request.userId())),
-                                                                     actionIdList));
+            this.grantUserActionList.execute(new GrantUserActionList.Input(new PrincipalId(Long.parseLong(request.userId())),
+                                                                           actionIdList));
 
         var response = new Response(output.resultCode());
 
-        LOG.info("Grant User Actions Response : [{}]", response);
+        LOG.info("Grant User Action List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

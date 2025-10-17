@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public interface BlockUserActions extends UseCase<BlockUserActions.Input, BlockUserActions.Output> {
+public interface BlockUserActionList extends UseCase<BlockUserActionList.Input, BlockUserActionList.Output> {
 
     record Input(PrincipalId principalId,
                  List<ActionId> actionIdList) { }

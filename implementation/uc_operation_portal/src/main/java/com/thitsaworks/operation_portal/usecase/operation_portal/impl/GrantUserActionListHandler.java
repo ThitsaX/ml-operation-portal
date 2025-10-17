@@ -8,26 +8,26 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantPrincipalActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantUserActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantUserActionList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.springframework.stereotype.Service;
 
 import java.net.ConnectException;
 
 @Service
-public class GrantUserActionsHandler
-    extends OperationPortalAuditableUseCase<GrantUserActions.Input, GrantUserActions.Output>
-    implements GrantUserActions {
+public class GrantUserActionListHandler
+    extends OperationPortalAuditableUseCase<GrantUserActionList.Input, GrantUserActionList.Output>
+    implements GrantUserActionList {
 
     private final GrantPrincipalActionCommand grantPrincipalActionCommand;
 
-    public GrantUserActionsHandler(CreateInputAuditCommand createInputAuditCommand,
-                                   CreateOutputAuditCommand createOutputAuditCommand,
-                                   CreateExceptionAuditCommand createExceptionAuditCommand,
-                                   ObjectMapper objectMapper,
-                                   PrincipalCache principalCache,
-                                   ActionAuthorizationManager actionAuthorizationManager,
-                                   GrantPrincipalActionCommand grantPrincipalActionCommand) {
+    public GrantUserActionListHandler(CreateInputAuditCommand createInputAuditCommand,
+                                      CreateOutputAuditCommand createOutputAuditCommand,
+                                      CreateExceptionAuditCommand createExceptionAuditCommand,
+                                      ObjectMapper objectMapper,
+                                      PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager,
+                                      GrantPrincipalActionCommand grantPrincipalActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,

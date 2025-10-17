@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.iam.command.GrantRoleActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.RevokeRoleActionByIdCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
@@ -9,17 +9,13 @@ import com.thitsaworks.operation_portal.core.iam.model.Role;
 import com.thitsaworks.operation_portal.core.iam.model.repository.ActionRepository;
 import com.thitsaworks.operation_portal.core.iam.model.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
-
-    private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionCommandHandler.class);
+public class RevokeRoleActionByIdCommandHandler implements RevokeRoleActionByIdCommand {
 
     private final RoleRepository roleRepository;
 
@@ -29,31 +25,28 @@ public class GrantRoleActionCommandHandler implements GrantRoleActionCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Role> optRole = this.roleRepository.findOne(RoleRepository.Filters.withName(input.roleName()));
+        Optional<Role> optRole = this.roleRepository.findById(input.roleId());
 
         if (optRole.isEmpty()) {
-
-            LOG.info("Role Not Found : [{}]", input.roleName());
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleName()));
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()
+                                                                        .getId()
+                                                                        .toString()));
         }
 
-        var role = optRole.get();
-
-        Optional<Action>
-            optAction =
-            this.actionRepository.findOne(ActionRepository.Filters.withActionCode(input.actionCode()));
+        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-
-            LOG.info("Action Not Found : [{}]", input.actionCode());
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionCode().getValue()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()
+                                                                          .getId()
+                                                                          .toString()));
         }
 
-        role.grantAction(optAction.get());
+        Role role = optRole.get();
+        var revoked = role.revokeAction(optAction.get());
 
         this.roleRepository.saveAndFlush(role);
 
-        return new Output(true);
+        return new Output(revoked);
     }
 
 }

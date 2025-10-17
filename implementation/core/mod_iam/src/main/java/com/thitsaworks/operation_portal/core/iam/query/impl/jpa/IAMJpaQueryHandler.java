@@ -4,6 +4,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.data.MenuData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
@@ -152,7 +153,8 @@ public class IAMJpaQueryHandler implements IAMQuery {
 
         var principal = this.principalRepository.findById(principalId)
                                                 .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(
-                                                    principalId.getId().toString())));
+                                                    principalId.getId()
+                                                               .toString())));
 
         var roles = principal.getRoles();
 
@@ -166,6 +168,53 @@ public class IAMJpaQueryHandler implements IAMQuery {
 
         return roleDataList;
 
+    }
+
+    @Override
+    public RoleData getRole(String name) throws IAMException {
+
+        BooleanExpression predicate = this.role.name.eq(name);
+
+        var
+            role =
+            this.roleRepository.findOne(predicate)
+                               .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(name)));
+
+        return new RoleData(role);
+    }
+
+    @Override
+    public ActionData getAction(ActionCode actionCode) throws IAMException {
+
+        var availableAction = this.iamEngine.getAction(actionCode);
+
+        if (availableAction != null) {
+            return availableAction;
+        }
+
+        var action = this.actionRepository.findOne(ActionRepository.Filters.withActionCode(actionCode))
+                                          .orElseThrow(() -> new IAMException(IAMErrors.ACTION_NOT_FOUND.format(
+                                              actionCode)));
+
+        var actionData = new ActionData(action);
+
+        this.iamEngine.addAction(action.getActionId(), action.getActionCode(), actionData);
+
+        return actionData;
+
+    }
+
+    @Override
+    public MenuData getMenu(String name) throws IAMException {
+
+        BooleanExpression predicate = this.menu.name.eq(name);
+
+        var
+            menu =
+            this.menuRepository.findOne(predicate)
+                               .orElseThrow(() -> new IAMException(IAMErrors.MENU_NOT_FOUND));
+
+        return new MenuData(menu);
     }
 
     /* <<<<<<<<<<<<<<  ✨ Windsurf Command 🌟 >>>>>>>>>>>>>>>> */
@@ -182,7 +231,8 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var
             principal =
             this.principalRepository.findByPrincipalId(principalId)
-                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId().toString())));
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId()
+                                                                                                                        .toString())));
 
         // get roles for the principal
         var roleList = principal.getRoles();
@@ -245,7 +295,8 @@ public class IAMJpaQueryHandler implements IAMQuery {
         var
             principal =
             this.principalRepository.findOne(predicate1)
-                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId().toString())));
+                                    .orElseThrow(() -> new IAMException(IAMErrors.PRINCIPAL_NOT_FOUND.format(principalId.getId()
+                                                                                                                        .toString())));
 
         var
             roleIdList =

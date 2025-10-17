@@ -25,17 +25,21 @@ public class RevokeRoleActionCommandHandler implements RevokeRoleActionCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Role> optRole = this.roleRepository.findById(input.roleId());
+        Optional<Role>
+            optRole =
+            this.roleRepository.findOne(RoleRepository.Filters.withName(input.roleName()));
 
         if (optRole.isEmpty()) {
-            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId().getId().toString()));
+            throw new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleName()));
         }
 
-        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
+        Optional<Action>
+            optAction =
+            this.actionRepository.findOne(ActionRepository.Filters.withActionCode(input.actionCode()));
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId()
-                                                                          .getId().toString()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionCode()
+                                                                          .getValue()));
         }
 
         Role role = optRole.get();

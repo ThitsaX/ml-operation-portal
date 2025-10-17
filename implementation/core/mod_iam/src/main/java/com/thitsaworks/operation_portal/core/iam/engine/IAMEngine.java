@@ -18,7 +18,6 @@ public interface IAMEngine {
 
     void print();
 
-
     List<ActionData> getActions();
 
     ActionData getAction(ActionCode actionCode);
@@ -30,7 +29,6 @@ public interface IAMEngine {
     List<RoleData> getRolesByPrincipal(PrincipalId principalId);
 
     PrincipalData getPrincipal(PrincipalId principalId);
-
 
     void addPrincipal(PrincipalId principalId, PrincipalData principalData);
 
@@ -55,7 +53,6 @@ public interface IAMEngine {
     void addPrincipalDeniedAction(PrincipalId principalId, ActionData actionData);
 
     void removePrincipalDeniedAction(PrincipalId principalId, ActionData actionData);
-
 
     Map<PrincipalId, PrincipalData> getPrincipalsMap();
 

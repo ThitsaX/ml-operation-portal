@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.BlockUserActionList;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -21,27 +21,29 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class BlockUserActionsController {
+public class BlockUserActionListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BlockUserActionsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(BlockUserActionListController.class);
 
-    private final BlockUserActions blockUserActions;
+    private final BlockUserActionList blockUserActionList;
 
-    @PostMapping("/secured/blockUserActions")
+    @PostMapping("/secured/blockUserActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Block User Actions Request : [{}]", request);
+        LOG.info("Block User Action List Request : [{}]", request);
 
-        var output = blockUserActions.execute(new BlockUserActions.Input(new PrincipalId(Long.parseLong(request.userId())),
-                                                                         request.actionIdList()
-                                                                                .stream()
-                                                                                .map(id -> new ActionId(Long.parseLong(
-                                                                                    id)))
-                                                                                .toList()));
+        var
+            output =
+            blockUserActionList.execute(new BlockUserActionList.Input(new PrincipalId(Long.parseLong(request.userId())),
+                                                                      request.actionIdList()
+                                                                       .stream()
+                                                                       .map(id -> new ActionId(Long.parseLong(
+                                                                           id)))
+                                                                       .toList()));
 
         var response = new Response(output.blocked());
 
-        LOG.info("Block User Actions Response : [{}]", response);
+        LOG.info("Block User Action List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -50,7 +52,7 @@ public class BlockUserActionsController {
     public record Request(@NotNull @NotEmpty String userId,
                           List<String> actionIdList) { }
 
-    public record Response(boolean success) { }
+    public record Response(boolean blocked) { }
 
 }
 

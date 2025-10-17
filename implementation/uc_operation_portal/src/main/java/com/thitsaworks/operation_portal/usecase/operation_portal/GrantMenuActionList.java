@@ -5,13 +5,12 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 import java.util.List;
 
-public interface GrantRoleActions extends UseCase<GrantRoleActions.Input, GrantRoleActions.Output> {
+public interface GrantMenuActionList extends UseCase<GrantMenuActionList.Input, GrantMenuActionList.Output> {
 
-    record Input(List<SingleRoleGrant> singleRoleGrantList) {
+    record Input(List<MenuGrant> menuGrantList) {
 
-        public record SingleRoleGrant(String role,
-                                      List<ActionCode> actionList) { }
-
+        public record MenuGrant(String menuName,
+                                List<ActionCode> actionList) { }
     }
 
     record Output(boolean granted) { }

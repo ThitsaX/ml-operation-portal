@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActionList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,46 +20,46 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GrantMenuActionsController {
+public class GrantMenuActionListController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionsController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionListController.class);
 
-    private final GrantMenuActions grantMenuActions;
+    private final GrantMenuActionList grantMenuActionList;
 
-    @PostMapping("/secured/grantMenuActions")
+    @PostMapping("/secured/grantMenuActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Grant Menu Actions Request: [{}]", request);
+        LOG.info("Grant Menu Action List Request: [{}]", request);
 
-        List<GrantMenuActions.Input.SingleMenuGrant> singleMenuGrantList = new ArrayList<>();
-        for (var singleMenuGrant : request.singleMenuGrantList()) {
+        List<GrantMenuActionList.Input.MenuGrant> menuGrantList = new ArrayList<>();
+        for (var singleMenuGrant : request.menuGrantList()) {
 
             List<ActionCode> actionCodeList = new ArrayList<>();
 
-            for (var action : singleMenuGrant.actionList()) {
+            for (var action : singleMenuGrant.actionCodeList()) {
                 actionCodeList.add(new ActionCode(action));
             }
 
-            singleMenuGrantList.add(new GrantMenuActions.Input.SingleMenuGrant(singleMenuGrant.menu(),
-                                                                               actionCodeList));
+            menuGrantList.add(new GrantMenuActionList.Input.MenuGrant(singleMenuGrant.menuName(),
+                                                                      actionCodeList));
 
         }
 
-        var output = this.grantMenuActions.execute(new GrantMenuActions.Input(singleMenuGrantList));
+        var output = this.grantMenuActionList.execute(new GrantMenuActionList.Input(menuGrantList));
 
         var response = new Response(output.granted());
 
-        LOG.info("Grant Menu Actions Response: [{}]", response);
+        LOG.info("Grant Menu Action List Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(List<SingleMenuGrant> singleMenuGrantList) implements Serializable {
+    public record Request(List<MenuGrant> menuGrantList) implements Serializable {
 
-        public record SingleMenuGrant(String menu,
-                                      List<String> actionList) implements Serializable { }
+        public record MenuGrant(String menuName,
+                                List<String> actionCodeList) implements Serializable { }
 
     }
 

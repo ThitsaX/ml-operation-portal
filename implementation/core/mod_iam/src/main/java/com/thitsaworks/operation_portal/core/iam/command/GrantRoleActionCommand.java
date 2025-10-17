@@ -7,7 +7,8 @@ public interface GrantRoleActionCommand {
 
     Output execute(Input input) throws IAMException;
 
-    record Input(String role, ActionCode actionCode) { }
+    record Input(String roleName,
+                 ActionCode actionCode) { }
 
     record Output(boolean resultCode) { }
 

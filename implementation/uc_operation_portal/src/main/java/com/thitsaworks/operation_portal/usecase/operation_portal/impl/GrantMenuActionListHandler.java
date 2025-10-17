@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantMenuActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActions;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActionList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,21 +17,21 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
-public class GrantMenuActionsHandler
-    extends OperationPortalAuditableUseCase<GrantMenuActions.Input, GrantMenuActions.Output>
-    implements GrantMenuActions {
+public class GrantMenuActionListHandler
+    extends OperationPortalAuditableUseCase<GrantMenuActionList.Input, GrantMenuActionList.Output>
+    implements GrantMenuActionList {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionsHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrantMenuActionListHandler.class);
 
     private final GrantMenuActionCommand grantMenuActionCommand;
 
-    public GrantMenuActionsHandler(CreateInputAuditCommand createInputAuditCommand,
-                                   CreateOutputAuditCommand createOutputAuditCommand,
-                                   CreateExceptionAuditCommand createExceptionAuditCommand,
-                                   ObjectMapper objectMapper,
-                                   PrincipalCache principalCache,
-                                   ActionAuthorizationManager actionAuthorizationManager,
-                                   GrantMenuActionCommand grantMenuActionCommand) {
+    public GrantMenuActionListHandler(CreateInputAuditCommand createInputAuditCommand,
+                                      CreateOutputAuditCommand createOutputAuditCommand,
+                                      CreateExceptionAuditCommand createExceptionAuditCommand,
+                                      ObjectMapper objectMapper,
+                                      PrincipalCache principalCache,
+                                      ActionAuthorizationManager actionAuthorizationManager,
+                                      GrantMenuActionCommand grantMenuActionCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -46,7 +46,7 @@ public class GrantMenuActionsHandler
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
-        for (var menu : input.singleMenuGrantList()) {
+        for (var menu : input.menuGrantList()) {
 
             for (var action : menu.actionList()) {
                 this.grantMenuActionCommand.execute(new GrantMenuActionCommand.Input(menu.menuName(), action));
