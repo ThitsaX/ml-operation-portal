@@ -87,9 +87,7 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public Optional<ParticipantData> get(String participantName) {
 
-        BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName))
-                                                                      .and(this.participant.participantStatus.eq(
-                                                                              ParticipantStatus.ACTIVE));
+        BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName));
 
         Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
 
