@@ -4,7 +4,7 @@ import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipant;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipantAccountBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetParticipants;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
@@ -49,11 +49,11 @@ public interface HubService {
                                                                          @Body PostCloseSettlementWindows.Request request);
 
     @GET("/v2/settlementWindows")
-    Call<List<GetSettlementWindowsList.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
-                                                                               @Query("toDateTime") String toDate,
-                                                                               @Query("currency") String currency,
-                                                                               @Query("state") String state,
-                                                                               @Query("participantId")
+    Call<List<GetSettlementWindows.SettlementWindow>> getSettlementWindows(@Query("fromDateTime") String fromDate,
+                                                                           @Query("toDateTime") String toDate,
+                                                                           @Query("currency") String currency,
+                                                                           @Query("state") String state,
+                                                                           @Query("participantId")
                                                                                Integer participantId);
 
     @POST("/v2/settlements")

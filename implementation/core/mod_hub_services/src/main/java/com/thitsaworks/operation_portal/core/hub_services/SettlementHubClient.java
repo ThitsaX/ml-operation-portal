@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.component.fspiop.model.ErrorInformationR
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitRunner;
 import com.thitsaworks.operation_portal.component.misc.retrofit.RetrofitServiceBuilder;
 import com.thitsaworks.operation_portal.component.misc.retrofit.converter.NullOrEmptyConverterFactory;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateSettlement;
@@ -98,15 +98,15 @@ public class SettlementHubClient {
         return response;
     }
 
-    public List<GetSettlementWindowsList.SettlementWindow> getSettlementWindowsList(String fromDate,
-                                                                                    String toDate,
-                                                                                    String currency,
-                                                                                    String state,
-                                                                                    Integer participantId,
-                                                                                    GetSettlementWindowsList.Request request)
+    public List<GetSettlementWindows.SettlementWindow> getSettlementWindowsList(String fromDate,
+                                                                                String toDate,
+                                                                                String currency,
+                                                                                String state,
+                                                                                Integer participantId,
+                                                                                GetSettlementWindows.Request request)
             throws HubServicesException {
 
-        List<GetSettlementWindowsList.SettlementWindow> response;
+        List<GetSettlementWindows.SettlementWindow> response;
 
         try {
 

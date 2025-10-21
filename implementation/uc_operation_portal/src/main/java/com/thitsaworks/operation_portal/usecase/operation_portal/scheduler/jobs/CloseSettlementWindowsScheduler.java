@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
-import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
+import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
@@ -48,14 +48,14 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
         SettlementModelData settlementModelData =
                 this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
 
-        List<GetSettlementWindowsList.SettlementWindow> settlementWindowList =
+        List<GetSettlementWindows.SettlementWindow> settlementWindowList =
                 this.settlementHubClient.getSettlementWindowsList(
                         null,
                         null,
                         settlementModelData.currencyId(),
                         SettlementWindowState.OPEN.toString(),
                         null,
-                        new GetSettlementWindowsList.Request());
+                        new GetSettlementWindows.Request());
 
         LOG.info("Settlement Window List: {}", settlementWindowList);
 
