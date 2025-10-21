@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,23 +21,23 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAuditListController {
+public class GetAuditListByParticipantController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListByParticipantController.class);
 
-    private final GetAuditByParticipantList getAuditByParticipantList;
+    private final GetAuditListByParticipant getAuditListByParticipant;
 
-    @GetMapping("/secured/getAuditList")
+    @GetMapping("/secured/getAuditListByParticipant")
     public ResponseEntity<Response> execute(
         @RequestParam("fromDate") String fromDate,
         @RequestParam("toDate") String toDate,
         @RequestParam("page") Integer page,
         @RequestParam("pageSize") Integer pageSize) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Audit List Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
+        LOG.info("Get Audit List By Participant Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
 
-        GetAuditByParticipantList.Output output = this.getAuditByParticipantList.execute(
-            new GetAuditByParticipantList.Input(Instant.parse(fromDate),
+        GetAuditListByParticipant.Output output = this.getAuditListByParticipant.execute(
+            new GetAuditListByParticipant.Input(Instant.parse(fromDate),
                                                 Instant.parse(toDate),
                                                 page,
                                                 pageSize));
@@ -56,7 +56,7 @@ public class GetAuditListController {
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());
 
-        LOG.info("Get Audit List Response: [{}]", response);
+        LOG.info("Get Audit List By Participant Response: [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

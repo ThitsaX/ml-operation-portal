@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetAuditByParticipantList
-    extends UseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output> {
+public interface GetAuditListByParticipant
+    extends UseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output> {
 
     record Input(Instant fromDate,
                  Instant toDate,

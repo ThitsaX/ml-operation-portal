@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -18,11 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetAuditByParticipantListHandler
-    extends OperationPortalUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
-    implements GetAuditByParticipantList {
+public class GetAuditListByParticipantHandler
+    extends OperationPortalUseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output>
+    implements GetAuditListByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAuditByParticipantListHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListByParticipantHandler.class);
 
     private final IAMQuery iamQuery;
 
@@ -30,7 +30,7 @@ public class GetAuditByParticipantListHandler
 
     private final UserPermissionManager userPermissionManager;
 
-    public GetAuditByParticipantListHandler(PrincipalCache principalCache,
+    public GetAuditListByParticipantHandler(PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
                                             GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
