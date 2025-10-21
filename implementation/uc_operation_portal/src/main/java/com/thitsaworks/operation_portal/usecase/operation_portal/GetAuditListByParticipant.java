@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
+import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
@@ -7,8 +8,8 @@ import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
-public interface GetAuditByParticipantList
-    extends UseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output> {
+public interface GetAuditListByParticipant
+    extends UseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output> {
 
     record Input(Instant fromDate,
                  Instant toDate,
@@ -18,9 +19,10 @@ public interface GetAuditByParticipantList
     record Output(List<AuditInfo> auditInfoList,
                   Long total,
                   Integer totalPages
-                  ) {
+    ) {
 
-        public record AuditInfo(Instant date,
+        public record AuditInfo(AuditId auditId,
+                                Instant date,
                                 String action,
                                 Email madeBy) implements Serializable {
 

@@ -7,7 +7,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditByParticipantList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditListByParticipant;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -18,21 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetAuditByParticipantListHandler
-    extends OperationPortalUseCase<GetAuditByParticipantList.Input, GetAuditByParticipantList.Output>
-    implements GetAuditByParticipantList {
+public class GetAuditListByParticipantHandler
+    extends OperationPortalUseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output>
+    implements GetAuditListByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAuditByParticipantListHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListByParticipantHandler.class);
 
     private final IAMQuery iamQuery;
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
-    public GetAuditByParticipantListHandler(PrincipalCache principalCache,
+    public GetAuditListByParticipantHandler(PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
                                             GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
@@ -44,7 +42,6 @@ public class GetAuditByParticipantListHandler
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
         this.userPermissionManager = userPermissionManager;
-        this.principalCache = principalCache;
     }
 
     @Override
@@ -69,18 +66,19 @@ public class GetAuditByParticipantListHandler
                 realmId,
                 input.fromDate(),
                 input.toDate(),
-                grantedActionList,input.page(),input.pageSize()));
+                grantedActionList, input.page(), input.pageSize()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
         for (var data : output.auditInfoList()) {
 
-            auditInfoList.add(new Output.AuditInfo(data.date(),
+            auditInfoList.add(new Output.AuditInfo(data.auditId(),
+                                                   data.date(),
                                                    data.action(),
                                                    data.madeBy()));
         }
 
-        return new Output(auditInfoList ,output.totalElements(),output.totalPages());
+        return new Output(auditInfoList, output.totalElements(), output.totalPages());
     }
 
 }
