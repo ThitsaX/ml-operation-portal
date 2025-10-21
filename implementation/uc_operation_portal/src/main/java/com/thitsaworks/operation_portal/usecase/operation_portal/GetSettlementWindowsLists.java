@@ -5,8 +5,8 @@ import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindo
 
 import java.util.List;
 
-public interface GetSettlementWindowsList
-        extends UseCase<GetSettlementWindowsList.Input, GetSettlementWindowsList.Output> {
+public interface GetSettlementWindowsLists
+        extends UseCase<GetSettlementWindowsLists.Input, GetSettlementWindowsLists.Output> {
     public record Input(String fromDate,
                         String toDate,
                         String currency,

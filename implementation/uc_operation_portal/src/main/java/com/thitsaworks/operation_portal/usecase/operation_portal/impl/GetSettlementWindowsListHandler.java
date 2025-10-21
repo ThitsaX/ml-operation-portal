@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindowsList;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsLists;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +17,8 @@ import java.util.List;
 
 @Service
 public class GetSettlementWindowsListHandler
-    extends OperationPortalUseCase<com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList.Input, com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList.Output>
-        implements com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList {
+    extends OperationPortalUseCase<GetSettlementWindowsLists.Input, GetSettlementWindowsLists.Output>
+        implements GetSettlementWindowsLists {
 
     private static final Logger logger = LoggerFactory.getLogger(GetSettlementWindowsListHandler.class);
 

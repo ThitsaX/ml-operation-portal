@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsLists;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class GetSettlementWindowsListController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementWindowsListController.class);
 
-    private final GetSettlementWindowsList getSettlementWindowsList;
+    private final GetSettlementWindowsLists getSettlementWindowsList;
 
     @GetMapping("/secured/getSettlementWindowsList")
     public ResponseEntity<Response> execute(
@@ -49,7 +49,7 @@ public class GetSettlementWindowsListController {
             participantId);
 
         var output = this.getSettlementWindowsList.execute(
-            new GetSettlementWindowsList.Input(fromDate,
+            new GetSettlementWindowsLists.Input(fromDate,
                                                toDate,
                                                currency,
                                                state,
