@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.iam.command.RevokeMenuActionCommand;
+import com.thitsaworks.operation_portal.core.iam.command.RevokeMenuActionByIdCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class RevokeMenuActionCommandHandler implements RevokeMenuActionCommand {
+public class RevokeMenuActionByIdCommandHandler implements RevokeMenuActionByIdCommand {
 
     private final MenuRepository menuRepository;
 
@@ -25,19 +25,16 @@ public class RevokeMenuActionCommandHandler implements RevokeMenuActionCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Menu> optMenu = this.menuRepository.findOne(MenuRepository.Filters.withName(input.menuName()));
+        Optional<Menu> optMenu = this.menuRepository.findById(input.menuId());
 
         if (optMenu.isEmpty()) {
-            throw new IAMException(IAMErrors.MENU_NOT_FOUND.format(input.menuName()));
+            throw new IAMException(IAMErrors.MENU_NOT_FOUND.format(input.menuId().getId().toString()));
         }
 
-        Optional<Action>
-            optAction =
-            this.actionRepository.findOne(ActionRepository.Filters.withActionCode(input.actionCode()));
+        Optional<Action> optAction = this.actionRepository.findById(input.actionId());
 
         if (optAction.isEmpty()) {
-            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionCode()
-                                                                          .getValue()));
+            throw new IAMException(IAMErrors.ACTION_NOT_FOUND.format(input.actionId().getId().toString()));
         }
 
         Menu menu = optMenu.get();
