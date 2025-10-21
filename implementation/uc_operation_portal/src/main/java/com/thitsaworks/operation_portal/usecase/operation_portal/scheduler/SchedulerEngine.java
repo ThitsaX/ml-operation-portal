@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler;
 
+import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,15 @@ import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -102,6 +109,38 @@ public class SchedulerEngine {
 
         new ArrayList<>(futures.keySet()).forEach(this::cancel);
     }
+
+    public boolean isCronOverlap(List<SchedulerConfigData> existingSchedulers,
+                                 String newCronExpression,
+                                 ZoneId newZoneId) {
+
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
+
+        ZonedDateTime newNext = CronExpression.parse(newCronExpression).next(now);
+
+        if (newNext == null) {
+            return false;
+        }
+
+        Map<SchedulerConfigId, SchedulerNextRunInfo> nextFireInfoByMap =
+                existingSchedulers.stream().collect(Collectors.toMap(SchedulerConfigData::schedulerConfigId, s -> {
+                                                                         ZoneId zone = ZoneId.of(s.zoneId());
+                                                                         CronExpression ce = CronExpression.parse(s.cronExpression());
+                                                                         ZonedDateTime next = ce.next(now);
+                                                                         return new SchedulerNextRunInfo(zone, next);
+                                                                     },
+                                                                     (a, b) -> a, LinkedHashMap::new));
+
+        return nextFireInfoByMap.values().stream()
+                               .filter(Objects::nonNull)
+                               .anyMatch(info ->
+                                                 info.nextRunTime() != null &&
+                                                         info.nextRunTime().toLocalTime().equals(newNext.toLocalTime())
+                                                         && info.zoneId().getRules().getOffset(Instant.now())
+                                                                .equals(newZoneId.getRules().getOffset(Instant.now())));
+    }
+
+    record SchedulerNextRunInfo(ZoneId zoneId, ZonedDateTime nextRunTime) {}
 
 }
 

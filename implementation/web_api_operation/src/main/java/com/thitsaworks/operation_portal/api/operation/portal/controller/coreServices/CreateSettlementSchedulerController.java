@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,14 +36,10 @@ public class CreateSettlementSchedulerController {
 
         CreateSettlementScheduler.Output output = this.createSettlementScheduler.execute(
             new CreateSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
-                                                request.schedulerConfigInfoList()
-                                                       .stream()
-                                                       .map(config -> new CreateSettlementScheduler.Input.SchedulerConfigInfo(
-                                                           config.name(),
-                                                           config.description(),
-                                                           config.cronExpression(),
-                                                           config.zoneId()))
-                                                       .toList()));
+                                                request.name(),
+                                                request.description(),
+                                                request.cronExpression(),
+                                                request.zoneId()));
 
         var response = new Response(output.created());
 
@@ -56,14 +51,11 @@ public class CreateSettlementSchedulerController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @JsonProperty("settlementModelId") String settlementModelId,
-                          @NotNull @JsonProperty("schedulerConfigInfoList") List<SchedulerConfigInfo> schedulerConfigInfoList
+                          @NotBlank @JsonProperty("name") String name,
+                          @NotBlank @JsonProperty("description") String description,
+                          @NotBlank @JsonProperty("cronExpression") String cronExpression,
+                          @NotBlank @JsonProperty("zoneId") String zoneId
     ) implements Serializable {
-
-        public record SchedulerConfigInfo(@NotBlank @JsonProperty("name") String name,
-                                          @NotBlank @JsonProperty("description") String description,
-                                          @NotBlank @JsonProperty("cronExpression") String cronExpression,
-                                          @NotBlank @JsonProperty("zoneId") String zoneId)
-            implements Serializable { }
 
     }
 

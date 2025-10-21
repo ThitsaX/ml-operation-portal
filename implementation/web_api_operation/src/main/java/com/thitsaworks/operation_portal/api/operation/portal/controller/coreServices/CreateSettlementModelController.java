@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,18 +38,9 @@ public class CreateSettlementModelController {
                                                 (request.currencyID().isEmpty() || request.currencyID().isBlank()) ?
                                                         null : request.currencyID(),
                                                 true,
-                                                request.autoCloseWindow(),
                                                 request.requireLiquidityCheck(),
                                                 request.autoPositionReset(),
-                                                request.adjustPosition(),
-                                                request.schedulerConfigInfoList()
-                                                       .stream()
-                                                       .map(info -> new CreateSettlementModel.Input.SchedulerConfigInfo(
-                                                               info.name(),
-                                                               info.description(),
-                                                               info.cronExpression(),
-                                                               info.zoneId()))
-                                                       .toList()));
+                                                request.adjustPosition()));
 
         var response = new Response(output.created(),
                                     output.settlementModelId()
@@ -67,24 +57,14 @@ public class CreateSettlementModelController {
     public record Request(@NotNull @JsonProperty("name") String name,
                           @JsonProperty("modelType") String modelType,
                           @JsonProperty("currencyID") String currencyID,
-                          @NotNull @JsonProperty("autoCloseWindow") boolean autoCloseWindow,
                           @JsonProperty("requireLiquidityCheck") boolean requireLiquidityCheck,
                           @JsonProperty("autoPositionReset") boolean autoPositionReset,
-                          @JsonProperty("adjustPosition") boolean adjustPosition,
-                          @JsonProperty("schedulerConfigInfoList") List<SchedulerConfigInfo> schedulerConfigInfoList
-    ) implements Serializable {
-
-        public record SchedulerConfigInfo(@NotNull @JsonProperty("name") String name,
-                                          @NotNull @JsonProperty("description") String description,
-                                          @NotNull @JsonProperty("cronExpression") String cronExpression,
-                                          @NotNull @JsonProperty("zoneId") String zoneId) implements Serializable {
-        }
-
+                          @JsonProperty("adjustPosition") boolean adjustPosition) implements Serializable {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("isCreated") boolean isCreated,
-                           @JsonProperty("settlementModelId") String contactId) implements Serializable {
+                           @JsonProperty("settlementModelId") String settlementModelId) implements Serializable {
     }
 
 }

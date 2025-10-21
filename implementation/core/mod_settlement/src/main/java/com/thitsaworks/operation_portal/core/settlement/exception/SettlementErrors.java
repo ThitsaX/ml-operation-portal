@@ -10,5 +10,6 @@ public class SettlementErrors {
     public static final ErrorMessage SETTLEMENT_MODEL_NOT_FOUND = new ErrorMessage("SETTLEMENT_MODEL_NOT_FOUND", "System cannot find the Settlement Model with provided ID : [{0}].");
     public static final ErrorMessage SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND = new ErrorMessage("SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND", "System cannot find the Settlement Model with provided Scheduler Config ID : [{0}].");
     public static final ErrorMessage SETTLEMENT_MODEL_ALREADY_REGISTERED = new ErrorMessage("SETTLEMENT_MODEL_ALREADY_REGISTERED", "The provided settlement model name : [{0}] has already registered in the system.");
+    public static final ErrorMessage SETTLEMENT_SCHEDULER_OVERLAP = new ErrorMessage("SETTLEMENT_SCHEDULER_OVERLAP", "The settlement model : [{0}] has already registered scheduler with the same time. Please consider to edit existing one to reschedule extra days.");
     //@@formatter:on
 }

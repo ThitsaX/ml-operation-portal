@@ -7,7 +7,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.scheduler.command.CreateSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.core.settlement.command.CreateSettlementModelCommand;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
@@ -15,7 +14,6 @@ import com.thitsaworks.operation_portal.core.settlement.exception.SettlementExce
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementModel;
-import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +34,6 @@ public class CreateSettlementModelHandler
 
     private final CreateSettlementModelCommand createSettlementModelCommand;
 
-    private final CreateSchedulerConfigCommand createSchedulerConfigCommand;
-
-    private final SchedulerEngine schedulerEngine;
-
-    private final ObjectMapper objectMapper;
-
     public CreateSettlementModelHandler(CreateInputAuditCommand createInputAuditCommand,
                                         CreateOutputAuditCommand createOutputAuditCommand,
                                         CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -49,9 +41,7 @@ public class CreateSettlementModelHandler
                                         PrincipalCache principalCache,
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SettlementModelQuery settlementModelQuery,
-                                        CreateSettlementModelCommand createSettlementModelCommand,
-                                        CreateSchedulerConfigCommand createSchedulerConfigCommand,
-                                        SchedulerEngine schedulerEngine) {
+                                        CreateSettlementModelCommand createSettlementModelCommand) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -62,9 +52,6 @@ public class CreateSettlementModelHandler
 
         this.settlementModelQuery = settlementModelQuery;
         this.createSettlementModelCommand = createSettlementModelCommand;
-        this.createSchedulerConfigCommand = createSchedulerConfigCommand;
-        this.schedulerEngine = schedulerEngine;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -81,31 +68,13 @@ public class CreateSettlementModelHandler
 
         List<SchedulerConfigId> schedulerConfigIdList = new ArrayList<>();
 
-        if (input.autoCloseWindow() && !input.schedulerConfigInfoList().isEmpty()) {
-
-            for (Input.SchedulerConfigInfo schedulerConfigInfo : input.schedulerConfigInfoList()) {
-                CreateSchedulerConfigCommand.Output schedulerOutput =
-                        this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(
-                                schedulerConfigInfo.name(),
-                                "CloseSettlementWindowsScheduler",
-                                schedulerConfigInfo.description(),
-                                schedulerConfigInfo.cronExpression(),
-                                schedulerConfigInfo.zoneId()));
-
-                this.schedulerEngine.scheduleOrReschedule(schedulerOutput.schedulerConfigData());
-
-                schedulerConfigIdList.add(schedulerOutput.schedulerConfigData().schedulerConfigId());
-            }
-
-        }
-
         var output = this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
 
                 input.settlementModelName(),
                 input.modelType(),
                 input.currencyID(),
                 true,
-                input.autoCloseWindow(),
+                false,
                 input.requireLiquidityCheck(),
                 input.autoPositionReset(),
                 input.adjustPosition(),

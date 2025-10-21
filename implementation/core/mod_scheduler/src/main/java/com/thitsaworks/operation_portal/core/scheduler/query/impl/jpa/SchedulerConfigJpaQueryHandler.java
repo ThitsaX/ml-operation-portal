@@ -30,9 +30,14 @@ public class SchedulerConfigJpaQueryHandler implements SchedulerConfigQuery {
 
     @Override
     public List<SchedulerConfigData> getSchedulerConfigs(Sort sort) {
-        return schedulerConfigRepository.findAll(sort).stream()
-                .map(SchedulerConfigData::new)
-                .collect(Collectors.toList());
+
+        List<SchedulerConfig> configs = sort == null
+                ? schedulerConfigRepository.findAll()
+                : schedulerConfigRepository.findAll(sort);
+
+        return configs.stream()
+                      .map(SchedulerConfigData::new)
+                      .collect(Collectors.toList());
     }
 
     @Override

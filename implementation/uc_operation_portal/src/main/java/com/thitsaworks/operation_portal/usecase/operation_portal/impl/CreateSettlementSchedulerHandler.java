@@ -7,6 +7,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateSchedulerConfigCommand;
+import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
+import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
 import com.thitsaworks.operation_portal.core.settlement.command.AddSettlementSchedulerCommand;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
@@ -20,6 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
+import java.util.List;
+
 @Service
 public class CreateSettlementSchedulerHandler
     extends OperationPortalAuditableUseCase<CreateSettlementScheduler.Input, CreateSettlementScheduler.Output>
@@ -28,6 +33,8 @@ public class CreateSettlementSchedulerHandler
     private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementSchedulerHandler.class);
 
     private final SchedulerEngine schedulerEngine;
+
+    private final SchedulerConfigQuery schedulerConfigQuery;
 
     private final SettlementModelQuery settlementModelQuery;
 
@@ -42,6 +49,7 @@ public class CreateSettlementSchedulerHandler
                                             PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             SchedulerEngine schedulerEngine,
+                                            SchedulerConfigQuery schedulerConfigQuery,
                                             SettlementModelQuery settlementModelQuery,
                                             CreateSchedulerConfigCommand createSchedulerConfigCommand,
                                             AddSettlementSchedulerCommand addSettlementSchedulerCommand) {
@@ -54,6 +62,7 @@ public class CreateSettlementSchedulerHandler
               actionAuthorizationManager);
 
         this.schedulerEngine = schedulerEngine;
+        this.schedulerConfigQuery = schedulerConfigQuery;
         this.settlementModelQuery = settlementModelQuery;
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
         this.addSettlementSchedulerCommand = addSettlementSchedulerCommand;
@@ -69,21 +78,37 @@ public class CreateSettlementSchedulerHandler
                 settlementModelData.name()));
         }
 
-        for (var config : input.schedulerConfigInfoList()) {
-            var schedulerConfigOutput =
-                this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(config.name(),
-                                                                                                 "CloseSettlementWindowsScheduler",
-                                                                                                 config.description(),
-                                                                                                 config.cronExpression(),
-                                                                                                 config.zoneId()));
+        List<SchedulerConfigData> schedulerConfigDataList =
+                this.schedulerConfigQuery.getSchedulerConfigs(null);
 
-            this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
-                                                                                               schedulerConfigOutput.schedulerConfigData()
-                                                                                                                    .schedulerConfigId()));
+        List<SchedulerConfigData> settlementSchedulerList =
+                schedulerConfigDataList.stream()
+                                       .filter(schedulerConfigData -> settlementModelData.schedulerConfigIds()
+                                                                                         .contains(schedulerConfigData.schedulerConfigId()))
+                                       .toList();
 
-            this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
+        boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList,
+                                                               input.cronExpression(),
+                                                               ZoneId.of(input.zoneId()));
 
+        if (isOverlap) {
+            throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
+                    settlementModelData.name()));
         }
+
+        var schedulerConfigOutput =
+                this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
+                                                                                                 "SchedulingTester",
+                                                                                                 input.description(),
+                                                                                                 input.cronExpression(),
+                                                                                                 (input.zoneId())));
+
+        this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
+                                                                                           schedulerConfigOutput.schedulerConfigData()
+                                                                                                                .schedulerConfigId()));
+
+        this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
+
 
         return new Output(true);
     }
