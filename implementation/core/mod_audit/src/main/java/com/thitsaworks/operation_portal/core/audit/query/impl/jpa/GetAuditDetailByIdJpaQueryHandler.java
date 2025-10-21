@@ -21,14 +21,17 @@ public class GetAuditDetailByIdJpaQueryHandler implements GetAuditDetailByIdQuer
 
         QAudit audit = QAudit.audit;
 
-        JPAQuery<Tuple> tupleSQLQuery =
-                this.readQueryFactory.select(audit.inputInfo, audit.outputInfo)
-                                     .from(audit)
-                                     .where(audit.auditId.id.eq(input.auditId().getEntityId()));
+        JPAQuery<Tuple> tupleSQLQuery = this.readQueryFactory.select(audit.auditId, audit.inputInfo, audit.outputInfo)
+                                                             .from(audit)
+                                                             .where(audit.auditId.id.eq(input.auditId()
+                                                                                             .getEntityId()));
 
         Tuple tuple = tupleSQLQuery.fetchOne();
 
-        return new Output(tuple.get(audit.inputInfo), tuple.get(audit.outputInfo));
+        assert tuple != null;
+        return new Output(tuple.get(audit.auditId),
+                          tuple.get(audit.inputInfo),
+                          tuple.get(audit.outputInfo));
     }
 
 }

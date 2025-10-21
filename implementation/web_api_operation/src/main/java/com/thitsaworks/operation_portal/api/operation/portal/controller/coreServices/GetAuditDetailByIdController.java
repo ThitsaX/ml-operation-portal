@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
+
 @RestController
 @RequiredArgsConstructor
 public class GetAuditDetailByIdController {
@@ -28,9 +30,13 @@ public class GetAuditDetailByIdController {
         LOG.info("Get Audit Detail By Id Request : auditId=[{}]", auditId);
 
         GetAuditDetailById.Output output = this.getAuditDetailById.execute(
-                new GetAuditDetailById.Input(new AuditId(Long.parseLong(auditId))));
+            new GetAuditDetailById.Input(new AuditId(Long.parseLong(auditId))));
 
-        var response = new Response(output.inputInfo(), output.outputInfo());
+        var response = new Response(output.auditId()
+                                          .getEntityId()
+                                          .toString(),
+                                    output.inputInfo(),
+                                    output.outputInfo());
 
         LOG.info("Get Audit Detail By Id Response : [{}]", response);
 
@@ -39,11 +45,9 @@ public class GetAuditDetailByIdController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty String inputInfo,
-            @JsonProperty String outputInfo
-    ) {
-
-    }
+    public record Response(@JsonProperty("auditId") String auditId,
+                           @JsonProperty("inputInfo") String inputInfo,
+                           @JsonProperty("outputInfo") String outputInfo
+    ) implements Serializable { }
 
 }

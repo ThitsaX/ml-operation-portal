@@ -6,13 +6,10 @@ public interface GetAuditDetailByIdQuery {
 
     Output execute(Input input);
 
-    record Input(AuditId auditId) {
+    record Input(AuditId auditId) { }
 
-    }
-
-    record Output(String inputInfo,
-                  String outputInfo) {
-
-    }
+    record Output(AuditId auditId,
+                  String inputInfo,
+                  String outputInfo) { }
 
 }

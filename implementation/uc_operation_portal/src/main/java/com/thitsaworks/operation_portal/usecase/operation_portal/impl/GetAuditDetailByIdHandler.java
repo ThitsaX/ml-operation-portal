@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditDetailByIdQuery;
-import com.thitsaworks.operation_portal.core.audit.query.impl.jpa.GetAuditDetailByIdJpaQueryHandler;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditDetailById;
@@ -14,8 +13,9 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
-public class GetAuditDetailByIdHandler extends
-        OperationPortalUseCase<GetAuditDetailById.Input, GetAuditDetailById.Output> implements GetAuditDetailById {
+public class GetAuditDetailByIdHandler
+    extends OperationPortalUseCase<GetAuditDetailById.Input, GetAuditDetailById.Output>
+    implements GetAuditDetailById {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAuditDetailByIdHandler.class);
 
@@ -23,7 +23,6 @@ public class GetAuditDetailByIdHandler extends
 
     public GetAuditDetailByIdHandler(PrincipalCache principalCache,
                                      ActionAuthorizationManager actionAuthorizationManager,
-                                     GetAuditDetailByIdJpaQueryHandler getAuditDetailByIdJpaQueryHandler,
                                      GetAuditDetailByIdQuery getAuditDetailByIdQuery) {
 
         super(principalCache, actionAuthorizationManager);
@@ -36,7 +35,9 @@ public class GetAuditDetailByIdHandler extends
 
         var output = this.getAuditDetailByIdQuery.execute(new GetAuditDetailByIdQuery.Input(input.auditId()));
 
-        return new Output(output.inputInfo(), output.outputInfo());
+        return new Output(output.auditId(),
+                          output.inputInfo(),
+                          output.outputInfo());
 
     }
 
