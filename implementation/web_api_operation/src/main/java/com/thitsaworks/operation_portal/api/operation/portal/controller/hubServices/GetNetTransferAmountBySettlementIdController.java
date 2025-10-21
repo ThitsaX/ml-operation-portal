@@ -57,8 +57,8 @@ public class GetNetTransferAmountBySettlementIdController {
                                           .stream()
                                           .map(detail -> new Detail(
                                               detail.participantName(),
-                                              detail.debitAmount(),
-                                              detail.creditAmount(),
+                                              detail.debitAmount().abs(),
+                                              detail.creditAmount().abs(),
                                               detail.currency()
                                           ))
                                           .toList()

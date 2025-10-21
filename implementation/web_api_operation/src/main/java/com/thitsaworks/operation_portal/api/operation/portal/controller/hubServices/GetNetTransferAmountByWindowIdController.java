@@ -32,8 +32,8 @@ public class GetNetTransferAmountByWindowIdController {
     private final GetNetTransferAmountByWindowId getNetTransferAmountByWindowId;
 
     @GetMapping(value = "/secured/getNetTransferAmountByWindowId")
-    public ResponseEntity<Response> execute( @RequestParam
-                                             @NotNull(message = "settlementWindowId is required") int settlementWindowId)
+    public ResponseEntity<Response> execute(@RequestParam
+                                            @NotNull(message = "settlementWindowId is required") int settlementWindowId)
         throws DomainException, JsonProcessingException {
 
         LOG.info("Get Net Transfer Amount By Window Id Request : [{}]", settlementWindowId);
@@ -54,8 +54,10 @@ public class GetNetTransferAmountByWindowIdController {
                                           .stream()
                                           .map(detail -> new Detail(
                                               detail.participantName(),
-                                              detail.debitAmount(),
-                                              detail.creditAmount(),
+                                              detail.debitAmount()
+                                                    .abs(),
+                                              detail.creditAmount()
+                                                    .abs(),
                                               detail.currency()
                                           ))
                                           .toList()
@@ -66,7 +68,6 @@ public class GetNetTransferAmountByWindowIdController {
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
-
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(int settlementWindowId,

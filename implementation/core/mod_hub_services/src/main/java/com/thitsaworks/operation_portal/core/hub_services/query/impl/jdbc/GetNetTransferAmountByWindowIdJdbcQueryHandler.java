@@ -52,12 +52,12 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
                     "  participant p ON tp.participantId = p.participantId\n" +
                     "JOIN \n" +
                     "  participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId\n" +
-                    "Join \n" +
-                    " settlementWindowStateChange swso on swso.settlementWindowId = tf.settlementWindowId\n" +
-                    " AND swso.settlementWindowStateId ='OPEN' \n" +
-                    " Join \n" +
-                    " settlementWindowStateChange swsf on swsf.settlementWindowId = tf.settlementWindowId\n" +
-                    " AND swsf.settlementWindowStateId ='SETTLED' \n" +
+                    "JOIN \n" +
+                    " settlementWindowStateChange swso ON swso.settlementWindowId = tf.settlementWindowId\n" +
+                    " AND swso.settlementWindowStateId = 'OPEN' \n" +
+                    "LEFT JOIN \n" +
+                    " settlementWindowStateChange swsf ON swsf.settlementWindowId = tf.settlementWindowId\n" +
+                    " AND swsf.settlementWindowStateId = 'SETTLED' \n" +
                     "WHERE \n" +
                     "  tf.settlementWindowId = ?\n" +
                     "GROUP BY \n" +
