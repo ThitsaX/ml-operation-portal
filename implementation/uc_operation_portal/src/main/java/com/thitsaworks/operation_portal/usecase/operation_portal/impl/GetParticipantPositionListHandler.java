@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
-import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
@@ -35,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GetParticipantPositionListHandler
-        extends OperationPortalUseCase<GetParticipantPositionList.Input, GetParticipantPositionList.Output>
+    extends OperationPortalUseCase<GetParticipantPositionList.Input, GetParticipantPositionList.Output>
     implements GetParticipantPositionList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionListHandler.class);
@@ -45,23 +44,25 @@ public class GetParticipantPositionListHandler
     private static final BigDecimal roundingValue = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
 
     private final GetParticipantPositionsDataQuery getParticipantPositionsDataQuery;
+
     private final ParticipantCache participantCache;
+
     private final UserCache userCache;
+
     private final ParticipantNDCQuery participantNDCQuery;
 
     private final UserPermissionManager userPermissionManager;
 
     private final ParticipantQuery participantQuery;
 
-    public GetParticipantPositionListHandler(
-            PrincipalCache principalCache,
-            GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
-            ParticipantCache participantCache,
-            UserCache userCache,
-            ParticipantNDCQuery participantNDCQuery,
-            ActionAuthorizationManager actionAuthorizationManager,
-            UserPermissionManager userPermissionManager,
-            ParticipantQuery participantQuery) {
+    public GetParticipantPositionListHandler(PrincipalCache principalCache,
+                                             GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
+                                             ParticipantCache participantCache,
+                                             UserCache userCache,
+                                             ParticipantNDCQuery participantNDCQuery,
+                                             ActionAuthorizationManager actionAuthorizationManager,
+                                             UserPermissionManager userPermissionManager,
+                                             ParticipantQuery participantQuery) {
 
         super(principalCache, actionAuthorizationManager);
 
@@ -91,15 +92,20 @@ public class GetParticipantPositionListHandler
                                                                                                   .toString()));
         }
 
-        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId().getId()));
+        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId()
+                                                                                     .getId()));
         final String fspName = isDfspUser
-                ? userParticipant.participantName().getValue()
-                : allDfsp;
+                                   ? userParticipant.participantName()
+                                                    .getValue()
+                                   : allDfsp;
 
         final GetParticipantPositionsDataQuery.Output output =
-                getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(fspName));
+            getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(fspName));
 
-        final var rows = Optional.ofNullable(output.getFinancialData()).orElseGet(List::of);
+        final var
+            rows =
+            Optional.ofNullable(output.getFinancialData())
+                    .orElseGet(List::of);
         final List<FinancialData> result = new ArrayList<>(rows.size());
 
         final Map<String, ParticipantData> participantDescCache = new ConcurrentHashMap<>();
@@ -112,26 +118,28 @@ public class GetParticipantPositionListHandler
                                                              .orElse(roundingValue);
 
             final ParticipantData resolved = isDfspUser
-                    ? userParticipant
-                    : participantDescCache.computeIfAbsent(dto.dfspId(), id -> resolveParticipantDescription(id));
+                                                 ? userParticipant
+                                                 : participantDescCache.computeIfAbsent(dto.dfspId(),
+                                                                                        id -> resolveParticipantDescription(
+                                                                                            id));
 
             final ParticipantId participantId = resolved.participantId();
 
             final String displayName = isDfspUser ? userParticipant.description() : resolved.description();
 
             final FinancialData updated = new FinancialData(
-                    participantId,
-                    dto.dfspId(),
-                    displayName,
-                    dto.currency(),
-                    dto.balance(),
-                    dto.currentPosition(),
-                    ndcPercent,
-                    dto.ndc(),
-                    dto.ndcUsed(),
-                    dto.participantSettlementCurrencyId(),
-                    dto.participantPositionCurrencyId(),
-                    dto.isActive()
+                participantId,
+                dto.dfspId(),
+                displayName,
+                dto.currency(),
+                dto.balance(),
+                dto.currentPosition(),
+                ndcPercent,
+                dto.ndc(),
+                dto.ndcUsed(),
+                dto.participantSettlementCurrencyId(),
+                dto.participantPositionCurrencyId(),
+                dto.isActive()
             );
 
             result.add(updated);
@@ -159,16 +167,17 @@ public class GetParticipantPositionListHandler
     private ParticipantData unknownParticipant(String dfspId) {
 
         return new ParticipantData(
-                new ParticipantId(1L),
-                "",
-                null,
-                "",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+            new ParticipantId(1L),
+            "",
+            null,
+            "",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
         );
     }
+
 }
