@@ -35,7 +35,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
         QAudit audit = QAudit.audit;
 
         JPAQuery<Tuple> tupleSQLQuery =
-            this.readQueryFactory.select(participant.description, user.email, action.actionCode, audit.createdAt)
+            this.readQueryFactory.select(participant.description, user.email, action.actionCode, audit.createdAt, audit.auditId)
                                  .from(
                                      audit)
                                  .join(participant)
@@ -74,6 +74,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
         for (Tuple tuple : results.getResults()) {
 
             auditInfoList.add(new Output.AuditInfo(
+                tuple.get(audit.auditId),
                 tuple.get(audit.createdAt),
                 Objects.requireNonNull(tuple.get(action.actionCode))
                        .getValue(),

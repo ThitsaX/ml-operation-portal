@@ -28,8 +28,6 @@ public class GetAuditByParticipantListHandler
 
     private final GetAllAuditByParticipantQuery getAllAuditByParticipantQuery;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     public GetAuditByParticipantListHandler(PrincipalCache principalCache,
@@ -44,7 +42,6 @@ public class GetAuditByParticipantListHandler
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
         this.userPermissionManager = userPermissionManager;
-        this.principalCache = principalCache;
     }
 
     @Override
@@ -69,18 +66,19 @@ public class GetAuditByParticipantListHandler
                 realmId,
                 input.fromDate(),
                 input.toDate(),
-                grantedActionList,input.page(),input.pageSize()));
+                grantedActionList, input.page(), input.pageSize()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
         for (var data : output.auditInfoList()) {
 
-            auditInfoList.add(new Output.AuditInfo(data.date(),
+            auditInfoList.add(new Output.AuditInfo(data.auditId(),
+                                                   data.date(),
                                                    data.action(),
                                                    data.madeBy()));
         }
 
-        return new Output(auditInfoList ,output.totalElements(),output.totalPages());
+        return new Output(auditInfoList, output.totalElements(), output.totalPages());
     }
 
 }

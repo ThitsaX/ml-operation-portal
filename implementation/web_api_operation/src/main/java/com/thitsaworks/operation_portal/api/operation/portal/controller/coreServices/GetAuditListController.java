@@ -32,7 +32,7 @@ public class GetAuditListController {
         @RequestParam("fromDate") String fromDate,
         @RequestParam("toDate") String toDate,
         @RequestParam("page") Integer page,
-        @RequestParam("pageSize")Integer pageSize) throws DomainException, JsonProcessingException {
+        @RequestParam("pageSize") Integer pageSize) throws DomainException, JsonProcessingException {
 
         LOG.info("Get Audit List Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
 
@@ -44,15 +44,17 @@ public class GetAuditListController {
 
         List<Response.AuditInfo> auditInfoList = new ArrayList<>();
         for (var auditInfo : output.auditInfoList()) {
-            auditInfoList.add(new Response.AuditInfo(
-                auditInfo.date()
-                         .getEpochSecond(),
-                auditInfo.action(),
-                auditInfo.madeBy() != null ? auditInfo.madeBy()
-                                                      .getValue() : "unknown"));
+            auditInfoList.add(new Response.AuditInfo(auditInfo.auditId()
+                                                              .getEntityId()
+                                                              .toString(),
+                                                     auditInfo.date()
+                                                              .getEpochSecond(),
+                                                     auditInfo.action(),
+                                                     auditInfo.madeBy() != null ? auditInfo.madeBy()
+                                                                                           .getValue() : "unknown"));
         }
 
-        var response = new Response(auditInfoList , output.total(), output.totalPages());
+        var response = new Response(auditInfoList, output.total(), output.totalPages());
 
         LOG.info("Get Audit List Response: [{}]", response);
 
@@ -63,12 +65,12 @@ public class GetAuditListController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("auditInfoList") List<AuditInfo> auditInfoList,
                            @JsonProperty("total") long total,
-                           @JsonProperty("totalPages")Integer totalPages) implements Serializable {
+                           @JsonProperty("totalPages") Integer totalPages) implements Serializable {
 
-        public record AuditInfo(
-            @JsonProperty("date") long date,
-            @JsonProperty("action") String action,
-            @JsonProperty("madeBy") String madeBy
+        public record AuditInfo(@JsonProperty("auditId") String auditId,
+                                @JsonProperty("date") long date,
+                                @JsonProperty("action") String action,
+                                @JsonProperty("madeBy") String madeBy
 
         ) implements Serializable { }
 
