@@ -104,7 +104,7 @@ public class ModifySettlementSchedulerHandler
                 output =
                 this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommandHandler.Input(input.schedulerConfigId(),
                                                                                                         input.name(),
-                                                                                                        "SchedulingTester",
+                                                                                                        "CloseSettlementWindowsScheduler",
                                                                                                         input.description(),
                                                                                                         input.cronExpression(),
                                                                                                         input.zoneId()
