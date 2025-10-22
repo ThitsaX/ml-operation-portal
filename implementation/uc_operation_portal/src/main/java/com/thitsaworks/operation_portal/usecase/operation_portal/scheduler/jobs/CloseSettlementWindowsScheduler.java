@@ -82,6 +82,8 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
             settlementWindowIdList.add(new SettlementWindowId(settlementWindow.settlementWindowId()));
         }
 
+        Thread.sleep(10000);
+
         //Create a new settlement with closed windows
         this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
                                                                                    reason,
