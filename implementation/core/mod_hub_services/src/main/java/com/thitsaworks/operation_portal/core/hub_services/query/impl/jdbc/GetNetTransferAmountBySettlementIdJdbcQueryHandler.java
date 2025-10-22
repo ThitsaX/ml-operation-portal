@@ -62,7 +62,7 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
                     "JOIN \n" +
                     "  settlementSettlementWindow ssw ON ssw.settlementWindowId = tf.settlementWindowId\n" +
                     "\n" +
-                    " JOIN \n" +
+                    " LEFT JOIN \n" +
                     " settlementWindowStateChange swsf on swsf.settlementWindowId = tf.settlementWindowId\n" +
                     " AND swsf.settlementWindowStateId ='SETTLED' \n" +
                     "WHERE \n" +
