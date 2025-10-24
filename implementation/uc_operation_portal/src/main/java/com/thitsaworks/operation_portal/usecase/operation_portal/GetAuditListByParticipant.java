@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
@@ -13,6 +15,8 @@ public interface GetAuditListByParticipant
 
     record Input(Instant fromDate,
                  Instant toDate,
+                 UserId userId,
+                 ActionId actionid,
                  Integer page,
                  Integer pageSize) { }
 

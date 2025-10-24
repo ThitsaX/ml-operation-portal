@@ -35,7 +35,11 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
         QAudit audit = QAudit.audit;
 
         JPAQuery<Tuple> tupleSQLQuery =
-            this.readQueryFactory.select(participant.description, user.email, action.actionCode, audit.createdAt, audit.auditId)
+            this.readQueryFactory.select(participant.description,
+                                         user.email,
+                                         action.actionCode,
+                                         audit.createdAt,
+                                         audit.auditId)
                                  .from(
                                      audit)
                                  .join(participant)
@@ -45,30 +49,31 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                  .join(action)
                                  .on(action.actionId.eq(audit.actionId))
                                  .where((input.realmId() == null ?
-                                            audit.realmId.eq(audit.realmId) :
-                                            audit.realmId.id.eq(input.realmId()
-                                                                     .getId()))
-                                                            .and(input.fromDate() ==
-                                                                     null ||
-                                                                     input.toDate() ==
-                                                                         null ?
-                                                                     audit.createdAt.eq(audit.createdAt) :
-                                                                     audit.createdAt.between(
-                                                                         input.fromDate(),
-                                                                         input.toDate()))
-                                                            .and(action.actionId.in(input.grantedActionList())))
+                                             audit.realmId.eq(audit.realmId) :
+                                             audit.realmId.id.eq(input.realmId()
+                                                                      .getId()))
+                                            .and(input.fromDate() ==
+                                                     null ||
+                                                     input.toDate() ==
+                                                         null ?
+                                                     audit.createdAt.eq(audit.createdAt) :
+                                                     audit.createdAt.between(
+                                                         input.fromDate(),
+                                                         input.toDate()))
+                                            .and(action.actionId.in(input.grantedActionList()))
+                                            .and(input.userId() == null ? audit.userId.eq(audit.userId) :
+                                                     audit.userId.eq(input.userId()))
+                                            .and(input.actionId() == null ? audit.actionId.eq(audit.actionId) :
+                                                     audit.actionId.eq(input.actionId())))
                                  .orderBy(audit.createdAt.desc());
-
-
 
         int page = input.page() > 0 ? input.page() - 1 : 0;
         Pageable pageable = PageRequest.of(page, input.size());
 
-
         QueryResults<Tuple> results = tupleSQLQuery
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetchResults();
+                                          .offset(pageable.getOffset())
+                                          .limit(pageable.getPageSize())
+                                          .fetchResults();
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
         for (Tuple tuple : results.getResults()) {
@@ -83,8 +88,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
         long total = results.getTotal();
         int totalPages = (int) Math.ceil((double) total / pageable.getPageSize());
 
-
-        return new Output(auditInfoList,total,totalPages);
+        return new Output(auditInfoList, total, totalPages);
 
     }
 
