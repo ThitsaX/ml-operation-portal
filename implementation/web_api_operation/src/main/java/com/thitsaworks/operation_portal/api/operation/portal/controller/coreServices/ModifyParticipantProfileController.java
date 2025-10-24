@@ -48,7 +48,9 @@ public class ModifyParticipantProfileController {
             new ModifyParticipantProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
                                                request.description(),
                                                request.address(),
-                                               request.mobile() != null ? new Mobile(request.mobile()) : null,
+                                               request.mobile() != null && !request.mobile()
+                                                                                   .isBlank() ?
+                                                   new Mobile(request.mobile()) : null,
                                                request.logoFileType(),
                                                Base64.getDecoder()
                                                      .decode(request.logoBase64())));
