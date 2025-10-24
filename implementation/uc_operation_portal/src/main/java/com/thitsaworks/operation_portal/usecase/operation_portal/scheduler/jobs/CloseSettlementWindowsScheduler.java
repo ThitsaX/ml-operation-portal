@@ -5,6 +5,8 @@ import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowState;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateJobExecutionLogCommand;
@@ -82,12 +84,28 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
             settlementWindowIdList.add(new SettlementWindowId(settlementWindow.settlementWindowId()));
         }
 
-        Thread.sleep(10000);
+        final int MAX_RETRIES = 6;
+        final int RETRY_DELAY_MS = 5000;
 
-        //Create a new settlement with closed windows
-        this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
-                                                                                   reason,
-                                                                                   settlementWindowIdList));
+        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+
+            Thread.sleep(RETRY_DELAY_MS);
+
+            GetSettlementWindows.SettlementWindow latestWindowData =
+                    settlementHubClient.getSettlementWindowById(settlementWindowIdList.getLast());
+
+            if (SettlementWindowState.CLOSED.name().equals(latestWindowData.state())) {
+
+                settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
+                                                                                      reason,
+                                                                                      settlementWindowIdList));
+                return;
+            }
+
+        }
+
+        throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(
+                "Settlement window did not close properly within retry limit"));
 
     }
 

@@ -16,6 +16,7 @@ import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesE
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.services.HubService;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
+import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -121,6 +122,43 @@ public class SettlementHubClient {
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
+                                                                                        .description(errorInformation.getErrorDescription()));
+
+            } else if (e.getCause() instanceof ConnectException) {
+
+                throw new HubServicesException(HubServicesErrors.CONNECTION_ERROR);
+
+            } else {
+
+                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(e.getMessage()));
+
+            }
+        }
+        return response;
+
+    }
+
+    public GetSettlementWindows.SettlementWindow getSettlementWindowById(SettlementWindowId settlementWindowId)
+            throws HubServicesException {
+
+        GetSettlementWindows.SettlementWindow response;
+
+        try {
+
+            response = RetrofitRunner.invoke(this.hubService,
+                                             null,
+                                             (s, r) -> s.getSettlementWindows(settlementWindowId.getId()),
+                                             this.hubApiErrorDecoder)
+                                     .body();
+
+        } catch (RetrofitRunner.InvocationException e) {
+
+            if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
+
+                ErrorInformation errorInformation =
+                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
                                                                                         .description(errorInformation.getErrorDescription()));

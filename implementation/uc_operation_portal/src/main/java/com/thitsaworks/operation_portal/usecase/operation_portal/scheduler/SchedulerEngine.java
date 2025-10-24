@@ -12,7 +12,6 @@ import org.springframework.scheduling.support.CronExpression;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -135,9 +134,9 @@ public class SchedulerEngine {
                                .filter(Objects::nonNull)
                                .anyMatch(info ->
                                                  info.nextRunTime() != null &&
-                                                         info.nextRunTime().toLocalTime().equals(newNext.toLocalTime())
-                                                         && info.zoneId().getRules().getOffset(Instant.now())
-                                                                .equals(newZoneId.getRules().getOffset(Instant.now())));
+                                                         info.nextRunTime()
+                                                             .toLocalTime()
+                                                             .equals(newNext.toLocalTime()));
     }
 
     record SchedulerNextRunInfo(ZoneId zoneId, ZonedDateTime nextRunTime) {}
