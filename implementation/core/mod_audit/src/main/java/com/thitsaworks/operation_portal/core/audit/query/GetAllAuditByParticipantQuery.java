@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.audit.query;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 
 import java.io.Serializable;
@@ -17,6 +18,8 @@ public interface GetAllAuditByParticipantQuery {
                  Instant fromDate,
                  Instant toDate,
                  List<ActionId> grantedActionList,
+                 UserId userId,
+                 ActionId actionId,
                  int page,
                  int size
     ) { }

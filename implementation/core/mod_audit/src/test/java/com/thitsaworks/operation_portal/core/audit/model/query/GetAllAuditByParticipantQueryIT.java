@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.audit.model.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.audit.AuditConfiguration;
 import com.thitsaworks.operation_portal.core.audit.model.BaseVaultSetUpTest;
 import com.thitsaworks.operation_portal.core.audit.model.TestSettings;
@@ -38,10 +39,12 @@ public class GetAllAuditByParticipantQueryIT extends BaseVaultSetUpTest {
             Instant.parse("2025-02-01T00:00:00Z"),
             Instant.parse("2025-08-31T23:59:59Z"),
             grantedActionList,
-                1,
-                10);
+            new UserId(1L),
+            new ActionId(1L),
+            1,
+            10);
 
-        GetAllAuditByParticipantQuery.Output output = getAllAuditByParticipantQuery.execute(input);
+        GetAllAuditByParticipantQuery.Output output = this.getAllAuditByParticipantQuery.execute(input);
 
         LOG.info("Audit Info : {}", output.auditInfoList());
 

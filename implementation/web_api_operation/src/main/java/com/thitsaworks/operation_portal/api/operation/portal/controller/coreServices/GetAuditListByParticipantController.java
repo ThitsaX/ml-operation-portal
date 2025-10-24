@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAuditListByParticipant;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +33,28 @@ public class GetAuditListByParticipantController {
     public ResponseEntity<Response> execute(
         @RequestParam("fromDate") String fromDate,
         @RequestParam("toDate") String toDate,
+        @RequestParam(
+            value = "userId",
+            required = false) String userId,
+        @RequestParam(
+            value = "actionId",
+            required = false) String actionId,
         @RequestParam("page") Integer page,
         @RequestParam("pageSize") Integer pageSize) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Audit List By Participant Request: fromDate = [{}], toDate = [{}]", fromDate, toDate);
+        LOG.info("Get Audit List By Participant Request: fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
+                 fromDate,
+                 toDate,
+                 userId,
+                 actionId);
 
         GetAuditListByParticipant.Output output = this.getAuditListByParticipant.execute(
             new GetAuditListByParticipant.Input(Instant.parse(fromDate),
                                                 Instant.parse(toDate),
+                                                userId == null || userId.isBlank() ? null :
+                                                    new UserId(Long.parseLong(userId)),
+                                                actionId == null || actionId.isBlank() ? null :
+                                                    new ActionId(Long.parseLong(actionId)),
                                                 page,
                                                 pageSize));
 
