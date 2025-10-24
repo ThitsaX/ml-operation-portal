@@ -42,7 +42,6 @@ public class ModifySettlementSchedulerController {
                         request.name(),
                         request.description(),
                         request.cronExpression(),
-                        ZoneId.of(request.zoneId()),
                         request.active()
                 ));
 
@@ -60,7 +59,6 @@ public class ModifySettlementSchedulerController {
             @NotBlank @JsonProperty("name") String name,
             @NotBlank @JsonProperty("description") String description,
             @NotBlank @JsonProperty("cronExpression") String cronExpression,
-            @NotNull @JsonProperty("zoneId") String zoneId,
             @NotNull @JsonProperty("active") Boolean active
     ) {}
 

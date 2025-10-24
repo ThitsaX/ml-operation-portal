@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -77,16 +78,18 @@ public class SyncHubSettlementModelsToPortalHandler
 
                 CreateSettlementModelCommand.Output output =
                     this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
-                        hubSettlementModel.name(),
-                        hubSettlementModel.settlementInterchangeName() + "_" + hubSettlementModel.name() + "_" +
+                            hubSettlementModel.name(),
+                            hubSettlementModel.settlementInterchangeName() + "_" + hubSettlementModel.name() + "_" +
                             hubSettlementModel.settlementGranularityName(),
-                        hubSettlementModel.currencyId(),
-                        hubSettlementModel.isActive(),
-                        false, // set Manual as default
-                        hubSettlementModel.requireLiquidityCheck(),
-                        hubSettlementModel.autoPositionReset(),
-                        hubSettlementModel.adjustPosition(),
-                        new ArrayList<>()));
+                            hubSettlementModel.currencyId(),
+                            hubSettlementModel.isActive(),
+                            false, // set Manual as default
+                            true,
+                            ZoneId.of("UTC").getId(),
+                            hubSettlementModel.requireLiquidityCheck(),
+                            hubSettlementModel.autoPositionReset(),
+                            hubSettlementModel.adjustPosition(),
+                            new ArrayList<>()));
 
                 createdSettlementModelInfoList.add(new CreatedSettlementModelInfo(output.settlementModelId()
                                                                                         .getId(),

@@ -35,9 +35,9 @@ public class CreateSettlementModelController {
         CreateSettlementModel.Output output = this.createSettlementModel.execute(
                 new CreateSettlementModel.Input(request.name(),
                                                 request.modelType(),
-                                                (request.currencyID().isEmpty() || request.currencyID().isBlank()) ?
-                                                        null : request.currencyID(),
-                                                true,
+                                                (request.currencyId().isEmpty() || request.currencyId().isBlank()) ?
+                                                        null : request.currencyId(),
+                                                request.zoneId(),
                                                 request.requireLiquidityCheck(),
                                                 request.autoPositionReset(),
                                                 request.adjustPosition()));
@@ -56,7 +56,8 @@ public class CreateSettlementModelController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @JsonProperty("name") String name,
                           @JsonProperty("modelType") String modelType,
-                          @JsonProperty("currencyID") String currencyID,
+                          @JsonProperty("currencyId") String currencyId,
+                          @JsonProperty("zoneId") String zoneId,
                           @JsonProperty("requireLiquidityCheck") boolean requireLiquidityCheck,
                           @JsonProperty("autoPositionReset") boolean autoPositionReset,
                           @JsonProperty("adjustPosition") boolean adjustPosition) implements Serializable {

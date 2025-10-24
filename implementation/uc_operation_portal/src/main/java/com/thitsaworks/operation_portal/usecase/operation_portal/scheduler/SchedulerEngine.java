@@ -109,9 +109,7 @@ public class SchedulerEngine {
         new ArrayList<>(futures.keySet()).forEach(this::cancel);
     }
 
-    public boolean isCronOverlap(List<SchedulerConfigData> existingSchedulers,
-                                 String newCronExpression,
-                                 ZoneId newZoneId) {
+    public boolean isCronOverlap(List<SchedulerConfigData> existingSchedulers, String newCronExpression) {
 
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
 

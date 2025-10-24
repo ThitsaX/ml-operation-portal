@@ -10,7 +10,9 @@ public interface ModifySettlementModelCommand {
                  String type,
                  String currencyId,
                  boolean isActive,
-                 boolean autoCloseWindow) {}
+                 boolean autoCloseWindow,
+                 boolean manualCloseWindow,
+                 String zoneId) {}
 
     record Output(boolean modified, SettlementModelId settlementModelId) {}
 

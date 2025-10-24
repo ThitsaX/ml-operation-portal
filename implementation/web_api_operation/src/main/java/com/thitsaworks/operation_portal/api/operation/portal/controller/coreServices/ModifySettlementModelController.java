@@ -37,9 +37,11 @@ public class ModifySettlementModelController {
                 new ModifySettlementModel.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
                                                 request.name(),
                                                 request.modelType(),
-                                                request.currencyID(),
+                                                request.currencyId(),
                                                 request.active(),
-                                                request.autoCloseWindow()));
+                                                request.autoCloseWindow(),
+                                                request.manualCloseWindow(),
+                                                request.zoneId()));
 
         var response = new Response(output.modified(),
                                     output.settlementModelId()
@@ -56,9 +58,11 @@ public class ModifySettlementModelController {
     public record Request(@NotNull @JsonProperty("settlementModelId") String settlementModelId,
                           @NotNull @JsonProperty("name") String name,
                           @JsonProperty("modelType") String modelType,
-                          @JsonProperty("currencyID") String currencyID,
+                          @JsonProperty("currencyId") String currencyId,
                           @NotNull @JsonProperty("active") boolean active,
-                          @NotNull @JsonProperty("autoCloseWindow") boolean autoCloseWindow
+                          @NotNull @JsonProperty("autoCloseWindow") boolean autoCloseWindow,
+                          @NotNull @JsonProperty("manualCloseWindow") boolean manualCloseWindow,
+                          @JsonProperty("zoneId") String zoneId
     ) implements Serializable {
 
     }

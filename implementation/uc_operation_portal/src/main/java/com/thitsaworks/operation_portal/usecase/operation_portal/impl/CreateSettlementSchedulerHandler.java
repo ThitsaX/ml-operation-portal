@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -87,9 +86,7 @@ public class CreateSettlementSchedulerHandler
                                                                                          .contains(schedulerConfigData.schedulerConfigId()))
                                        .toList();
 
-        boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList,
-                                                               input.cronExpression(),
-                                                               ZoneId.of(input.zoneId()));
+        boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList, input.cronExpression());
 
         if (isOverlap) {
             throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
@@ -98,10 +95,10 @@ public class CreateSettlementSchedulerHandler
 
         var schedulerConfigOutput =
                 this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
-                                                                                                 "CloseSettlementWindowsScheduler",
+                                                                                                 "SchedulingTester",
                                                                                                  input.description(),
                                                                                                  input.cronExpression(),
-                                                                                                 (input.zoneId())));
+                                                                                                 settlementModelData.zoneId()));
 
         this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
                                                                                            schedulerConfigOutput.schedulerConfigData()

@@ -22,8 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -68,15 +66,13 @@ public class ModifySettlementSchedulerHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+
         SchedulerConfigData settlementSchedulerData = this.schedulerConfigQuery.get(input.schedulerConfigId());
 
         // Validate the cron duplication if the cron expression or zone ID has changed
-        if (!settlementSchedulerData.cronExpression().equals(input.cronExpression()) ||
-                !ZoneId.of(settlementSchedulerData.zoneId()).getRules().getOffset(Instant.now()).equals(input.zoneId()
-                                                                                                             .getRules()
-                                                                                                             .getOffset(
-                                                                                                                     Instant.now()))) {
-            SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+        if (!settlementSchedulerData.cronExpression().equals(input.cronExpression())) {
+
 
             List<SchedulerConfigData> schedulerConfigDataList = this.schedulerConfigQuery.getSchedulerConfigs(null);
 
@@ -90,9 +86,7 @@ public class ModifySettlementSchedulerHandler
                                                                                                      schedulerConfigData.schedulerConfigId()))
                                            .toList();
 
-            boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList,
-                                                                   input.cronExpression(),
-                                                                   input.zoneId());
+            boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList, input.cronExpression());
 
             if (isOverlap) {
                 throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
@@ -100,15 +94,13 @@ public class ModifySettlementSchedulerHandler
             }
         }
 
-        var
-                output =
+        var output =
                 this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommandHandler.Input(input.schedulerConfigId(),
                                                                                                         input.name(),
                                                                                                         "CloseSettlementWindowsScheduler",
                                                                                                         input.description(),
                                                                                                         input.cronExpression(),
-                                                                                                        input.zoneId()
-                                                                                                             .getId(),
+                                                                                                        settlementModelData.zoneId(),
                                                                                                         input.active()));
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 

@@ -43,6 +43,12 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
     @Column(name = "auto_close_window")
     protected boolean autoCloseWindow;
 
+    @Column(name = "manual_close_window")
+    protected boolean manualCloseWindow;
+
+    @Column(name = "zone_id")
+    protected String zoneId;
+
     @Column(name = "require_liquidity_check")
     protected boolean requireLiquidityCheck;
 
@@ -60,6 +66,8 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
                            String currencyId,
                            boolean isActive,
                            boolean autoCloseWindow,
+                           boolean manualCloseWindow,
+                           String zoneId,
                            boolean requireLiquidityCheck,
                            boolean autoPositionReset,
                            boolean adjustPosition) {
@@ -72,6 +80,8 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
         this.currencyId = currencyId;
         this.isActive = isActive;
         this.autoCloseWindow = autoCloseWindow;
+        this.manualCloseWindow = manualCloseWindow;
+        this.zoneId = zoneId;
         this.requireLiquidityCheck = requireLiquidityCheck;
         this.autoPositionReset = autoPositionReset;
         this.adjustPosition = adjustPosition;
@@ -136,6 +146,20 @@ public class SettlementModel extends JpaEntity<SettlementModelId> {
     public SettlementModel autoCloseWindow(boolean autoCloseWindow) {
 
         this.autoCloseWindow = autoCloseWindow;
+
+        return this;
+    }
+
+    public SettlementModel manualCloseWindow(boolean manualCloseWindow) {
+
+        this.manualCloseWindow = manualCloseWindow;
+
+        return this;
+    }
+
+    public SettlementModel zoneId(String zoneId) {
+
+        this.zoneId = zoneId;
 
         return this;
     }

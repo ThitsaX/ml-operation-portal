@@ -9,8 +9,7 @@ public interface CreateSettlementScheduler extends
     record Input(SettlementModelId settlementModelId,
                  String name,
                  String description,
-                 String cronExpression,
-                 String zoneId) {
+                 String cronExpression) {
     }
 
     record Output(boolean created) { }

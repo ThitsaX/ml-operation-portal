@@ -43,7 +43,9 @@ public class ModifySettlementModelCommandHandler implements ModifySettlementMode
                        .type(input.type())
                        .currencyId(input.currencyId())
                        .isActive(input.isActive())
-                       .autoCloseWindow(input.autoCloseWindow());
+                       .autoCloseWindow(input.autoCloseWindow())
+                       .manualCloseWindow(input.manualCloseWindow())
+                       .zoneId(input.zoneId());
 
         this.settlementModelRepository.save(settlementModel);
 
