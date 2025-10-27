@@ -9,6 +9,7 @@ public interface GetAuditDetailById extends UseCase<GetAuditDetailById.Input, Ge
 
     record Output(AuditId auditId,
                   String inputInfo,
-                  String outputInfo) { }
+                  String outputInfo,
+                  String exceptionInfo) { }
 
 }
