@@ -38,7 +38,9 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
 
-        return participants.stream().map(ParticipantData::new).toList();
+        return participants.stream()
+                           .map(ParticipantData::new)
+                           .toList();
 
     }
 
@@ -49,23 +51,23 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
 
-        return participants.stream().map(ParticipantData::new).toList();
+        return participants.stream()
+                           .map(ParticipantData::new)
+                           .toList();
     }
 
     @Override
     public ParticipantData get(ParticipantId participantId) throws ParticipantException {
 
-        BooleanExpression predicate = this.participant.participantId.eq(participantId)
-                                                                    .and(this.participant.participantStatus.eq(
-                                                                            ParticipantStatus.ACTIVE));
-        ;
+        BooleanExpression predicate = this.participant.participantId.eq(participantId);
 
         Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
 
         if (optionalParticipant.isEmpty()) {
 
             throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
-                    .format(participantId.getId().toString()));
+                                               .format(participantId.getId()
+                                                                    .toString()));
         }
 
         return new ParticipantData(optionalParticipant.get());
@@ -74,13 +76,13 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     @Override
     public List<ParticipantData> getOtherParticipants(ParticipantId participantId) {
 
-        BooleanExpression predicate = this.participant.participantId.ne(participantId)
-                                                                    .and(this.participant.participantStatus.eq(
-                                                                            ParticipantStatus.ACTIVE));
+        BooleanExpression predicate = this.participant.participantId.ne(participantId);
 
         List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
 
-        return participants.stream().map(ParticipantData::new).toList();
+        return participants.stream()
+                           .map(ParticipantData::new)
+                           .toList();
 
     }
 
@@ -91,11 +93,8 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
 
         Optional<Participant> optionalParticipant = this.participantRepository.findOne(predicate);
 
-        if (optionalParticipant.isEmpty()) {
-            return Optional.empty();
-        }
+        return optionalParticipant.map(ParticipantData::new);
 
-        return Optional.of(new ParticipantData(optionalParticipant.get()));
     }
 
 }
