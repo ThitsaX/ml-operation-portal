@@ -620,7 +620,7 @@
 					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageHeader"/>
 					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="pageFooter"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="Blank">
 					<datasetRun subDataset="sDetailReport" uuid="56c6fefc-5d2c-4ec6-b501-dc94d96b32d6">
 						<datasetParameter name="fspId">
 							<datasetParameterExpression><![CDATA[$P{fspId}]]></datasetParameterExpression>

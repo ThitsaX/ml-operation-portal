@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -38,19 +35,15 @@ public class GetAnnouncementInfoListController {
 
         List<Response.AnnouncementInfo> announcementInfoList = new ArrayList<>();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         for (var announcement : output.announcementInfoList()) {
-
-            LocalDateTime announcementDateTime = LocalDateTime.ofInstant(announcement.announcementDate(),
-                                                                         ZoneId.systemDefault());
 
             announcementInfoList.add(new Response.AnnouncementInfo(announcement.announcementId()
                                                                                .getId()
                                                                                .toString(),
                                                                    announcement.announcementTitle(),
                                                                    announcement.announcementDetail(),
-                                                                   announcementDateTime.format(formatter)));
+                                                                   announcement.announcementDate()
+                                                                               .getEpochSecond()));
         }
 
         if (!announcementInfoList.isEmpty()) {
@@ -74,7 +67,7 @@ public class GetAnnouncementInfoListController {
         public record AnnouncementInfo(@JsonProperty("id") String announcementId,
                                        @JsonProperty("title") String announcementTitle,
                                        @JsonProperty("detail") String announcementDetail,
-                                       @JsonProperty("date") String announcementDate) implements Serializable {
+                                       @JsonProperty("date") long announcementDate) implements Serializable {
         }
 
     }
