@@ -11,7 +11,9 @@ public interface ModifySettlementModel extends
                  String modelType,
                  String currencyID,
                  boolean isActive,
-                 boolean autoCloseWindow) {
+                 boolean autoCloseWindow,
+                 boolean manualCloseWindow,
+                 String zoneId) {
 
     }
 

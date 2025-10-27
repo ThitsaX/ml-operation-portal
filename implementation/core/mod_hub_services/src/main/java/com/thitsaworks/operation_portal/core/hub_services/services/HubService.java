@@ -56,6 +56,9 @@ public interface HubService {
                                                                            @Query("participantId")
                                                                                Integer participantId);
 
+    @GET("/v2/settlementWindows/{settlementWindowId}")
+    Call<GetSettlementWindows.SettlementWindow> getSettlementWindows(@Path("settlementWindowId") Integer settlementWindowId);
+
     @POST("/v2/settlements")
     Call<PostCreateSettlement.Response> postCreateSettlement(@Body PostCreateSettlement.Request request);
 

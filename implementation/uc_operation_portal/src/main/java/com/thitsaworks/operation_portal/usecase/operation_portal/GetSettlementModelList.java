@@ -22,6 +22,8 @@ public interface GetSettlementModelList extends UseCase<GetSettlementModelList.I
                 String currencyId,
                 boolean isActive,
                 boolean autoCloseWindow,
+                boolean manualCloseWindow,
+                String zoneId,
                 boolean requireLiquidityCheck,
                 boolean autoPositionReset,
                 boolean adjustPosition,

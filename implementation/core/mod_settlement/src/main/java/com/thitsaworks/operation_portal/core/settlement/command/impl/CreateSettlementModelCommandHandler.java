@@ -38,6 +38,8 @@ public class CreateSettlementModelCommandHandler implements CreateSettlementMode
                                                               input.currencyId(),
                                                               input.isActive(),
                                                               input.autoCloseWindow(),
+                                                              input.manualCloseWindow(),
+                                                              input.zoneId(),
                                                               input.requireLiquidityCheck(),
                                                               input.autoPositionReset(),
                                                               input.adjustPosition());

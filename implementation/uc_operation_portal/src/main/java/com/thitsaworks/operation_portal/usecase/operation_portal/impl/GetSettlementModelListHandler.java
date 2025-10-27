@@ -44,6 +44,8 @@ public class GetSettlementModelListHandler
                                                            settlementModelData.currencyId(),
                                                            settlementModelData.isActive(),
                                                            settlementModelData.autoCloseWindow(),
+                                                           settlementModelData.manualCloseWindow(),
+                                                           settlementModelData.zoneId(),
                                                            settlementModelData.requireLiquidityCheck(),
                                                            settlementModelData.autoPositionReset(),
                                                            settlementModelData.adjustPosition(),

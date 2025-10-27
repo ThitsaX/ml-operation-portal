@@ -9,7 +9,7 @@ public interface CreateSettlementModel extends
     record Input(String settlementModelName,
                  String modelType,
                  String currencyID,
-                 boolean isActive,
+                 String zoneId,
                  boolean requireLiquidityCheck,
                  boolean autoPositionReset,
                  boolean adjustPosition) {

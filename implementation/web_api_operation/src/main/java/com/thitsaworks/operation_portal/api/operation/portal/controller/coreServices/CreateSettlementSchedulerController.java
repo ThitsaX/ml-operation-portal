@@ -38,8 +38,7 @@ public class CreateSettlementSchedulerController {
             new CreateSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
                                                 request.name(),
                                                 request.description(),
-                                                request.cronExpression(),
-                                                request.zoneId()));
+                                                request.cronExpression()));
 
         var response = new Response(output.created());
 
@@ -53,8 +52,7 @@ public class CreateSettlementSchedulerController {
     public record Request(@NotNull @JsonProperty("settlementModelId") String settlementModelId,
                           @NotBlank @JsonProperty("name") String name,
                           @NotBlank @JsonProperty("description") String description,
-                          @NotBlank @JsonProperty("cronExpression") String cronExpression,
-                          @NotBlank @JsonProperty("zoneId") String zoneId
+                          @NotBlank @JsonProperty("cronExpression") String cronExpression
     ) implements Serializable {
 
     }

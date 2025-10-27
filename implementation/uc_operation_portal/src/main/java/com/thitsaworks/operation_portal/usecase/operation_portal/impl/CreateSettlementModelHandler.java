@@ -75,6 +75,8 @@ public class CreateSettlementModelHandler
                 input.currencyID(),
                 true,
                 false,
+                true,
+                input.zoneId(),
                 input.requireLiquidityCheck(),
                 input.autoPositionReset(),
                 input.adjustPosition(),
