@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementBankReport" pageWidth="2000" pageHeight="2000" whenNoDataType="AllSectionsNoDetail" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementBankReport" pageWidth="2000" pageHeight="2000" whenNoDataType="NoPages" columnWidth="1940" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
@@ -317,7 +317,7 @@
 					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.2" value="pageHeader"/>
 					<property name="net.sf.jasperreports.export.xlsx.exclude.origin.band.3" value="pageFooter"/>
 				</reportElement>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="AllSectionsNoDetail">
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" whenNoDataType="Blank">
 					<datasetRun subDataset="settlementBankDB" uuid="5dc97863-31cc-4bc9-a30e-c14e01e7cee0">
 						<datasetParameter name="settlementId">
 							<datasetParameterExpression><![CDATA[$P{settlementId}]]></datasetParameterExpression>
