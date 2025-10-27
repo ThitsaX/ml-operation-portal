@@ -4,9 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 
 import java.time.Instant;
 
-public record ActionData(
-    ActionId actionId,
-    String name,
-    Instant createdDate
-) {
-}
+public record ActionData(ActionId actionId,
+                         String name,
+                         Instant createdDate
+) { }

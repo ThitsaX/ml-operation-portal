@@ -33,11 +33,15 @@ public class GetAuditDetailByIdHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.getAuditDetailByIdQuery.execute(new GetAuditDetailByIdQuery.Input(input.auditId()));
+        var
+            output =
+            this.getAuditDetailByIdQuery.execute(new GetAuditDetailByIdQuery.Input(input.auditId()))
+                                        .auditData();
 
         return new Output(output.auditId(),
                           output.inputInfo(),
-                          output.outputInfo());
+                          output.outputInfo(),
+                          output.exceptionInfo());
 
     }
 

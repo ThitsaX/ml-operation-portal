@@ -36,7 +36,8 @@ public class GetAuditDetailByIdController {
                                           .getEntityId()
                                           .toString(),
                                     output.inputInfo(),
-                                    output.outputInfo());
+                                    output.outputInfo(),
+                                    output.exceptionInfo());
 
         LOG.info("Get Audit Detail By Id Response : [{}]", response);
 
@@ -47,7 +48,7 @@ public class GetAuditDetailByIdController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("auditId") String auditId,
                            @JsonProperty("inputInfo") String inputInfo,
-                           @JsonProperty("outputInfo") String outputInfo
-    ) implements Serializable { }
+                           @JsonProperty("outputInfo") String outputInfo,
+                           @JsonProperty("exceptionInfo") String exceptionInfo) implements Serializable { }
 
 }

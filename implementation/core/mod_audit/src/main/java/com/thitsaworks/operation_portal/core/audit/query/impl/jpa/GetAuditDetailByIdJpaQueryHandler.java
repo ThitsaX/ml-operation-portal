@@ -1,10 +1,12 @@
 package com.thitsaworks.operation_portal.core.audit.query.impl.jpa;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
+import com.thitsaworks.operation_portal.core.audit.data.AuditData;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditErrors;
+import com.thitsaworks.operation_portal.core.audit.exception.AuditException;
 import com.thitsaworks.operation_portal.core.audit.model.QAudit;
+import com.thitsaworks.operation_portal.core.audit.model.repository.AuditRepository;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditDetailByIdQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,25 +15,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GetAuditDetailByIdJpaQueryHandler implements GetAuditDetailByIdQuery {
 
-    private final JPAQueryFactory readQueryFactory;
+    private final AuditRepository auditRepository;
+
+    private final QAudit audit = QAudit.audit;
 
     @Override
     @CoreReadTransactional
-    public Output execute(Input input) {
+    public Output execute(Input input) throws AuditException {
 
-        QAudit audit = QAudit.audit;
+        BooleanExpression predicate = this.audit.auditId.eq(input.auditId());
 
-        JPAQuery<Tuple> tupleSQLQuery = this.readQueryFactory.select(audit.auditId, audit.inputInfo, audit.outputInfo)
-                                                             .from(audit)
-                                                             .where(audit.auditId.id.eq(input.auditId()
-                                                                                             .getEntityId()));
+        var
+            audit =
+            this.auditRepository.findOne(predicate)
+                                .orElseThrow(() -> new AuditException(AuditErrors.AUDIT_NOT_FOUND.format(input.auditId()
+                                                                                                              .getId()
+                                                                                                              .toString())));
 
-        Tuple tuple = tupleSQLQuery.fetchOne();
+        return new Output(new AuditData(audit));
 
-        assert tuple != null;
-        return new Output(tuple.get(audit.auditId),
-                          tuple.get(audit.inputInfo),
-                          tuple.get(audit.outputInfo));
     }
 
 }
