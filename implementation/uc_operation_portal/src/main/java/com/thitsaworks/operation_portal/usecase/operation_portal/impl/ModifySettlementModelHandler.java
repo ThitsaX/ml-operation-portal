@@ -88,10 +88,11 @@ public class ModifySettlementModelHandler
         boolean zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
                                          .equals(ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
 
-        //Activate or Deactivate all schedulers when Auto-Manual changes occurs.
-        if (input.autoCloseWindow() != settlementModelData.autoCloseWindow() || zoneChanged) {
+        if (input.autoCloseWindow() != settlementModelData.autoCloseWindow() || !input.isActive() || zoneChanged) {
 
             List<SchedulerConfigData> schedulerConfigDataList = this.schedulerConfigQuery.getSchedulerConfigs(null);
+
+            boolean isSchedulerActive = input.isActive() && input.autoCloseWindow();
 
             for (SchedulerConfigId schedulerConfigId : settlementModelData.schedulerConfigIds()) {
 
@@ -99,7 +100,9 @@ public class ModifySettlementModelHandler
                                                                                  .filter(scheduler -> scheduler.schedulerConfigId()
                                                                                                                .equals(schedulerConfigId))
                                                                                  .findFirst()
-                                                                                 .orElse(null);
+                                                                                 .orElseThrow(() -> new SettlementException(
+                                                                                         SettlementErrors.SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND.format(
+                                                                                                 schedulerConfigId.toString())));
 
                 schedulerConfigData = this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommand.Input(
                         schedulerConfigData.schedulerConfigId(),
@@ -108,7 +111,7 @@ public class ModifySettlementModelHandler
                         schedulerConfigData.description(),
                         schedulerConfigData.cronExpression(),
                         input.zoneId(),
-                        input.autoCloseWindow())).schedulerConfigData();
+                        isSchedulerActive)).schedulerConfigData();
 
                 this.schedulerEngine.scheduleOrReschedule(schedulerConfigData);
 

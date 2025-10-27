@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.core.scheduler.model.repository;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
+import com.thitsaworks.operation_portal.core.scheduler.model.QSchedulerConfig;
 import com.thitsaworks.operation_portal.core.scheduler.model.SchedulerConfig;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

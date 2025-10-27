@@ -11,6 +11,8 @@ import com.thitsaworks.operation_portal.core.scheduler.model.repository.Schedule
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ModifySchedulerConfigCommandHandler implements ModifySchedulerConfigCommand {
@@ -26,6 +28,14 @@ public class ModifySchedulerConfigCommandHandler implements ModifySchedulerConfi
                                                                                 SchedulerErrors.SCHEDULER_CONFIG_NOT_FOUND.format(
                                                                                         input.schedulerConfigId()
                                                                                              .getId())));
+        if (!input.name().equals(schedulerConfig.getName())) {
+
+            Optional<SchedulerConfig> optionalSchedulerConfig = schedulerConfigRepository.findByName(input.name());
+
+            if (optionalSchedulerConfig.isPresent()) {
+                throw new SchedulerException(SchedulerErrors.SCHEDULER_ALREADY_REGISTERED.format(input.name()));
+            }
+        }
 
         this.schedulerConfigRepository.save(schedulerConfig.name(input.name())
                                                            .jobName(input.jobName())

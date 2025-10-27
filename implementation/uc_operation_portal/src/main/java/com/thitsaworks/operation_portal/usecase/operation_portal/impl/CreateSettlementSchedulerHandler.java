@@ -95,7 +95,7 @@ public class CreateSettlementSchedulerHandler
 
         var schedulerConfigOutput =
                 this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
-                                                                                                 "SchedulingTester",
+                                                                                                 "CloseSettlementWindowsScheduler",
                                                                                                  input.description(),
                                                                                                  input.cronExpression(),
                                                                                                  settlementModelData.zoneId()));
