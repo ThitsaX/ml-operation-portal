@@ -4,16 +4,12 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 
 public interface GenerateSettlementBankReportCommand {
 
-    record Input(
-        String settlementId,
-        String currencyId,
-        String fileType,
-        String timezoneOffset
-    ) { }
+    record Input(String settlementId,
+                 String currencyId,
+                 String fileType,
+                 String timezoneOffset) { }
 
-    record Output(
-        byte[] settlementBankReportByte
-    ) { }
+    record Output(byte[] settlementBankRptByte) { }
 
     Output execute(Input input) throws ReportException;
 

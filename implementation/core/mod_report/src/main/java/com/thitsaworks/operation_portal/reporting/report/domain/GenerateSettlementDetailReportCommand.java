@@ -4,17 +4,13 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 
 public interface GenerateSettlementDetailReportCommand {
 
-    record Input(
-        String settlementId,
-        String fspId,
-        String dfspName,
-        String fileType,
-        String timezoneOffset
-    ) { }
+    record Input(String settlementId,
+                 String fspId,
+                 String dfspName,
+                 String fileType,
+                 String timezoneOffset) { }
 
-    record Output(
-        byte[] detailReportByte
-    ) { }
+    record Output(byte[] settlementDetailRptByte) { }
 
     Output execute(Input input) throws ReportException;
 

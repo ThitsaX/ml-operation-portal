@@ -55,7 +55,7 @@ public class GenerateSettlementBankReportHandler
                                                                                                                input.fileType(),
                                                                                                                input.timezone()));
 
-        return new Output(output.settlementBankReportByte());
+        return new Output(output.settlementBankRptByte());
     }
 
 }

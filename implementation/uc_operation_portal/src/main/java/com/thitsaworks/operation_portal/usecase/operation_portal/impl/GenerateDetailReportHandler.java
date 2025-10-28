@@ -69,7 +69,7 @@ public class GenerateDetailReportHandler
                                                             input.fileType(),
                                                             input.timezoneOffset()));
 
-        return new Output(output.detailReportByte());
+        return new Output(output.settlementDetailRptByte());
     }
 
 }

@@ -8,16 +8,13 @@ public interface GenerateSettlementAuditReportCommand {
 
     record Input(Instant startDate,
                  Instant endDate,
-
                  String dfspId,
-
                  String dfspName,
-
                  String currencyId,
                  String filetype,
-                 String timeZoneOffset) {}
+                 String timeZoneOffset) { }
 
-    record Output(byte[] reportData) {}
+    record Output(byte[] settlementAuditRptByte) { }
 
     Output execute(Input input) throws ReportException;
 
