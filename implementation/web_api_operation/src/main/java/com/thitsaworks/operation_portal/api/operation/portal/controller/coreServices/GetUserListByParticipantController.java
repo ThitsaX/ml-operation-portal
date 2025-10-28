@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -53,6 +54,8 @@ public class GetUserListByParticipantController {
                                                    user.createdDate()
                                                        .getEpochSecond()));
         }
+
+        userInfoList.sort(Comparator.comparing(Response.UserInfo::email));
 
         var response = new GetUserListByParticipantController.Response(userInfoList);
 
