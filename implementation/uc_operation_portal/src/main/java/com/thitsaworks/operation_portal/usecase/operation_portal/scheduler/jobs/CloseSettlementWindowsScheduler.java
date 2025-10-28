@@ -1,6 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
@@ -15,6 +19,7 @@ import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.ScheduledJob;
+import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -25,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("CloseSettlementWindowsScheduler")
-public class CloseSettlementWindowsScheduler extends ScheduledJob {
+public class CloseSettlementWindowsScheduler extends ScheduledJob<SchedulerConfigData, PostCreateSettlement.Response> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsScheduler.class);
 
@@ -35,17 +40,24 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
 
     public CloseSettlementWindowsScheduler(CreateJobExecutionLogCommand createJobExecutionLogCommand,
                                            ModifyJobExecutionLogCommand modifyJobExecutionLogCommand,
+                                           CreateInputAuditCommand createInputAuditCommand,
+                                           CreateOutputAuditCommand createOutputAuditCommand,
+                                           CreateExceptionAuditCommand createExceptionAuditCommand,
+                                           ActionAuthorizationManager actionAuthorizationManager,
+                                           ObjectMapper objectMapper,
                                            SettlementModelQuery settlementModelQuery,
                                            SettlementHubClient settlementHubClient) {
 
-        super(createJobExecutionLogCommand, modifyJobExecutionLogCommand);
+        super(createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
+              createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager, objectMapper);
 
         this.settlementModelQuery = settlementModelQuery;
         this.settlementHubClient = settlementHubClient;
     }
 
     @Override
-    protected void onExecute(SchedulerConfigData schedulerConfigData) throws DomainException, InterruptedException {
+    protected PostCreateSettlement.Response onExecute(SchedulerConfigData schedulerConfigData)
+            throws DomainException, InterruptedException {
 
         SettlementModelData settlementModelData =
                 this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
@@ -96,10 +108,9 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob {
 
             if (SettlementWindowState.CLOSED.name().equals(latestWindowData.state())) {
 
-                settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
-                                                                                      reason,
-                                                                                      settlementWindowIdList));
-                return;
+                return settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
+                                                                                             reason,
+                                                                                             settlementWindowIdList));
             }
 
         }

@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Component
 public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(UseCaseRegistrationBeanPostProcessor.class);
 
-    private static final String TARGET_PACKAGE = "com.thitsaworks.operation_portal.usecase.operation_portal.impl";
+    private static final List<String> TARGET_PACKAGE_LIST = new ArrayList<>(List.of(
+            "com.thitsaworks.operation_portal.usecase.operation_portal.impl",
+            "com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs"));
 
     private final ObjectProvider<ActionAuthorizationManager> actionAuthorizationManager;
 
@@ -28,8 +33,8 @@ public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
 
         Class<?> clazz = bean.getClass();
 
-        if (clazz.getPackageName()
-                 .startsWith(TARGET_PACKAGE)) {
+        if (TARGET_PACKAGE_LIST.stream()
+                 .anyMatch(pkg -> clazz.getPackageName().startsWith(pkg))) {
 
             String simpleName = clazz.getSimpleName();
             String actionName = simpleName.replaceFirst("(Handler|UseCase)$", "");
