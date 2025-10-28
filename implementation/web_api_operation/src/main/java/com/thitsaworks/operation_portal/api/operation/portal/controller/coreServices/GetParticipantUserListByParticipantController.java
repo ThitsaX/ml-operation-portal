@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,17 +30,19 @@ public class GetParticipantUserListByParticipantController {
         GetParticipantUserListByParticipant.Input input = new GetParticipantUserListByParticipant.Input();
         GetParticipantUserListByParticipant.Output output = this.getParticipantUserListByParticipant.execute(input);
 
-        Set<Response.User>
-            users = output.madeBy()
-                          .stream()
-                          .map(user -> {
-                              var email = user.email();
-                              return new Response.User(user.userId()
-                                                           .getId()
-                                                           .toString(),
-                                                       email == null ? "unknown" : email.getValue());
-                          })
-                          .collect(Collectors.toSet());
+        Set<Response.User> users = output.madeBy()
+                                         .stream()
+                                         .map(user -> {
+                                             var email = user.email();
+                                             return new Response.User(
+                                                 user.userId()
+                                                     .getId()
+                                                     .toString(),
+                                                 email == null ? "unknown" : email.getValue()
+                                             );
+                                         })
+                                         .sorted(Comparator.comparing(Response.User::email))
+                                         .collect(Collectors.toCollection(LinkedHashSet::new));
 
         LOG.info("Get Participant User List By Participant Response: [{}]", users);
 
