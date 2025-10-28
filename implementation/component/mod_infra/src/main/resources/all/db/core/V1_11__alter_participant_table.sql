@@ -1,0 +1,1 @@
+ALTER TABLE tbl_participant MODIFY COLUMN logo MEDIUMBLOB NULL;
