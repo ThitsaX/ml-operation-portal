@@ -99,7 +99,11 @@
         </parameter>
         <queryString language="plsql">
             <![CDATA[SELECT
-    IFNULL(tu.email, 'system') AS user,
+    CASE
+        WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
+        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
+        ELSE tu.email
+    END AS user,
     tac.action_code AS action_name,
     CONCAT(
     DATE_FORMAT(
@@ -154,7 +158,11 @@ ORDER BY ta.created_date DESC]]>
     </parameter>
     <queryString language="plsql">
         <![CDATA[SELECT
-    IFNULL(tu.email, 'system') AS user,
+    CASE
+        WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
+        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
+        ELSE tu.email
+    END AS user,
     tac.action_code AS action_name,
     CONCAT(
     DATE_FORMAT(
