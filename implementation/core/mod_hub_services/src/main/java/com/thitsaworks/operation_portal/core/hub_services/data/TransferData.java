@@ -24,7 +24,11 @@ public class TransferData implements Serializable {
 
     private String payerDfsp;
 
+    private String payerDfspName;
+
     private String payeeDfsp;
+
+    private String payeeDfspName;
 
     private String windowId;
 

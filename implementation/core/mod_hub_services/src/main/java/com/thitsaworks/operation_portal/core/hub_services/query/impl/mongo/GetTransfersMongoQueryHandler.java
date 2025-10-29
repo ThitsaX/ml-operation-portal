@@ -236,8 +236,12 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                              .as("amount")
                              .and(ConditionalOperators.IfNull.ifNull("payerDFSP").then(""))
                              .as("payerDfsp")
+                             .and(ConditionalOperators.IfNull.ifNull("payerDesc").then(""))
+                             .as("payerDfspName")
                              .and(ConditionalOperators.IfNull.ifNull("payeeDFSP").then(""))
                              .as("payeeDfsp")
+                             .and(ConditionalOperators.IfNull.ifNull("payeeDesc").then(""))
+                             .as("payeeDfspName")
                              .and(ConditionalOperators.IfNull.ifNull("windowIdsCsv").then("")).as("windowId")
                              .and(ConditionalOperators.IfNull.ifNull("settlementMatch.settlementId").then(""))
                              .as("settlementBatch")
@@ -283,7 +287,9 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                 final String currency = str(d.get("currency"));
                 final BigDecimal amount = toBigDecimal(d.get("amount"));
                 final String payerDfsp = str(d.get("payerDfsp"));
+                final String payerDfspName = str(d.get("payerDfspName"));
                 final String payeeDfsp = str(d.get("payeeDfsp"));
+                final String payeeDfspName = str(d.get("payeeDfspName"));
                 final String windowId = str(d.get("windowId"));
                 final String settlementBatch = str(d.get("settlementBatch"));
 
@@ -302,7 +308,9 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                                            currency,
                                            amount,
                                            payerDfsp,
+                                           payerDfspName,
                                            payeeDfsp,
+                                           payeeDfspName,
                                            windowId,
                                            settlementBatch,
                                            submittedOnDate));
@@ -357,7 +365,9 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                                                   String currency,
                                                   BigDecimal amount,
                                                   String payerDfsp,
+                                                  String payerDfspName,
                                                   String payeeDfsp,
+                                                  String payeeDfspName,
                                                   String windowId,
                                                   String settlementBatch,
                                                   String submittedOnDate) {
@@ -368,7 +378,9 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                                 currency,
                                 amount,
                                 payerDfsp,
+                                payerDfspName,
                                 payeeDfsp,
+                                payeeDfspName,
                                 windowId,
                                 settlementBatch,
                                 submittedOnDate);

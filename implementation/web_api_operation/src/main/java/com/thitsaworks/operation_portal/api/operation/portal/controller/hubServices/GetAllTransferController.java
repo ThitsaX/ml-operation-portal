@@ -93,7 +93,9 @@ public class GetAllTransferController {
                 transferInfo.getCurrency(),
                 transferInfo.getAmount(),
                 transferInfo.getPayerDfsp(),
+                transferInfo.getPayerDfspName(),
                 transferInfo.getPayeeDfsp(),
+                transferInfo.getPayeeDfspName(),
                 transferInfo.getWindowId(), transferInfo.getSettlementBatch(), transferInfo.getSubmittedOnDate()));
 
         }
@@ -114,7 +116,10 @@ public class GetAllTransferController {
             @JsonProperty("type") String type,
             @JsonProperty("currency") String currency,
             @JsonProperty("amount") BigDecimal amount,
-            @JsonProperty("payerDfsp") String payerDfsp, @JsonProperty("payeeDfsp") String payeeDfsp,
+            @JsonProperty("payerDfsp") String payerDfsp,
+            @JsonProperty("payerDfspName") String payerDfspName,
+            @JsonProperty("payeeDfsp") String payeeDfsp,
+            @JsonProperty("payeeDfspName") String payeeDfspName,
             @JsonProperty("windowId") String windowId,
             @JsonProperty("settlementBatch") String settlementBatch,
             @JsonProperty("submittedOnDate") String submittedOnDate

@@ -40,8 +40,8 @@ public class GetTransfersJdbcQueryHandler implements GetTransfersQuery {
             //@@Formatter:off
             results = this.jdbcTemplate.query(
                 "SELECT  t.transferId AS transferId, IFNULL(tst.enumeration,'') AS state, IFNULL(ts.name,'') AS type,\n" +
-                        "    IFNULL(t.currencyId,'') AS currency, ROUND(t.amount,2) AS amount, IFNULL(payer.name,'') AS payer_dfsp,\n" +
-                        "    IFNULL(payee.name,'') AS payee_dfsp, IFNULL(swc.settlementWindowId, '') AS window_id, IFNULL(swc.settlementId,'') AS settlement_batch," +
+                        "    IFNULL(t.currencyId,'') AS currency, ROUND(t.amount,2) AS amount, IFNULL(payer.name,'') AS payer_dfsp, IFNULL(payer.description,'') AS payer_dfsp_name,\n" +
+                        "    IFNULL(payee.name,'') AS payee_dfsp, IFNULL(payee.description,'') AS payee_dfsp_name, IFNULL(swc.settlementWindowId, '') AS window_id, IFNULL(swc.settlementId,'') AS settlement_batch," +
                         " t.createdDate AS submitted_on_date \n" +
                         "FROM transfer t \n" +
                         "LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')\n" +

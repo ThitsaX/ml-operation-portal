@@ -105,7 +105,9 @@ public class GetTransferListHandler
                     data.getCurrency(),
                     data.getAmount(),
                     data.getPayerDfsp(),
+                    data.getPayerDfspName(),
                     data.getPayeeDfsp(),
+                    data.getPayeeDfspName(),
                     data.getWindowId(),
                     data.getSettlementBatch(),
                     data.getSubmittedOnDate()));
