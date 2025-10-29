@@ -67,7 +67,7 @@ public class GetAuditListByParticipantController {
                                                               .getEpochSecond(),
                                                      auditInfo.action(),
                                                      auditInfo.madeBy() != null ? auditInfo.madeBy()
-                                                                                           .getValue() : "unknown"));
+                                                                                           .getValue() : ""));
         }
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());

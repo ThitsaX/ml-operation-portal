@@ -4,6 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
@@ -40,16 +41,15 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                          action.actionCode,
                                          audit.createdAt,
                                          audit.auditId)
-                                 .from(
-                                     audit)
-                                 .join(participant)
+                                 .from(audit)
+                                 .leftJoin(participant)
                                  .on(participant.participantId.id.eq(audit.realmId.id))
                                  .leftJoin(user)
                                  .on(user.userId.id.eq(audit.userId.id))
                                  .join(action)
                                  .on(action.actionId.eq(audit.actionId))
                                  .where((input.realmId() == null ?
-                                             audit.realmId.eq(audit.realmId) :
+                                             audit.realmId.isNull().or(audit.realmId.isNotNull()) :
                                              audit.realmId.id.eq(input.realmId()
                                                                       .getId()))
                                             .and(input.fromDate() ==
@@ -61,7 +61,7 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                                          input.fromDate(),
                                                          input.toDate()))
                                             .and(action.actionId.in(input.grantedActionList()))
-                                            .and(input.userId() == null ? audit.userId.eq(audit.userId) :
+                                            .and(input.userId() == null ? audit.userId.isNull().or(audit.userId.isNotNull()):
                                                      audit.userId.eq(input.userId()))
                                             .and(input.actionId() == null ? audit.actionId.eq(audit.actionId) :
                                                      audit.actionId.eq(input.actionId())))

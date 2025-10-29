@@ -99,7 +99,7 @@
         </parameter>
         <queryString language="plsql">
             <![CDATA[SELECT
-    tu.email AS user,
+    IFNULL(tu.email, 'system') AS user,
     tac.action_code AS action_name,
     CONCAT(
     DATE_FORMAT(
@@ -113,7 +113,7 @@
     ), $P{timezoneoffset}
 ) AS date
 FROM tbl_audit AS ta
-JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
+LEFT JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
 LEFT JOIN tbl_user AS tu ON tu.user_id = ta.user_id
 JOIN tbl_action AS tac ON tac.action_id = ta.action_id
 WHERE
@@ -154,7 +154,7 @@ ORDER BY ta.created_date DESC]]>
     </parameter>
     <queryString language="plsql">
         <![CDATA[SELECT
-    tu.email AS user,
+    IFNULL(tu.email, 'system') AS user,
     tac.action_code AS action_name,
     CONCAT(
     DATE_FORMAT(
@@ -168,7 +168,7 @@ ORDER BY ta.created_date DESC]]>
     ), $P{timezoneoffset}
 ) AS date
 FROM tbl_audit AS ta
-JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
+LEFT JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
 LEFT JOIN tbl_user AS tu ON tu.user_id = ta.user_id
 JOIN tbl_action AS tac ON tac.action_id = ta.action_id
 WHERE

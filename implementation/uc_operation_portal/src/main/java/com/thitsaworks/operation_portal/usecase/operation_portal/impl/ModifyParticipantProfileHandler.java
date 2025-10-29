@@ -6,10 +6,12 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
+import com.thitsaworks.operation_portal.core.hub_services.query.ModifyParticipantDescriptionQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantCommand;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyParticipantProfile;
 import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
@@ -27,6 +29,10 @@ public class ModifyParticipantProfileHandler
 
     private final ModifyParticipantCommand modifyParticipantCommand;
 
+    private final ModifyParticipantDescriptionQuery modifyParticipantDescriptionQuery;
+
+    private final ParticipantQuery participantQuery;
+
     private final UserPermissionManager userPermissionManager;
 
     public ModifyParticipantProfileHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -36,6 +42,8 @@ public class ModifyParticipantProfileHandler
                                            PrincipalCache principalCache,
                                            ActionAuthorizationManager actionAuthorizationManager,
                                            ModifyParticipantCommand modifyParticipantCommand,
+                                           ModifyParticipantDescriptionQuery modifyParticipantDescriptionQuery,
+                                           ParticipantQuery participantQuery,
                                            UserPermissionManager userPermissionManager) {
 
         super(createInputAuditCommand,
@@ -46,6 +54,8 @@ public class ModifyParticipantProfileHandler
               actionAuthorizationManager);
 
         this.modifyParticipantCommand = modifyParticipantCommand;
+        this.modifyParticipantDescriptionQuery = modifyParticipantDescriptionQuery;
+        this.participantQuery = participantQuery;
         this.userPermissionManager = userPermissionManager;
     }
 
@@ -68,6 +78,13 @@ public class ModifyParticipantProfileHandler
                                                                                               input.mobile(),
                                                                                               input.logoFileType(),
                                                                                               input.logo()));
+
+        var participantName = this.participantQuery.get(input.participantId())
+                                                   .participantName()
+                                                   .getValue();
+
+        this.modifyParticipantDescriptionQuery.execute(new ModifyParticipantDescriptionQuery.Input(participantName,
+                                                                                                   input.description()));
 
         return new Output(output.modified(), output.participantId());
     }
