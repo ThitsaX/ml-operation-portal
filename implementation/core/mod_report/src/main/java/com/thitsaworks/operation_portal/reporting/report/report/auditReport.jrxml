@@ -101,7 +101,7 @@
             <![CDATA[SELECT
     CASE
         WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
-        THEN LOWER(CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically'))
+        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
         ELSE tu.email
     END AS user,
     tac.action_code AS action_name,
@@ -160,7 +160,7 @@ ORDER BY ta.created_date DESC]]>
         <![CDATA[SELECT
     CASE
         WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
-        THEN LOWER(CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically'))
+        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
         ELSE tu.email
     END AS user,
     tac.action_code AS action_name,
