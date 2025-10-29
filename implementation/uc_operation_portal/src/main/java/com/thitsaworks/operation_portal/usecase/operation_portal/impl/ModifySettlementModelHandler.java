@@ -86,7 +86,7 @@ public class ModifySettlementModelHandler
         }
 
         boolean zoneChanged = true;
-        if (settlementModelData.zoneId() != null) {
+        if (!settlementModelData.zoneId().isEmpty()) {
             zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
                                              .equals(ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
         }
