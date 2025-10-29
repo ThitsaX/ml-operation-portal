@@ -101,7 +101,7 @@
             <![CDATA[SELECT
     CASE
         WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
-        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
+        THEN LOWER(CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically'))
         ELSE tu.email
     END AS user,
     tac.action_code AS action_name,
@@ -160,7 +160,7 @@ ORDER BY ta.created_date DESC]]>
         <![CDATA[SELECT
     CASE
         WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
-        THEN CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically')
+        THEN LOWER(CONCAT(SUBSTRING(tac.action_code, 1, LENGTH(tac.action_code) - LENGTH('Scheduler')), 'Automatically'))
         ELSE tu.email
     END AS user,
     tac.action_code AS action_name,
@@ -416,13 +416,13 @@ ORDER BY ta.created_date DESC]]>
                             </textField>
                         </jr:detailCell>
                     </jr:column>
-                    <jr:column width="151" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
+                    <jr:column width="400" uuid="f10e74e1-2127-46a9-b952-96d20a2bfba0">
                         <property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
                         <jr:detailCell style="Table_TD" height="17">
                             <property name="com.jaspersoft.studio.unit.width" value="px"/>
                             <property name="com.jaspersoft.studio.unit.height" value="px"/>
                             <textField>
-                                <reportElement x="0" y="0" width="151" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
+                                <reportElement x="0" y="0" width="400" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
                                 <textElement>
                                     <font fontName="Calibri" size="11"/>
                                 </textElement>
@@ -448,7 +448,7 @@ ORDER BY ta.created_date DESC]]>
                 <text><![CDATA[Date Time]]></text>
             </staticText>
             <staticText>
-                <reportElement x="380" y="200" width="151" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
+                <reportElement x="380" y="200" width="400" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
                     <property name="com.jaspersoft.studio.unit.height" value="px"/>
                 </reportElement>
                 <box>
