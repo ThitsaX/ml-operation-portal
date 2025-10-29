@@ -124,45 +124,103 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
             final MatchOperation match = match(new Criteria().andOperator(filters.toArray(new Criteria[0])));
 
             final AggregationOperation lookupSettlement = context -> {
-                Document stage = new Document("$lookup", new Document().append("from", "settlement")
-                                                                       .append("let",
-                                                                               new Document("winId",
-                                                                                            new Document("$toString",
-                                                                                                         "$transferSettlementWindowId")))
-                                                                       .append("pipeline",
-                                                                               Arrays.asList(new Document("$addFields",
-                                                                                                          new Document(
-                                                                                                                  "_winIds",
-                                                                                                                  new Document(
-                                                                                                                          "$map",
-                                                                                                                          new Document().append(
-                                                                                                                                                "input",
-                                                                                                                                                "$settlementWindows")
-                                                                                                                                        .append("as",
-                                                                                                                                                "w")
-                                                                                                                                        .append("in",
-                                                                                                                                                new Document(
-                                                                                                                                                        "$toString",
-                                                                                                                                                        "$$w.settlementWindowId"))))),
-                                                                                             new Document("$match",
-                                                                                                          new Document(
-                                                                                                                  "$expr",
-                                                                                                                  new Document(
-                                                                                                                          "$in",
-                                                                                                                          Arrays.asList(
-                                                                                                                                  "$$winId",
-                                                                                                                                  "$_winIds")))),
-                                                                                             new Document("$project",
-                                                                                                          new Document(
-                                                                                                                  "settlementId",
-                                                                                                                  1))))
-                                                                       .append("as", "settlementMatches"));
+                Document stage = new Document("$lookup",
+                                              new Document()
+                                                      .append("from", "settlement")
+                                                      .append("let", new Document("winId",
+                                                                                  new Document("$toString",
+                                                                                               "$transferSettlementWindowId")))
+                                                      .append("pipeline", Arrays.asList(
+                                                              // Build helper array of settlement window ids as strings for matching
+                                                              new Document("$addFields",
+                                                                           new Document("_winIds",
+                                                                                        new Document("$map",
+                                                                                                     new Document(
+                                                                                                             "input",
+                                                                                                             "$settlementWindows")
+                                                                                                             .append("as",
+                                                                                                                     "w")
+                                                                                                             .append("in",
+                                                                                                                     new Document(
+                                                                                                                             "$toString",
+                                                                                                                             "$$w.settlementWindowId"))
+                                                                                        )
+                                                                           )
+                                                              ),
+                                                              // Match settlement whose windows contain the transfer window id
+                                                              new Document("$match",
+                                                                           new Document("$expr",
+                                                                                        new Document("$in",
+                                                                                                     Arrays.asList(
+                                                                                                             "$$winId",
+                                                                                                             "$_winIds"))
+                                                                           )
+                                                              ),
+                                                              // >>> CHANGED: also expose numeric windowIds so we can display 32,33
+                                                              new Document("$project",
+                                                                           new Document("settlementId", 1)
+                                                                                   .append("windowIds",
+                                                                                           "$settlementWindows.settlementWindowId")
+                                                              )
+                                                                                       ))
+                                                      .append("as", "settlementMatches")
+                );
                 return context.getMappedObject(stage);
             };
 
-            final AddFieldsOperation addFirstSettlement = AddFieldsOperation.builder().addFieldWithValue(
-                    "settlementMatch",
-                    new Document("$arrayElemAt", Arrays.asList("$settlementMatches", 0))).build();
+            final AddFieldsOperation addFirstSettlement =
+                    AddFieldsOperation.builder()
+                                      .addFieldWithValue(
+                                              "settlementMatch",
+                                              new Document("$arrayElemAt", Arrays.asList("$settlementMatches", 0))
+                                                        )
+                                      .build();
+
+// >>> NEW: turn settlementMatch.windowIds (e.g., [32,33]) into "32,33"
+            final AddFieldsOperation addWindowIdsCsv =
+                    AddFieldsOperation.builder()
+                                      .addFieldWithValue(
+                                              "windowIdsCsv",
+                                              new Document("$let",
+                                                           new Document("vars",
+                                                                        new Document("ids",
+                                                                                     new Document("$map",
+                                                                                                  new Document("input",
+                                                                                                               "$settlementMatch.windowIds")
+                                                                                                          .append("as",
+                                                                                                                  "w")
+                                                                                                          .append("in",
+                                                                                                                  new Document(
+                                                                                                                          "$toString",
+                                                                                                                          "$$w"))
+                                                                                     )
+                                                                        )
+                                                           ).append("in",
+                                                                    new Document("$reduce",
+                                                                                 new Document("input", "$$ids")
+                                                                                         .append("initialValue", "")
+                                                                                         .append("in",
+                                                                                                 new Document("$cond",
+                                                                                                              Arrays.asList(
+                                                                                                                      new Document(
+                                                                                                                              "$eq",
+                                                                                                                              Arrays.asList(
+                                                                                                                                      "$$value",
+                                                                                                                                      "")),
+                                                                                                                      "$$this",
+                                                                                                                      new Document(
+                                                                                                                              "$concat",
+                                                                                                                              Arrays.asList(
+                                                                                                                                      "$$value",
+                                                                                                                                      ",",
+                                                                                                                                      "$$this"))
+                                                                                                                           ))
+                                                                                                )
+                                                                    )
+                                                                   )
+                                              )
+                                                        )
+                                      .build();
 
             final ProjectionOperation project =
                     project().and("transferId")
@@ -180,8 +238,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                              .as("payerDfsp")
                              .and(ConditionalOperators.IfNull.ifNull("payeeDFSP").then(""))
                              .as("payeeDfsp")
-                             .and(ConditionalOperators.IfNull.ifNull("transferSettlementWindowId").then(""))
-                             .as("windowId")
+                             .and(ConditionalOperators.IfNull.ifNull("windowIdsCsv").then("")).as("windowId")
                              .and(ConditionalOperators.IfNull.ifNull("settlementMatch.settlementId").then(""))
                              .as("settlementBatch")
                              .and("_createdAt")
@@ -191,6 +248,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
             final Aggregation agg = newAggregation(normalizeCreatedAt, match, facet(lookupSettlement,
                                                                                     addFirstSettlement,
+                                                                                    addWindowIdsCsv,
                                                                                     project,
                                                                                     sort,
                                                                                     skip(skipN),
