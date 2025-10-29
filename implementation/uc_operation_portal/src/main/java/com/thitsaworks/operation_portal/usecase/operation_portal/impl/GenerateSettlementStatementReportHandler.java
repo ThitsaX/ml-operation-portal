@@ -53,13 +53,19 @@ public class GenerateSettlementStatementReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        String dfspName = input.fspId().equalsIgnoreCase("all") ? input.fspId() : "";
+        String
+            dfspName =
+            input.fspId()
+                 .equalsIgnoreCase("all") ? input.fspId() : "";
 
-        if (!input.fspId().equalsIgnoreCase("all")) {
+        if (!input.fspId()
+                  .equalsIgnoreCase("all")) {
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.fspId());
 
-            dfspName = optionalParticipantData.isEmpty() ? input.fspId() : optionalParticipantData.get().description();
+            dfspName =
+                optionalParticipantData.isEmpty() ? input.fspId() : optionalParticipantData.get()
+                                                                                           .description();
         }
 
         GenerateSettlementStatementReportCommand.Output output = this.generateSettlementStatementReportCommand.execute(
@@ -70,7 +76,8 @@ public class GenerateSettlementStatementReportHandler
                                                                input.fileType(),
                                                                input.currencyId(),
                                                                input.timezoneOffSet()));
-        return new Output(output.statementRptData());
+
+        return new Output(output.settlementStatementRptByte());
     }
 
 }

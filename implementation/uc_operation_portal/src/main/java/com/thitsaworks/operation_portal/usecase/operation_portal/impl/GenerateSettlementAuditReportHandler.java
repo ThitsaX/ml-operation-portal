@@ -76,7 +76,7 @@ public class GenerateSettlementAuditReportHandler
                                                                                                              input.fileType(),
                                                                                                              input.timezone()));
 
-        return new Output(output.reportData());
+        return new Output(output.settlementAuditRptByte());
     }
 
 }

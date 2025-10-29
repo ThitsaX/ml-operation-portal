@@ -88,7 +88,7 @@ public class GenerateAuditReportHandler
                                                                                                   input.fileType(),
                                                                                                   grantedActionList));
 
-        return new Output(output.rptData());
+        return new Output(output.auditRptByte());
     }
 
 }

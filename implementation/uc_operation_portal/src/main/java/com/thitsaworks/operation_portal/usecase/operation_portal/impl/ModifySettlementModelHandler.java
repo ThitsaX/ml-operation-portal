@@ -31,8 +31,8 @@ import java.util.List;
 
 @Service
 public class ModifySettlementModelHandler
-        extends OperationPortalAuditableUseCase<ModifySettlementModel.Input, ModifySettlementModel.Output>
-        implements ModifySettlementModel {
+    extends OperationPortalAuditableUseCase<ModifySettlementModel.Input, ModifySettlementModel.Output>
+    implements ModifySettlementModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifySettlementModelHandler.class);
 
@@ -82,11 +82,14 @@ public class ModifySettlementModelHandler
 
         if (!input.autoCloseWindow() && !input.manualCloseWindow()) {
             throw new SettlementException(SettlementErrors.WINDOW_CLOSING_METHOD_MISSING.format(
-                    settlementModelData.name()));
+                settlementModelData.name()));
         }
 
-        boolean zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
-                                         .equals(ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
+        boolean zoneChanged = true;
+        if (settlementModelData.zoneId() != null) {
+            zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
+                                             .equals(ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
+        }
 
         if (input.autoCloseWindow() != settlementModelData.autoCloseWindow() || !input.isActive() || zoneChanged) {
 
@@ -98,20 +101,22 @@ public class ModifySettlementModelHandler
 
                 SchedulerConfigData schedulerConfigData = schedulerConfigDataList.stream()
                                                                                  .filter(scheduler -> scheduler.schedulerConfigId()
-                                                                                                               .equals(schedulerConfigId))
+                                                                                                               .equals(
+                                                                                                                   schedulerConfigId))
                                                                                  .findFirst()
                                                                                  .orElseThrow(() -> new SettlementException(
-                                                                                         SettlementErrors.SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND.format(
-                                                                                                 schedulerConfigId.toString())));
+                                                                                     SettlementErrors.SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND.format(
+                                                                                         schedulerConfigId.toString())));
 
                 schedulerConfigData = this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommand.Input(
-                        schedulerConfigData.schedulerConfigId(),
-                        schedulerConfigData.name(),
-                        schedulerConfigData.jobName(),
-                        schedulerConfigData.description(),
-                        schedulerConfigData.cronExpression(),
-                        input.zoneId(),
-                        isSchedulerActive)).schedulerConfigData();
+                                              schedulerConfigData.schedulerConfigId(),
+                                              schedulerConfigData.name(),
+                                              schedulerConfigData.jobName(),
+                                              schedulerConfigData.description(),
+                                              schedulerConfigData.cronExpression(),
+                                              input.zoneId(),
+                                              isSchedulerActive))
+                                                                       .schedulerConfigData();
 
                 this.schedulerEngine.scheduleOrReschedule(schedulerConfigData);
 
@@ -120,14 +125,14 @@ public class ModifySettlementModelHandler
         }
 
         var output = this.modifySettlementModelCommand.execute(new ModifySettlementModelCommandHandler.Input(
-                settlementModelData.settlementModelId(),
-                input.settlementModelName(),
-                input.modelType(),
-                input.currencyID(),
-                input.isActive(),
-                input.autoCloseWindow(),
-                input.manualCloseWindow(),
-                input.zoneId()));
+            settlementModelData.settlementModelId(),
+            input.settlementModelName(),
+            input.modelType(),
+            input.currencyID(),
+            input.isActive(),
+            input.autoCloseWindow(),
+            input.manualCloseWindow(),
+            input.zoneId()));
 
         return new Output(output.modified(), output.settlementModelId());
 

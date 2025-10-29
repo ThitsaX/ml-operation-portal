@@ -70,7 +70,7 @@ public class HubDataSourceConfiguration {
         config.addDataSourceProperty("maintainTimeStats", false);
 
         config.setMaximumPoolSize(settings.maxPoolSize());
-        config.setAutoCommit(false);
+        config.setAutoCommit(true);
 
         return new HikariDataSource(config);
 

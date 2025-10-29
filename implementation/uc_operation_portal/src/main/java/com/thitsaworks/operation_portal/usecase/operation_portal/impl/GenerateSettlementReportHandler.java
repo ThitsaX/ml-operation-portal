@@ -68,7 +68,7 @@ public class GenerateSettlementReportHandler
                                                       input.fileType(),
                                                       input.timezoneOffset()));
 
-        return new Output(output.settlementByte());
+        return new Output(output.settlementRptByte());
     }
 
 }

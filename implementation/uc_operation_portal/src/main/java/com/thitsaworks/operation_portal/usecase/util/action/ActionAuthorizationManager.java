@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.query.ActionQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.ScheduledJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ActionAuthorizationManager {
@@ -59,21 +61,30 @@ public class ActionAuthorizationManager {
     public List<String> findAuditableActions() throws IAMException {
 
         try {
+
+            String[] packages = {"com.thitsaworks.operation_portal.usecase.operation_portal"};
+
             List<String> auditableActionNames = new ArrayList<>();
             ClassPathScanningCandidateComponentProvider scanner =
                 new ClassPathScanningCandidateComponentProvider(false);
 
             scanner.addIncludeFilter(new AssignableTypeFilter(OperationPortalAuditableUseCase.class));
+            scanner.addIncludeFilter(new AssignableTypeFilter(ScheduledJob.class));
 
-            for (BeanDefinition bd : scanner.findCandidateComponents("com.thitsaworks.operation_portal.usecase.operation_portal")) {
-                String className = bd.getBeanClassName();
-                if (className != null && !className.equals(OperationPortalAuditableUseCase.class.getName())) {
+            Set<String> ignoredBaseClasses = Set.of(OperationPortalAuditableUseCase.class.getName(),
+                                                    ScheduledJob.class.getName());
 
-                    String simpleName = className.substring(className.lastIndexOf('.') + 1);
-                    String actionName = simpleName.replaceFirst("(Handler|UseCase)$", "");
-                    auditableActionNames.add(actionName);
+            for (String pkg : packages) {
+                for (BeanDefinition bd : scanner.findCandidateComponents(pkg)) {
+                    String className = bd.getBeanClassName();
+                    if (className != null && !ignoredBaseClasses.contains(className)) {
+                        String simpleName = className.substring(className.lastIndexOf('.') + 1);
+                        String actionName = simpleName.replaceFirst("(Handler|UseCase)$", "");
+                        auditableActionNames.add(actionName);
+                    }
                 }
             }
+
             return auditableActionNames;
 
         } catch (Exception e) {

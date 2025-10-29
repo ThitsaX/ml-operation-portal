@@ -6,9 +6,11 @@ import java.io.OutputStream;
 
 public interface GenerateDfspDailyTransactionTrendSummaryCommand {
 
-    record Input(
-            String fspId, String startdate, String enddate, String fileType,
-            OutputStream destination) {
+    record Input(String fspId,
+                 String startdate,
+                 String enddate,
+                 String fileType,
+                 OutputStream destination) {
     }
 
     record Output(Boolean generated) {

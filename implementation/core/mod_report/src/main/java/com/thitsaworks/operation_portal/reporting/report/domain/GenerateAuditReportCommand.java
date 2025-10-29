@@ -18,6 +18,6 @@ public interface GenerateAuditReportCommand {
                  String fileType,
                  List<String> grantedActionList) { }
 
-    record Output(byte[] rptData) { }
+    record Output(byte[] auditRptByte) { }
 
 }

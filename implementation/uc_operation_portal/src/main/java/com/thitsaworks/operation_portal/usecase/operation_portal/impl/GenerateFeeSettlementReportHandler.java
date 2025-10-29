@@ -53,7 +53,7 @@ public class GenerateFeeSettlementReportHandler
                                                                                                          input.timezone(),
                                                                                                          input.fileType()));
 
-        return new Output(output.rptData());
+        return new Output(output.feeSettlementRptByte());
     }
 
 }

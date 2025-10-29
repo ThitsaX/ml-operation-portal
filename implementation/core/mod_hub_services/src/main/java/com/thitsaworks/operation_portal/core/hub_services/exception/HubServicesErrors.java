@@ -16,6 +16,7 @@ public class HubServicesErrors {
     public static final ErrorMessage HUB_PARTICIPANT_POSITION_ERROR = new ErrorMessage("HUB_PARTICIPANT_POSITION_ERROR", "Failed to get the participant's position data on Hub.");
     public static final ErrorMessage SETTLEMENT_WINDOW_STATE_ERROR = new ErrorMessage("SETTLEMENT_WINDOW_STATE_ERROR", "Failed to get settlement window states.");
     public static final ErrorMessage SETTLEMENT_STATE_ERROR = new ErrorMessage("SETTLEMENT_STATE_ERROR", "Failed to get settlement states.");
+    public static final ErrorMessage HUB_PARTICIPANT_DESCRIPTION_ERROR = new ErrorMessage("HUB_PARTICIPANT_DESCRIPTION_ERROR", "Failed to update the description for Participant on Hub.");
 
     //@@formatter:on
 }

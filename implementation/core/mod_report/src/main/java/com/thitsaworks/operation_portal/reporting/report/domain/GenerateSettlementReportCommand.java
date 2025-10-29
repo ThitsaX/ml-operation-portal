@@ -10,7 +10,7 @@ public interface GenerateSettlementReportCommand {
                  String filetype,
                  String timezoneOffset) { }
 
-    record Output(byte[] settlementByte) { }
+    record Output(byte[] settlementRptByte) { }
 
     Output execute(Input input) throws ReportException;
 

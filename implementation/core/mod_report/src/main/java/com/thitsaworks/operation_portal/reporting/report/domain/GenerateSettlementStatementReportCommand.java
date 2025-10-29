@@ -14,7 +14,7 @@ public interface GenerateSettlementStatementReportCommand {
                  String currencyId,
                  String timeZoneOffset) { }
 
-    record Output(byte[] statementRptData) { }
+    record Output(byte[] settlementStatementRptByte) { }
 
     Output execute(Input input) throws ReportException;
 
