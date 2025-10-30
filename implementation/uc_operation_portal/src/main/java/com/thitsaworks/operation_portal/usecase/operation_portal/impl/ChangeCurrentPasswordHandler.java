@@ -50,8 +50,9 @@ public class ChangeCurrentPasswordHandler
     protected Output onExecute(Input input) throws DomainException {
 
         ChangePasswordCommand.Output changePasswordOutput = this.changePasswordCommand.execute(
-            new ChangePasswordCommand.Input(input.principalId(), input.oldPassword(),
-                                            input.newPassword()));
+            new ChangePasswordCommand.Input(input.principalId(),
+                                            input.oldPassword().getValue(),
+                                            input.newPassword().getValue()));
 
         return new Output(changePasswordOutput.accessKey(),
                           changePasswordOutput.secretKey());

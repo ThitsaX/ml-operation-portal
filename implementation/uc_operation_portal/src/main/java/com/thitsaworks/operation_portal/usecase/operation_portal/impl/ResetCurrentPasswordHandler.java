@@ -64,7 +64,7 @@ public class ResetCurrentPasswordHandler
         ResetPasswordCommand.Output resetPasswordOutput = this.resetPasswordCommand.execute(
                 new ResetPasswordCommand.Input(new PrincipalId(userData.userId()
                                                                        .getId()),
-                        input.password()));
+                        input.password().getValue()));
 
         return new Output(resetPasswordOutput.accessKey(),
                 resetPasswordOutput.secretKey(),

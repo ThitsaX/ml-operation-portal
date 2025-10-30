@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
@@ -36,7 +37,7 @@ public class ResetCurrentPasswordController {
         LOG.info("Reset Current Password Request: [{}]", MaskPassword.toMaskedString(request));
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
-            new ResetCurrentPassword.Input(new Email(request.email()), request.password()));
+            new ResetCurrentPassword.Input(new Email(request.email()), new Password(request.password())));
 
         var response = new Response(output.updated());
 

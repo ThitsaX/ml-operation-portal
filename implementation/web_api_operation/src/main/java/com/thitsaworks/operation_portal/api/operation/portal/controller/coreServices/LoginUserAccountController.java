@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.LoginUserAccount;
 import jakarta.validation.Valid;
@@ -35,7 +36,8 @@ public class LoginUserAccountController {
         LOG.info("Login User Account Request: [{}]", MaskPassword.toMaskedString(request));
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
-            new LoginUserAccount.Input(new Email(request.email), request.password));
+            new LoginUserAccount.Input(new Email(request.email()),
+                                       new Password(request.password())));
 
         var response = new Response(output.accessKey()
                                           .getId()

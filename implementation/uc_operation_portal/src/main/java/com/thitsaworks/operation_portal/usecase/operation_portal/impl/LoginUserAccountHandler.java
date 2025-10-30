@@ -40,7 +40,7 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
         AuthenticateCommand.Output securityToken = this.authenticateCommand.execute(
                 new AuthenticateCommand.Input(new PrincipalId(userData.userId().getId()),
-                        input.passwordPlain()));
+                        input.passwordPlain().getValue()));
 
         return new Output(securityToken.securityToken()
                                        .getAccessKey(),
