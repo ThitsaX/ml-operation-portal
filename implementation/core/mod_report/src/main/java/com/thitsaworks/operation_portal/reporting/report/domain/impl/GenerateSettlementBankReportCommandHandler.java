@@ -76,7 +76,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
             if (jasperPrint.getPages() == null || jasperPrint.getPages()
                                                              .isEmpty()) {
 
-                throw new ReportException(ReportErrors.RESULT_NOT_FOUND);
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
             byte[] rptBytes = new byte[0];
@@ -112,7 +112,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
                 rptBytes = csvReport.toByteArray();
             } else {
 
-                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED);
+                throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
             }
 
             return new Output(rptBytes);
