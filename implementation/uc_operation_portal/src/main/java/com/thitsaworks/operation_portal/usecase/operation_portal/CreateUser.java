@@ -4,6 +4,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
@@ -14,7 +15,7 @@ public interface CreateUser extends
 
     record Input(String name,
                  Email email,
-                 String password,
+                 Password password,
                  String firstName,
                  String lastName,
                  String jobTitle,

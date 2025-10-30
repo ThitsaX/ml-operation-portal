@@ -5,11 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ChangeCurrentPassword;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,8 @@ public class ChangeCurrentPasswordController {
         ChangeCurrentPassword.Output output = this.changeCurrentPassword.execute(
             new ChangeCurrentPassword.Input(new PrincipalId(userContext.userId()
                                                                        .getId()),
-                                            request.oldPassword(),
-                                            request.newPassword()));
+                                            new Password(request.oldPassword()),
+                                            new Password(request.newPassword())));
 
         var response = new Response(output.accessKey()
                                           .getId()
@@ -58,8 +59,8 @@ public class ChangeCurrentPasswordController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("oldPassword") String oldPassword,
-                          @NotNull @JsonProperty("newPassword") String newPassword
+    public record Request(@NotBlank @JsonProperty("oldPassword") String oldPassword,
+                          @NotBlank @JsonProperty("newPassword") String newPassword
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

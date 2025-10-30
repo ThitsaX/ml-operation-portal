@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
+import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
@@ -42,7 +43,7 @@ public class CreateUserController {
 
         CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
                                                                                 new Email(request.email()),
-                                                                                request.password(),
+                                                                                new Password(request.password()),
                                                                                 request.firstName(),
                                                                                 request.lastName(),
                                                                                 request.jobTitle(),

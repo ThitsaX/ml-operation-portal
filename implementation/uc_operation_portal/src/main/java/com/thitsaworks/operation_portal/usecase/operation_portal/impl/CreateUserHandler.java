@@ -86,7 +86,7 @@ public class CreateUserHandler
                                                 .getId());
 
         this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(principalId,
-                                                                             input.password(),
+                                                                             input.password().getValue(),
                                                                              new RealmId(input.participantId()
                                                                                               .getId()),
                                                                              input.status()));
