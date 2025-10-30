@@ -9,7 +9,7 @@ public interface LoginUserAccount {
 
     Output execute(Input input) throws DomainException;
 
-    record Input(Email email, Password passwordPlain) { }
+    record Input(Email email, String passwordPlain) { }
 
     record Output(AccessKey accessKey, String secretKey) { }
 

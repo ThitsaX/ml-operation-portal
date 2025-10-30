@@ -279,7 +279,7 @@ public class Principal extends JpaEntity<PrincipalId> {
         if (!OperationPortalCrypto.sha256Hex(oldPasswordSha256Hex)
                                   .equals(this.sha256PasswordHex)) {
 
-            throw new IAMIgnorableException(IAMErrors.PASSWORD_AUTHENTICATION_FAILURE);
+            throw new IAMIgnorableException(IAMErrors.OLD_PASSWORD_MISMATCH);
         }
 
         this.sha256PasswordHex = OperationPortalCrypto.sha256Hex(newPasswordSha256Hex);

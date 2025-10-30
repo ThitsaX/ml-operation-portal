@@ -37,7 +37,7 @@ public class LoginUserAccountController {
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
             new LoginUserAccount.Input(new Email(request.email()),
-                                       new Password(request.password())));
+                                       request.password()));
 
         var response = new Response(output.accessKey()
                                           .getId()

@@ -17,6 +17,7 @@ public class IAMErrors {
     public static final ErrorMessage ROLE_ALREADY_ASSIGNED = new ErrorMessage("ROLE_ALREADY_ASSIGNED","The Role has already assigned to the user : [{0}].");
 
     public static final ErrorMessage PASSWORD_AUTHENTICATION_FAILURE = new ErrorMessage("PASSWORD_AUTHENTICATION_FAILURE", "Password authentication is failed.");
+    public static final ErrorMessage OLD_PASSWORD_MISMATCH = new ErrorMessage("OLD_PASSWORD_MISMATCH", "The old password you entered is incorrect. Password cannot be changed.");
     public static final ErrorMessage UNAUTHORIZED_CREATION = new ErrorMessage("UNAUTHORIZED_CREATION", "The other participant's user is not authorized to create.");
     public static final ErrorMessage UNAUTHORIZED_ROLE_CREATION = new ErrorMessage("UNAUTHORIZED_ROLE_CREATION", "The role is not authorized to create.");
     public static final ErrorMessage UNAUTHORIZED_USER_ACCESS = new ErrorMessage("UNAUTHORIZED_USER_ACCESS", "The user is not authorized to view.");
