@@ -61,12 +61,12 @@ public class GetAllTransferController {
                                                .getAuthentication()
                                                .getDetails();
 
-        String localFromDate = TimeZoneConverter.convertTimeZone(fromDate, timezone);
+        String utcFromDate = TimeZoneConverter.convertTimeZone(fromDate, timezone);
 
-        String localToDate = TimeZoneConverter.convertTimeZone(toDate, timezone);
+        String utcToDate = TimeZoneConverter.convertTimeZone(toDate, timezone);
 
-        GetTransferList.Output output = this.getTransferList.execute(new GetTransferList.Input(localFromDate,
-                                                                                               localToDate,
+        GetTransferList.Output output = this.getTransferList.execute(new GetTransferList.Input(utcFromDate,
+                                                                                               utcToDate,
                                                                                                transferId,
                                                                                                payerFspId,
                                                                                                payeeFspId,

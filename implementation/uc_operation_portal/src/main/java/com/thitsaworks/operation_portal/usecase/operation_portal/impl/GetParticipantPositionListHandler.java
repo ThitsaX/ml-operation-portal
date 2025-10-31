@@ -9,10 +9,10 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.cache.UserCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantNDCData;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -113,7 +113,7 @@ public class GetParticipantPositionListHandler
         for (var dto : rows) {
 
             final BigDecimal ndcPercent = participantNDCQuery.get(dto.dfspId(), dto.currency())
-                                                             .map(ParticipantNDCData::ndcPercent)
+                                                             .map(ParticipantNDC::getNdcPercent)
                                                              .map(v -> v.setScale(2, RoundingMode.HALF_UP))
                                                              .orElse(roundingValue);
 

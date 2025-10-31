@@ -1,15 +1,14 @@
 package com.thitsaworks.operation_portal.core.participant.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantNDCHistoryId;
+import com.thitsaworks.operation_portal.component.common.identifier.ParticipantNDCId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -26,9 +25,11 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
     @EmbeddedId
     protected ParticipantNDCHistoryId participantNDCHistoryId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
-    @JoinColumn(name = "participant_ndc_id")
-    protected ParticipantNDC participantNDC;
+    // @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    //@JoinColumn(name = "participant_ndc_id")
+    @Embedded
+    @AttributeOverride(name = "id", column = @Column(name = "participant_ndc_id"))
+    protected ParticipantNDCId participantNDCId;
 
     @Column(name = "participant_name")
     protected String participantName;
@@ -43,7 +44,7 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
 
         this.participantNDCHistoryId = new ParticipantNDCHistoryId(Snowflake.get()
                                                                             .nextId());
-        this.participantNDC(participantNDC);
+        this.participantNDCId(participantNDC.getParticipantNDCId());
         this.participantName(participantNDC.getParticipantName());
         this.currency(participantNDC.getCurrency());
         this.ndcPercent(participantNDC.getNdcPercent());
@@ -52,9 +53,9 @@ public class ParticipantNDCHistory extends JpaEntity<ParticipantNDCHistoryId> {
 
     }
 
-    public void participantNDC(ParticipantNDC participantNDC) {
+    public void participantNDCId(ParticipantNDCId participantNDCId) {
 
-        this.participantNDC = participantNDC;
+        this.participantNDCId = participantNDCId;
     }
 
     public void participantName(String participantName) {

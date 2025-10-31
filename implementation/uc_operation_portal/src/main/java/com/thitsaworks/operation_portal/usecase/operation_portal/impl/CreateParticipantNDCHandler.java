@@ -8,7 +8,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantNDCData;
+import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
@@ -59,10 +59,10 @@ public class CreateParticipantNDCHandler
 
         //TODO: To call mojaloop api and calculate ndcamount logic
 
-        Optional<ParticipantNDCData> optionalParticipantNDCData = this.participantNDCQuery.get(input.participantName(),
-                                                                                               input.currency());
+        Optional<ParticipantNDC> optionalParticipantNDC = this.participantNDCQuery.get(input.participantName(),
+                                                                                       input.currency());
 
-        if (optionalParticipantNDCData.isEmpty()) {
+        if (optionalParticipantNDC.isEmpty()) {
 
             CreateParticipantNDCCommand.Output output =
                 this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(input.participantName(),
@@ -74,9 +74,9 @@ public class CreateParticipantNDCHandler
         } else {
 
             ModifyParticipantNDCCommand.Output output =
-                this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(
-                    optionalParticipantNDCData.get()
-                                              .participantNDCId(), input.ndcPercent()));
+                this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(optionalParticipantNDC.get()
+                                                                                                                     .getParticipantNDCId(),
+                                                                                               input.ndcPercent()));
 
             return new Output(output.participantNDCId());
         }

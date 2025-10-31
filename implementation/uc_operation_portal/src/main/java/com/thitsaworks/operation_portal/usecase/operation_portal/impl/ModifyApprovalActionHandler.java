@@ -27,6 +27,7 @@ import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCHistoryCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
@@ -65,6 +66,8 @@ public class ModifyApprovalActionHandler
 
     private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
 
+    private final CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand;
+
     private final ParticipantNDCQuery participantNDCQuery;
 
     private final GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery;
@@ -81,6 +84,7 @@ public class ModifyApprovalActionHandler
                                        Utility utility,
                                        CreateParticipantNDCCommand createParticipantNDCCommand,
                                        ModifyParticipantNDCCommand modifyParticipantNDCCommand,
+                                       CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
                                        ParticipantNDCQuery participantNDCQuery,
                                        GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery) {
 
@@ -97,6 +101,7 @@ public class ModifyApprovalActionHandler
         this.utility = utility;
         this.createParticipantNDCCommand = createParticipantNDCCommand;
         this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
+        this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;
         this.participantNDCQuery = participantNDCQuery;
         this.getParticipantBalanceByCurrencyIdQuery = getParticipantBalanceByCurrencyIdQuery;
     }
@@ -272,8 +277,10 @@ public class ModifyApprovalActionHandler
             BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
                                        approvalRequestData.amount();
 
+            this.createParticipantNDCHistoryCommand.execute(new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get()));
+
             this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(optionalNdc.get()
-                                                                                                      .participantNDCId(),
+                                                                                                      .getParticipantNDCId(),
                                                                                            ndcAmount));
         }
     }

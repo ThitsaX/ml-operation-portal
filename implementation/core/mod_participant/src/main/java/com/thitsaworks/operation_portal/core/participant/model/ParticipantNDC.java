@@ -3,12 +3,9 @@ package com.thitsaworks.operation_portal.core.participant.model;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantNDCId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -39,10 +36,9 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         scale = 4)
     protected BigDecimal ndcPercent;
 
-
-    @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participantNDC", orphanRemoval = true, fetch = FetchType.LAZY)
-    @Getter(AccessLevel.NONE)
-    protected Set<ParticipantNDCHistory> participantNDCHistories = new HashSet<>();
+    // @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participantNDC", orphanRemoval = true, fetch = FetchType.LAZY)
+//    @Getter(AccessLevel.NONE)
+//    protected Set<ParticipantNDCHistory> participantNDCHistories = new HashSet<>();
 
     public ParticipantNDC(String participantName,
                           String currency,
@@ -73,15 +69,15 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         return this;
     }
 
-    public ParticipantNDCHistory moveParticipantNDCToHistory(ParticipantNDC participantNDC) {
-
-        ParticipantNDCHistory participantNDCHistory =
-                new ParticipantNDCHistory(participantNDC);
-
-        this.participantNDCHistories.add(participantNDCHistory);
-        return participantNDCHistory;
-
-    }
+//    public ParticipantNDCHistory moveParticipantNDCToHistory() {
+//
+//        ParticipantNDCHistory participantNDCHistory =
+//                new ParticipantNDCHistory(this);
+//
+//        this.participantNDCHistories.add(participantNDCHistory);
+//        return participantNDCHistory;
+//
+//    }
 
     @Override
     public ParticipantNDCId getId() {

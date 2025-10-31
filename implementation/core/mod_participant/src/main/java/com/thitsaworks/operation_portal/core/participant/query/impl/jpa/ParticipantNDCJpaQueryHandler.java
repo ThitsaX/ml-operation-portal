@@ -44,14 +44,14 @@ public class ParticipantNDCJpaQueryHandler implements ParticipantNDCQuery {
     }
 
     @Override
-    public Optional<ParticipantNDCData> get(String participantName, String currency) {
+    public Optional<ParticipantNDC> get(String participantName, String currency) {
 
         BooleanExpression predicate = this.participantNDC.participantName.eq(participantName).and(this.participantNDC.currency.eq(
                 currency));
 
         Optional<ParticipantNDC> optionalParticipantNDC = this.participantNDCRepository.findOne(predicate);
 
-        return optionalParticipantNDC.map(ParticipantNDCData::new);
+        return optionalParticipantNDC;
     }
 
 }
