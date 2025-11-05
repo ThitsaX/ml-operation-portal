@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -9,13 +8,13 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifySchedulerConfigCommand;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
 import com.thitsaworks.operation_portal.core.settlement.command.ModifySettlementModelCommand;
 import com.thitsaworks.operation_portal.core.settlement.command.impl.ModifySettlementModelCommandHandler;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementException;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementSchedulerQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySettlementModel;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
@@ -27,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,7 +38,7 @@ public class ModifySettlementModelHandler
 
     private final SettlementModelQuery settlementModelQuery;
 
-    private final SchedulerConfigQuery schedulerConfigQuery;
+    private final SettlementSchedulerQuery settlementSchedulerQuery;
 
     private final ModifySettlementModelCommand modifySettlementModelCommand;
 
@@ -55,7 +55,7 @@ public class ModifySettlementModelHandler
                                         PrincipalCache principalCache,
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SettlementModelQuery settlementModelQuery,
-                                        SchedulerConfigQuery schedulerConfigQuery,
+                                        SettlementSchedulerQuery settlementSchedulerQuery,
                                         ModifySettlementModelCommand modifySettlementModelCommand,
                                         ModifySchedulerConfigCommand modifySchedulerConfigCommand,
                                         SchedulerEngine schedulerEngine) {
@@ -68,7 +68,7 @@ public class ModifySettlementModelHandler
               actionAuthorizationManager);
 
         this.settlementModelQuery = settlementModelQuery;
-        this.schedulerConfigQuery = schedulerConfigQuery;
+        this.settlementSchedulerQuery = settlementSchedulerQuery;
         this.modifySettlementModelCommand = modifySettlementModelCommand;
         this.modifySchedulerConfigCommand = modifySchedulerConfigCommand;
         this.schedulerEngine = schedulerEngine;
@@ -85,6 +85,9 @@ public class ModifySettlementModelHandler
                 settlementModelData.name()));
         }
 
+        List<SchedulerConfigData> settlementSchedulers =
+                this.settlementSchedulerQuery.getSettlementSchedulers(input.settlementModelId());
+
         boolean zoneChanged = true;
         if (!settlementModelData.zoneId().isEmpty()) {
             zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
@@ -95,37 +98,32 @@ public class ModifySettlementModelHandler
 
         boolean methodChanged = input.autoCloseWindow() != settlementModelData.autoCloseWindow();
 
-        // update schedulers when autoClose is off or model is inactive or zone changed.
-        if ((methodChanged && !input.autoCloseWindow()) || (statusChanged && !input.isActive()) || zoneChanged) {
+        if (zoneChanged || methodChanged || statusChanged) {
 
-            List<SchedulerConfigData> schedulerConfigDataList = this.schedulerConfigQuery.getSchedulerConfigs(null);
+            if (zoneChanged) {
 
-            for (SchedulerConfigId schedulerConfigId : settlementModelData.schedulerConfigIds()) {
+                List<SchedulerConfigData> updatedSchedulerList = new ArrayList<>();
 
-                SchedulerConfigData schedulerConfigData = schedulerConfigDataList.stream()
-                                                                                 .filter(scheduler -> scheduler.schedulerConfigId()
-                                                                                                               .equals(
-                                                                                                                   schedulerConfigId))
-                                                                                 .findFirst()
-                                                                                 .orElseThrow(() -> new SettlementException(
-                                                                                     SettlementErrors.SETTLEMENT_MODEL_SCHEDULER_NOT_FOUND.format(
-                                                                                         schedulerConfigId.toString())));
+                for (SchedulerConfigData scheduler : settlementSchedulers) {
+                    scheduler =
+                            this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommand.Input(
+                                    scheduler.schedulerConfigId(),
+                                    scheduler.name(),
+                                    scheduler.jobName(),
+                                    scheduler.description(),
+                                    scheduler.cronExpression(),
+                                    input.zoneId(),
+                                    scheduler.active())).schedulerConfigData();
 
-//              // when settlement model is inactive, scheduler config will be inactive
-                boolean schedulerStatus = input.isActive() && schedulerConfigData.active();
+                    updatedSchedulerList.add(scheduler);
+                }
 
-                schedulerConfigData = this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommand.Input(
-                                              schedulerConfigData.schedulerConfigId(),
-                                              schedulerConfigData.name(),
-                                              schedulerConfigData.jobName(),
-                                              schedulerConfigData.description(),
-                                              schedulerConfigData.cronExpression(),
-                                              input.zoneId(),
-                                              schedulerStatus)).schedulerConfigData();
-
-                this.schedulerEngine.scheduleOrReschedule(schedulerConfigData);
-
+                settlementSchedulers = updatedSchedulerList;
             }
+
+            boolean isSchedulerActive = input.isActive() && input.autoCloseWindow();
+
+            this.schedulerEngine.rescheduleSettlementSchedulers(settlementSchedulers, isSchedulerActive);
 
         }
 
@@ -135,8 +133,8 @@ public class ModifySettlementModelHandler
             input.modelType(),
             input.currencyID(),
             input.isActive(),
-            input.autoCloseWindow() && input.isActive(),
-            input.manualCloseWindow() && input.isActive(),
+            input.autoCloseWindow(),
+            input.manualCloseWindow(),
             input.zoneId()));
 
         return new Output(output.modified(), output.settlementModelId());

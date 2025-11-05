@@ -2,20 +2,15 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.scheduler.command.ModifySchedulerConfigCommand;
-import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementSchedulerQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementSchedulerList;
-import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class GetSettlementSchedulerListHandler
@@ -26,20 +21,18 @@ public class GetSettlementSchedulerListHandler
 
     private final SettlementModelQuery settlementModelQuery;
 
-    private final SchedulerConfigQuery schedulerConfigQuery;
+    private final SettlementSchedulerQuery settlementSchedulerQuery;
 
     public GetSettlementSchedulerListHandler(PrincipalCache principalCache,
                                              SettlementModelQuery settlementModelQuery,
-                                             SchedulerConfigQuery schedulerConfigQuery,
-                                             SchedulerEngine schedulerEngine,
-                                             ModifySchedulerConfigCommand modifySchedulerConfigCommand,
+                                             SettlementSchedulerQuery settlementSchedulerQuery,
                                              ActionAuthorizationManager actionAuthorizationManager) {
 
         super(principalCache,
               actionAuthorizationManager);
 
         this.settlementModelQuery = settlementModelQuery;
-        this.schedulerConfigQuery = schedulerConfigQuery;
+        this.settlementSchedulerQuery = settlementSchedulerQuery;
     }
 
     @Override
@@ -47,16 +40,7 @@ public class GetSettlementSchedulerListHandler
 
         SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
 
-        List<SchedulerConfigData> schedulerConfigDataList = this.schedulerConfigQuery.getSchedulerConfigs(null);
-
-        List<SchedulerConfigData> settlementSchedulerList =
-            schedulerConfigDataList.stream()
-                                   .filter(schedulerConfigData -> settlementModelData.schedulerConfigIds()
-                                                                                     .contains(
-                                                                                         schedulerConfigData.schedulerConfigId()))
-                                   .toList();
-
-        return new Output(settlementSchedulerList);
+        return new Output(this.settlementSchedulerQuery.getSettlementSchedulers(settlementModelData.settlementModelId()));
     }
 
 }

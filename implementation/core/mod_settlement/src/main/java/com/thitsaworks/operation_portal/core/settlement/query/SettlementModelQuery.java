@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.core.settlement.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.common.identifier.SettlementModelId;
+import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementException;
 

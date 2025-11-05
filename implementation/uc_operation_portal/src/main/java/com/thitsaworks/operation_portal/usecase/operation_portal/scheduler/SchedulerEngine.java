@@ -3,6 +3,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.core.scheduler.model.repository.SchedulerConfigRepository;
+import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,8 @@ public class SchedulerEngine {
     private final ApplicationContext applicationContext;
 
     private final SchedulerConfigRepository schedulerConfigRepository;
+
+    private final SettlementModelQuery settlementModelQuery;
 
     private final ConcurrentMap<Long, ScheduledFuture<?>> futures = new ConcurrentHashMap<>();
 
@@ -94,11 +98,27 @@ public class SchedulerEngine {
                                                                  .stream()
                                                                  .map(SchedulerConfigData::new)
                                                                  .collect(Collectors.toSet());
+
         new HashSet<>(futures.keySet()).stream()
                                        .filter(id -> keep.stream()
                                                          .noneMatch(configData -> configData.schedulerConfigId().getId()
                                                                                             .equals(id)))
                                        .forEach(this::cancel);
+
+        List<SettlementModelData> settlementModelDataList = this.settlementModelQuery.getSettlementModels();
+
+        // remove scheduler configs if their settlement model is inactive or auto close window is disabled.
+        for (SettlementModelData settlementModelData : settlementModelDataList) {
+            if (!settlementModelData.autoCloseWindow() || !settlementModelData.isActive()) {
+                settlementModelData.schedulerConfigIds()
+                                   .forEach(schedulerConfigId ->
+                                                    keep.removeIf(configData ->
+                                                                          configData.schedulerConfigId()
+                                                                                    .getId()
+                                                                                    .equals(schedulerConfigId.getId())));
+            }
+        }
+
 
         // Ensure all active are scheduled
         keep.forEach(this::scheduleOrReschedule);
@@ -107,6 +127,21 @@ public class SchedulerEngine {
     public synchronized void cancelAll() {
 
         new ArrayList<>(futures.keySet()).forEach(this::cancel);
+    }
+
+    public synchronized void rescheduleSettlementSchedulers(List<SchedulerConfigData> schedulerConfigDataList,
+                                                            boolean isActive) {
+
+        if (isActive) {
+            schedulerConfigDataList.forEach(this::scheduleOrReschedule);
+
+            return;
+        }
+
+        schedulerConfigDataList.stream()
+                               .map(config -> config.schedulerConfigId().getId())
+                               .forEach(this::cancel);
+
     }
 
     public boolean isCronOverlap(List<SchedulerConfigData> existingSchedulers, String newCronExpression) {
