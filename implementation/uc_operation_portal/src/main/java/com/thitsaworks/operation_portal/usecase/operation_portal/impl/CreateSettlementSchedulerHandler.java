@@ -8,12 +8,12 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.core.scheduler.query.SchedulerConfigQuery;
 import com.thitsaworks.operation_portal.core.settlement.command.AddSettlementSchedulerCommand;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementException;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementSchedulerQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementScheduler;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
@@ -33,9 +33,9 @@ public class CreateSettlementSchedulerHandler
 
     private final SchedulerEngine schedulerEngine;
 
-    private final SchedulerConfigQuery schedulerConfigQuery;
-
     private final SettlementModelQuery settlementModelQuery;
+
+    private final SettlementSchedulerQuery settlementSchedulerQuery;
 
     private final CreateSchedulerConfigCommand createSchedulerConfigCommand;
 
@@ -48,8 +48,8 @@ public class CreateSettlementSchedulerHandler
                                             PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             SchedulerEngine schedulerEngine,
-                                            SchedulerConfigQuery schedulerConfigQuery,
                                             SettlementModelQuery settlementModelQuery,
+                                            SettlementSchedulerQuery settlementSchedulerQuery,
                                             CreateSchedulerConfigCommand createSchedulerConfigCommand,
                                             AddSettlementSchedulerCommand addSettlementSchedulerCommand) {
 
@@ -61,8 +61,8 @@ public class CreateSettlementSchedulerHandler
               actionAuthorizationManager);
 
         this.schedulerEngine = schedulerEngine;
-        this.schedulerConfigQuery = schedulerConfigQuery;
         this.settlementModelQuery = settlementModelQuery;
+        this.settlementSchedulerQuery = settlementSchedulerQuery;
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
         this.addSettlementSchedulerCommand = addSettlementSchedulerCommand;
     }
@@ -77,16 +77,10 @@ public class CreateSettlementSchedulerHandler
                 settlementModelData.name()));
         }
 
-        List<SchedulerConfigData> schedulerConfigDataList =
-                this.schedulerConfigQuery.getSchedulerConfigs(null);
+        List<SchedulerConfigData> schedulerConfigDataList = this.settlementSchedulerQuery.getSettlementSchedulers(
+                settlementModelData.settlementModelId());
 
-        List<SchedulerConfigData> settlementSchedulerList =
-                schedulerConfigDataList.stream()
-                                       .filter(schedulerConfigData -> settlementModelData.schedulerConfigIds()
-                                                                                         .contains(schedulerConfigData.schedulerConfigId()))
-                                       .toList();
-
-        boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList, input.cronExpression());
+        boolean isOverlap = this.schedulerEngine.isCronOverlap(schedulerConfigDataList, input.cronExpression());
 
         if (isOverlap) {
             throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(

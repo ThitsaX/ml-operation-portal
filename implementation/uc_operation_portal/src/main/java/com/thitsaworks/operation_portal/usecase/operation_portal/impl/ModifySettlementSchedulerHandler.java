@@ -14,6 +14,7 @@ import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementErrors;
 import com.thitsaworks.operation_portal.core.settlement.exception.SettlementException;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
+import com.thitsaworks.operation_portal.core.settlement.query.SettlementSchedulerQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySettlementScheduler;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.SchedulerEngine;
@@ -35,6 +36,8 @@ public class ModifySettlementSchedulerHandler
 
     private final SettlementModelQuery settlementModelQuery;
 
+    private final SettlementSchedulerQuery settlementSchedulerQuery;
+
     private final SchedulerConfigQuery schedulerConfigQuery;
 
     private final SchedulerEngine schedulerEngine;
@@ -43,6 +46,7 @@ public class ModifySettlementSchedulerHandler
                                             CreateOutputAuditCommand createOutputAuditCommand,
                                             CreateExceptionAuditCommand createExceptionAuditCommand,
                                             SettlementModelQuery settlementModelQuery,
+                                            SettlementSchedulerQuery settlementSchedulerQuery,
                                             SchedulerConfigQuery schedulerConfigQuery,
                                             SchedulerEngine schedulerEngine,
                                             ObjectMapper objectMapper,
@@ -59,6 +63,7 @@ public class ModifySettlementSchedulerHandler
 
         this.modifySchedulerConfigCommand = modifySchedulerConfigCommand;
         this.settlementModelQuery = settlementModelQuery;
+        this.settlementSchedulerQuery = settlementSchedulerQuery;
         this.schedulerConfigQuery = schedulerConfigQuery;
         this.schedulerEngine = schedulerEngine;
     }
@@ -73,18 +78,12 @@ public class ModifySettlementSchedulerHandler
         // Validate the cron duplication if the cron expression or zone ID has changed
         if (!settlementSchedulerData.cronExpression().equals(input.cronExpression())) {
 
+            List<SchedulerConfigData> settlementSchedulerList = this.settlementSchedulerQuery.getSettlementSchedulers(
+                    settlementModelData.settlementModelId());
 
-            List<SchedulerConfigData> schedulerConfigDataList = this.schedulerConfigQuery.getSchedulerConfigs(null);
-
-            schedulerConfigDataList.removeIf(schedulerConfigData -> schedulerConfigData.schedulerConfigId()
+            settlementSchedulerList.removeIf(schedulerConfigData -> schedulerConfigData.schedulerConfigId()
                                                                                        .equals(input.schedulerConfigId()));
 
-            List<SchedulerConfigData> settlementSchedulerList =
-                    schedulerConfigDataList.stream()
-                                           .filter(schedulerConfigData -> settlementModelData.schedulerConfigIds()
-                                                                                             .contains(
-                                                                                                     schedulerConfigData.schedulerConfigId()))
-                                           .toList();
 
             boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList, input.cronExpression());
 
