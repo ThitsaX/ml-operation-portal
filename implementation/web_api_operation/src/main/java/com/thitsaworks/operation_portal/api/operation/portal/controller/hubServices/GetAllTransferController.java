@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,12 +62,8 @@ public class GetAllTransferController {
                                                .getAuthentication()
                                                .getDetails();
 
-        String utcFromDate = TimeZoneConverter.convertTimeZone(fromDate, timezone);
-
-        String utcToDate = TimeZoneConverter.convertTimeZone(toDate, timezone);
-
-        GetTransferList.Output output = this.getTransferList.execute(new GetTransferList.Input(utcFromDate,
-                                                                                               utcToDate,
+        GetTransferList.Output output = this.getTransferList.execute(new GetTransferList.Input(fromDate,
+                                                                                               toDate,
                                                                                                transferId,
                                                                                                payerFspId,
                                                                                                payeeFspId,
