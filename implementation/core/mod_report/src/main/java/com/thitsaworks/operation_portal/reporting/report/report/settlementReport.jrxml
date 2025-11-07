@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.8.0.final using JasperReports Library version 6.8.0-2ed8dfabb690ff337a5797129f2cd92902b0c87b  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementLatest" pageWidth="1500" pageHeight="1000" columnWidth="1460" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -102,7 +102,7 @@
 					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 					ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
 		 ) AS createdDate, 
-		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset,
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset,
 		DATE_FORMAT( CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		CONVERT_TZ(lastActionDate,'+00:00',CONCAT('-',SUBSTRING($P{timezoneoffset},2,2),':',SUBSTRING($P{timezoneoffset},4,2)))
 		ELSE CONVERT_TZ(lastActionDate,'+00:00',CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2))) END ,'%d-%b-%Y %h:%i:%s %p')as lastActionDate
@@ -272,7 +272,7 @@ ORDER BY p.name, settlementWindowId]]>
 					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 					ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
 		 ) AS createdDate, 
-		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset,
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset,
 		DATE_FORMAT( CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		CONVERT_TZ(lastActionDate,'+00:00',CONCAT('-',SUBSTRING($P{timezoneoffset},2,2),':',SUBSTRING($P{timezoneoffset},4,2)))
 		ELSE CONVERT_TZ(lastActionDate,'+00:00',CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2))) END ,'%d-%b-%Y %h:%i:%s %p')as lastActionDate
@@ -414,12 +414,68 @@ ORDER BY p.name, settlementWindowId]]>
 	<variable name="netPositionAmount" class="java.math.BigDecimal" resetType="Group" resetGroup="Group1" calculation="Sum">
 		<variableExpression><![CDATA[$F{netAmount}]]></variableExpression>
 	</variable>
-	<group name="Group1">
+	<group name="Group1" keepTogether="true">
 		<groupExpression><![CDATA[$F{currencyId}.trim().toUpperCase()]]></groupExpression>
-		<groupFooter>
-			<band height="77">
+		<groupHeader>
+			<band height="50">
 				<textField>
-					<reportElement x="0" y="2" width="150" height="16" uuid="af84ff7e-98fc-4e2f-ba2f-860130016495">
+					<reportElement isPrintRepeatedValues="false" x="0" y="16" width="150" height="16" isRemoveLineWhenBlank="true" uuid="89703d3e-e0a6-4921-8aa7-f7e3b517fcd2">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement>
+						<font fontName="Calibri" size="11" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="0" y="34" width="150" height="16" isRemoveLineWhenBlank="true" uuid="d16b2036-ac49-49cf-af6e-1597d6f99826">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement>
+						<font fontName="Calibri" size="11" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA["Aggregated Net Positions"]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="150" y="34" width="150" height="16" isRemoveLineWhenBlank="true" uuid="7741b836-902d-4bc2-bcef-3b62c95a2a15">
+						<property name="com.jaspersoft.studio.unit.width" value="px"/>
+						<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					</reportElement>
+					<box>
+						<pen lineWidth="0.25"/>
+						<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					</box>
+					<textElement>
+						<font fontName="Calibri" size="11" isBold="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[""]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="77" splitType="Stretch">
+				<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.grid.JSSGridBagLayout"/>
+				<textField>
+					<reportElement isPrintRepeatedValues="false" x="0" y="0" width="150" height="16" isRemoveLineWhenBlank="true" uuid="af84ff7e-98fc-4e2f-ba2f-860130016495">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
@@ -436,7 +492,7 @@ ORDER BY p.name, settlementWindowId]]>
 					<textFieldExpression><![CDATA[$F{currencyId}.trim().toUpperCase()]]></textFieldExpression>
 				</textField>
 				<textField pattern="#,##0.00#;-#,##0.00">
-					<reportElement x="150" y="2" width="150" height="16" uuid="660e1d27-6cdc-4dc6-aa0b-6cd7d4daa995">
+					<reportElement isPrintRepeatedValues="false" x="150" y="0" width="150" height="16" isRemoveLineWhenBlank="true" uuid="660e1d27-6cdc-4dc6-aa0b-6cd7d4daa995">
 						<property name="com.jaspersoft.studio.unit.width" value="px"/>
 						<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					</reportElement>
@@ -459,9 +515,9 @@ ORDER BY p.name, settlementWindowId]]>
 		<band splitType="Stretch"/>
 	</background>
 	<pageHeader>
-		<band height="249">
+		<band height="189">
 			<componentElement>
-				<reportElement positionType="Float" mode="Transparent" x="0" y="170" width="1400" height="63" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="ae14b4fd-b503-432a-9f1f-c1513382aa6f">
+				<reportElement positionType="Float" mode="Transparent" x="0" y="107" width="1400" height="63" forecolor="#FFFFFF" backcolor="#FFFFFF" uuid="ae14b4fd-b503-432a-9f1f-c1513382aa6f">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
 					<property name="com.jaspersoft.studio.table.style.table_header" value="Table_TH"/>
 					<property name="com.jaspersoft.studio.table.style.column_header" value="Table_CH"/>
@@ -772,7 +828,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<textFieldExpression><![CDATA[$P{settlementId}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="150" y="62" width="150" height="17" uuid="cdb86ac5-dbe0-429c-9d8d-a98fdd1dc862"/>
+				<reportElement x="150" y="36" width="150" height="17" uuid="cdb86ac5-dbe0-429c-9d8d-a98fdd1dc862"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -785,7 +841,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<textFieldExpression><![CDATA[$P{dfspId}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="62" width="150" height="17" uuid="daa267f5-ac85-4e12-adae-a08fec79fc7f">
+				<reportElement x="0" y="36" width="150" height="17" uuid="daa267f5-ac85-4e12-adae-a08fec79fc7f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -800,7 +856,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<text><![CDATA[DFSP ID]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="150" y="32" width="150" height="17" uuid="3d188677-2540-4228-bd8d-3d4952570536"/>
+				<reportElement x="150" y="19" width="150" height="17" uuid="3d188677-2540-4228-bd8d-3d4952570536"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -828,7 +884,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<text><![CDATA[Settlement ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="122" width="150" height="17" uuid="7ab1c2e9-61ab-476c-a6c0-148d96fd9649">
+				<reportElement x="0" y="70" width="150" height="17" uuid="7ab1c2e9-61ab-476c-a6c0-148d96fd9649">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -843,7 +899,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<text><![CDATA[TimeZoneOffSet]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="0" y="92" width="150" height="17" uuid="752f8445-6b43-4c2a-ab5e-90e361f3589b">
+				<reportElement x="0" y="53" width="150" height="17" uuid="752f8445-6b43-4c2a-ab5e-90e361f3589b">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -858,7 +914,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<text><![CDATA[DFSP Name]]></text>
 			</staticText>
 			<textField pattern="dd-MMM-yyyy">
-				<reportElement x="150" y="122" width="150" height="17" uuid="8f926158-1de2-4fe3-a0ef-7c718ec8fb67"/>
+				<reportElement x="150" y="70" width="150" height="17" uuid="8f926158-1de2-4fe3-a0ef-7c718ec8fb67"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -871,7 +927,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<textFieldExpression><![CDATA[$F{timezoneoffset}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="32" width="150" height="17" uuid="4edb64ab-7a2b-435d-863b-7dbe33a5d9a7">
+				<reportElement x="0" y="19" width="150" height="17" uuid="4edb64ab-7a2b-435d-863b-7dbe33a5d9a7">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -886,7 +942,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<text><![CDATA[Settlement Created Date]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="150" y="92" width="150" height="17" uuid="eeba5067-88f0-42d2-9935-bf34b0e06c34"/>
+				<reportElement x="150" y="53" width="150" height="17" uuid="eeba5067-88f0-42d2-9935-bf34b0e06c34"/>
 				<box>
 					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -899,7 +955,7 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 				<textFieldExpression><![CDATA[$P{dfspName}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="152" width="150" height="17" uuid="539d5840-3837-4640-bbf6-8669fef818d1">
+				<reportElement x="0" y="89" width="150" height="17" uuid="539d5840-3837-4640-bbf6-8669fef818d1">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -916,59 +972,4 @@ CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFiel
 			</staticText>
 		</band>
 	</pageHeader>
-	<columnHeader>
-		<band height="50">
-			<textField>
-				<reportElement x="0" y="2" width="150" height="16" uuid="89703d3e-e0a6-4921-8aa7-f7e3b517fcd2">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="18" width="150" height="16" uuid="d16b2036-ac49-49cf-af6e-1597d6f99826">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Aggregated Net Positions"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="150" y="18" width="150" height="16" uuid="7741b836-902d-4bc2-bcef-3b62c95a2a15">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[""]]></textFieldExpression>
-			</textField>
-		</band>
-	</columnHeader>
 </jasperReport>
