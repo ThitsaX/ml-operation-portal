@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementStatementReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -30,8 +31,7 @@ public class GenerateSettlementStatementReportController {
         @RequestParam("startDate") String startDate,
         @RequestParam("endDate") String endDate,
         @RequestParam("fileType") String fileType,
-        @RequestParam("currencyId") String currencyId,
-        @RequestParam("timezoneOffset") String timeZoneOffset)
+        @RequestParam("currencyId") String currencyId, @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
         LOG.info(
@@ -40,16 +40,17 @@ public class GenerateSettlementStatementReportController {
             endDate,
             fspId,
             fileType,
-            timeZoneOffset,
+            timezoneOffset,
             currencyId);
+
+        String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
         GenerateSettlementStatementReport.Output output = this.generateSettlementStatementReport.execute(
             new GenerateSettlementStatementReport.Input(fspId,
                                                         Instant.parse(startDate),
                                                         Instant.parse(endDate),
                                                         fileType,
-                                                        currencyId,
-                                                        timeZoneOffset
+                                                        currencyId, timezone
             ));
 
         var response = new Response(output.statementData());

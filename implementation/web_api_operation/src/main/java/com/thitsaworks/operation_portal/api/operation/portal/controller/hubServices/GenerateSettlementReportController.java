@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -36,8 +37,10 @@ public class GenerateSettlementReportController {
             "Generate Settlement Report : fspId = [{}], settlementId = [{}], fileType = [{}], timezoneOffset = [{}]",
             fspId, settlementId, fileType, timezoneOffset);
 
+        String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
+
         GenerateSettlementReport.Output output = this.generateSettlementReport.execute(
-            new GenerateSettlementReport.Input(fspId, settlementId, fileType, timezoneOffset));
+                new GenerateSettlementReport.Input(fspId, settlementId, fileType, timezone));
 
         var response = new Response(output.settlementByte());
 

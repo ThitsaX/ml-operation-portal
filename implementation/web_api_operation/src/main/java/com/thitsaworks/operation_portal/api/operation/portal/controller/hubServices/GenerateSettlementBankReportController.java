@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -37,8 +38,10 @@ public class GenerateSettlementBankReportController {
                 fileType,
                 timezoneOffset);
 
+        String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
+
         GenerateSettlementBankReport.Output output = this.generateSettlementBankReport.execute(
-                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezoneOffset));
+                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone));
 
         var response = new Response(output.reportData());
 
