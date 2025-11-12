@@ -291,7 +291,7 @@ ORDER BY ta.created_date DESC]]>
                 <textFieldExpression><![CDATA[java.time.OffsetDateTime.ofInstant(
     java.time.Instant.ofEpochSecond($P{fromDate}.longValue()),
     java.time.ZoneOffset.of($P{timezoneoffset})
-).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
+).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")).replace("Z", "+00:00")]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="180" y="69" width="300" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c"/>
@@ -307,7 +307,7 @@ ORDER BY ta.created_date DESC]]>
                 <textFieldExpression><![CDATA[java.time.OffsetDateTime.ofInstant(
     java.time.Instant.ofEpochSecond($P{toDate}.longValue()),
     java.time.ZoneOffset.of($P{timezoneoffset})
-).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
+).format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")).replace("Z", "+00:00")]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="180" y="86" width="300" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
