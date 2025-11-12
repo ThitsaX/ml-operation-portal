@@ -4,11 +4,29 @@ public class TimeZoneOffsetFormater {
 
     public static String normalizeOffset(String rawOffset) {
 
+        if (rawOffset == null || rawOffset.isBlank()) {
+            throw new IllegalArgumentException("Offset cannot be null or blank");
+        }
+
+        rawOffset = rawOffset.trim().toUpperCase();
+
+        if (rawOffset.equals("Z") || rawOffset.equals("UTC") || rawOffset.equals("GMT")) {
+            return "+00:00";
+        }
+
+        if (rawOffset.startsWith("UTC") || rawOffset.startsWith("GMT")) {
+            rawOffset = rawOffset.substring(3).trim();
+        }
+
         char sign = rawOffset.charAt(0);
 
-        if (sign != '+' && sign != '-') {
-            rawOffset = "+" + rawOffset;
+        if (sign != '-') {
+            if (!Character.isDigit(sign)) {
+                rawOffset = rawOffset.substring(1);
+            }
+
             sign = '+';
+
         } else {
             rawOffset = rawOffset.substring(1);
         }
@@ -36,39 +54,34 @@ public class TimeZoneOffsetFormater {
             throw new IllegalArgumentException("Offset cannot be null or blank");
         }
 
-        String s = input.trim().toUpperCase().trim();
+        String s = input.trim()
+                        .toUpperCase()
+                        .trim();
 
-        // Handle UTC aliases
         if (s.equals("Z") || s.equals("UTC") || s.equals("GMT")) {
             return "0000";
         }
 
-        // Extract sign if negative
         boolean negative = s.startsWith("-");
         if (negative || s.startsWith("+")) {
             s = s.substring(1);
         }
 
-        // Remove any colon (e.g., "06:30" → "0630")
         s = s.replace(":", "");
 
-        // Validate numeric part
         if (!s.matches("\\d{1,4}")) {
             throw new IllegalArgumentException("Invalid offset format: " + input);
         }
 
-        // Normalize to 4 digits (HHmm)
         if (s.length() == 1) {
-            s = "0" + s + "00";   // "8"   → "0800"
+            s = "0" + s + "00";
         } else if (s.length() == 2) {
-            s = s + "00";    // "06"  → "0600"
+            s = s + "00";
         } else if (s.length() == 3) {
-            s = "0" + s;     // "630" → "0630"
+            s = "0" + s;
         }
-        // if already 4, keep as-is
 
         return negative ? "-" + s : s;
     }
-
 
 }
