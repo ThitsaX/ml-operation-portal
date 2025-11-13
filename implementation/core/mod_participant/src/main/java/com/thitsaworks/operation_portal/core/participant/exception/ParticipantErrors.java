@@ -21,6 +21,10 @@ public class ParticipantErrors {
     public static final ErrorMessage ANNOUNCEMENT_ALREADY_REGISTERED = new ErrorMessage("ANNOUNCEMENT_ALREADY_REGISTERED", "The provided Announcement : [{0}] has already registered in the system.");
     public static final ErrorMessage GREETING_MESSAGE_ALREADY_REGISTERED = new ErrorMessage("GREETING_MESSAGE_ALREADY_REGISTERED", "The provided Greeting Message : [{0}] has already registered in the system.");
 
+
+    public static final ErrorMessage INSUFFICIENT_BALANCE = new ErrorMessage("INSUFFICIENT_BALANCE", "The withdraw amount :[{0}] is greater than Balance");
+    public static final ErrorMessage NDC_LIMIT_EXCEEDED = new ErrorMessage("NDC_LIMIT_EXCEEDED", "The amount should not be greater than the NDC.");
+
     public static final ErrorMessage USER_NOT_ACTIVE = new ErrorMessage("USER_NOT_ACTIVE", "The user is not active.");
     //@@formatter:on
 }

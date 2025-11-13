@@ -22,6 +22,7 @@ import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBal
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantLimitByCurrencyIdQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAction;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -29,6 +30,7 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCCommand;
 import com.thitsaworks.operation_portal.core.participant.command.CreateParticipantNDCHistoryCommand;
 import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipantNDCCommand;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
@@ -72,6 +74,8 @@ public class ModifyApprovalActionHandler
 
     private final GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery;
 
+    private final GetParticipantLimitByCurrencyIdQuery getParticipantLimitByCurrencyIdQuery;
+
     public ModifyApprovalActionHandler(CreateInputAuditCommand createInputAuditCommand,
                                        CreateOutputAuditCommand createOutputAuditCommand,
                                        CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -86,7 +90,8 @@ public class ModifyApprovalActionHandler
                                        ModifyParticipantNDCCommand modifyParticipantNDCCommand,
                                        CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
                                        ParticipantNDCQuery participantNDCQuery,
-                                       GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery) {
+                                       GetParticipantBalanceByCurrencyIdQuery getParticipantBalanceByCurrencyIdQuery,
+                                       GetParticipantLimitByCurrencyIdQuery getParticipantLimitByCurrencyIdQuery) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -104,6 +109,7 @@ public class ModifyApprovalActionHandler
         this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;
         this.participantNDCQuery = participantNDCQuery;
         this.getParticipantBalanceByCurrencyIdQuery = getParticipantBalanceByCurrencyIdQuery;
+        this.getParticipantLimitByCurrencyIdQuery = getParticipantLimitByCurrencyIdQuery;
     }
 
     @Override
@@ -167,6 +173,54 @@ public class ModifyApprovalActionHandler
             this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
         } else {
+
+            if (actionType == PositionActionType.WITHDRAW) {
+
+                int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
+                var participantLimitInfo = this.getParticipantLimitByCurrencyIdQuery.execute(
+                    new GetParticipantLimitByCurrencyIdQuery.Input(participantCurrencyId));
+
+                var participantBalanceInfo = this.getParticipantBalanceByCurrencyIdQuery.execute(
+                    new GetParticipantBalanceByCurrencyIdQuery.Input(participantCurrencyId));
+
+                if (participantLimitInfo == null || participantLimitInfo.getParticipantLimitData() == null) {
+
+                    throw new ParticipantException(ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND);
+
+                }
+
+                BigDecimal
+                    currentBalance =
+                    participantBalanceInfo.getParticipantBalanceData()
+                                          .value();
+
+                BigDecimal
+                    currentParticipantLimit =
+                    participantLimitInfo.getParticipantLimitData()
+                                        .value();
+
+                BigDecimal withdrawalAmount = approvalRequestData.amount();
+
+                if (withdrawalAmount.compareTo(currentBalance) > 0) {
+                    throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
+                }
+
+                var ndcData = this.participantNDCQuery.get(participantName, currency);
+                if (ndcData.isPresent()) {
+                    BigDecimal
+                        ndcPercent =
+                        ndcData.get()
+                               .getNdcPercent();
+
+                    // If NDC is a fixed amount (ndcPercent is 0), check remaining balance against NDC
+                    if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
+                        BigDecimal remainingBalance = currentBalance.subtract(withdrawalAmount);
+                        if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
+                            throw new ParticipantException(ParticipantErrors.NDC_LIMIT_EXCEEDED);
+                        }
+                    }
+                }
+            }
 
             String
                 reason =
