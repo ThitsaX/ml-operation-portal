@@ -74,15 +74,15 @@ public class GetPendingApprovalListHandler
 
         return new Output(requests.stream()
                                   .map(request -> new Output.PendingApproval(
-                                      request.approvalRequestId(),
-                                      request.requestedAction(),
-                                      request.participantName(),
-                                      request.currency(),
-                                      request.amount(),
-                                      this.utility.getEmail(new UserId(request.requestedBy()
+                                      request.getApprovalRequestId(),
+                                      request.getRequestedAction(),
+                                      request.getParticipantName(),
+                                      request.getCurrency(),
+                                      request.getAmount(),
+                                      this.utility.getEmail(new UserId(request.getRequestedBy()
                                                                               .getId())),
-                                      request.requestedDtm(),
-                                      request.action()
+                                      request.getRequestedDtm(),
+                                      request.getAction()
                                   ))
                                   .toList()
         );

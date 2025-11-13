@@ -4,34 +4,50 @@ import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequ
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
 import com.thitsaworks.operation_portal.core.approval.model.ApprovalRequest;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
-public record ApprovalRequestData(ApprovalRequestId approvalRequestId,
-                                  String requestedAction,
-                                  String participantName,
-                                  String currency,
-                                  String participantCurrencyId,
+@Getter
+@Setter
+public class ApprovalRequestData {
 
-                                  BigDecimal amount,
-                                  UserId requestedBy,
-                                  UserId respondedBy,
-                                  Instant requestedDtm,
-                                  ApprovalActionType action) {
+    private ApprovalRequestId approvalRequestId;
+
+    private String requestedAction;
+
+    private String participantName;
+
+    private String currency;
+
+    private String participantCurrencyId;
+
+    private BigDecimal amount;
+
+    private UserId requestedBy;
+
+    private UserId respondedBy;
+
+    private Instant requestedDtm;
+
+    private ApprovalActionType action;
+
+    public ApprovalRequestData() { }
 
     public ApprovalRequestData(ApprovalRequest request) {
 
-        this(request.getApprovalRequestId(),
-             request.getRequestedAction(),
-             request.getParticipantName(),
-             request.getParticipantCurrency(),
-             request.getParticipantCurrencyId(),
-             request.getAmount(),
-             request.getRequestedBy(),
-             request.getRespondedBy() == null ? null : request.getRespondedBy(),
-             request.getRequestedDtm(),
-             request.getAction());
+        this.approvalRequestId = request.getApprovalRequestId();
+        this.requestedAction = request.getRequestedAction();
+        this.participantName = request.getParticipantName();
+        this.currency = request.getParticipantCurrency();
+        this.participantCurrencyId = request.getParticipantCurrencyId();
+        this.amount = request.getAmount();
+        this.requestedBy = request.getRequestedBy();
+        this.respondedBy = request.getRespondedBy();
+        this.requestedDtm = request.getRequestedDtm();
+        this.action = request.getAction();
     }
 
 }

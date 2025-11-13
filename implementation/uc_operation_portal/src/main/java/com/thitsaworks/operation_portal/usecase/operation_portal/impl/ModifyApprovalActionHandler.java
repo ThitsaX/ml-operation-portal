@@ -117,7 +117,7 @@ public class ModifyApprovalActionHandler
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
 
-        if (this.isSelfApprovalAttempt(approvalRequestData.requestedBy(), input.responseUserId())) {
+        if (this.isSelfApprovalAttempt(approvalRequestData.getRequestedBy(), input.responseUserId())) {
             throw new IAMException(IAMErrors.SELF_APPROVAL_NOT_ALLOWED);
         }
 
@@ -131,7 +131,7 @@ public class ModifyApprovalActionHandler
             return new Output(output.approvalRequestId());
         }
 
-        final String requested = approvalRequestData.requestedAction();
+        final String requested = approvalRequestData.getRequestedAction();
         final PositionActionType actionType = parsePositionAction(requested);
 
         final String action = switch (actionType) {
@@ -142,22 +142,22 @@ public class ModifyApprovalActionHandler
             default -> requested;
         };
 
-        final String participantName = approvalRequestData.participantName();
-        final String currency = approvalRequestData.currency();
+        final String participantName = approvalRequestData.getParticipantName();
+        final String currency = approvalRequestData.getCurrency();
 
         Money
             money =
-            new Money().currency(Currency.valueOf(approvalRequestData.currency()))
-                       .amount(approvalRequestData.amount()
+            new Money().currency(Currency.valueOf(approvalRequestData.getCurrency()))
+                       .amount(approvalRequestData.getAmount()
                                                   .toString());
 
         ExtensionList extensionList = new ExtensionList();
         Extension extension = new Extension();
         extension.setKey("requestUser");
-        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
+        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
                                                                                .getId())));
         extension.setKey("approveUser");
-        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
+        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
                                                                                .getId())));
         extensionList.addExtensionItem(extension);
         boolean toRecalculateNDC = false;
@@ -175,12 +175,12 @@ public class ModifyApprovalActionHandler
 
             if (actionType == PositionActionType.WITHDRAW) {
 
-                int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
+                int participantCurrencyId = Integer.parseInt(approvalRequestData.getParticipantCurrencyId());
                 var
                     participantLimitInfo =
                     this.getParticipantLimitByCurrencyIdQuery.execute(new GetParticipantLimitByCurrencyIdQuery.Input(
-                        approvalRequestData.participantName(),
-                        approvalRequestData.currency()));
+                        approvalRequestData.getParticipantName(),
+                        approvalRequestData.getCurrency()));
 
                 var
                     participantBalanceInfo =
@@ -193,14 +193,18 @@ public class ModifyApprovalActionHandler
 
                 }
 
-                BigDecimal currentBalance = participantBalanceInfo.getParticipantBalanceData().value().abs();
+                BigDecimal
+                    currentBalance =
+                    participantBalanceInfo.getParticipantBalanceData()
+                                          .value()
+                                          .abs();
 
                 BigDecimal
                     currentParticipantLimit =
                     participantLimitInfo.getParticipantLimitData()
                                         .value();
 
-                BigDecimal withdrawalAmount = approvalRequestData.amount();
+                BigDecimal withdrawalAmount = approvalRequestData.getAmount();
 
                 if (withdrawalAmount.compareTo(currentBalance) > 0) {
                     throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE.format(withdrawalAmount));
@@ -231,7 +235,7 @@ public class ModifyApprovalActionHandler
             PostParticipantBalance.Request
                 request =
                 new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
-                                                   this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
+                                                   this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
                                                                                                        .getId())),
                                                    action,
                                                    reason,
@@ -247,9 +251,10 @@ public class ModifyApprovalActionHandler
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
             PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
-                approvalRequestData.participantName(),
-                approvalRequestData.participantCurrencyId(),
+                approvalRequestData.getParticipantName(),
+                approvalRequestData.getParticipantCurrencyId(),
                 request);
+            approvalRequestData.setAmount(ndcPercent);
             if (toRecalculateNDC) {
                 this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
             }
@@ -290,12 +295,12 @@ public class ModifyApprovalActionHandler
             return new BigDecimal(0);
         }
 
-        var ndcPercent = req.amount();
+        var ndcPercent = req.getAmount();
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
             return new BigDecimal(0);
         }
 
-        if (!Objects.equals(balanceData.currency(), req.currency())) {
+        if (!Objects.equals(balanceData.currency(), req.getCurrency())) {
             return new BigDecimal(0);
         }
         if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(balanceData.ledgerAccountType()))) {
@@ -324,22 +329,22 @@ public class ModifyApprovalActionHandler
         BigDecimal calculatedNdcLimit;
 
         if (ToCalculateNdc) {
-            int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
+            int participantCurrencyId = Integer.parseInt(approvalRequestData.getParticipantCurrencyId());
             var
                 balanceInfo =
                 this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
                     participantCurrencyId));
             calculatedNdcLimit = computeNdcAmount(approvalRequestData, balanceInfo);
         } else {
-            calculatedNdcLimit = approvalRequestData.amount();
+            calculatedNdcLimit = approvalRequestData.getAmount();
         }
 
-        var request = new PutUpdateParticipantLimit.Request(approvalRequestData.currency(),
+        var request = new PutUpdateParticipantLimit.Request(approvalRequestData.getCurrency(),
                                                             new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
                                                                                                 calculatedNdcLimit,
                                                                                                 10));
 
-        this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantName(), request);
+        this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.getParticipantName(), request);
 
         var optionalNdc = this.participantNDCQuery.get(participantName, currency);
 
@@ -347,7 +352,7 @@ public class ModifyApprovalActionHandler
 
             BigDecimal
                 ndcAmount =
-                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.amount();
+                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.getAmount();
 
             this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(participantName,
                                                                                            currency,
@@ -357,7 +362,7 @@ public class ModifyApprovalActionHandler
 
             BigDecimal
                 ndcAmount =
-                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.amount();
+                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.getAmount();
 
             this.createParticipantNDCHistoryCommand.execute(new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get()));
 
