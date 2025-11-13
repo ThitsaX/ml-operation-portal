@@ -25,7 +25,7 @@ public class GetParticipantLimitByCurrencyIdJdbcQueryHandler implements GetParti
 
     @Autowired
     public GetParticipantLimitByCurrencyIdJdbcQueryHandler(
-            @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -38,13 +38,18 @@ public class GetParticipantLimitByCurrencyIdJdbcQueryHandler implements GetParti
         try {
             //@@Formatter:off
             final String query = """
-                               Select pl.participantCurrencyId,pl.value, pl.isActive from participantLimit pl
-                               WHERE pl.isActive = 1 and pl.participantCurrencyId = ?
+                               SELECT pl.participantCurrencyId,pl.value, pl.isActive from participantLimit pl
+                                                                                     JOIN participantCurrency pc
+                                                                                     ON pc.participantCurrencyId = pl.participantCurrencyId
+                                                                                     JOIN participant p
+                                                                                     ON p.participantId= pc.participantId
+                                                                                     WHERE pl.isActive=1 and p.name = ? and pc.currencyId = ?
                                 """;
             //@@Formatter:on
             result = this.jdbcTemplate.queryForObject(query,
                                                       new ParticipantLimitDataMapper(),
-                                                      input.getParticipantCurrencyId());
+                                                      input.getParticipantName(),
+                                                      input.getCurrencyId());
 
         } catch (Exception e) {
 

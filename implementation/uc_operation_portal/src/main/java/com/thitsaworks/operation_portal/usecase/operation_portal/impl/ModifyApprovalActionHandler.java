@@ -166,8 +166,7 @@ public class ModifyApprovalActionHandler
 
             this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
-        }
-        if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
+        } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
 
             this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
@@ -177,11 +176,16 @@ public class ModifyApprovalActionHandler
             if (actionType == PositionActionType.WITHDRAW) {
 
                 int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
-                var participantLimitInfo = this.getParticipantLimitByCurrencyIdQuery.execute(
-                    new GetParticipantLimitByCurrencyIdQuery.Input(participantCurrencyId));
+                var
+                    participantLimitInfo =
+                    this.getParticipantLimitByCurrencyIdQuery.execute(new GetParticipantLimitByCurrencyIdQuery.Input(
+                        approvalRequestData.participantName(),
+                        approvalRequestData.currency()));
 
-                var participantBalanceInfo = this.getParticipantBalanceByCurrencyIdQuery.execute(
-                    new GetParticipantBalanceByCurrencyIdQuery.Input(participantCurrencyId));
+                var
+                    participantBalanceInfo =
+                    this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
+                        participantCurrencyId));
 
                 if (participantLimitInfo == null || participantLimitInfo.getParticipantLimitData() == null) {
 

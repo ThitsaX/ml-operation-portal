@@ -10,7 +10,9 @@ public interface GetParticipantLimitByCurrencyIdQuery {
     @Value
     class Input {
 
-        private int participantCurrencyId;
+        private String participantName;
+
+        private String currencyId;
 
     }
 
