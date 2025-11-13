@@ -193,10 +193,7 @@ public class ModifyApprovalActionHandler
 
                 }
 
-                BigDecimal
-                    currentBalance =
-                    participantBalanceInfo.getParticipantBalanceData()
-                                          .value();
+                BigDecimal currentBalance = participantBalanceInfo.getParticipantBalanceData().value().abs();
 
                 BigDecimal
                     currentParticipantLimit =
@@ -206,7 +203,7 @@ public class ModifyApprovalActionHandler
                 BigDecimal withdrawalAmount = approvalRequestData.amount();
 
                 if (withdrawalAmount.compareTo(currentBalance) > 0) {
-                    throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
+                    throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE.format(withdrawalAmount));
                 }
 
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
