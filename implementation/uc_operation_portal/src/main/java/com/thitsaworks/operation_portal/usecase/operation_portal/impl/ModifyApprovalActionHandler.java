@@ -20,6 +20,7 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostParticipantBalance;
 import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
+import com.thitsaworks.operation_portal.core.hub_services.data.ParticipantBalanceData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantLimitByCurrencyIdQuery;
@@ -250,14 +251,14 @@ public class ModifyApprovalActionHandler
                        .getNdcPercent();
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
+            if (toRecalculateNDC) {
+                this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
+            }
+
             PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
                 approvalRequestData.getParticipantName(),
                 approvalRequestData.getParticipantCurrencyId(),
                 request);
-            approvalRequestData.setAmount(ndcPercent);
-            if (toRecalculateNDC) {
-                this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
-            }
 
         }
 
@@ -283,8 +284,8 @@ public class ModifyApprovalActionHandler
         }
     }
 
-    private static BigDecimal computeNdcAmount(ApprovalRequestData req,
-                                               GetParticipantBalanceByCurrencyIdQuery.Output balanceInfo) {
+    private BigDecimal computeNdcAmount(ApprovalRequestData req,
+                                        GetParticipantBalanceByCurrencyIdQuery.Output balanceInfo) {
 
         if (balanceInfo == null) {
             return new BigDecimal(0);
@@ -294,8 +295,17 @@ public class ModifyApprovalActionHandler
         if (balanceData == null) {
             return new BigDecimal(0);
         }
-
         var ndcPercent = req.getAmount();
+        if (req.getAction()
+               .equals("WITHDRAW") || req.getAction()
+                                         .equals("DEPOSIT")) {
+            var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
+
+            ndcPercent =
+                ndcData.get()
+                       .getNdcPercent();
+        }
+
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
             return new BigDecimal(0);
         }
@@ -334,7 +344,26 @@ public class ModifyApprovalActionHandler
                 balanceInfo =
                 this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
                     participantCurrencyId));
-            calculatedNdcLimit = computeNdcAmount(approvalRequestData, balanceInfo);
+            var
+                updatedBalance =
+                balanceInfo.getParticipantBalanceData()
+                           .value()
+                           .add(approvalRequestData.getAmount());
+
+            ParticipantBalanceData balanceData = new ParticipantBalanceData(balanceInfo.getParticipantBalanceData()
+                                                                                       .currency(),
+                                                                            balanceInfo.getParticipantBalanceData()
+                                                                                       .ledgerAccountType(),
+                                                                            updatedBalance,
+                                                                            balanceInfo.getParticipantBalanceData()
+                                                                                       .reservedValue(),
+                                                                            balanceInfo.getParticipantBalanceData()
+                                                                                       .isActive(),
+                                                                            balanceInfo.getParticipantBalanceData()
+                                                                                       .changedDate());
+
+            calculatedNdcLimit = computeNdcAmount(approvalRequestData,
+                                                  new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData));
         } else {
             calculatedNdcLimit = approvalRequestData.getAmount();
         }
