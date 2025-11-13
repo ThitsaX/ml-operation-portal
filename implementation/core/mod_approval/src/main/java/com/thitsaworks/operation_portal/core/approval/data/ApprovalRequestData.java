@@ -16,7 +16,7 @@ public class ApprovalRequestData {
 
     private ApprovalRequestId approvalRequestId;
 
-    private String requestedAction;
+    private String fundInOutAction;
 
     private String participantName;
 
@@ -39,7 +39,7 @@ public class ApprovalRequestData {
     public ApprovalRequestData(ApprovalRequest request) {
 
         this.approvalRequestId = request.getApprovalRequestId();
-        this.requestedAction = request.getRequestedAction();
+        this.fundInOutAction = request.getRequestedAction();
         this.participantName = request.getParticipantName();
         this.currency = request.getParticipantCurrency();
         this.participantCurrencyId = request.getParticipantCurrencyId();

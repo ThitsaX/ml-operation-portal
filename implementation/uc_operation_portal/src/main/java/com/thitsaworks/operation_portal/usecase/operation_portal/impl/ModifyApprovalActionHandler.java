@@ -132,15 +132,15 @@ public class ModifyApprovalActionHandler
             return new Output(output.approvalRequestId());
         }
 
-        final String requested = approvalRequestData.getRequestedAction();
-        final PositionActionType actionType = parsePositionAction(requested);
+        final String fundInOutAction = approvalRequestData.getFundInOutAction();
+        final PositionActionType actionType = parsePositionAction(fundInOutAction);
 
         final String action = switch (actionType) {
             case DEPOSIT -> SettlementAction.recordFundsIn.name();
             case WITHDRAW -> SettlementAction.recordFundsOutPrepareReserve.name();
             case UPDATE_NDC_FIXED -> SettlementAction.NET_DEBIT_CAP.name();
             case UPDATE_NDC_PERCENTAGE -> SettlementAction.NET_DEBIT_CAP.name();
-            default -> requested;
+            default -> fundInOutAction;
         };
 
         final String participantName = approvalRequestData.getParticipantName();
@@ -296,9 +296,10 @@ public class ModifyApprovalActionHandler
             return new BigDecimal(0);
         }
         var ndcPercent = req.getAmount();
-        if (req.getAction()
-               .equals("WITHDRAW") || req.getAction()
-                                         .equals("DEPOSIT")) {
+
+        if (req.getFundInOutAction()
+               .equalsIgnoreCase("WITHDRAW") || req.getFundInOutAction()
+                                         .equalsIgnoreCase("DEPOSIT")) {
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
             ndcPercent =

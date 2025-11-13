@@ -75,7 +75,7 @@ public class GetPendingApprovalListHandler
         return new Output(requests.stream()
                                   .map(request -> new Output.PendingApproval(
                                       request.getApprovalRequestId(),
-                                      request.getRequestedAction(),
+                                      request.getFundInOutAction(),
                                       request.getParticipantName(),
                                       request.getCurrency(),
                                       request.getAmount(),
