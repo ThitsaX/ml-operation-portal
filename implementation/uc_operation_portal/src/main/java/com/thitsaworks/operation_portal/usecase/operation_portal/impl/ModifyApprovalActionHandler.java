@@ -152,34 +152,49 @@ public class ModifyApprovalActionHandler
         extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                .getId())));
         extensionList.addExtensionItem(extension);
+        boolean toRecalculateNDC = false;
 
         if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
 
-            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_FIXED, approvalRequestData, participantName, currency);
+            this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
-        } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
+        }
+        if (
+            actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
+            toRecalculateNDC = true;
 
-            this.handleUpdateNdc(PositionActionType.UPDATE_NDC_PERCENTAGE,
-                                 approvalRequestData,
-                                 participantName,
-                                 currency);
+            this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
         } else {
+
+            String reason = actionType == PositionActionType.DEPOSIT
+                                ? "Admin portal funds in request"
+                                : "Admin portal funds out request";
 
             PostParticipantBalance.Request request =
                 new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
                                                    this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                                        .getId())),
                                                    action,
-                                                   "Admin portal funds in request",
+                                                   reason,
                                                    money,
                                                    extensionList);
+
+            var ndcData = this.participantNDCQuery.get(participantName, currency);
+
+            BigDecimal
+                ndcPercent =
+                ndcData.get()
+                       .getNdcPercent();
+            toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
             PostParticipantBalance.Response
                 response =
                 this.participantHubClient.postParticipantBalance(approvalRequestData.participantName(),
                                                                  approvalRequestData.participantCurrencyId(),
                                                                  request);
+
+            this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
         }
 
         output = this.executeApprovalAction(input);
@@ -189,7 +204,9 @@ public class ModifyApprovalActionHandler
 
     private static PositionActionType parsePositionAction(String value) {
 
-        if (value == null) { return null; }
+        if (value == null) {
+            return null;
+        }
 
         try {
 
@@ -202,75 +219,80 @@ public class ModifyApprovalActionHandler
         }
     }
 
-    private static BigDecimal computeNdcAmount(ApprovalRequestData req, GetParticipantBalanceByCurrencyIdQuery.Output out) {
+    private static BigDecimal computeNdcAmount(ApprovalRequestData req,
+                                               GetParticipantBalanceByCurrencyIdQuery.Output balanceInfo) {
 
-        if (out == null) { return new BigDecimal(0); }
+        if (balanceInfo == null) {
+            return new BigDecimal(0);
+        }
 
-        var data = out.getParticipantBalanceData();
-        if (data == null) { return new BigDecimal(0); }
+        var balanceData = balanceInfo.getParticipantBalanceData();
+        if (balanceData == null) {
+            return new BigDecimal(0);
+        }
 
-        var amount = req.amount();
-        if (amount == null || amount.signum() <= 0) { return new BigDecimal(0); }
+        var ndcPercent = req.amount();
+        if (ndcPercent == null || ndcPercent.signum() <= 0) {
+            return new BigDecimal(0);
+        }
 
-        if (!Objects.equals(data.currency(), req.currency())) { return new BigDecimal(0); }
-        if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(data.ledgerAccountType()))) { return new BigDecimal(0); }
+        if (!Objects.equals(balanceData.currency(), req.currency())) {
+            return new BigDecimal(0);
+        }
+        if (!"SETTLEMENT".equalsIgnoreCase(String.valueOf(balanceData.ledgerAccountType()))) {
+            return new BigDecimal(0);
+        }
 
         var
             balance =
-            Optional.ofNullable(data.value())
+            Optional.ofNullable(balanceData.value())
                     .orElse(BigDecimal.ZERO)
                     .abs();
 
-        try {
+        return balance.multiply(ndcPercent)
+                      .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN)
+                      .abs();
 
-            return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN).abs();
-
-        } catch (ArithmeticException ex) {
-
-            return balance.multiply(amount)
-                          .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN).abs();
-
-        }
     }
 
-    private void handleUpdateNdc(PositionActionType actionType,
+    private void handleUpdateNdc(Boolean ToCalculateNdc,
                                  ApprovalRequestData approvalRequestData,
-                                 String dfsp,
-                                 String currency) throws
-                                                  HubServicesException,
-                                                  ParticipantException,
-                                                  ParticipantNDCException {
+                                 String participantName,
+                                 String currency,
+                                 PositionActionType actionType) throws
+                                                                HubServicesException,
+                                                                ParticipantException,
+                                                                ParticipantNDCException {
 
-        BigDecimal limitValue = switch (actionType) {
+        BigDecimal calculatedNdcLimit;
 
-            case UPDATE_NDC_FIXED -> approvalRequestData.amount();
-            case UPDATE_NDC_PERCENTAGE -> {
-
-                int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
-                var balanceInfo =
-                    this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
-                        participantCurrencyId));
-                yield computeNdcAmount(approvalRequestData, balanceInfo);
-            }
-            default -> throw new IllegalArgumentException("Unsupported actionType: " + actionType);
-        };
+        if (ToCalculateNdc) {
+            int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
+            var balanceInfo =
+                this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
+                    participantCurrencyId));
+            calculatedNdcLimit = computeNdcAmount(approvalRequestData, balanceInfo);
+        } else {
+            calculatedNdcLimit = approvalRequestData.amount();
+        }
 
         var request = new PutUpdateParticipantLimit.Request(approvalRequestData.currency(),
                                                             new PutUpdateParticipantLimit.Limit(SettlementAction.NET_DEBIT_CAP.toString(),
-                                                                                                limitValue,
+                                                                                                calculatedNdcLimit,
                                                                                                 10));
 
         this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.participantName(), request);
 
-        var optionalNdc = this.participantNDCQuery.get(dfsp, currency);
+        var optionalNdc = this.participantNDCQuery.get(participantName, currency);
 
         if (optionalNdc.isEmpty()) {
 
             BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
                                        approvalRequestData.amount();
 
-            this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(dfsp, currency, ndcAmount));
+            this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(participantName,
+                                                                                           currency,
+                                                                                           ndcAmount));
 
         } else {
 
