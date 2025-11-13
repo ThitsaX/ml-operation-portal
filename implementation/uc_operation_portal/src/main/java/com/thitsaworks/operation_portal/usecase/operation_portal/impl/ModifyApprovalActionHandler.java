@@ -302,10 +302,10 @@ public class ModifyApprovalActionHandler
                                                    .equalsIgnoreCase("DEPOSIT")) {
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
-            ndcPercent =
-                ndcData.get()
-                       .getNdcPercent()
-                       .setScale(2, RoundingMode.HALF_DOWN);
+            // Convert to 2 decimal places and ensure it's a valid DECIMAL(7,4) value
+            BigDecimal rawNdc = ndcData.get().getNdcPercent();
+            ndcPercent = rawNdc.setScale(2, RoundingMode.HALF_DOWN)
+                             .setScale(4, RoundingMode.UNNECESSARY);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
