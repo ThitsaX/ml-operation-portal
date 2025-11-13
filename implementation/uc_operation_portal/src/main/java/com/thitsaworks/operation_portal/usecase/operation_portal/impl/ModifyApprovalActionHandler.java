@@ -139,9 +139,11 @@ public class ModifyApprovalActionHandler
         final String participantName = approvalRequestData.participantName();
         final String currency = approvalRequestData.currency();
 
-        Money money = new Money().currency(Currency.valueOf(approvalRequestData.currency()))
-                                 .amount(approvalRequestData.amount()
-                                                            .toString());
+        Money
+            money =
+            new Money().currency(Currency.valueOf(approvalRequestData.currency()))
+                       .amount(approvalRequestData.amount()
+                                                  .toString());
 
         ExtensionList extensionList = new ExtensionList();
         Extension extension = new Extension();
@@ -159,19 +161,20 @@ public class ModifyApprovalActionHandler
             this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
         }
-        if (
-            actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
+        if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
 
             this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
 
         } else {
 
-            String reason = actionType == PositionActionType.DEPOSIT
-                                ? "Admin portal funds in request"
-                                : "Admin portal funds out request";
+            String
+                reason =
+                actionType == PositionActionType.DEPOSIT ? "Admin portal funds in request" :
+                    "Admin portal funds out request";
 
-            PostParticipantBalance.Request request =
+            PostParticipantBalance.Request
+                request =
                 new PostParticipantBalance.Request(TransferIdGenerator.generateTransferId(),
                                                    this.utility.getEmail(new UserId(approvalRequestData.requestedBy()
                                                                                                        .getId())),
@@ -188,13 +191,14 @@ public class ModifyApprovalActionHandler
                        .getNdcPercent();
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
-            PostParticipantBalance.Response
-                response =
-                this.participantHubClient.postParticipantBalance(approvalRequestData.participantName(),
-                                                                 approvalRequestData.participantCurrencyId(),
-                                                                 request);
+            PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
+                approvalRequestData.participantName(),
+                approvalRequestData.participantCurrencyId(),
+                request);
+            if (toRecalculateNDC) {
+                this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
+            }
 
-            this.handleUpdateNdc(toRecalculateNDC, approvalRequestData, participantName, currency, actionType);
         }
 
         output = this.executeApprovalAction(input);
@@ -259,16 +263,15 @@ public class ModifyApprovalActionHandler
                                  ApprovalRequestData approvalRequestData,
                                  String participantName,
                                  String currency,
-                                 PositionActionType actionType) throws
-                                                                HubServicesException,
-                                                                ParticipantException,
-                                                                ParticipantNDCException {
+                                 PositionActionType actionType)
+        throws HubServicesException, ParticipantException, ParticipantNDCException {
 
         BigDecimal calculatedNdcLimit;
 
         if (ToCalculateNdc) {
             int participantCurrencyId = Integer.parseInt(approvalRequestData.participantCurrencyId());
-            var balanceInfo =
+            var
+                balanceInfo =
                 this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
                     participantCurrencyId));
             calculatedNdcLimit = computeNdcAmount(approvalRequestData, balanceInfo);
@@ -287,8 +290,9 @@ public class ModifyApprovalActionHandler
 
         if (optionalNdc.isEmpty()) {
 
-            BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
-                                       approvalRequestData.amount();
+            BigDecimal
+                ndcAmount =
+                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.amount();
 
             this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(participantName,
                                                                                            currency,
@@ -296,8 +300,9 @@ public class ModifyApprovalActionHandler
 
         } else {
 
-            BigDecimal ndcAmount = (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO :
-                                       approvalRequestData.amount();
+            BigDecimal
+                ndcAmount =
+                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.amount();
 
             this.createParticipantNDCHistoryCommand.execute(new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get()));
 
@@ -313,8 +318,7 @@ public class ModifyApprovalActionHandler
                                 .equals(respondedByUserId.getId());
     }
 
-    private ModifyApprovalActionCommand.Output executeApprovalAction(Input input)
-        throws ApprovalException {
+    private ModifyApprovalActionCommand.Output executeApprovalAction(Input input) throws ApprovalException {
 
         return this.modifyApprovalActionCommand.execute(new ModifyApprovalActionCommand.Input(input.approvalRequestId(),
                                                                                               input.action(),
