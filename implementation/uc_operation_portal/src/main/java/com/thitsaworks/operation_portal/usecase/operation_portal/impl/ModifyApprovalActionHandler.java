@@ -303,9 +303,12 @@ public class ModifyApprovalActionHandler
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
             // Convert to 2 decimal places and ensure it's a valid DECIMAL(7,4) value
-            BigDecimal rawNdc = ndcData.get().getNdcPercent();
+            BigDecimal
+                rawNdc =
+                ndcData.get()
+                       .getNdcPercent();
             ndcPercent = rawNdc.setScale(2, RoundingMode.HALF_DOWN)
-                             .setScale(4, RoundingMode.UNNECESSARY);
+                               .setScale(4, RoundingMode.UNNECESSARY);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
@@ -391,15 +394,31 @@ public class ModifyApprovalActionHandler
 
         } else {
 
-            BigDecimal
+            BigDecimal ndcAmount;
+
+            if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
+                ndcAmount = BigDecimal.ZERO;
+            } else if (actionType == PositionActionType.WITHDRAW || actionType == PositionActionType.DEPOSIT) {
+                // keep the current percent (no overwrite)
                 ndcAmount =
-                (actionType == PositionActionType.UPDATE_NDC_FIXED) ? BigDecimal.ZERO : approvalRequestData.getAmount();
+                    optionalNdc.get()
+                               .getNdcPercent();
+            } else {
+                ndcAmount = approvalRequestData.getAmount(); // other action types, if any
+            }
 
-            this.createParticipantNDCHistoryCommand.execute(new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get()));
+            this.createParticipantNDCHistoryCommand.execute(
+                new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get())
+                                                           );
 
-            this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(optionalNdc.get()
-                                                                                                      .getParticipantNDCId(),
-                                                                                           ndcAmount));
+            this.modifyParticipantNDCCommand.execute(
+                new ModifyParticipantNDCCommand.Input(
+                    optionalNdc.get()
+                               .getParticipantNDCId(),
+                    ndcAmount
+                )
+                                                    );
+
         }
     }
 
