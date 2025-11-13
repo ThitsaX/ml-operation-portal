@@ -299,12 +299,13 @@ public class ModifyApprovalActionHandler
 
         if (req.getFundInOutAction()
                .equalsIgnoreCase("WITHDRAW") || req.getFundInOutAction()
-                                         .equalsIgnoreCase("DEPOSIT")) {
+                                                   .equalsIgnoreCase("DEPOSIT")) {
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
             ndcPercent =
                 ndcData.get()
-                       .getNdcPercent();
+                       .getNdcPercent()
+                       .setScale(2, RoundingMode.HALF_DOWN);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
