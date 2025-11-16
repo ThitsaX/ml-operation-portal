@@ -348,11 +348,14 @@ public class ModifyApprovalActionHandler
                 balanceInfo =
                 this.getParticipantBalanceByCurrencyIdQuery.execute(new GetParticipantBalanceByCurrencyIdQuery.Input(
                     participantCurrencyId));
-            var
-                updatedBalance =
-                balanceInfo.getParticipantBalanceData()
-                           .value().abs()
-                           .add(approvalRequestData.getAmount());
+            BigDecimal updatedBalance = balanceInfo.getParticipantBalanceData()
+                                                   .value()
+                                                   .abs();
+            if (actionType == PositionActionType.DEPOSIT) {
+                updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
+            } else if (actionType == PositionActionType.WITHDRAW) {
+                updatedBalance = updatedBalance.subtract(approvalRequestData.getAmount());
+            }
 
             ParticipantBalanceData balanceData = new ParticipantBalanceData(balanceInfo.getParticipantBalanceData()
                                                                                        .currency(),
