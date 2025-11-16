@@ -307,8 +307,7 @@ public class ModifyApprovalActionHandler
                 rawNdc =
                 ndcData.get()
                        .getNdcPercent();
-            ndcPercent = rawNdc.setScale(2, RoundingMode.HALF_DOWN)
-                               .setScale(4, RoundingMode.UNNECESSARY);
+            ndcPercent = rawNdc.setScale(2, RoundingMode.HALF_DOWN);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
@@ -352,7 +351,7 @@ public class ModifyApprovalActionHandler
             var
                 updatedBalance =
                 balanceInfo.getParticipantBalanceData()
-                           .value()
+                           .value().abs()
                            .add(approvalRequestData.getAmount());
 
             ParticipantBalanceData balanceData = new ParticipantBalanceData(balanceInfo.getParticipantBalanceData()
