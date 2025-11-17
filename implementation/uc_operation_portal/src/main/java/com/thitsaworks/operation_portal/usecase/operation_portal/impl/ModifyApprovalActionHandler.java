@@ -304,7 +304,7 @@ public class ModifyApprovalActionHandler
 
             ndcPercent = ndcData.get()
                                 .getNdcPercent()
-                                .setScale(2, RoundingMode.HALF_DOWN);
+                                .setScale(2, RoundingMode.DOWN);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
@@ -327,7 +327,7 @@ public class ModifyApprovalActionHandler
         calculatedNdcValue = balance.multiply(ndcPercent)
                                     .divide(BigDecimal.valueOf(100))
                                     .abs()
-                                    .setScale(2, RoundingMode.HALF_DOWN);
+                                    .setScale(2, RoundingMode.DOWN);
 
         return calculatedNdcValue;
 
@@ -362,7 +362,7 @@ public class ModifyApprovalActionHandler
                                                                             balanceInfo.getParticipantBalanceData()
                                                                                        .ledgerAccountType(),
                                                                             updatedBalance.setScale(2,
-                                                                                                    RoundingMode.HALF_DOWN),
+                                                                                                    RoundingMode.DOWN),
                                                                             balanceInfo.getParticipantBalanceData()
                                                                                        .reservedValue(),
                                                                             balanceInfo.getParticipantBalanceData()
@@ -418,7 +418,7 @@ public class ModifyApprovalActionHandler
                 new ModifyParticipantNDCCommand.Input(
                     optionalNdc.get()
                                .getParticipantNDCId(),
-                    ndcAmount.setScale(2, RoundingMode.HALF_DOWN)
+                    ndcAmount.setScale(2, RoundingMode.DOWN)
                 )
                                                     );
 
