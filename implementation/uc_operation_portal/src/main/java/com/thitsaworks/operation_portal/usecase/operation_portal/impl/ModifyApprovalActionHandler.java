@@ -362,7 +362,8 @@ public class ModifyApprovalActionHandler
                                                                                        .currency(),
                                                                             balanceInfo.getParticipantBalanceData()
                                                                                        .ledgerAccountType(),
-                                                                            updatedBalance,
+                                                                            updatedBalance.setScale(2,
+                                                                                                    RoundingMode.HALF_DOWN),
                                                                             balanceInfo.getParticipantBalanceData()
                                                                                        .reservedValue(),
                                                                             balanceInfo.getParticipantBalanceData()
@@ -418,7 +419,7 @@ public class ModifyApprovalActionHandler
                 new ModifyParticipantNDCCommand.Input(
                     optionalNdc.get()
                                .getParticipantNDCId(),
-                    ndcAmount
+                    ndcAmount.setScale(2, RoundingMode.HALF_DOWN)
                 )
                                                     );
 
