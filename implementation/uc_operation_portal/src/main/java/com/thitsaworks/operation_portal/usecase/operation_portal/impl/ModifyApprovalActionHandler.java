@@ -350,7 +350,8 @@ public class ModifyApprovalActionHandler
                     participantCurrencyId));
             BigDecimal updatedBalance = balanceInfo.getParticipantBalanceData()
                                                    .value()
-                                                   .abs();
+                                                   .abs()
+                                                   .setScale(2, RoundingMode.HALF_DOWN);
             if (actionType == PositionActionType.DEPOSIT) {
                 updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
             } else if (actionType == PositionActionType.WITHDRAW) {
