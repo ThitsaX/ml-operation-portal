@@ -302,12 +302,9 @@ public class ModifyApprovalActionHandler
                                                    .equalsIgnoreCase("DEPOSIT")) {
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
-            // Convert to 2 decimal places and ensure it's a valid DECIMAL(7,4) value
-            BigDecimal
-                rawNdc =
-                ndcData.get()
-                       .getNdcPercent();
-            ndcPercent = rawNdc.setScale(2, RoundingMode.HALF_DOWN);
+            ndcPercent = ndcData.get()
+                                .getNdcPercent()
+                                .setScale(2, RoundingMode.HALF_DOWN);
         }
 
         if (ndcPercent == null || ndcPercent.signum() <= 0) {
@@ -326,10 +323,13 @@ public class ModifyApprovalActionHandler
             Optional.ofNullable(balanceData.value())
                     .orElse(BigDecimal.ZERO)
                     .abs();
+        BigDecimal calculatedNdcValue;
+        calculatedNdcValue = balance.multiply(ndcPercent)
+                                    .divide(BigDecimal.valueOf(100))
+                                    .abs()
+                                    .setScale(2, RoundingMode.HALF_DOWN);
 
-        return balance.multiply(ndcPercent)
-                      .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_DOWN)
-                      .abs();
+        return calculatedNdcValue;
 
     }
 
@@ -350,8 +350,7 @@ public class ModifyApprovalActionHandler
                     participantCurrencyId));
             BigDecimal updatedBalance = balanceInfo.getParticipantBalanceData()
                                                    .value()
-                                                   .abs()
-                                                   .setScale(2, RoundingMode.HALF_DOWN);
+                                                   .abs();
             if (actionType == PositionActionType.DEPOSIT) {
                 updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
             } else if (actionType == PositionActionType.WITHDRAW) {
