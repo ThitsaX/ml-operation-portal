@@ -87,38 +87,42 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
             final Criteria baseDate = Criteria.where("_createdAt").gte(Date.from(start)).lt(Date.from(endEx));
 
             final List<Criteria> filters = new ArrayList<>();
-            filters.add(baseDate);
 
             if (StringUtils.isNotBlank(input.getTransferId())) {
+
                 filters.add(Criteria.where("transferId").is(input.getTransferId()));
-            }
-            if (StringUtils.isNotBlank(input.getFspName())) {
-                filters.add(new Criteria().orOperator(Criteria.where("payerDFSP").is(input.getFspName()),
-                                                      Criteria.where("payeeDFSP").is(input.getFspName())));
-            }
-            if (StringUtils.isNotBlank(input.getPayerFspId())) {
-                filters.add(Criteria.where("payerDFSP").is(input.getPayerFspId()));
-            }
-            if (StringUtils.isNotBlank(input.getPayeeFspId())) {
-                filters.add(Criteria.where("payeeDFSP").is(input.getPayeeFspId()));
-            }
-            if (StringUtils.isNotBlank(input.getPayerIdentifierTypeId())) {
-                filters.add(Criteria.where("payerParty.partyIdType").is(input.getPayerIdentifierTypeId()));
-            }
-            if (StringUtils.isNotBlank(input.getPayerIdentifierValue())) {
-                filters.add(Criteria.where("payerParty.partyIdentifier").is(input.getPayerIdentifierValue()));
-            }
-            if (StringUtils.isNotBlank(input.getPayeeIdentifierTypeId())) {
-                filters.add(Criteria.where("payeeParty.partyIdType").is(input.getPayeeIdentifierTypeId()));
-            }
-            if (StringUtils.isNotBlank(input.getPayeeIdentifierValue())) {
-                filters.add(Criteria.where("payeeParty.partyIdentifier").is(input.getPayeeIdentifierValue()));
-            }
-            if (StringUtils.isNotBlank(input.getCurrencyId())) {
-                filters.add(Criteria.where("transferTerms.transferAmount.currency").is(input.getCurrencyId()));
-            }
-            if (StringUtils.isNotBlank(input.getTransferStateId())) {
-                filters.add(Criteria.where("transferStateEnum").is(input.getTransferStateId()));
+            } else {
+
+                filters.add(baseDate);
+
+                if (StringUtils.isNotBlank(input.getFspName())) {
+                    filters.add(new Criteria().orOperator(Criteria.where("payerDFSP").is(input.getFspName()),
+                                                          Criteria.where("payeeDFSP").is(input.getFspName())));
+                }
+                if (StringUtils.isNotBlank(input.getPayerFspId())) {
+                    filters.add(Criteria.where("payerDFSP").is(input.getPayerFspId()));
+                }
+                if (StringUtils.isNotBlank(input.getPayeeFspId())) {
+                    filters.add(Criteria.where("payeeDFSP").is(input.getPayeeFspId()));
+                }
+                if (StringUtils.isNotBlank(input.getPayerIdentifierTypeId())) {
+                    filters.add(Criteria.where("payerParty.partyIdType").is(input.getPayerIdentifierTypeId()));
+                }
+                if (StringUtils.isNotBlank(input.getPayerIdentifierValue())) {
+                    filters.add(Criteria.where("payerParty.partyIdentifier").is(input.getPayerIdentifierValue()));
+                }
+                if (StringUtils.isNotBlank(input.getPayeeIdentifierTypeId())) {
+                    filters.add(Criteria.where("payeeParty.partyIdType").is(input.getPayeeIdentifierTypeId()));
+                }
+                if (StringUtils.isNotBlank(input.getPayeeIdentifierValue())) {
+                    filters.add(Criteria.where("payeeParty.partyIdentifier").is(input.getPayeeIdentifierValue()));
+                }
+                if (StringUtils.isNotBlank(input.getCurrencyId())) {
+                    filters.add(Criteria.where("transferTerms.transferAmount.currency").is(input.getCurrencyId()));
+                }
+                if (StringUtils.isNotBlank(input.getTransferStateId())) {
+                    filters.add(Criteria.where("transferStateEnum").is(input.getTransferStateId()));
+                }
             }
 
             final MatchOperation match = match(new Criteria().andOperator(filters.toArray(new Criteria[0])));
