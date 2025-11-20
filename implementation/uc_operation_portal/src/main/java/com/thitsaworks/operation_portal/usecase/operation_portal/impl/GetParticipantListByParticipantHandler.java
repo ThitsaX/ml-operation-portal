@@ -22,8 +22,6 @@ public class GetParticipantListByParticipantHandler
 
     private final ParticipantQuery participantQuery;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     public GetParticipantListByParticipantHandler(PrincipalCache principalCache,
@@ -35,7 +33,6 @@ public class GetParticipantListByParticipantHandler
               actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
     }
 
@@ -54,7 +51,9 @@ public class GetParticipantListByParticipantHandler
                 new Output.ParticipantInfo(participantData.participantId(),
                                            participantData.participantName()
                                                           .getValue(),
-                                           participantData.description()));
+                                           participantData.description(),
+                                           participantData.logoFileType(),
+                                           participantData.logo()));
 
         } else {
 
@@ -65,7 +64,9 @@ public class GetParticipantListByParticipantHandler
                     new Output.ParticipantInfo(participantData.participantId(),
                                                participantData.participantName()
                                                               .getValue(),
-                                               participantData.description()));
+                                               participantData.description(),
+                                               participantData.logoFileType(),
+                                               participantData.logo()));
             }
 
         }

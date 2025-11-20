@@ -8,12 +8,16 @@ import java.util.List;
 public interface GetParticipantListByParticipant
     extends UseCase<GetParticipantListByParticipant.Input, GetParticipantListByParticipant.Output> {
 
-    record  Input( ) {}
+    record Input() { }
 
     record Output(List<ParticipantInfo> participantInfoList) {
+
         public record ParticipantInfo(ParticipantId participantId,
                                       String participantName,
-                                      String participantDescription){}
+                                      String participantDescription,
+                                      String logoFileType,
+                                      byte[] logo) { }
+
     }
 
 }
