@@ -78,21 +78,21 @@ public class CreateSettlementSchedulerHandler
         }
 
         List<SchedulerConfigData> schedulerConfigDataList = this.settlementSchedulerQuery.getSettlementSchedulers(
-                settlementModelData.settlementModelId());
+            settlementModelData.settlementModelId());
 
         boolean isOverlap = this.schedulerEngine.isCronOverlap(schedulerConfigDataList, input.cronExpression());
 
         if (isOverlap) {
             throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
-                    settlementModelData.name()));
+                settlementModelData.name()));
         }
 
         var schedulerConfigOutput =
-                this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
-                                                                                                 "CloseSettlementWindowsScheduler",
-                                                                                                 input.description(),
-                                                                                                 input.cronExpression(),
-                                                                                                 settlementModelData.zoneId()));
+            this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
+                                                                                             "CloseSettlementWindowsScheduler",
+                                                                                             input.description(),
+                                                                                             input.cronExpression(),
+                                                                                             settlementModelData.zoneId()));
 
         this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
                                                                                            schedulerConfigOutput.schedulerConfigData()
@@ -100,8 +100,9 @@ public class CreateSettlementSchedulerHandler
 
         this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
 
-
-        return new Output(true);
+        return new Output(schedulerConfigOutput.schedulerConfigData()
+                                               .schedulerConfigId(),
+                          true);
     }
 
 }
