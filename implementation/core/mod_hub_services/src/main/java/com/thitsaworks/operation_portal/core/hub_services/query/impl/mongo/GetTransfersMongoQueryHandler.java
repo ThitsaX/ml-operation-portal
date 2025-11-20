@@ -91,6 +91,11 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
             if (StringUtils.isNotBlank(input.getTransferId())) {
 
                 filters.add(Criteria.where("transferId").is(input.getTransferId()));
+
+                if (StringUtils.isNotBlank(input.getFspName())) {
+                    filters.add(new Criteria().orOperator(Criteria.where("payerDFSP").is(input.getFspName()),
+                                                          Criteria.where("payeeDFSP").is(input.getFspName())));
+                }
             } else {
 
                 filters.add(baseDate);
