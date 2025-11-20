@@ -34,7 +34,7 @@ public class CreateAnnouncementController {
         @Valid @RequestBody CreateAnnouncementController.Request request)
         throws DomainException, ParseException, JsonProcessingException {
 
-        LOG.info("Create Announcement Request: [{}]", request);
+        LOG.info("Create Announcement Request : [{}]", request);
 
         CreateAnnouncement.Output output = this.createAnnouncement.execute(
             new CreateAnnouncement.Input(request.announcementTitle,
@@ -44,7 +44,7 @@ public class CreateAnnouncementController {
         Response response = new Response(
             output.created());
 
-        LOG.info("Create Announcement Response: [{}]", response);
+        LOG.info("Create Announcement Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

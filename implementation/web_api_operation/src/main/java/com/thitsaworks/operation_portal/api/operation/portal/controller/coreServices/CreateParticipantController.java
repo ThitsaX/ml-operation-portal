@@ -38,7 +38,7 @@ public class CreateParticipantController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create Participant Request: [{}]", request);
+        LOG.info("Create Participant Request : [{}]", request);
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -86,7 +86,7 @@ public class CreateParticipantController {
                                                .getId()
                                                .toString(), output.created());
 
-        LOG.info("Create Participant Response: [{}]", response);
+        LOG.info("Create Participant Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

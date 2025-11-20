@@ -59,7 +59,7 @@ public class GetUserListByParticipantController {
 
         var response = new GetUserListByParticipantController.Response(userInfoList);
 
-        LOG.info("Get User List By Participant Response: [{}]", response);
+        LOG.info("Get User List By Participant Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -45,7 +45,7 @@ public class CloseSettlementWindowsController {
         var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(),
                                     output.changedDate());
 
-        LOG.info("Close Settlement Window Response : {}", response);
+        LOG.info("Close Settlement Window Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

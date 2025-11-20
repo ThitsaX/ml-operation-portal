@@ -32,7 +32,7 @@ public class ModifySchedulerConfigController {
         @Valid @RequestBody Request request
     ) throws DomainException {
 
-        LOG.info("Updating Scheduler Configuration With SchedulerConfigId: {}", request.schedulerConfigId());
+        LOG.info("Updating Scheduler Configuration Request : schedulerConfigId : [{}]", request.schedulerConfigId());
 
         ModifySchedulerConfig.Output output = this.modifySchedulerConfig.execute(
             new ModifySchedulerConfig.Input(
@@ -48,7 +48,7 @@ public class ModifySchedulerConfigController {
 
         var response = new Response(output.updated());
 
-        LOG.info("Updated Scheduler Configuration Response: {}", response);
+        LOG.info("Updating Scheduler Configuration Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

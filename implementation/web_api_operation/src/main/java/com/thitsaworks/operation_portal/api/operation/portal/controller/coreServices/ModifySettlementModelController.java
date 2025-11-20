@@ -31,7 +31,7 @@ public class ModifySettlementModelController {
     public ResponseEntity<Response> execute(
             @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Settlement Model Request: [{}]", request);
+        LOG.info("Modify Settlement Model Request : [{}]", request);
 
         ModifySettlementModel.Output output = this.modifySettlementModel.execute(
                 new ModifySettlementModel.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
@@ -48,7 +48,7 @@ public class ModifySettlementModelController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Modify Settlement Model Response: [{}]", response);
+        LOG.info("Modify Settlement Model Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

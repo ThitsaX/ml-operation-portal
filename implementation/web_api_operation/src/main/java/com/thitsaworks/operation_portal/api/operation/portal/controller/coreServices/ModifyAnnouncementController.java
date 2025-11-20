@@ -33,7 +33,7 @@ public class ModifyAnnouncementController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Announcement Request: [{}]", request);
+        LOG.info("Modify Announcement Request : [{}]", request);
 
         ModifyAnnouncement.Output output = this.modifyExistingAnnouncement.execute(
             new ModifyAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId)),
@@ -44,7 +44,7 @@ public class ModifyAnnouncementController {
 
         Response response = new Response(output.modified());
 
-        LOG.info("Modify Announcement Response: [{}]", response);
+        LOG.info("Modify Announcement Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -41,7 +41,7 @@ public class GetSettlementWindowsListController {
         throws DomainException {
 
         LOG.info(
-            "Get Settlement Windows By Params Request: FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
+            "Get Settlement Windows By Params Request : FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
             fromDate,
             toDate,
             currency,
@@ -82,7 +82,7 @@ public class GetSettlementWindowsListController {
                                                 .reversed());
 
         }
-        LOG.info("Get Settlement Windows By Params Response: [{}]", settlementWindowList);
+        LOG.info("Get Settlement Windows By Params Response : [{}]", settlementWindowList);
 
         return ResponseEntity.ok(new Response(settlementWindowList));
     }

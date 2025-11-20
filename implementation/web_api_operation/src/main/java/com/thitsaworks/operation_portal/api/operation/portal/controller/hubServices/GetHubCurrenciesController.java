@@ -39,7 +39,7 @@ public class GetHubCurrenciesController {
 
         var response = new Response(currencyInfoList);
 
-        LOG.info("Get Hub Currencies Response: [{}]", response);
+        LOG.info("Get Hub Currencies Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

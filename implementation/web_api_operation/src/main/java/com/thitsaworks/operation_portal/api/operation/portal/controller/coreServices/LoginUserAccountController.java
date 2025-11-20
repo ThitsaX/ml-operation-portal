@@ -33,7 +33,7 @@ public class LoginUserAccountController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws Exception {
 
-        LOG.info("Login User Account Request: [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Login User Account Request : [{}]", MaskPassword.toMaskedString(request));
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
             new LoginUserAccount.Input(new Email(request.email()),
@@ -43,7 +43,7 @@ public class LoginUserAccountController {
                                           .getId()
                                           .toString(), output.secretKey());
 
-        LOG.info("Login User Account Response: [{}]", MaskPassword.toMaskedString(response));
+        LOG.info("Login User Account Response : [{}]", MaskPassword.toMaskedString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

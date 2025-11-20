@@ -31,7 +31,7 @@ public class RemoveContactController {
     @PostMapping(value = "/secured/removeContact")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Remove Contact Request: [{}]", request);
+        LOG.info("Remove Contact Request : [{}]", request);
 
         var
             output =
@@ -40,7 +40,7 @@ public class RemoveContactController {
 
         var response = new Response(output.removed());
 
-        LOG.info("Remove Contact Response: [{}]", response);
+        LOG.info("Remove Contact Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

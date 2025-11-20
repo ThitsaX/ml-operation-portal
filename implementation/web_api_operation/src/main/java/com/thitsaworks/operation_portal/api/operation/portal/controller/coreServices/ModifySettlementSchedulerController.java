@@ -33,7 +33,7 @@ public class ModifySettlementSchedulerController {
             @Valid @RequestBody Request request
                                            ) throws DomainException {
 
-        LOG.info("Updating Settlement Scheduler With SchedulerConfigId: {}", request.schedulerConfigId());
+        LOG.info("Updating Settlement Scheduler Request : schedulerConfigId: [{}]", request.schedulerConfigId());
 
         ModifySettlementScheduler.Output output = this.modifySettlementScheduler.execute(
                 new ModifySettlementScheduler.Input(
@@ -47,7 +47,7 @@ public class ModifySettlementSchedulerController {
 
         var response = new Response(output.updated());
 
-        LOG.info("Updated Settlement Scheduler Response: {}", response);
+        LOG.info("Updating Settlement Scheduler Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

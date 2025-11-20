@@ -44,7 +44,7 @@ public class GenerateSettlementReportController {
 
         var response = new Response(output.settlementByte());
 
-        LOG.info("Generate Settlement Report Response: [{}]", response);
+        LOG.info("Generate Settlement Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

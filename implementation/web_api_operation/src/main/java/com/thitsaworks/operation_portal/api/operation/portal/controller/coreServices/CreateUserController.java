@@ -39,7 +39,7 @@ public class CreateUserController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Onboard User Request: {}", MaskPassword.toMaskedString(request));
+        LOG.info("Onboard User Request : [{}]", MaskPassword.toMaskedString(request));
 
         CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
                                                                                 new Email(request.email()),
@@ -63,7 +63,7 @@ public class CreateUserController {
                                                .toString(),
                                          output.created());
 
-        LOG.info("Onboard User Response: {}", response);
+        LOG.info("Onboard User Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

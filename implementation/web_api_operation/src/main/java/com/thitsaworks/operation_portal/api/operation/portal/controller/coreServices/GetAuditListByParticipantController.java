@@ -42,7 +42,7 @@ public class GetAuditListByParticipantController {
         @RequestParam("page") Integer page,
         @RequestParam("pageSize") Integer pageSize) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Audit List By Participant Request: fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
+        LOG.info("Get Audit List By Participant Request : fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
                  fromDate,
                  toDate,
                  userId,
@@ -72,7 +72,7 @@ public class GetAuditListByParticipantController {
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());
 
-        LOG.info("Get Audit List By Participant Response: [{}]", response);
+        LOG.info("Get Audit List By Participant Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -48,7 +48,7 @@ public class GetSettlementSchedulerListController {
 
         Response response = new Response(settlementSchedulerList);
 
-        LOG.info("Get All Settlement Model List: [{}]", response);
+        LOG.info("Get Settlement Scheduler List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

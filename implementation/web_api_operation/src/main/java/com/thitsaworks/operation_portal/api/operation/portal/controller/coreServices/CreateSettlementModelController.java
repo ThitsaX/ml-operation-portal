@@ -30,7 +30,7 @@ public class CreateSettlementModelController {
     public ResponseEntity<Response> execute(
             @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create New Settlement Model Request: [{}]", request);
+        LOG.info("Create New Settlement Model Request : [{}]", request);
 
         CreateSettlementModel.Output output = this.createSettlementModel.execute(
                 new CreateSettlementModel.Input(request.name(),
@@ -47,7 +47,7 @@ public class CreateSettlementModelController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Create New Settlement Model Response: [{}]", response);
+        LOG.info("Create New Settlement Model Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

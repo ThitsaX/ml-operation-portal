@@ -29,7 +29,7 @@ public class RemoveSchedulerConfigController {
     @PostMapping("/secured/removeSchedulerConfig")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Remove Scheduler Config With ID: {}", request.schedulerConfigId);
+        LOG.info("Remove Scheduler Config Request : [{}]", request);
 
         RemoveSchedulerConfig.Output output = this.removeSchedulerConfig.execute(
                 new RemoveSchedulerConfig.Input(new SchedulerConfigId(request.schedulerConfigId))
@@ -37,7 +37,7 @@ public class RemoveSchedulerConfigController {
 
         var response = new Response(output.deleted());
 
-        LOG.info("Remove Scheduler Config Response: {}", response);
+        LOG.info("Remove Scheduler Config Response : [{}]", response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

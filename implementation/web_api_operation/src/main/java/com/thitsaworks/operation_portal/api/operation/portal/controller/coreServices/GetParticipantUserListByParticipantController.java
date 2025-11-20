@@ -44,7 +44,7 @@ public class GetParticipantUserListByParticipantController {
                                          .sorted(Comparator.comparing(Response.User::email))
                                          .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        LOG.info("Get Participant User List By Participant Response: [{}]", users);
+        LOG.info("Get Participant User List By Participant Response : [{}]", users);
 
         return ResponseEntity.ok(new Response(users));
     }

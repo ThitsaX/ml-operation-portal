@@ -41,7 +41,7 @@ public class GetAllTransferStateController {
 
         var response = new Response(transferStateInfoList);
 
-        LOG.info("Get All Transfer State Response: [{}]", response);
+        LOG.info("Get All Transfer State Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
