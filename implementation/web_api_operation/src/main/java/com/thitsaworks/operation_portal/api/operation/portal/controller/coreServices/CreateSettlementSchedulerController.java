@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.common.identifier.SettlementModelId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementScheduler;
@@ -41,7 +40,9 @@ public class CreateSettlementSchedulerController {
                                                 request.description(),
                                                 request.cronExpression()));
 
-        var response = new Response(output.schedulerConfigId(),
+        var response = new Response(output.schedulerConfigId()
+                                          .getId()
+                                          .toString(),
                                     output.created());
 
         LOG.info("Create Settlement Scheduler Response: [{}]", response);
@@ -60,7 +61,7 @@ public class CreateSettlementSchedulerController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("schedulerConfigId") SchedulerConfigId schedulerConfigId,
+    public record Response(@JsonProperty("schedulerConfigId") String schedulerConfigId,
                            @JsonProperty("isCreated") boolean isCreated) implements Serializable {
     }
 
