@@ -8,10 +8,6 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
-import com.thitsaworks.operation_portal.core.hub_services.api.PostCreateSettlement;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
-import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowState;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifyJobExecutionLogCommand;
@@ -30,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("CloseSettlementWindowsScheduler")
-public class CloseSettlementWindowsScheduler extends ScheduledJob<SchedulerConfigData, PostCreateSettlement.Response> {
+public class CloseSettlementWindowsScheduler
+        extends ScheduledJob<SchedulerConfigData, List<PostCloseSettlementWindows.Response>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsScheduler.class);
 
@@ -56,67 +53,70 @@ public class CloseSettlementWindowsScheduler extends ScheduledJob<SchedulerConfi
     }
 
     @Override
-    protected PostCreateSettlement.Response onExecute(SchedulerConfigData schedulerConfigData)
-            throws DomainException, InterruptedException {
+    protected List<PostCloseSettlementWindows.Response> onExecute(SchedulerConfigData schedulerConfigData)
+        throws DomainException, InterruptedException {
 
         SettlementModelData settlementModelData =
-                this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
+            this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
 
         List<GetSettlementWindows.SettlementWindow> settlementWindowList =
-                this.settlementHubClient.getSettlementWindowsList(
-                        null,
-                        null,
-                        settlementModelData.currencyId(),
-                        SettlementWindowState.OPEN.toString(),
-                        null,
-                        new GetSettlementWindows.Request());
+            this.settlementHubClient.getSettlementWindowsList(
+                null,
+                null,
+                settlementModelData.currencyId(),
+                SettlementWindowState.OPEN.toString(),
+                null,
+                new GetSettlementWindows.Request());
 
         LOG.info("Settlement Window List: {}", settlementWindowList);
 
-        List<SettlementWindowId> settlementWindowIdList = new ArrayList<>();
+        List<PostCloseSettlementWindows.Response> settlementWindowsList = new ArrayList<>();
 
         LocalDateTime runningTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
 
         String reason =
-                String.format("Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
-                              schedulerConfigData.name(),
-                              settlementModelData.name(),
-                              runningTime,
-                              schedulerConfigData.zoneId());
+            String.format("Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
+                          schedulerConfigData.name(),
+                          settlementModelData.name(),
+                          runningTime,
+                          schedulerConfigData.zoneId());
 
-        //Close each settlement window
         for (var settlementWindow : settlementWindowList) {
 
-
-            this.settlementHubClient.closeSettlementWindows(settlementWindow.settlementWindowId(),
+            var output = this.settlementHubClient.closeSettlementWindows(settlementWindow.settlementWindowId(),
                                                             new PostCloseSettlementWindows.Request(
-                                                                    SettlementWindowState.CLOSED.toString(),
-                                                                    reason));
+                                                                SettlementWindowState.CLOSED.toString(),
+                                                                reason));
 
-            settlementWindowIdList.add(new SettlementWindowId(settlementWindow.settlementWindowId()));
+            settlementWindowsList.add(output);
         }
 
-        final int MAX_RETRIES = 6;
-        final int RETRY_DELAY_MS = 5000;
+        return settlementWindowsList;
 
-        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
-
-            Thread.sleep(RETRY_DELAY_MS);
-
-            GetSettlementWindows.SettlementWindow latestWindowData =
-                    settlementHubClient.getSettlementWindowById(settlementWindowIdList.getLast());
-
-            if (SettlementWindowState.CLOSED.name().equals(latestWindowData.state())) {
-
-                return settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
-                                                                                             reason,
-                                                                                             settlementWindowIdList));
-            }
-
-        }
-
-        throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(
-                "Settlement window did not close properly within retry limit"));
+//        final int MAX_RETRIES = 6;
+//        final int RETRY_DELAY_MS = 5000;
+//
+//        for (int attempt = 0; attempt < MAX_RETRIES; attempt++) {
+//
+//            Thread.sleep(RETRY_DELAY_MS);
+//
+//            GetSettlementWindows.SettlementWindow latestWindowData =
+//                settlementHubClient.getSettlementWindowById(settlementWindowIdList.getLast());
+//
+//            if (SettlementWindowState.CLOSED.name()
+//                                            .equals(latestWindowData.state())) {
+//
+//                return settlementHubClient.createSettlement(new PostCreateSettlement.Request(settlementModelData.name(),
+//                                                                                             reason,
+//                                                                                             settlementWindowList.stream()
+//                                                                                              .map(settlementWindow -> new SettlementWindowId(settlementWindow.settlementWindowId()))
+//                                                                                              .toList()));
+//            }
+//
+//        }
+//
+//        throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.description(
+//            "Settlement window did not close properly within retry limit"));
 
     }
 
