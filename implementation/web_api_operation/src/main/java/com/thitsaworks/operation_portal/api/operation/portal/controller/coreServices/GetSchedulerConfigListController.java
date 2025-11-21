@@ -38,7 +38,7 @@ public class GetSchedulerConfigListController {
             value = "sortDirection",
             required = false) Sort.Direction sortDirection) throws DomainException {
 
-        LOG.info("Get Scheduler Config List : active=[{}], sortBy=[{}], sortDirection=[{}]",
+        LOG.info("Get Scheduler Config List Request : active= [{}], sortBy= [{}], sortDirection= [{}]",
                  active, sortBy, sortDirection);
 
         GetSchedulerConfigList.Output output = this.getSchedulerConfigList.execute(

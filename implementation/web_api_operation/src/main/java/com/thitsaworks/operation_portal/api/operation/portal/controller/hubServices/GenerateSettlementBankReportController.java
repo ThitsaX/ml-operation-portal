@@ -45,7 +45,7 @@ public class GenerateSettlementBankReportController {
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Settlement Bank Report Response: [{}]", response);
+        LOG.info("Generate Settlement Bank Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -34,14 +34,14 @@ public class ResetCurrentPasswordController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Reset Current Password Request: [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Reset Current Password Request : [{}]", MaskPassword.toMaskedString(request));
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
             new ResetCurrentPassword.Input(new Email(request.email()), new Password(request.password())));
 
         var response = new Response(output.updated());
 
-        LOG.info("Reset Current Password Response: [{}]", response);
+        LOG.info("Reset Current Password Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

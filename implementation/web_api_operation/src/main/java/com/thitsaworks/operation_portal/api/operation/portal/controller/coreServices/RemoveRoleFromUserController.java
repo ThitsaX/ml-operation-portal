@@ -28,14 +28,14 @@ public class RemoveRoleFromUserController {
     @PostMapping("/secured/removeRoleFromUser")
     public Response execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Remove Role From User Request: [{}]", request);
+        LOG.info("Remove Role From User Request : [{}]", request);
 
         var
             output =
             this.removeRoleFromUser.execute(new RemoveRoleFromUser.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                          new RoleId(Long.parseLong(request.roleId()))));
         var response = new Response(output.removed());
-        LOG.info("Remove Role From User Response: [{}]", response);
+        LOG.info("Remove Role From User Response : [{}]", response);
         return response;
     }
 

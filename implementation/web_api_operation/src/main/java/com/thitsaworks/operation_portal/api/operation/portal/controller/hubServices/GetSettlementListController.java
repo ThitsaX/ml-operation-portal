@@ -143,7 +143,7 @@ public class GetSettlementListController {
 
         var response = new Response(settlementList);
 
-        LOG.info("Get Settlements By Params Response: [{}]", response);
+        LOG.info("Get Settlements By Params Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -95,8 +95,13 @@ public class GetPendingApprovalListHandler
         final var createApprovalRequest = this.actionQuery.get(new ActionCode("CreateApprovalRequest"));
         final var modifyApprovalAction = this.actionQuery.get(new ActionCode("ModifyApprovalAction"));
 
-        return grantedActions.contains(createApprovalRequest)
-                   && grantedActions.contains(modifyApprovalAction);
+        if (grantedActions.contains(createApprovalRequest)
+                && grantedActions.contains(modifyApprovalAction)) {
+            return true;
+
+        } else {
+            return !grantedActions.contains(createApprovalRequest) && grantedActions.contains(modifyApprovalAction);
+        }
 
     }
 

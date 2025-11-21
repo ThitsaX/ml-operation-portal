@@ -33,7 +33,7 @@ public class GetUserController {
     public ResponseEntity<Response> execute(@Valid @RequestParam String userId)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get User Request: [{}]", userId);
+        LOG.info("Get User Request : [{}]", userId);
 
         var output = this.getUser.execute(
                 new GetUser.Input(new UserId(Long.parseLong(userId))));
@@ -50,7 +50,7 @@ public class GetUserController {
                                     output.roleList(),
                                     output.createdDate());
 
-        LOG.info("Get User Response: [{}]", response);
+        LOG.info("Get User Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

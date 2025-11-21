@@ -50,7 +50,7 @@ public class GetPendingApprovalListController {
                                                                                               .name()))
                                           .toList());
 
-        LOG.info("Get Pending Approval List Response: [{}]", response);
+        LOG.info("Get Pending Approval List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

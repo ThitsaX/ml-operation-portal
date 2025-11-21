@@ -46,7 +46,7 @@ public class GenerateFeeSettlementReportController {
 
         var response = new Response(output.rptData());
 
-        LOG.info("Generate Fee Report Response : response = [{}]", response);
+        LOG.info("Generate Fee Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

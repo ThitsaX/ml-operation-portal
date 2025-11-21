@@ -44,7 +44,7 @@ public class UpdateParticipantStatusController {
 
         var response = new Response(output.participantName(), output.participantCurrencyId(), output.activeStatus());
 
-        LOG.info("Update Approval Response : {}", response);
+        LOG.info("Update Participant Status Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -41,7 +41,7 @@ public class GenerateSettlementDetailReportController {
 
         var response = new Response(output.detailReportData());
 
-        LOG.info("Generate Detail Report Response: [{}]", response);
+        LOG.info("Generate Detail Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -33,7 +33,7 @@ public class ModifyLiquidityProfileController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Modify Liquidity Profile Request: [{}]", request);
+        LOG.info("Modify Liquidity Profile Request : [{}]", request);
 
         ModifyLiquidityProfile.Output output = this.modifyLiquidityProfile.execute(
             new ModifyLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -45,7 +45,7 @@ public class ModifyLiquidityProfileController {
 
         Response response = new Response(output.modified());
 
-        LOG.info("Modify Liquidity Profile Response: [{}]", response);
+        LOG.info("Modify Liquidity Profile Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

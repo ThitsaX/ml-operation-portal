@@ -31,7 +31,7 @@ public class GetParticipantController {
     public ResponseEntity<Response> execute(
         @RequestParam("participantId") String participantId) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Existing Participant Request: ParticipantId = [{}]", participantId);
+        LOG.info("Get Existing Participant Request : ParticipantId = [{}]", participantId);
 
         GetParticipant.Output output = this.getParticipant.execute(
             new GetParticipant.Input(new ParticipantId(Long.parseLong(participantId))));
@@ -83,7 +83,7 @@ public class GetParticipantController {
                                     contactInfoList,
                                     liquidityProfileInfoList);
 
-        LOG.info("Get Existing Participant Response: [{}]", response);
+        LOG.info("Get Existing Participant Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

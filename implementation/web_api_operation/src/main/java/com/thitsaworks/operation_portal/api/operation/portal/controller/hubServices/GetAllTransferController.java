@@ -99,7 +99,7 @@ public class GetAllTransferController {
 
         var response = new Response(transferInfoList, output.totalPage());
 
-        LOG.info("Get All Transfer Response: [{}]", response);
+        LOG.info("Get All Transfer Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

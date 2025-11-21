@@ -32,7 +32,7 @@ public class RemoveSettlementSchedulerController {
     public ResponseEntity<Response> execute(
             @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove Settlement Scheduler Request: [{}]", request);
+        LOG.info("Remove Settlement Scheduler Request : [{}]", request);
 
         RemoveSettlementScheduler.Output output = this.removeSettlementScheduler.execute(
                 new RemoveSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
@@ -43,7 +43,7 @@ public class RemoveSettlementSchedulerController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Remove Settlement Scheduler Response: [{}]", response);
+        LOG.info("Remove Settlement Scheduler Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

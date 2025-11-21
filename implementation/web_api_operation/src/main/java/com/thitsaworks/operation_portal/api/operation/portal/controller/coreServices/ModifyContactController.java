@@ -36,7 +36,7 @@ public class ModifyContactController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Contact Request: [{}]", request);
+        LOG.info("Modify Contact Request : [{}]", request);
 
         ModifyContact.Output output = this.modifyContact.execute(
             new ModifyContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -50,7 +50,7 @@ public class ModifyContactController {
 
         var response = new Response(output.modified());
 
-        LOG.info("Modify Contact Response: [{}]", response);
+        LOG.info("Modify Contact Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

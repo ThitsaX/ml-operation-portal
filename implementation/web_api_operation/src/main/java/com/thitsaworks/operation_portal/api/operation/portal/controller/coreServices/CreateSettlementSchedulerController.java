@@ -32,7 +32,7 @@ public class CreateSettlementSchedulerController {
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Settlement Scheduler Request: [{}]", request);
+        LOG.info("Create Settlement Scheduler Request : [{}]", request);
 
         CreateSettlementScheduler.Output output = this.createSettlementScheduler.execute(
             new CreateSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
@@ -40,9 +40,12 @@ public class CreateSettlementSchedulerController {
                                                 request.description(),
                                                 request.cronExpression()));
 
-        var response = new Response(output.created());
+        var response = new Response(output.schedulerConfigId()
+                                          .getId()
+                                          .toString(),
+                                    output.created());
 
-        LOG.info("Create Settlement Scheduler Response: [{}]", response);
+        LOG.info("Create Settlement Scheduler Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -58,7 +61,8 @@ public class CreateSettlementSchedulerController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("isCreated") boolean isCreated) implements Serializable {
+    public record Response(@JsonProperty("schedulerConfigId") String schedulerConfigId,
+                           @JsonProperty("isCreated") boolean isCreated) implements Serializable {
     }
 
 }

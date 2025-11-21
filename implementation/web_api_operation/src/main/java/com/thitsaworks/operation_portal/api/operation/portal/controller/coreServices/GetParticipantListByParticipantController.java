@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByParticipant;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -35,7 +37,12 @@ public class GetParticipantListByParticipantController {
             participantInfoList.add(new Response.ParticipantInfo(participantInfo.participantId()
                                                                                 .toString(),
                                                                  participantInfo.participantName(),
-                                                                 participantInfo.participantDescription()));
+                                                                 participantInfo.participantDescription(),
+                                                                 participantInfo.logoFileType(),
+                                                                 participantInfo.logo() == null ? null :
+                                                                     Base64.getEncoder()
+                                                                           .encodeToString(
+                                                                               participantInfo.logo())));
         }
 
         var response = new Response(participantInfoList);
@@ -49,9 +56,11 @@ public class GetParticipantListByParticipantController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(List<ParticipantInfo> participantInfoList) {
 
-        public record ParticipantInfo(String participantId,
-                                      String participantName,
-                                      String participantDescription) implements Serializable { }
+        public record ParticipantInfo(@JsonProperty("participantId") String participantId,
+                                      @JsonProperty("participantName") String participantName,
+                                      @JsonProperty("participantDescription") String participantDescription,
+                                      @JsonProperty("logoFileType") String logoFileType,
+                                      @JsonProperty("logo") String logoBase64) implements Serializable { }
 
     }
 

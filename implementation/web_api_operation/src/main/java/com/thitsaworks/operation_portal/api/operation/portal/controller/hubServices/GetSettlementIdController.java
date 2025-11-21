@@ -46,7 +46,7 @@ public class GetSettlementIdController {
                   .toList();
         var response = new Response(settlementIdInfoList);
 
-        LOG.info("Get SettlementId Response: [{}]", response);
+        LOG.info("Get SettlementId Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -50,7 +50,7 @@ public class CreateSettlementController {
                                     output.settlementWindowList(),
                                     output.settlementParticipantList());
 
-        LOG.info("Create Settlement Response : {}", response);
+        LOG.info("Create Settlement Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

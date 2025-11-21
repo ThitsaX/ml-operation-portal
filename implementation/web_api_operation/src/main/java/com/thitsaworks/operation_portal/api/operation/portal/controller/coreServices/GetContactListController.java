@@ -29,7 +29,7 @@ public class GetContactListController {
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
         throws DomainException {
 
-        LOG.info("Get Contact List Request For : [{}]", participantId);
+        LOG.info("Get Contact List Request : [{}]", participantId);
 
         var
             output =

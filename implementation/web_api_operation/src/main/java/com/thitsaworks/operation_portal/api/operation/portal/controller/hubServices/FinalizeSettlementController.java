@@ -46,7 +46,7 @@ public class FinalizeSettlementController {
 
         var response = new Response(output.finalized());
 
-        LOG.info("Finalize Settlement Response : {}", response);
+        LOG.info("Finalize Settlement Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

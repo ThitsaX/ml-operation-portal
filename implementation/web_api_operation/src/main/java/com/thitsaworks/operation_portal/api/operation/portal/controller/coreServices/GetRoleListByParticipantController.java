@@ -39,7 +39,7 @@ public class GetRoleListByParticipantController {
                                                                          role.active()))
                                           .toList());
 
-        LOG.info("Get Role List By User Id Response: [{}]", response);
+        LOG.info("Get Role List By User Id Response : [{}]", response);
 
         return ResponseEntity.ok(response);
     }

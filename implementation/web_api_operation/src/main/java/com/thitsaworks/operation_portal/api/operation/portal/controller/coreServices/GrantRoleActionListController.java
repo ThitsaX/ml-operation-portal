@@ -29,7 +29,7 @@ public class GrantRoleActionListController {
     @PostMapping("/secured/grantRoleActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Grant Role Action List Request: [{}]", request);
+        LOG.info("Grant Role Action List Request : [{}]", request);
 
         List<GrantRoleActionList.Input.RoleGrant> roleGrantList = new ArrayList<>();
         for (var singleRoleGrant : request.roleGrantList()) {
@@ -49,7 +49,7 @@ public class GrantRoleActionListController {
 
         var response = new Response(output.granted());
 
-        LOG.info("Grant Role Action List Response: [{}]", response);
+        LOG.info("Grant Role Action List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

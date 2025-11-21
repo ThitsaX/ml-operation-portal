@@ -35,7 +35,7 @@ public class ModifyUserController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify User Request: [{}]", request);
+        LOG.info("Modify User Request : [{}]", request);
 
         var output = this.modifyUser.execute(new ModifyUser.Input(new UserId(Long.parseLong(request.userId())),
                                                                   request.name(),
@@ -53,7 +53,7 @@ public class ModifyUserController {
                                           .getId()
                                           .toString(), output.modified());
 
-        LOG.info("Modify User Response: [{}]", response);
+        LOG.info("Modify User Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

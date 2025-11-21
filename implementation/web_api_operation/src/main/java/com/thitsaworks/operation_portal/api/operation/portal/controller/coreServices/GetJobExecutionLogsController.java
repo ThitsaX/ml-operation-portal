@@ -42,7 +42,8 @@ public class GetJobExecutionLogsController {
         @RequestParam(value = "sortBy", required = false) String sortBy,
         @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
                                            ) throws DomainException {
-        LOG.info("Fetching Job Execution Logs With jobName={}, jobStatus={}, startDate={}, endDate={}, sortBy={}, sortDirection={}",
+
+        LOG.info("Fetching Job Execution Logs Request :  jobName = [{}], jobStatus = [{}], startDate = [{}], endDate = [{}], sortBy = [{}], sortDirection = [{}]",
                   jobName, status, startDate, endDate, sortBy, sortDirection);
 
         GetJobExecutionLogList.Output output = this.getJobExecutionLogList.execute(
@@ -53,12 +54,11 @@ public class GetJobExecutionLogsController {
                 Optional.ofNullable(endDate).map(LocalDateTime::toString),
                 Optional.ofNullable(sortBy),
                 Optional.ofNullable(sortDirection)
-            )
-                                                                                  );
+            )                                                                                  );
 
         var response = new Response(output.logs());
 
-        LOG.info("Get Job Execution Logs Response: [{}]", response);
+        LOG.info("Get Job Execution Logs Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

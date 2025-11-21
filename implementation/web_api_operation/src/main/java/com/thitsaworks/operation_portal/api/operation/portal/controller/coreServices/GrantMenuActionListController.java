@@ -29,7 +29,7 @@ public class GrantMenuActionListController {
     @PostMapping("/secured/grantMenuActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
 
-        LOG.info("Grant Menu Action List Request: [{}]", request);
+        LOG.info("Grant Menu Action List Request : [{}]", request);
 
         List<GrantMenuActionList.Input.MenuGrant> menuGrantList = new ArrayList<>();
         for (var singleMenuGrant : request.menuGrantList()) {
@@ -49,7 +49,7 @@ public class GrantMenuActionListController {
 
         var response = new Response(output.granted());
 
-        LOG.info("Grant Menu Action List Response: [{}]", response);
+        LOG.info("Grant Menu Action List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -33,7 +33,7 @@ public class ModifyUserStatusController {
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify User Status Request: [{}]", request);
+        LOG.info("Modify User Status Request : [{}]", request);
 
         ModifyUserStatus.Output
             output =
@@ -44,7 +44,7 @@ public class ModifyUserStatusController {
                                                              PrincipalStatus.INACTIVE));
         var response = new Response(output.removed());
 
-        LOG.info("Modify User Status Response: [{}]", response);
+        LOG.info("Modify User Status Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

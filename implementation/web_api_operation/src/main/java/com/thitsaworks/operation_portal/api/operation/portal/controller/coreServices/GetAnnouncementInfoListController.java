@@ -54,7 +54,7 @@ public class GetAnnouncementInfoListController {
         }
         Response response = new Response(announcementInfoList);
 
-        LOG.info("Get Announcement Info List Response: [{}]", response);
+        LOG.info("Get Announcement Info List Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
