@@ -88,6 +88,12 @@ public class CloseSettlementWindowsScheduler
                                                                 SettlementWindowState.CLOSED.toString(),
                                                                 reason));
 
+            output = new PostCloseSettlementWindows.Response(settlementWindow.settlementWindowId(),
+                                                             SettlementWindowState.CLOSED.toString(),
+                                                             output.reason(),
+                                                             output.createdDate(),
+                                                             output.changedDate());
+
             settlementWindowsList.add(output);
         }
 
