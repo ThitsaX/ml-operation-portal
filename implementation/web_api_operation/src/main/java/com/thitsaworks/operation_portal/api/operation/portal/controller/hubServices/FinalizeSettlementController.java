@@ -1,13 +1,10 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementParticipant;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindow;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowId;
-import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlement;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -54,12 +50,12 @@ public class FinalizeSettlementController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            Integer settlementId
+            @JsonProperty("settlementId") Integer settlementId
     ) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            Boolean finalized
+            @JsonProperty("finalized") Boolean finalized
     ) implements Serializable {}
 
 }

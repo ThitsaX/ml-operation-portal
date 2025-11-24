@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -149,43 +150,43 @@ public class GetSettlementListController {
 
     }
 
-    public record Response(List<Settlement> settlementList) implements Serializable {
+    public record Response(@JsonProperty("settlementList") List<Settlement> settlementList) implements Serializable {
 
-        public record Settlement(Integer settlementId,
-                                 String state,
-                                 String reason,
-                                 String createdDate,
-                                 String changedDate,
-                                 List<SettlementWindow> settlementWindowList,
-                                 List<Participant> participantList) {
+        public record Settlement(@JsonProperty("settlementId") Integer settlementId,
+                                 @JsonProperty("state") String state,
+                                 @JsonProperty("reason") String reason,
+                                 @JsonProperty("createdDate") String createdDate,
+                                 @JsonProperty("changedDate") String changedDate,
+                                 @JsonProperty("settlementWindowList") List<SettlementWindow> settlementWindowList,
+                                 @JsonProperty("participantList") List<Participant> participantList) {
         }
 
-        public record SettlementWindow(Integer settlementWindowId,
-                                       String state,
-                                       String reason,
-                                       String createdDate,
-                                       String changedDate,
-                                       List<Content> contentList) {
+        public record SettlementWindow(@JsonProperty("settlementWindowId") Integer settlementWindowId,
+                                       @JsonProperty("state") String state,
+                                       @JsonProperty("reason") String reason,
+                                       @JsonProperty("createdDate") String createdDate,
+                                       @JsonProperty("changedDate") String changedDate,
+                                       @JsonProperty("contentList") List<Content> contentList) {
         }
 
-        public record Content(Integer contentId,
-                              String state,
-                              String ledgerAccountType,
-                              String currencyId,
-                              String createdDate,
-                              String changedDate) {
+        public record Content(@JsonProperty("contentId") Integer contentId,
+                              @JsonProperty("state") String state,
+                              @JsonProperty("ledgerAccountType") String ledgerAccountType,
+                              @JsonProperty("currencyId") String currencyId,
+                              @JsonProperty("createdDate") String createdDate,
+                              @JsonProperty("changedDate") String changedDate) {
         }
 
-        public record Participant(Integer participantId,
-                                  List<Account> accountList) {
+        public record Participant(@JsonProperty("participantId") Integer participantId,
+                                  @JsonProperty("accountList") List<Account> accountList) {
         }
 
-        public record Account(Integer accountId,
-                              String state,
-                              String reason,
-                              String externalReference,
-                              String createdDate,
-                              Money netSettlementAmount) {
+        public record Account(@JsonProperty("accountId") Integer accountId,
+                              @JsonProperty("state") String state,
+                              @JsonProperty("reason") String reason,
+                              @JsonProperty("externalReference") String externalReference,
+                              @JsonProperty("createdDate") String createdDate,
+                              @JsonProperty("netSettlementAmount") Money netSettlementAmount) {
         }
 
     }

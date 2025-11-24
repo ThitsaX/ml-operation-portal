@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList;
 import lombok.RequiredArgsConstructor;
@@ -88,26 +89,25 @@ public class GetSettlementWindowsListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(List<SettlementWindow> settlementWindowList) {
+    public record Response(@JsonProperty("settlementWindowList") List<SettlementWindow> settlementWindowList) {
 
-        public record SettlementWindow(
-            Integer settlementWindowId,
-            String state,
-            String reason,
-            String createdDate,
-            String changedDate,
-            List<Content> contentList
+        public record SettlementWindow(@JsonProperty("settlementWindowId") Integer settlementWindowId,
+                                       @JsonProperty("state") String state,
+                                       @JsonProperty("reason") String reason,
+                                       @JsonProperty("createdDate") String createdDate,
+                                       @JsonProperty("changedDate") String changedDate,
+                                       @JsonProperty("contentList") List<Content> contentList
         ) implements Serializable {
 
         }
 
         public record Content(
-            Integer contentId,
-            String state,
-            String ledgerAccountType,
-            String currencyId,
-            String createdDate,
-            String changedDate
+                @JsonProperty("contentId") Integer contentId,
+                @JsonProperty("state") String state,
+                @JsonProperty("ledgerAccountType") String ledgerAccountType,
+                @JsonProperty("currencyId") String currencyId,
+                @JsonProperty("createdDate") String createdDate,
+                @JsonProperty("changedDate") String changedDate
         ) implements Serializable {
 
         }

@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -48,9 +49,9 @@ public class AssignRoleToUserController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String userId,
-                          @NotNull @NotBlank String roleId) implements Serializable { }
+    public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
+                          @NotNull @NotBlank @JsonProperty("roleId") String roleId) implements Serializable {}
 
-    public record Response(String principalRoleId) implements Serializable { }
+    public record Response(@JsonProperty("principalRoleId") String principalRoleId) implements Serializable {}
 
 }

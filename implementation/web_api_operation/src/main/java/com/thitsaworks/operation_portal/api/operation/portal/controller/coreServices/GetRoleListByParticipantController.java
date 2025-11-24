@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleListByParticipant;
 import lombok.RequiredArgsConstructor;
@@ -45,11 +46,11 @@ public class GetRoleListByParticipantController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(List<Role> roleList) {
+    public record Response(@JsonProperty("roleList") List<Role> roleList) {
 
-        public record Role(String roleId,
-                           String name,
-                           boolean active) implements Serializable { }
+        public record Role(@JsonProperty("roleId") String roleId,
+                           @JsonProperty("name") String name,
+                           @JsonProperty("active") boolean active) implements Serializable {}
 
     }
 

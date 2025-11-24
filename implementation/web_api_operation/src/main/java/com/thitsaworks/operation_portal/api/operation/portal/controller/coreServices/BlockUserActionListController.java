@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -49,10 +50,10 @@ public class BlockUserActionListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotEmpty String userId,
-                          List<String> actionIdList) { }
+    public record Request(@NotNull @NotEmpty @JsonProperty("userId") String userId,
+                          @JsonProperty("actionIdList") List<String> actionIdList) {}
 
-    public record Response(boolean blocked) { }
+    public record Response(@JsonProperty("blocked") boolean blocked) {}
 
 }
 

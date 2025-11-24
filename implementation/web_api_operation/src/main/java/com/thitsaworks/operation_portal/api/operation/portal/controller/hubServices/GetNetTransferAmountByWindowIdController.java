@@ -1,11 +1,11 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -14,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -70,15 +68,15 @@ public class GetNetTransferAmountByWindowIdController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(int settlementWindowId,
-                           String windowOpenedDate,
-                           String windowClosedDate,
-                           List<Detail> details
+    public record Response(@JsonProperty("settlementWindowId") int settlementWindowId,
+                           @JsonProperty("windowOpenedDate") String windowOpenedDate,
+                           @JsonProperty("windowClosedDate") String windowClosedDate,
+                           @JsonProperty("details") List<Detail> details
     ) implements Serializable { }
 
-    public record Detail(String participantName,
-                         BigDecimal debitAmount,
-                         BigDecimal creditAmount,
-                         String currency) implements Serializable { }
+    public record Detail(@JsonProperty("participantName") String participantName,
+                         @JsonProperty("debitAmount") BigDecimal debitAmount,
+                         @JsonProperty("creditAmount") BigDecimal creditAmount,
+                         @JsonProperty("currency") String currency) implements Serializable {}
 
 }

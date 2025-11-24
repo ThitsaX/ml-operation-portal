@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
@@ -47,12 +48,12 @@ public class CreateParticipantNDCController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String participantName,
-                          @NotNull @NotBlank String currency,
-                          BigDecimal ndcPercent,
-                          BigDecimal ndcAmount) implements Serializable {}
+    public record Request(@NotNull @NotBlank @JsonProperty("participantName") String participantName,
+                          @NotNull @NotBlank @JsonProperty("currency") String currency,
+                          @JsonProperty("ndcPercent") BigDecimal ndcPercent,
+                          @JsonProperty("ndcAmount") BigDecimal ndcAmount) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(String participantNDCId) implements Serializable {}
+    public record Response(@JsonProperty("participantNDCId") String participantNDCId) implements Serializable {}
 
 }
