@@ -25,6 +25,10 @@ public interface GetUserListByParticipant extends
                     String jobTitle,
                     List<String> roleList,
                     ParticipantId participantId,
+
+                    String participantName,
+
+                    String participantDescription,
                     String status,
                     Instant createdDate
     ) implements Serializable { }

@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUser;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +48,8 @@ public class GetActionListByUserController {
 
     public record Response(List<Action> actionList) {
 
-        public record Action(String actionId,
-                             String actionName) implements Serializable { }
+        public record Action(@JsonProperty("actionId") String actionId,
+                             @JsonProperty("actionName") String actionName) implements Serializable { }
 
     }
 

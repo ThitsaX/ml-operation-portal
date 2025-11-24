@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -51,13 +52,13 @@ public class UpdateParticipantStatusController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(String participantName,
-                          int participantCurrencyId,
-                          String activeStatus) implements Serializable { }
+    public record Request(@JsonProperty("participantName") String participantName,
+                          @JsonProperty("participantCurrencyId") int participantCurrencyId,
+                          @JsonProperty("activeStatus") String activeStatus) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(String participantName,
-                           int participantCurrencyId,
-                           String activeStatus) implements Serializable { }
+    public record Response(@JsonProperty("participantName") String participantName,
+                           @JsonProperty("participantCurrencyId") int participantCurrencyId,
+                           @JsonProperty("activeStatus") String activeStatus) implements Serializable {}
 
 }

@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetPendingApprovalList;
@@ -59,16 +60,17 @@ public class GetPendingApprovalListController {
     public record Request() implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(List<PendingApproval> pendingApprovalList) implements Serializable {
+    public record Response(@JsonProperty("pendingApprovalList") List<PendingApproval> pendingApprovalList)
+            implements Serializable {
 
-        public record PendingApproval(String approvalRequestId,
-                                      String requestedAction,
-                                      String participantName,
-                                      String currency,
-                                      BigDecimal amount,
-                                      String requestedBy,
-                                      long requestedDateTime,
-                                      String action) implements Serializable { }
+        public record PendingApproval(@JsonProperty("approvalRequestId") String approvalRequestId,
+                                      @JsonProperty("requestedAction") String requestedAction,
+                                      @JsonProperty("participantName") String participantName,
+                                      @JsonProperty("currency") String currency,
+                                      @JsonProperty("amount") BigDecimal amount,
+                                      @JsonProperty("requestedBy") String requestedBy,
+                                      @JsonProperty("requestedDateTime") long requestedDateTime,
+                                      @JsonProperty("action") String action) implements Serializable {}
 
     }
 

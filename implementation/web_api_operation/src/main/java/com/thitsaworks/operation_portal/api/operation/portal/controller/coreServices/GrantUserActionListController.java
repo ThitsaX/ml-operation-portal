@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -51,10 +52,10 @@ public class GrantUserActionListController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String userId,
-                          List<String> actionIdList) implements Serializable { }
+    public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
+                          @JsonProperty("actionIdList") List<String> actionIdList) implements Serializable {}
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(boolean granted) implements Serializable { }
+    public record Response(@JsonProperty("granted") boolean granted) implements Serializable {}
 
 }

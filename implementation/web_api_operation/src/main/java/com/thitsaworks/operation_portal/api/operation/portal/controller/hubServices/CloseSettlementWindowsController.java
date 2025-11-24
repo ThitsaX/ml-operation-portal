@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -52,17 +53,17 @@ public class CloseSettlementWindowsController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(String state,
-                          String reason,
-                          int settlementWindowId
+    public record Request(@JsonProperty("state") String state,
+                          @JsonProperty("reason") String reason,
+                          @JsonProperty("settlementWindowId") int settlementWindowId
     ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(int settlementWindowId,
-                           String state,
-                           String reason,
-                           String createdDate,
-                           String changedDate
+    public record Response(@JsonProperty("settlementWindowId") int settlementWindowId,
+                           @JsonProperty("state") String state,
+                           @JsonProperty("reason") String reason,
+                           @JsonProperty("createdDate") String createdDate,
+                           @JsonProperty("changedDate") String changedDate
     ) implements Serializable { }
 
 }

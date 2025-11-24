@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAction;
@@ -45,10 +46,10 @@ public class CreateActionController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @NotBlank String name,
-                          @NotNull @NotBlank String description,
-                          @NotNull @NotBlank String scope) implements Serializable { }
+    public record Request(@NotNull @NotBlank @JsonProperty("name") String name,
+                          @NotNull @NotBlank @JsonProperty("description") String description,
+                          @NotNull @NotBlank @JsonProperty("scope") String scope) implements Serializable { }
 
-    public record Response(String actionId) implements Serializable { }
+    public record Response(@JsonProperty("actionId") String actionId) implements Serializable {}
 
 }

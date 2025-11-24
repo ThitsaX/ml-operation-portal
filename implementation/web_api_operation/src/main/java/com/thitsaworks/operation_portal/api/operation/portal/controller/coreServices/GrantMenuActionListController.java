@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActionList;
@@ -58,11 +59,11 @@ public class GrantMenuActionListController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(List<MenuGrant> menuGrantList) implements Serializable {
 
-        public record MenuGrant(String menuName,
-                                List<String> actionCodeList) implements Serializable { }
+        public record MenuGrant(@JsonProperty("menuName") String menuName,
+                                @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable {}
 
     }
 
-    public record Response(boolean granted) implements Serializable { }
+    public record Response(@JsonProperty("granted") boolean granted) implements Serializable {}
 
 }

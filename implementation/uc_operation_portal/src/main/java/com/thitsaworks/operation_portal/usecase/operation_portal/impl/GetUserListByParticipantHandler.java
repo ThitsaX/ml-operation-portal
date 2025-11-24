@@ -93,6 +93,8 @@ public class GetUserListByParticipantHandler
                                                                    userData.jobTitle(),
                                                                    roleList,
                                                                    userData.participantId(),
+                                                                   userData.participantName().getValue(),
+                                                                   userData.participantDescription(),
                                                                    principalData.principalStatus()
                                                                                 .toString(),
                                                                    Instant.ofEpochSecond(userData.createdDate())));
