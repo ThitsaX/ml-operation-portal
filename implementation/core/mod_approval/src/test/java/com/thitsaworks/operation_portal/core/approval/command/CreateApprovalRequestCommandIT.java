@@ -33,8 +33,11 @@ public class CreateApprovalRequestCommandIT extends BaseVaultSetUpTest {
                                                                                                   "wallet2",
                                                                                                   "USD",
                                                                                                   "8",
-                                                                                                  BigDecimal.valueOf(50000.00),
-                                                                                                  new UserId(728941546990530560L))));
+                                                                                                  "9",
+                                                                                                  BigDecimal.valueOf(
+                                                                                                      50000.00),
+                                                                                                  new UserId(
+                                                                                                      728941546990530560L))));
     }
 
 }

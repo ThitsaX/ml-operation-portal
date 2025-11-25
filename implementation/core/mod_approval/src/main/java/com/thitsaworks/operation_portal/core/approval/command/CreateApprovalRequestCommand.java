@@ -12,7 +12,8 @@ public interface CreateApprovalRequestCommand {
     record Input(String requestedAction,
                  String participant,
                  String participantCurrency,
-                 String participantCurrencyId,
+                 String participantSettlementCurrencyId,
+                 String participantPositionCurrencyId,
                  BigDecimal amount,
                  UserId requestedBy) { }
 

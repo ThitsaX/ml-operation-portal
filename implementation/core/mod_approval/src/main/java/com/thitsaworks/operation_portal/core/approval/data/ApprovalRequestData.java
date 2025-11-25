@@ -22,7 +22,9 @@ public class ApprovalRequestData {
 
     private String currency;
 
-    private String participantCurrencyId;
+    private String participantSettlementCurrencyId;
+
+    private String participantPositionCurrencyId;
 
     private BigDecimal amount;
 
@@ -42,7 +44,8 @@ public class ApprovalRequestData {
         this.fundInOutAction = request.getRequestedAction();
         this.participantName = request.getParticipantName();
         this.currency = request.getParticipantCurrency();
-        this.participantCurrencyId = request.getParticipantCurrencyId();
+        this.participantSettlementCurrencyId = request.getParticipantSettlementCurrencyId();
+        this.participantPositionCurrencyId = request.getParticipantPositionCurrencyId();
         this.amount = request.getAmount();
         this.requestedBy = request.getRequestedBy();
         this.respondedBy = request.getRespondedBy();

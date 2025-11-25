@@ -22,8 +22,9 @@ public class ParticipantErrors {
     public static final ErrorMessage GREETING_MESSAGE_ALREADY_REGISTERED = new ErrorMessage("GREETING_MESSAGE_ALREADY_REGISTERED", "The provided Greeting Message : [{0}] has already registered in the system.");
 
 
-    public static final ErrorMessage INSUFFICIENT_BALANCE = new ErrorMessage("INSUFFICIENT_BALANCE", "The withdraw amount : [{0}] is greater than Balance");
-    public static final ErrorMessage NDC_LIMIT_EXCEEDED = new ErrorMessage("NDC_LIMIT_EXCEEDED", "The amount should not be greater than the NDC.");
+    public static final ErrorMessage INSUFFICIENT_BALANCE = new ErrorMessage("INSUFFICIENT_BALANCE", "Amount is invalid. Transaction amount cannot exceed the available balance.");
+    public static final ErrorMessage NDC_LIMIT_EXCEEDED = new ErrorMessage("NDC_LIMIT_EXCEEDED", "Amount is invalid. Balance after this transaction cannot be lower than the NDC.");
+    public static final ErrorMessage BELOW_CURRENT_POSITION = new ErrorMessage("BELOW_CURRENT_POSITION", "Amount is invalid. Balance after this transaction cannot be lower than the Current Position.");
 
     public static final ErrorMessage USER_NOT_ACTIVE = new ErrorMessage("USER_NOT_ACTIVE", "The user is not active.");
     //@@formatter:on

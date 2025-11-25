@@ -42,8 +42,11 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
     @Column(name = "participant_currency")
     protected String participantCurrency;
 
-    @Column(name = "participant_currency_id")
-    protected String participantCurrencyId;
+    @Column(name = "participant_settlement_currency_id")
+    protected String participantSettlementCurrencyId;
+
+    @Column(name = "participant_position_currency_id")
+    protected String participantPositionCurrencyId;
 
     @Column(name = "amount")
     protected BigDecimal amount;
@@ -71,7 +74,8 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
     public ApprovalRequest(String requestedAction,
                            String participantName,
                            String participantCurrency,
-                           String participantCurrencyId,
+                           String participantSettlementCurrencyId,
+                           String participantPositionCurrencyId,
                            BigDecimal amount,
                            UserId requestedBy) {
 
@@ -80,7 +84,8 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
         this.requestedAction(requestedAction);
         this.participantName(participantName);
         this.participantCurrency(participantCurrency);
-        this.participantCurrencyId(participantCurrencyId);
+        this.participantSettlementCurrencyId(participantSettlementCurrencyId);
+        this.participantPositionCurrencyId(participantPositionCurrencyId);
         this.amount(amount);
         this.requestedBy(requestedBy);
         this.requestedDtm();
@@ -115,16 +120,26 @@ public class ApprovalRequest extends JpaEntity<ApprovalRequestId> {
 
         this.participantCurrency = participantCurrency;
     }
-    public void participantCurrencyId(String participantCurrencyId) {
 
-        if (participantCurrencyId == null || participantCurrencyId.isBlank()) {
+    public void participantSettlementCurrencyId(String participantSettlementCurrencyId) {
+
+        if (participantSettlementCurrencyId == null || participantSettlementCurrencyId.isBlank()) {
             throw new InputException(ApprovalErrors.INVALID_CURRENCY);
 
         }
 
-        this.participantCurrencyId = participantCurrencyId;
+        this.participantSettlementCurrencyId = participantSettlementCurrencyId;
     }
 
+    public void participantPositionCurrencyId(String participantPositionCurrencyId) {
+
+        if (participantPositionCurrencyId == null || participantPositionCurrencyId.isBlank()) {
+            throw new InputException(ApprovalErrors.INVALID_CURRENCY);
+
+        }
+
+        this.participantPositionCurrencyId = participantPositionCurrencyId;
+    }
 
     public void amount(BigDecimal amount) {
 

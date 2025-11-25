@@ -41,15 +41,13 @@ public class CreateApprovalRequestController {
                                                .getAuthentication()
                                                .getDetails();
 
-
-
-
         var output = this.createApprovalRequest.execute(new CreateApprovalRequest.Input(request.requestedAction(),
-                                                                                      request.participantName(),
-                                                                                      request.currency,
-                                                                                      request.currencyId(),
-                                                                                      request.amount(),
-                                                                                      userContext.userId()));
+                                                                                        request.participantName(),
+                                                                                        request.currency,
+                                                                                        request.settlementCurrencyId(),
+                                                                                        request.positionCurrencyId(),
+                                                                                        request.amount(),
+                                                                                        userContext.userId()));
 
         var response = new Response(output.approvalRequestId()
                                           .getEntityId()
@@ -65,10 +63,11 @@ public class CreateApprovalRequestController {
     public record Request(@NotNull @NotBlank @JsonProperty("requestedAction") String requestedAction,
                           @NotNull @NotBlank @JsonProperty("participantName") String participantName,
                           @NotNull @NotBlank @JsonProperty("currency") String currency,
-                          @NotNull @NotBlank @JsonProperty("currencyId") String currencyId,
-                          @JsonProperty("amount") BigDecimal amount) implements Serializable {}
+                          @NotNull @NotBlank @JsonProperty("settlementCurrencyId") String settlementCurrencyId,
+                          @NotNull @NotBlank @JsonProperty("positionCurrencyId") String positionCurrencyId,
+                          @JsonProperty("amount") BigDecimal amount) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("approvalRequestId") String approvalRequestId) implements Serializable {}
+    public record Response(@JsonProperty("approvalRequestId") String approvalRequestId) implements Serializable { }
 
 }

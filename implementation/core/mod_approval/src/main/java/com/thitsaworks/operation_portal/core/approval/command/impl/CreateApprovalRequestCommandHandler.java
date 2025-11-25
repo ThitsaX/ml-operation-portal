@@ -22,11 +22,12 @@ public class CreateApprovalRequestCommandHandler implements CreateApprovalReques
     public Output execute(Input input) {
 
         var approvalRequest = new ApprovalRequest(input.requestedAction(),
-                                           input.participant(),
-                                           input.participantCurrency(),
-                                           input.participantCurrencyId(),
-                                           input.amount(),
-                                           input.requestedBy());
+                                                  input.participant(),
+                                                  input.participantCurrency(),
+                                                  input.participantSettlementCurrencyId(),
+                                                  input.participantPositionCurrencyId(),
+                                                  input.amount(),
+                                                  input.requestedBy());
 
         this.approvalRequestRepository.save(approvalRequest);
 

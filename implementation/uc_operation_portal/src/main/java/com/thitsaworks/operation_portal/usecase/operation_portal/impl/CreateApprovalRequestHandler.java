@@ -53,7 +53,8 @@ public class CreateApprovalRequestHandler
             this.createApprovalRequestCommand.execute(new CreateApprovalRequestCommand.Input(input.requestedAction(),
                                                                                              input.participant(),
                                                                                              input.participantCurrency(),
-                                                                                             input.participantCurrencyId(),
+                                                                                             input.participantSettlementCurrencyId(),
+                                                                                             input.participantPositionCurrencyId(),
                                                                                              input.amount(),
                                                                                              input.requestedBy()));
 
