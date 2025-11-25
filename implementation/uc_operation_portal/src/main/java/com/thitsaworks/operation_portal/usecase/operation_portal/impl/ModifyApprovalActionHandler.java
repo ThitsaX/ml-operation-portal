@@ -219,7 +219,7 @@ public class ModifyApprovalActionHandler
                 BigDecimal withdrawalAmount = approvalRequestData.getAmount();
 
                 if (withdrawalAmount.compareTo(currentBalance) > 0) {
-                    throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE.format(withdrawalAmount));
+                    throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
                 }
 
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
@@ -402,8 +402,7 @@ public class ModifyApprovalActionHandler
         } else {
 
             if (approvalRequestData.getAmount()
-                                   .compareTo(balanceInfo.getParticipantBalanceData()
-                                                         .value()) > 0) {
+                                   .compareTo(updatedBalance) > 0) {
                 throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
             }
 
@@ -414,7 +413,8 @@ public class ModifyApprovalActionHandler
                         .compareTo(BigDecimal.ZERO) > 0) {
             if (calculatedNdcLimit
                     .compareTo(positionInfo.getParticipantBalanceData()
-                                           .value()) < 0) {
+                                           .value()
+                                           .abs()) < 0) {
                 throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
             }
         }
