@@ -409,11 +409,14 @@ public class ModifyApprovalActionHandler
 
             calculatedNdcLimit = approvalRequestData.getAmount();
         }
-
-        if (calculatedNdcLimit
-                .compareTo(positionInfo.getParticipantBalanceData()
-                                       .value()) < 0) {
-            throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
+        if (positionInfo.getParticipantBalanceData()
+                        .value()
+                        .compareTo(BigDecimal.ZERO) > 0) {
+            if (calculatedNdcLimit
+                    .compareTo(positionInfo.getParticipantBalanceData()
+                                           .value()) < 0) {
+                throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
+            }
         }
 
         var request = new PutUpdateParticipantLimit.Request(approvalRequestData.getCurrency(),
