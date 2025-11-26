@@ -235,12 +235,15 @@ public class ModifyApprovalActionHandler
                                                .value();
 
                     // If NDC is a fixed amount (ndcPercent is 0), check remaining balance against NDC
-                    //removed above logic by MOJ-950
                     BigDecimal remainingBalance = currentBalance.subtract(withdrawalAmount);
-                    if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
-                        throw new ParticipantException(ParticipantErrors.NDC_LIMIT_EXCEEDED);
+                    if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
+
+                        if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
+                            throw new ParticipantException(ParticipantErrors.NDC_LIMIT_EXCEEDED);
+                        }
                     }
                     if (participantPosition.compareTo(BigDecimal.ZERO) > 0) {
+
                         if (remainingBalance.compareTo(participantPosition.abs()) < 0) {
                             throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
                         }
