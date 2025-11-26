@@ -45,10 +45,10 @@ public class GetNetTransferAmountBySettlementIdHandler
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
             Detail detail = new Detail(windowInfo.getDfspName(),
-                                       windowInfo.getDebit(),
-                                       windowInfo.getCredit(),
                                        windowInfo.getParticipantLimit(),
                                        windowInfo.getParticipantBalance(),
+                                       windowInfo.getDebit(),
+                                       windowInfo.getCredit(),
                                        windowInfo.getCurrencyId(),
                                        windowInfo.getParticipantSettlementCurrencyId());
 
