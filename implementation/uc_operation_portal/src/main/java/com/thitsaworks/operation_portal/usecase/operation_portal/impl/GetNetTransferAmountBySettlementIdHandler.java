@@ -27,8 +27,7 @@ public class GetNetTransferAmountBySettlementIdHandler
                                                      ActionAuthorizationManager actionAuthorizationManager,
                                                      GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getNetTransferAmountBySettlementIdQuery = getNetTransferAmountBySettlementIdQuery;
 
@@ -39,18 +38,19 @@ public class GetNetTransferAmountBySettlementIdHandler
 
         GetNetTransferAmountBySettlementIdQuery.Output
             output =
-            this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
-                input.settlementId()));
+            this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(input.settlementId()));
 
         List<Detail> details = new ArrayList<>();
 
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
-            Detail detail = new Detail(
-                windowInfo.getDfspName(),
-                windowInfo.getDebit(),
-                windowInfo.getCredit(),
-                windowInfo.getCurrencyId());
+            Detail detail = new Detail(windowInfo.getDfspName(),
+                                       windowInfo.getDebit(),
+                                       windowInfo.getCredit(),
+                                       windowInfo.getParticipantLimit(),
+                                       windowInfo.getParticipantBalance(),
+                                       windowInfo.getCurrencyId(),
+                                       windowInfo.getParticipantSettlementCurrencyId());
 
             details.add(detail);
         }
@@ -58,33 +58,25 @@ public class GetNetTransferAmountBySettlementIdHandler
         String
             windowOpenedDate =
             output.getWindowInfoList()
-                  .isEmpty() ? null :
-                output.getWindowInfoList()
-                      .get(0)
-                      .getWindowOpenedDate();
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getWindowOpenedDate();
 
         String
             windowClosedDate =
             output.getWindowInfoList()
-                  .isEmpty() ? null :
-                output.getWindowInfoList()
-                      .get(0)
-                      .getWindowClosedDate();
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getWindowClosedDate();
 
         String
             settlementWindowIds =
             output.getWindowInfoList()
-                  .isEmpty() ? null :
-                output.getWindowInfoList()
-                      .get(0)
-                      .getSettlementWindowIds();
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getSettlementWindowIds();
 
-        return new Output(
-            input.settlementId(),
-            settlementWindowIds,
-            windowOpenedDate,
-            windowClosedDate,
-            details);
+        return new Output(input.settlementId(), settlementWindowIds, windowOpenedDate, windowClosedDate, details);
 
     }
 

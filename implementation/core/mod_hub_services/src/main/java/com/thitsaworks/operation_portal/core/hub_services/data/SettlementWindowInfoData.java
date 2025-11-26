@@ -18,6 +18,9 @@ public class SettlementWindowInfoData implements Serializable {
     private BigDecimal Credit;
     private String currencyId;
     private String windowOpenedDate;
+    private String participantSettlementCurrencyId;
+    private BigDecimal participantLimit;
+    private BigDecimal participantBalance;
     private String windowClosedDate;
     private String settlementWindowIds;  // Optional field, can be null
 }

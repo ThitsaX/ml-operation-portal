@@ -31,9 +31,10 @@ public class GetNetTransferAmountBySettlementIdController {
 
     @GetMapping(value = "/secured/getNetTransferAmountBySettlementId")
     public ResponseEntity<GetNetTransferAmountBySettlementIdController.Response> execute(@RequestParam
-                                                                                     @NotNull(message = "settlementId is required") int settlementId)
+                                                                                         @NotNull(message = "settlementId is required")
+                                                                                         int settlementId)
 
-    throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Net Transfer Amount By Settlement Id Request : [{}]", settlementId);
 
@@ -54,8 +55,12 @@ public class GetNetTransferAmountBySettlementIdController {
                                           .stream()
                                           .map(detail -> new Detail(
                                               detail.participantName(),
-                                              detail.debitAmount().abs(),
-                                              detail.creditAmount().abs(),
+                                              detail.participantLimit(),
+                                              detail.participantBalance(),
+                                              detail.debitAmount()
+                                                    .abs(),
+                                              detail.creditAmount()
+                                                    .abs(),
                                               detail.currency()
                                           ))
                                           .toList()
@@ -67,8 +72,6 @@ public class GetNetTransferAmountBySettlementIdController {
 
     }
 
-
-
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("settlementId") int settlementId,
                            @JsonProperty("settlementWindowIds") String settlementWindowIds,
@@ -78,8 +81,10 @@ public class GetNetTransferAmountBySettlementIdController {
     ) implements Serializable { }
 
     public record Detail(@JsonProperty("participantName") String participantName,
+                         @JsonProperty("settlementWindowIds") BigDecimal participantLimit,
+                         @JsonProperty("settlementWindowIds") BigDecimal participantBalance,
                          @JsonProperty("debitAmount") BigDecimal debitAmount,
                          @JsonProperty("creditAmount") BigDecimal creditAmount,
-                         @JsonProperty("currency") String currency) implements Serializable {}
+                         @JsonProperty("currency") String currency) implements Serializable { }
 
 }

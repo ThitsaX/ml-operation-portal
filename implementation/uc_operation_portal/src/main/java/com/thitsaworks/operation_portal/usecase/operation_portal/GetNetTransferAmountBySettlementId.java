@@ -29,9 +29,12 @@ public interface GetNetTransferAmountBySettlementId
     public record Detail(
 
         String participantName,
+        BigDecimal participantLimit,
+        BigDecimal participantBalance,
         BigDecimal debitAmount,
         BigDecimal creditAmount,
-        String currency
-    ) implements Serializable {}
+        String currency,
+        String participantSettlementCurrencyId
+    ) implements Serializable { }
 
 }
