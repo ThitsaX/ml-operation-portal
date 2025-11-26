@@ -81,8 +81,8 @@ public class GetNetTransferAmountBySettlementIdController {
     ) implements Serializable { }
 
     public record Detail(@JsonProperty("participantName") String participantName,
-                         @JsonProperty("settlementWindowIds") BigDecimal participantLimit,
-                         @JsonProperty("settlementWindowIds") BigDecimal participantBalance,
+                         @JsonProperty("participantLimit") BigDecimal participantLimit,
+                         @JsonProperty("participantBalance") BigDecimal participantBalance,
                          @JsonProperty("debitAmount") BigDecimal debitAmount,
                          @JsonProperty("creditAmount") BigDecimal creditAmount,
                          @JsonProperty("currency") String currency) implements Serializable { }
