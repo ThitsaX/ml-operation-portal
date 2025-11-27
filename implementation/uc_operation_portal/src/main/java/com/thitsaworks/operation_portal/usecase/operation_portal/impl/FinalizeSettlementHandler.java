@@ -98,19 +98,19 @@ public class FinalizeSettlementHandler
 
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
-            if (windowInfo.getCredit() != null && windowInfo.getCredit()
+            if (windowInfo.getCredit() != null && windowInfo.getCredit().abs()
                                                             .compareTo(windowInfo.getParticipantBalance()
-                                                                      ) > 0) {
+                                                                                 .abs()) > 0) {
 
                 throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
             }
 
             GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(
                 windowInfo.getDfspName(),
-                windowInfo.getDebit(),
-                windowInfo.getCredit(),
                 windowInfo.getParticipantLimit(),
                 windowInfo.getParticipantBalance(),
+                windowInfo.getDebit(),
+                windowInfo.getCredit(),
                 windowInfo.getCurrencyId(),
                 windowInfo.getParticipantSettlementCurrencyId());
 
