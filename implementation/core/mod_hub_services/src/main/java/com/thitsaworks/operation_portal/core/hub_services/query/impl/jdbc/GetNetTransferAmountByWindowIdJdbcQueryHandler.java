@@ -1,8 +1,9 @@
 package com.thitsaworks.operation_portal.core.hub_services.query.impl.jdbc;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowInfoData;
+import com.thitsaworks.operation_portal.core.hub_services.data.WindowInfoData;
 import com.thitsaworks.operation_portal.core.hub_services.data.mapper.SettlementWindowInfoDataMapper;
+import com.thitsaworks.operation_portal.core.hub_services.data.mapper.WindowInfoDataMapper;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
@@ -33,7 +34,7 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
     @Override
     public Output execute(Input input) throws HubServicesException {
 
-        List<SettlementWindowInfoData> results = null;
+        List<WindowInfoData> results = null;
 
         try {
             results = this.jdbcTemplate.query(
@@ -62,7 +63,7 @@ public class GetNetTransferAmountByWindowIdJdbcQueryHandler implements GetNetTra
                     "  tf.settlementWindowId = ?\n" +
                     "GROUP BY \n" +
                     "  p.name, pc.currencyId ,swso.createdDate, swsf.createdDate;",
-                new SettlementWindowInfoDataMapper(),
+                new WindowInfoDataMapper(),
                 input.getSettlementWindowId()
                                              );
         } catch (Exception e) {

@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
-import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowInfoData;
+import com.thitsaworks.operation_portal.core.hub_services.data.WindowInfoData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import lombok.Value;
 
@@ -18,7 +18,7 @@ public interface GetNetTransferAmountByWindowIdQuery {
     @Value
     class Output {
 
-        private List<SettlementWindowInfoData> windowInfoList;
+        private List<WindowInfoData> windowInfoList;
 
     }
 
