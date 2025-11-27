@@ -1,17 +1,31 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementParticipant;
-import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindow;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface FinalizeSettlement
-        extends UseCase<FinalizeSettlement.Input, FinalizeSettlement.Output> {
+    extends UseCase<FinalizeSettlement.Input, FinalizeSettlement.Output> {
 
-    public record Input(Integer settlementId){}
+    record Input(Integer settlementId) { }
 
-    public record Output(Boolean finalized){}
+    record Output(int settlementId,
+                  String settlementWindowIds,
+                  String windowOpenedDate,
+                  String windowClosedDate,
+                  List<Detail> details
+
+    ) implements Serializable { }
+
+    record Detail(String participantName,
+                  BigDecimal participantLimit,
+                  BigDecimal participantBalance,
+                  BigDecimal debitAmount,
+                  BigDecimal creditAmount,
+                  String currency,
+                  String participantSettlementCurrencyId
+    ) implements Serializable { }
 
 }

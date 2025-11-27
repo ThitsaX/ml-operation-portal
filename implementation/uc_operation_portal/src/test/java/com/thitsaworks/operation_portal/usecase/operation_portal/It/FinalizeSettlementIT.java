@@ -35,8 +35,6 @@ public class FinalizeSettlementIT {
         FinalizeSettlement.Output output =
                 this.finalizeSettlement.execute(new FinalizeSettlement.Input(34));
 
-        LOG.info("Finalized : [{}]", output.finalized());
-
     }
 
 }
