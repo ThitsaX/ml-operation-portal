@@ -29,6 +29,7 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class FinalizeSettlementHandler
             this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
                 input.settlementId()));
 
-        List<Detail> details = new ArrayList<>();
+        List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
 
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
@@ -105,13 +106,13 @@ public class FinalizeSettlementHandler
                 throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
             }
 
-            Detail detail = new Detail(windowInfo.getDfspName(),
-                                       windowInfo.getParticipantLimit(),
-                                       windowInfo.getParticipantBalance(),
-                                       windowInfo.getDebit(),
-                                       windowInfo.getCredit(),
-                                       windowInfo.getCurrencyId(),
-                                       windowInfo.getParticipantSettlementCurrencyId());
+            GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(windowInfo.getDfspName(),
+                                                                                                             windowInfo.getParticipantLimit(),
+                                                                                                             windowInfo.getParticipantBalance(),
+                                                                                                             windowInfo.getDebit(),
+                                                                                                             windowInfo.getCredit(),
+                                                                                                             windowInfo.getCurrencyId(),
+                                                                                                             windowInfo.getParticipantSettlementCurrencyId());
 
             details.add(detail);
         }
@@ -243,28 +244,8 @@ public class FinalizeSettlementHandler
 
         LOG.info("Successfully settled net amounts to participants for settlementId: [{}].", settlement.getId());
 
-        String
-            windowOpenedDate =
-            output.getWindowInfoList()
-                  .isEmpty() ? null : output.getWindowInfoList()
-                                            .get(0)
-                                            .getWindowOpenedDate();
 
-        String
-            windowClosedDate =
-            output.getWindowInfoList()
-                  .isEmpty() ? null : output.getWindowInfoList()
-                                            .get(0)
-                                            .getWindowClosedDate();
-
-        String
-            settlementWindowIds =
-            output.getWindowInfoList()
-                  .isEmpty() ? null : output.getWindowInfoList()
-                                            .get(0)
-                                            .getSettlementWindowIds();
-
-        return new Output(input.settlementId(), settlementWindowIds, windowOpenedDate, windowClosedDate, details);
+        return new Output(true);
     }
 
 }

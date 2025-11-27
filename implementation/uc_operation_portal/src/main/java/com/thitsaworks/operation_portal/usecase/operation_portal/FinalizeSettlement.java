@@ -11,21 +11,6 @@ public interface FinalizeSettlement
 
     record Input(Integer settlementId) { }
 
-    record Output(int settlementId,
-                  String settlementWindowIds,
-                  String windowOpenedDate,
-                  String windowClosedDate,
-                  List<Detail> details
-
-    ) implements Serializable { }
-
-    record Detail(String participantName,
-                  BigDecimal participantLimit,
-                  BigDecimal participantBalance,
-                  BigDecimal debitAmount,
-                  BigDecimal creditAmount,
-                  String currency,
-                  String participantSettlementCurrencyId
-    ) implements Serializable { }
+    record Output(Boolean finalized){}
 
 }
