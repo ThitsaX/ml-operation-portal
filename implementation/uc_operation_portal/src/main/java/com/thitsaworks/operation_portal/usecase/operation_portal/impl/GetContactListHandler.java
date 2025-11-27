@@ -26,32 +26,18 @@ public class GetContactListHandler extends OperationPortalUseCase<GetContactList
 
     private final ContactQuery contactQuery;
 
-    private final UserPermissionManager userPermissionManager;
-
     public GetContactListHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
-                                 ContactQuery contactQuery,
-                                 UserPermissionManager userPermissionManager) {
+                                 ContactQuery contactQuery) {
 
         super(principalCache,
               actionAuthorizationManager);
 
         this.contactQuery = contactQuery;
-        this.userPermissionManager = userPermissionManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
-
-        var currentUser = this.userPermissionManager.getCurrentUser();
-
-        if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
-            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
-                                                                                           .getId()),
-                                                              input.participantId())) {
-                throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
-            }
-        }
 
         List<ContactData> contactDataList = this.contactQuery.getContacts(input.participantId());
 
