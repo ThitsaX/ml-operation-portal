@@ -29,7 +29,6 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEr
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,7 +93,7 @@ public class FinalizeSettlementHandler
             this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
                 input.settlementId()));
 
-        List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
+        List<Detail> details = new ArrayList<>();
 
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
@@ -106,14 +105,13 @@ public class FinalizeSettlementHandler
                 throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
             }
 
-            GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(
-                windowInfo.getDfspName(),
-                windowInfo.getParticipantLimit(),
-                windowInfo.getParticipantBalance(),
-                windowInfo.getDebit(),
-                windowInfo.getCredit(),
-                windowInfo.getCurrencyId(),
-                windowInfo.getParticipantSettlementCurrencyId());
+            Detail detail = new Detail(windowInfo.getDfspName(),
+                                       windowInfo.getParticipantLimit(),
+                                       windowInfo.getParticipantBalance(),
+                                       windowInfo.getDebit(),
+                                       windowInfo.getCredit(),
+                                       windowInfo.getCurrencyId(),
+                                       windowInfo.getParticipantSettlementCurrencyId());
 
             details.add(detail);
         }

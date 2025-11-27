@@ -15,7 +15,7 @@ public interface FinalizeSettlement
                   String settlementWindowIds,
                   String windowOpenedDate,
                   String windowClosedDate,
-                  List<GetNetTransferAmountBySettlementId.Detail> details
+                  List<Detail> details
 
     ) implements Serializable { }
 
