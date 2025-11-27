@@ -99,18 +99,19 @@ public class FinalizeSettlementHandler
         for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
             if (windowInfo.getCredit() != null && windowInfo.getCredit()
+                                                            .abs()
                                                             .compareTo(windowInfo.getParticipantBalance()
-                                                                      ) > 0) {
+                                                                                 .abs()) > 0) {
 
                 throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
             }
 
             GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(
                 windowInfo.getDfspName(),
-                windowInfo.getDebit(),
-                windowInfo.getCredit(),
                 windowInfo.getParticipantLimit(),
                 windowInfo.getParticipantBalance(),
+                windowInfo.getDebit(),
+                windowInfo.getCredit(),
                 windowInfo.getCurrencyId(),
                 windowInfo.getParticipantSettlementCurrencyId());
 
@@ -244,7 +245,28 @@ public class FinalizeSettlementHandler
 
         LOG.info("Successfully settled net amounts to participants for settlementId: [{}].", settlement.getId());
 
-        return new Output(true);
+        String
+            windowOpenedDate =
+            output.getWindowInfoList()
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getWindowOpenedDate();
+
+        String
+            windowClosedDate =
+            output.getWindowInfoList()
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getWindowClosedDate();
+
+        String
+            settlementWindowIds =
+            output.getWindowInfoList()
+                  .isEmpty() ? null : output.getWindowInfoList()
+                                            .get(0)
+                                            .getSettlementWindowIds();
+
+        return new Output(input.settlementId(), settlementWindowIds, windowOpenedDate, windowClosedDate, details);
     }
 
 }

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,18 +31,34 @@ public class FinalizeSettlementController {
 
     @PostMapping(value = "/secured/finalizeSettlement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Finalize Settlement Request : [{}]", request);
 
         UserContext userContext =
-                (UserContext) SecurityContextHolder.getContext()
-                                                   .getAuthentication()
-                                                   .getDetails();
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
 
-        var output = this.finalizeSettlement.execute(new FinalizeSettlement.Input(request.settlementId));
+        var output = this.finalizeSettlement.execute(new FinalizeSettlement.Input(request.settlementId()));
 
-        var response = new Response(output.finalized());
+        var response = new FinalizeSettlementController.Response(output.settlementId(),
+                                                                 output.settlementWindowIds(),
+                                                                 output.windowOpenedDate(),
+                                                                 output.windowClosedDate(),
+                                                                 output.details()
+                                                                       .stream()
+                                                                       .map(detail -> new Detail(
+                                                                           detail.participantName(),
+                                                                           detail.participantLimit(),
+                                                                           detail.participantBalance(),
+                                                                           detail.debitAmount()
+                                                                                 .abs(),
+                                                                           detail.creditAmount()
+                                                                                 .abs(),
+                                                                           detail.currency()
+                                                                       ))
+                                                                       .toList());
 
         LOG.info("Finalize Settlement Response : [{}]", response);
 
@@ -49,13 +67,22 @@ public class FinalizeSettlementController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(
-            @JsonProperty("settlementId") Integer settlementId
-    ) implements Serializable {}
+    public record Request(@JsonProperty("settlementId") Integer settlementId
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(
-            @JsonProperty("finalized") Boolean finalized
-    ) implements Serializable {}
+    public record Response(@JsonProperty("settlementId") int settlementId,
+                           @JsonProperty("settlementWindowIds") String settlementWindowIds,
+                           @JsonProperty("windowOpenedDate") String windowOpenedDate,
+                           @JsonProperty("windowClosedDate") String windowClosedDate,
+                           @JsonProperty("details") List<Detail> details
+    ) implements Serializable { }
+
+    public record Detail(@JsonProperty("participantName") String participantName,
+                         @JsonProperty("participantLimit") BigDecimal participantLimit,
+                         @JsonProperty("participantBalance") BigDecimal participantBalance,
+                         @JsonProperty("debitAmount") BigDecimal debitAmount,
+                         @JsonProperty("creditAmount") BigDecimal creditAmount,
+                         @JsonProperty("currency") String currency) implements Serializable { }
 
 }
