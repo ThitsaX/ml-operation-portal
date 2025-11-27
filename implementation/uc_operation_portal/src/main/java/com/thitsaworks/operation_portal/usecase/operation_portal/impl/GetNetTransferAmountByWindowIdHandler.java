@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowInfoData;
+import com.thitsaworks.operation_portal.core.hub_services.data.WindowInfoData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -44,7 +45,7 @@ public class GetNetTransferAmountByWindowIdHandler
 
         List<GetNetTransferAmountByWindowId.Detail> details = new ArrayList<>();
 
-        for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
+        for (WindowInfoData windowInfo : output.getWindowInfoList()) {
 
             GetNetTransferAmountByWindowId.Detail detail = new GetNetTransferAmountByWindowId.Detail(
                 windowInfo.getDfspName(),
