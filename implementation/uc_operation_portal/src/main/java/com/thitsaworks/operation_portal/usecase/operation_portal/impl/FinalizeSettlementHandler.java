@@ -101,7 +101,8 @@ public class FinalizeSettlementHandler
             if (windowInfo.getCredit() != null && windowInfo.getCredit()
                                                             .compareTo(windowInfo.getParticipantBalance()
                                                                       ) > 0) {
-                throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
+
+                throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
             }
 
             GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(
