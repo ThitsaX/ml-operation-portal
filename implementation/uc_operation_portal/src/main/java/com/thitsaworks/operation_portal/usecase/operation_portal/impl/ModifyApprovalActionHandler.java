@@ -34,6 +34,7 @@ import com.thitsaworks.operation_portal.core.participant.command.ModifyParticipa
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
+import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyApprovalAction;
@@ -270,8 +271,9 @@ public class ModifyApprovalActionHandler
 
             BigDecimal
                 ndcPercent =
-                ndcData.get()
-                       .getNdcPercent();
+                ndcData.map(ParticipantNDC::getNdcPercent)
+                       .orElse(BigDecimal.ZERO);
+
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
             if (toRecalculateNDC) {
@@ -325,8 +327,8 @@ public class ModifyApprovalActionHandler
                                                    .equalsIgnoreCase("DEPOSIT")) {
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
-            ndcPercent = ndcData.get()
-                                .getNdcPercent()
+            ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
+                                .orElse(BigDecimal.ZERO)
                                 .setScale(2, RoundingMode.DOWN);
         }
 
