@@ -200,6 +200,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
             return (DomainException) exception;
         }
 
+        LOGGER.info("Runtime Exception: [{}]", exception.getMessage());
+
         throw new RuntimeException(exception);
     }
 

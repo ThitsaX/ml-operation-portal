@@ -224,11 +224,11 @@ public class ModifyApprovalActionHandler
                 }
 
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
-                if (ndcData.isPresent()) {
-                    BigDecimal
-                        ndcPercent =
-                        ndcData.get()
-                               .getNdcPercent();
+
+                BigDecimal
+                        ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
+                                            .orElse(BigDecimal.ZERO)
+                                            .setScale(2, RoundingMode.DOWN);
 
                     BigDecimal
                         participantPosition =
@@ -249,7 +249,6 @@ public class ModifyApprovalActionHandler
                             throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
                         }
                     }
-                }
             }
 
             String

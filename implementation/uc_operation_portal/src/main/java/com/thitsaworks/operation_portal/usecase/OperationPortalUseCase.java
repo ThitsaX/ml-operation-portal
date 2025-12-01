@@ -104,6 +104,8 @@ public abstract class OperationPortalUseCase<I, O> implements UseCase<I, O> {
             return (DomainException) exception;
         }
 
+        LOGGER.info("Runtime Exception: [{}]", exception.getMessage());
+
         throw new RuntimeException(exception);
     }
 
