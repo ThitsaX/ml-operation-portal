@@ -133,7 +133,7 @@ public class FinalizeSettlementHandler
                                       .equals(SettlementState.SETTLED.toString())) {
 
             switch (settlementState) {
-             
+
                 case PS_TRANSFERS_RESERVED -> settlementState = SettlementState.PS_TRANSFERS_COMMITTED;
                 case PS_TRANSFERS_COMMITTED -> settlementState = SettlementState.SETTLED;
             }

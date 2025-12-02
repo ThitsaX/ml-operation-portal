@@ -70,57 +70,39 @@ public class CreateSettlementHandler
                                                                                        input.reason(),
                                                                                        input.settlementWindowIdList()));
 
-        GetNetTransferAmountBySettlementIdQuery.Output
-            output =
-            this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
-                response.id()));
+        Settlement settlement = this.settlementHubClient.getSettlement(response.id());
 
-        List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
+        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
 
-        for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
+        List<SettlementParticipant> settlementParticipants = request.participants();
 
-            if (windowInfo.getCredit() != null && windowInfo.getCredit()
-                                                            .abs()
-                                                            .compareTo(windowInfo.getParticipantBalance()
-                                                                                 .abs()) > 0) {
+        SettlementState settlementState = SettlementState.valueOf(settlement.getState());
 
-                throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
+        while (!settlementParticipants.getFirst()
+                                      .getAccounts()
+                                      .getFirst()
+                                      .getState()
+                                      .equals(SettlementState.PS_TRANSFERS_RESERVED.toString())) {
+
+            switch (settlementState) {
+                case PENDING_SETTLEMENT -> settlementState = SettlementState.PS_TRANSFERS_RECORDED;
+                case PS_TRANSFERS_RECORDED -> settlementState = SettlementState.PS_TRANSFERS_RESERVED;
             }
 
-            Settlement settlement = this.settlementHubClient.getSettlement(response.id());
-
-            PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
-
-            List<SettlementParticipant> settlementParticipants = request.participants();
-
-            SettlementState settlementState = SettlementState.valueOf(settlement.getState());
-
-            while (!settlementParticipants.getFirst()
-                                          .getAccounts()
-                                          .getFirst()
-                                          .getState()
-                                          .equals(SettlementState.PS_TRANSFERS_RESERVED.toString())) {
-
-                switch (settlementState) {
-                    case PENDING_SETTLEMENT -> settlementState = SettlementState.PS_TRANSFERS_RECORDED;
-                    case PS_TRANSFERS_RECORDED -> settlementState = SettlementState.PS_TRANSFERS_RESERVED;
+            for (SettlementParticipant participant : settlementParticipants) {
+                for (SettlementAccount account : participant.getAccounts()) {
+                    account.setState(settlementState.toString());
                 }
-
-                for (SettlementParticipant participant : settlementParticipants) {
-                    for (SettlementAccount account : participant.getAccounts()) {
-                        account.setState(settlementState.toString());
-                    }
-                }
-
-                PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
-                    settlement.getId(),
-                    new PutUpdateSettlement.Request(settlementParticipants));
-
-                settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
-
             }
+
+            PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
+                settlement.getId(),
+                new PutUpdateSettlement.Request(settlementParticipants));
+
+            settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
 
         }
+
         return new Output(response.id(),
                           response.settlementModel(),
                           response.state(),
