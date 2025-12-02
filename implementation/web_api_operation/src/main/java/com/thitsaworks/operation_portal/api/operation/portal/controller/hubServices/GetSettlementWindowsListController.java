@@ -51,7 +51,7 @@ public class GetSettlementWindowsListController {
             participantId);
 
         if (state != null && state.equalsIgnoreCase("PENDING")) {
-            state = String.valueOf(SettlementWindowState.PENDING_SETTLEMENT);
+            state ="PENDING_SETTLEMENT";
         }
 
         var output = this.getSettlementWindowsList.execute(
@@ -69,12 +69,16 @@ public class GetSettlementWindowsListController {
             List<Response.Content> contentList = new ArrayList<>();
 
             for (var content : settlementWindow.content()) {
+                String contentState = content.getState();
+                if ("PENDING_SETTLEMENT".equalsIgnoreCase(contentState)) {
+                    contentState = String.valueOf(SettlementWindowState.PENDING);
+                }
                 contentList.add(new Response.Content(content.getId(),
-                                                     content.getState(),
-                                                     content.getLedgerAccountType(),
-                                                     content.getCurrencyId(),
-                                                     content.getCreatedDate(),
-                                                     content.getChangedDate()));
+                                                 contentState,
+                                                 content.getLedgerAccountType(),
+                                                 content.getCurrencyId(),
+                                                 content.getCreatedDate(),
+                                                 content.getChangedDate()));
             }
 
             settlementWindowList.add(new Response.SettlementWindow(settlementWindow.settlementWindowId(),
