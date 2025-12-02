@@ -51,7 +51,7 @@ public class GetSettlementWindowsListController {
             participantId);
 
         if (state != null && state.equalsIgnoreCase("PENDING")) {
-            state ="PENDING_SETTLEMENT";
+            state = "PENDING_SETTLEMENT";
         }
 
         var output = this.getSettlementWindowsList.execute(
@@ -66,23 +66,29 @@ public class GetSettlementWindowsListController {
 
         for (var settlementWindow : output.settlementWindows()) {
 
+            String settlementWindowState = settlementWindow.state();
+            if ("PENDING_SETTLEMENT".equalsIgnoreCase(settlementWindow.state())) {
+                settlementWindowState = String.valueOf(SettlementWindowState.PENDING);
+            }
             List<Response.Content> contentList = new ArrayList<>();
 
             for (var content : settlementWindow.content()) {
                 String contentState = content.getState();
+
                 if ("PENDING_SETTLEMENT".equalsIgnoreCase(contentState)) {
                     contentState = String.valueOf(SettlementWindowState.PENDING);
                 }
+
                 contentList.add(new Response.Content(content.getId(),
-                                                 contentState,
-                                                 content.getLedgerAccountType(),
-                                                 content.getCurrencyId(),
-                                                 content.getCreatedDate(),
-                                                 content.getChangedDate()));
+                                                     contentState,
+                                                     content.getLedgerAccountType(),
+                                                     content.getCurrencyId(),
+                                                     content.getCreatedDate(),
+                                                     content.getChangedDate()));
             }
 
             settlementWindowList.add(new Response.SettlementWindow(settlementWindow.settlementWindowId(),
-                                                                   settlementWindow.state(),
+                                                                   settlementWindowState,
                                                                    settlementWindow.reason(),
                                                                    settlementWindow.createdDate(),
                                                                    settlementWindow.changedDate(),
