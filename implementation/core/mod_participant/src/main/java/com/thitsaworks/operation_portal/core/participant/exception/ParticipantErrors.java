@@ -23,9 +23,13 @@ public class ParticipantErrors {
 
 
     public static final ErrorMessage INSUFFICIENT_BALANCE = new ErrorMessage("INSUFFICIENT_BALANCE", "Amount is invalid. Transaction amount cannot exceed the available balance.");
-    public static final ErrorMessage NDC_LIMIT_EXCEEDED = new ErrorMessage("NDC_LIMIT_EXCEEDED", "Amount is invalid. Balance after this transaction cannot be lower than the NDC.");
-    public static final ErrorMessage BELOW_CURRENT_POSITION = new ErrorMessage("BELOW_CURRENT_POSITION", "Amount is invalid. Balance after this transaction cannot be lower than the Current Position.");
+    public static final ErrorMessage BALANCE_BELOW_NDC = new ErrorMessage("BALANCE_BELOW_NDC", "Amount is invalid. Balance after this transaction cannot be lower than the NDC.");
+    public static final ErrorMessage BALANCE_BELOW_CURRENT_POSITION = new ErrorMessage("BALANCE_BELOW_CURRENT_POSITION", "Amount is invalid. Balance after this transaction cannot be lower than the Current Position.");
     public static final ErrorMessage ORG_INSUFFICIENT_BALANCE = new ErrorMessage("ORG_INSUFFICIENT_BALANCE", "The {0} organization does not have sufficient balance to perform this action.");
+    public static final ErrorMessage NDC_BELOW_CURRENT_POSITION = new ErrorMessage("NDC_BELOW_CURRENT_POSITION", "Amount is invalid. This transaction amount results in NDC lower than the Current Position.");
+
+    public static final ErrorMessage NDC_BALANCE_EXCEEDED = new ErrorMessage("NDC_BALANCE_EXCEEDED", "NDC value cannot exceed the participant’s Balance.");
+    public static final ErrorMessage NDC_LOWER_THAN_CURRENT_POSITION = new ErrorMessage("NDC_LOWER_THAN_CURRENT_POSITION", "NDC value cannot be lower than the Current Position.");
 
     public static final ErrorMessage USER_NOT_ACTIVE = new ErrorMessage("USER_NOT_ACTIVE", "The user is not active.");
     //@@formatter:on
