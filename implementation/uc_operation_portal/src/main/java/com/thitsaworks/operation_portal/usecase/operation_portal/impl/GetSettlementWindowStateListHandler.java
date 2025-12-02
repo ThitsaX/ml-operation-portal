@@ -16,8 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetSettlementWindowStateListHandler extends OperationPortalUseCase<GetSettlementWindowStateList.Input, GetSettlementWindowStateList.Output>
-        implements GetSettlementWindowStateList {
+public class GetSettlementWindowStateListHandler
+    extends OperationPortalUseCase<GetSettlementWindowStateList.Input, GetSettlementWindowStateList.Output>
+    implements GetSettlementWindowStateList {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementWindowStateListHandler.class);
 
@@ -36,12 +37,18 @@ public class GetSettlementWindowStateListHandler extends OperationPortalUseCase<
 
         var output = this.settlementWindowStateQuery.execute(new GetSettlementWindowStateQuery.Input());
 
-        List<Output.SettlementWindowStateData> settlementWindowStates= new ArrayList<>();
+        List<Output.SettlementWindowStateData> settlementWindowStates = new ArrayList<>();
 
-        for (SettlementWindowStateData data : output.settlementWindowStates()){
-             settlementWindowStates.add(new Output.SettlementWindowStateData(data.settlementWindowStateId(), data.enumeration()));
+        for (SettlementWindowStateData data : output.settlementWindowStates()) {
+            String state = data.enumeration();
+            if (!"FAILED".equalsIgnoreCase(state)) {
+                if ("PENDING_SETTLEMENT".equalsIgnoreCase(state)) {
+                    state = "PENDING";
+                }
+                settlementWindowStates.add(new Output.SettlementWindowStateData(data.settlementWindowStateId(), state));
+            }
         }
-        return  new Output(settlementWindowStates);
+        return new Output(settlementWindowStates);
     }
 
 }

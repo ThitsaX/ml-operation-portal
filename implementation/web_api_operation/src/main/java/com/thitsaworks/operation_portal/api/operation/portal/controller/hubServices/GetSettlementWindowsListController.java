@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowState;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -48,6 +49,10 @@ public class GetSettlementWindowsListController {
             currency,
             state,
             participantId);
+        if(state.equalsIgnoreCase("PENDING"))
+        {
+            state= String.valueOf(SettlementWindowState.PENDING_SETTLEMENT);
+        }
 
         var output = this.getSettlementWindowsList.execute(
             new GetSettlementWindowsList.Input(fromDate,
