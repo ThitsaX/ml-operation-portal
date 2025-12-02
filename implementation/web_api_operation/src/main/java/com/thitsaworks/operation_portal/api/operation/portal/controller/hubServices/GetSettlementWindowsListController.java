@@ -49,9 +49,9 @@ public class GetSettlementWindowsListController {
             currency,
             state,
             participantId);
-        if(state.equalsIgnoreCase("PENDING"))
-        {
-            state= String.valueOf(SettlementWindowState.PENDING_SETTLEMENT);
+
+        if (state != null && state.equalsIgnoreCase("PENDING")) {
+            state = String.valueOf(SettlementWindowState.PENDING_SETTLEMENT);
         }
 
         var output = this.getSettlementWindowsList.execute(
@@ -107,12 +107,12 @@ public class GetSettlementWindowsListController {
         }
 
         public record Content(
-                @JsonProperty("contentId") Integer contentId,
-                @JsonProperty("state") String state,
-                @JsonProperty("ledgerAccountType") String ledgerAccountType,
-                @JsonProperty("currencyId") String currencyId,
-                @JsonProperty("createdDate") String createdDate,
-                @JsonProperty("changedDate") String changedDate
+            @JsonProperty("contentId") Integer contentId,
+            @JsonProperty("state") String state,
+            @JsonProperty("ledgerAccountType") String ledgerAccountType,
+            @JsonProperty("currencyId") String currencyId,
+            @JsonProperty("createdDate") String createdDate,
+            @JsonProperty("changedDate") String changedDate
         ) implements Serializable {
 
         }
