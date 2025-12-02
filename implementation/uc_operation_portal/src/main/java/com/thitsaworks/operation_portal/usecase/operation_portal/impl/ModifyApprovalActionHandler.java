@@ -226,35 +226,33 @@ public class ModifyApprovalActionHandler
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
 
                 BigDecimal
-                        ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
-                                            .orElse(BigDecimal.ZERO)
-                                            .setScale(2, RoundingMode.DOWN);
+                    ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
+                                        .orElse(BigDecimal.ZERO)
+                                        .setScale(2, RoundingMode.DOWN);
 
-                    BigDecimal
-                        participantPosition =
-                        participantPositionInfo.getParticipantBalanceData()
-                                               .value();
+                BigDecimal
+                    participantPosition =
+                    participantPositionInfo.getParticipantBalanceData()
+                                           .value();
 
-                    // If NDC is a fixed amount (ndcPercent is 0), check remaining balance against NDC
-                    BigDecimal remainingBalance = currentBalance.subtract(withdrawalAmount);
-                    if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
+                // If NDC is a fixed amount (ndcPercent is 0), check remaining balance against NDC
+                BigDecimal remainingBalance = currentBalance.subtract(withdrawalAmount);
+                if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
 
-                        if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
-                            throw new ParticipantException(ParticipantErrors.NDC_LIMIT_EXCEEDED);
-                        }
+                    if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
+                        throw new ParticipantException(ParticipantErrors.BALANCE_BELOW_NDC);
                     }
-                    if (participantPosition.compareTo(BigDecimal.ZERO) > 0) {
+                }
+                if (participantPosition.compareTo(BigDecimal.ZERO) > 0) {
 
-                        if (remainingBalance.compareTo(participantPosition.abs()) < 0) {
-                            throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
-                        }
+                    if (remainingBalance.compareTo(participantPosition.abs()) < 0) {
+                        throw new ParticipantException(ParticipantErrors.BALANCE_BELOW_CURRENT_POSITION);
                     }
+                }
             }
 
-            String
-                reason =
-                actionType == PositionActionType.DEPOSIT ? "Admin portal funds in request" :
-                    "Admin portal funds out request";
+            String reason = actionType == PositionActionType.DEPOSIT ? "Admin portal funds in request" :
+                                "Admin portal funds out request";
 
             PostParticipantBalance.Request
                 request =
@@ -407,19 +405,24 @@ public class ModifyApprovalActionHandler
 
             if (approvalRequestData.getAmount()
                                    .compareTo(updatedBalance) > 0) {
-                throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
+                throw new ParticipantException(ParticipantErrors.NDC_BALANCE_EXCEEDED);
             }
 
             calculatedNdcLimit = approvalRequestData.getAmount();
         }
+
         if (positionInfo.getParticipantBalanceData()
                         .value()
                         .compareTo(BigDecimal.ZERO) > 0) {
-            if (calculatedNdcLimit
-                    .compareTo(positionInfo.getParticipantBalanceData()
-                                           .value()
-                                           .abs()) < 0) {
-                throw new ParticipantException(ParticipantErrors.BELOW_CURRENT_POSITION);
+
+            if (calculatedNdcLimit.compareTo(positionInfo.getParticipantBalanceData()
+                                                         .value()
+                                                         .abs()) < 0) {
+
+                throw actionType == PositionActionType.WITHDRAW
+                          ? new ParticipantException(ParticipantErrors.NDC_BELOW_CURRENT_POSITION)
+                          : new ParticipantException(ParticipantErrors.NDC_LOWER_THAN_CURRENT_POSITION);
+
             }
         }
 
