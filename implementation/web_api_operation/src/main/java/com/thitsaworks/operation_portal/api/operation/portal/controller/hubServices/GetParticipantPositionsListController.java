@@ -65,10 +65,12 @@ public class GetParticipantPositionsListController {
                                                                                                            .equals(
                                                                                                                BigDecimal.ZERO.setScale(
                                                                                                                    2,
-                                                                                                                   RoundingMode.HALF_UP))) ?
+                                                                                                                   RoundingMode.DOWN))) ?
                                                                                             financialData.ndcPercent() +
                                                                                                 "%" : "-"),
-                                                                                       financialData.ndc(),
+                                                                                       financialData.ndc()
+                                                                                                    .setScale(2,
+                                                                                                              RoundingMode.DOWN),
                                                                                        (financialData.ndcUsed() !=
                                                                                             null) ?
                                                                                            financialData.ndcUsed() :

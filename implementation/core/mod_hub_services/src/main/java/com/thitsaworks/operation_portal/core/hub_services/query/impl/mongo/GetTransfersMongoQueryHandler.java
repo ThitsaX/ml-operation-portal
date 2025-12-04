@@ -296,16 +296,16 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
     private static BigDecimal toBigDecimal(Object o) {
 
         if (o == null) {return null;}
-        if (o instanceof BigDecimal bd) {return bd.setScale(2, RoundingMode.HALF_UP);}
+        if (o instanceof BigDecimal bd) {return bd.setScale(2, RoundingMode.DOWN);}
         if (o instanceof Integer || o instanceof Long) {
-            return BigDecimal.valueOf(((Number) o).longValue()).setScale(2, RoundingMode.HALF_UP);
+            return BigDecimal.valueOf(((Number) o).longValue()).setScale(2, RoundingMode.DOWN);
         }
         if (o instanceof Number n) {
 
-            return BigDecimal.valueOf(n.doubleValue()).setScale(2, RoundingMode.HALF_UP);
+            return BigDecimal.valueOf(n.doubleValue()).setScale(2, RoundingMode.DOWN);
         }
         try {
-            return new BigDecimal(o.toString()).setScale(2, RoundingMode.HALF_UP);
+            return new BigDecimal(o.toString()).setScale(2, RoundingMode.DOWN);
         } catch (Exception e) {
             return null;
         }

@@ -41,7 +41,7 @@ public class GetParticipantPositionListHandler
 
     private static final String allDfsp = "All";
 
-    private static final BigDecimal roundingValue = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP);
+    private static final BigDecimal roundingValue = BigDecimal.ZERO.setScale(2, RoundingMode.DOWN);
 
     private final GetParticipantPositionsDataQuery getParticipantPositionsDataQuery;
 
@@ -114,7 +114,7 @@ public class GetParticipantPositionListHandler
 
             final BigDecimal ndcPercent = participantNDCQuery.get(dto.dfspId(), dto.currency())
                                                              .map(ParticipantNDC::getNdcPercent)
-                                                             .map(v -> v.setScale(2, RoundingMode.HALF_UP))
+                                                             .map(v -> v.setScale(2, RoundingMode.DOWN))
                                                              .orElse(roundingValue);
 
             final ParticipantData resolved = isDfspUser
