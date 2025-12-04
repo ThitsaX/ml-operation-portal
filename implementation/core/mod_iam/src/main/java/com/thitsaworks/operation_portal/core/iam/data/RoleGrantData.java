@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.model.RoleGrant;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public record RoleGrantData(GrantId grantId,
                             RoleId roleId,
@@ -19,5 +20,22 @@ public record RoleGrantData(GrantId grantId,
              roleGrant.getAction()
                       .getId());
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RoleGrantData that = (RoleGrantData) o;
+        return Objects.equals(grantId, that.grantId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(grantId);
+    }
+
 
 }

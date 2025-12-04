@@ -7,6 +7,7 @@ import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.core.iam.model.Principal;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public record PrincipalData(PrincipalId principalId,
                             AccessKey accessKey,
@@ -22,5 +23,22 @@ public record PrincipalData(PrincipalId principalId,
              principal.getRealmId(),
              principal.getPrincipalStatus());
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        PrincipalData that = (PrincipalData) o;
+        return Objects.equals(principalId, that.principalId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(principalId);
+    }
+
 
 }

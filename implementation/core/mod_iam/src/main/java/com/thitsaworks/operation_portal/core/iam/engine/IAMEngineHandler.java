@@ -204,7 +204,7 @@ public class IAMEngineHandler implements IAMEngine {
     @Override
     public void addPrincipal(PrincipalId principalId, PrincipalData principalData) {
 
-        this.principalsMap.putIfAbsent(principalId, principalData);
+        this.principalsMap.put(principalId, principalData);
 
     }
 
@@ -233,8 +233,8 @@ public class IAMEngineHandler implements IAMEngine {
     @Override
     public void addAction(ActionId actionId, ActionCode actionCode, ActionData actionData) {
 
-        this.actionCodesMap.putIfAbsent(actionCode, actionData);
-        this.actionIdsMap.putIfAbsent(actionId, actionData);
+        this.actionCodesMap.put(actionCode, actionData);
+        this.actionIdsMap.put(actionId, actionData);
     }
 
     @Override
