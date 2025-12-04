@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.BlockedActio
 import com.thitsaworks.operation_portal.core.iam.model.BlockedAction;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public record BlockedActionData(BlockedActionId blockedActionId,
                                 PrincipalId principalId,
@@ -19,5 +20,22 @@ public record BlockedActionData(BlockedActionId blockedActionId,
              blockedAction.getAction()
                           .getActionId());
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        BlockedActionData that = (BlockedActionData) o;
+        return Objects.equals(blockedActionId, that.blockedActionId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hashCode(blockedActionId);
+    }
+
 
 }
