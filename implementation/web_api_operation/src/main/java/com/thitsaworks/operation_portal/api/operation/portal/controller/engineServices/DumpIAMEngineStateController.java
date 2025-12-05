@@ -30,8 +30,6 @@ public class DumpIAMEngineStateController {
 
         var response = new Response(output.engineState());
 
-        LOG.info("Assign Role To User Response : [{}]", response);
-
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
