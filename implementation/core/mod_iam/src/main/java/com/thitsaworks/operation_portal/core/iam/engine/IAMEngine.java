@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.data.EngineData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 
@@ -17,6 +18,8 @@ public interface IAMEngine {
     void bootstrap();
 
     void print();
+
+    EngineData dumpEngineState();
 
     List<ActionData> getActions();
 
