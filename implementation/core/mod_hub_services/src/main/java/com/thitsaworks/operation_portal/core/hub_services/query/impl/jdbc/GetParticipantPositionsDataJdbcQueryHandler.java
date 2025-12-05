@@ -36,7 +36,7 @@ public class GetParticipantPositionsDataJdbcQueryHandler implements GetParticipa
                     ",IFNULL(TRUNCATE(SUM(IFNULL(pb.value,0)),2),0) AS balance \n" +
                     ",IFNULL(TRUNCATE(SUM(IFNULL(pp.value,0)),2),0) AS currentPosition, 0 AS ndcPercent \n" +
                     ",IFNULL(SUM(IFNULL(pl.value, 0)), 0) AS ndc \n" +
-                    ",ROUND(FLOOR(((SUM(IFNULL(pp.value,0)) / SUM(IFNULL(pl.value,0))) * 100) * 100) / 100, 2) AS ndcUsed\n" +
+                    ",ABS(ROUND(FLOOR(((SUM(IFNULL(-pp.value,0)) / SUM(IFNULL(pl.value,0))) * 100) * 100) / 100, 2)) AS ndcUsed\n" +
                     ",MIN(CASE WHEN pc.ledgerAccountTypeId = 2 THEN pb.participantCurrencyId END) AS participantSettlementCurrencyId\n" +
                     ",MIN(CASE WHEN pc.ledgerAccountTypeId = 1 THEN pp.participantCurrencyId END) AS participantPositionCurrencyId\n" +
                     ",MIN(CASE WHEN pc.ledgerAccountTypeId = 1 THEN pc.isActive END) AS isActive\n" +
