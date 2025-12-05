@@ -8,6 +8,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ChangePasswordCommand;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ChangeCurrentPassword;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -49,13 +51,17 @@ public class ChangeCurrentPasswordHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        if (input.oldPassword().getValue().equals(input.newPassword().getValue())) {
+            throw new ParticipantException(ParticipantErrors.PASSWORD_SAME_AS_CURRENT);
+        }
+
         ChangePasswordCommand.Output changePasswordOutput = this.changePasswordCommand.execute(
             new ChangePasswordCommand.Input(input.principalId(),
-                                            input.oldPassword().getValue(),
-                                            input.newPassword().getValue()));
+                                          input.oldPassword().getValue(),
+                                          input.newPassword().getValue()));
 
         return new Output(changePasswordOutput.accessKey(),
-                          changePasswordOutput.secretKey());
+                         changePasswordOutput.secretKey());
     }
 
 }

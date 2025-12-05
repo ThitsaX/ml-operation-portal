@@ -14,6 +14,7 @@ public class ParticipantErrors {
     public static final ErrorMessage ANNOUNCEMENT_NOT_FOUND = new ErrorMessage("ANNOUNCEMENT_NOT_FOUND", "System cannot find the announcement with provided ID : [{0}].");
     public static final ErrorMessage GREETING_MESSAGE_NOT_FOUND = new ErrorMessage("GREETING_MESSAGE_NOT_FOUND", "System cannot find the Greeting Message with provided ID : [{0}].");
 
+    public static final ErrorMessage PASSWORD_SAME_AS_CURRENT = new ErrorMessage("PASSWORD_SAME_AS_CURRENT", "New password must be different from current password.");
     public static final ErrorMessage EMAIL_ALREADY_REGISTERED = new ErrorMessage("EMAIL_ALREADY_REGISTERED", "The provided Email : [{0}] has already registered in the system.");
     public static final ErrorMessage PARTICIPANT_ALREADY_REGISTERED = new ErrorMessage("PARTICIPANT_ALREADY_REGISTERED", "The Participant has already registered in the system with provided DFSP Code : [{0}].");
     public static final ErrorMessage CONTACT_TYPE_ALREADY_REGISTERED = new ErrorMessage("CONTACT_TYPE_ALREADY_REGISTERED", "The provided Contact Type : [{0}] has already registered in the system.");
