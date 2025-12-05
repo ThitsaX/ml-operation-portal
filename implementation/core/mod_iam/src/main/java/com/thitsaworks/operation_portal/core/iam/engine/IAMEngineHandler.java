@@ -6,6 +6,7 @@ import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
+import com.thitsaworks.operation_portal.core.iam.data.EngineData;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.model.repository.ActionRepository;
@@ -116,6 +117,18 @@ public class IAMEngineHandler implements IAMEngine {
         LOG.info("userGrantedActionsMap : [{}]", this.principalGrantedActionsMap);
         LOG.info("userDeniedActionsMap : [{}]", this.principalDeniedActionsMap);
         LOG.info("actionCodesMap : [{}]", this.actionCodesMap);
+    }
+
+    @Override
+    public EngineData dumpEngineState() {
+
+        return new EngineData(Collections.unmodifiableMap(this.principalsMap),
+                              Collections.unmodifiableMap(this.principalRolesMap),
+                              Collections.unmodifiableMap(this.actionCodesMap),
+                              Collections.unmodifiableMap(this.actionIdsMap),
+                              Collections.unmodifiableMap(this.roleGrantedActionsMap),
+                              Collections.unmodifiableMap(this.principalGrantedActionsMap),
+                              Collections.unmodifiableMap(this.principalDeniedActionsMap));
     }
 
     @Override
@@ -345,7 +358,5 @@ public class IAMEngineHandler implements IAMEngine {
 
         return null;
     }
-
-
 
 }

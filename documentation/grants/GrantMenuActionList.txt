@@ -1,0 +1,126 @@
+{
+    "menuGrantList": [
+        {
+            "menuName": "Home",
+            "actionCodeList": [
+                "GetGreeting",
+                "GetAnnouncementInfoList"
+            ]
+        },
+        {
+            "menuName": "Participant Positions",
+            "actionCodeList": [
+                "GetParticipantPositionList",
+                "CreateApprovalRequest",
+                "SyncHubParticipantsToPortal"
+            ]
+        },
+        {
+            "menuName": "Participant",
+            "actionCodeList": [
+                "GetParticipantProfile",
+                "GetLiquidityProfileList",
+                "GetContactList",
+                "ModifyContact",
+                "ModifyLiquidityProfile",
+                "ModifyParticipantProfile",
+                "RemoveContact",
+                "RemoveLiquidityProfile"
+            ]
+        },
+        {
+            "menuName": "Users",
+            "actionCodeList": [
+                "CreateUser",
+                "GetUserListByParticipant",
+                "ModifyUser",
+                "ModifyUserStatus"
+            ]
+        },
+        {
+            "menuName": "Transfers",
+            "actionCodeList": [
+                "GetTransferList",
+                "GetTransferStateList",
+                "GetTransferDetail"
+            ]
+        },
+        {
+            "menuName": "Settlement Models",
+            "actionCodeList": [
+                "GetSettlementModelList"
+            ]
+        },
+        {
+            "menuName": "Settlement Windows",
+            "actionCodeList": [
+                "CloseSettlementWindows",
+                "CreateSettlement",
+                "GetSettlementWindowsList"
+            ]
+        },
+        {
+            "menuName": "Finalize Settlement",
+            "actionCodeList": [
+                "GetSettlementList",
+                "FinalizeSettlement"
+            ]
+        },
+        {
+            "menuName": "Settlement Bank Report",
+            "actionCodeList": [
+                "GenerateSettlementBankReport"
+            ]
+        },
+        {
+            "menuName": "Settlement Detail Report",
+            "actionCodeList": [
+                "GenerateDetailReport"
+            ]
+        },
+        {
+            "menuName": "Settlement Summary Report",
+            "actionCodeList": [
+                "GenerateSettlementReport"
+            ]
+        },
+        {
+            "menuName": "Settlement Statement Report",
+            "actionCodeList": [
+                "GenerateSettlementStatementReport"
+            ]
+        },
+        {
+            "menuName": "Settlement Audit Report",
+            "actionCodeList": [
+                "GenerateSettlementAuditReport"
+            ]
+        },
+        {
+            "menuName": "Audit Report",
+            "actionCodeList": [
+                "GenerateAuditReport"
+            ]
+        },
+        {
+            "menuName": "Pending Approvals",
+            "actionCodeList": [
+                "GetPendingApprovalList",
+                "ModifyApprovalAction"
+            ]
+        },
+        {
+            "menuName": "Audit",
+            "actionCodeList": [
+                "GetAuditListByParticipant"
+            ]
+        },
+        {
+            "menuName": "Support Center",
+            "actionCodeList": [
+                "GetParticipantList",
+                "GetContactList"
+            ]
+        }
+    ]
+}
