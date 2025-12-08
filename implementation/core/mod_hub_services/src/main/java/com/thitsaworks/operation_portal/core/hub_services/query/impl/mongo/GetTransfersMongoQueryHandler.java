@@ -80,11 +80,9 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
             final Instant start = Instant.parse(input.getFromDate());
 
-            final Instant endInclusive = Instant.parse(input.getToDate());
+            final Instant end = Instant.parse(input.getToDate());
 
-            final Instant endEx = endInclusive.plusNanos(1);
-
-            final Criteria baseDate = Criteria.where("_createdAt").gte(Date.from(start)).lt(Date.from(endEx));
+            final Criteria baseDate = Criteria.where("_createdAt").gte(Date.from(start)).lte(Date.from(end));
 
             final List<Criteria> filters = new ArrayList<>();
 
