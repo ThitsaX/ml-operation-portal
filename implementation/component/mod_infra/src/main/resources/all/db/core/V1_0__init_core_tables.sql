@@ -69,14 +69,14 @@ CREATE TABLE IF NOT EXISTS `tbl_contact` (
   `contact_id` bigint NOT NULL,
   `participant_id` bigint DEFAULT NULL,
   `name` varchar(200) DEFAULT NULL,
-  `position` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `position` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `contact_type` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `contact_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`contact_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- operation_portal.tbl_contact_history definition
@@ -88,12 +88,12 @@ CREATE TABLE IF NOT EXISTS `tbl_contact_history` (
   `name` varchar(200) DEFAULT NULL,
   `position` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `contact_type` varchar(50) DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`contact_history_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- operation_portal.tbl_extra_property definition
@@ -101,14 +101,14 @@ CREATE TABLE IF NOT EXISTS `tbl_contact_history` (
 CREATE TABLE IF NOT EXISTS `tbl_extra_property` (
   `extra_property_id` bigint NOT NULL,
   `participant_id` bigint DEFAULT NULL,
-  `property_key` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `property_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `label` varchar(100) DEFAULT NULL,
-  `property_value` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `property_value` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`extra_property_id`),
   UNIQUE KEY `participant_id_property_key` (`participant_id`,`property_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- operation_portal.tbl_greeting definition
@@ -129,18 +129,18 @@ CREATE TABLE IF NOT EXISTS `tbl_greeting` (
 
 CREATE TABLE IF NOT EXISTS `tbl_job_execution_logs` (
   `job_execution_log_id` bigint NOT NULL,
-  `job_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `job_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime DEFAULT NULL,
-  `execution_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `execution_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`job_execution_log_id`),
   KEY `idx_job_name` (`job_name`),
   KEY `idx_status` (`status`),
   KEY `idx_start_time` (`start_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- operation_portal.tbl_liquidity_profile definition
@@ -175,16 +175,16 @@ CREATE TABLE IF NOT EXISTS `tbl_menu` (
 
 CREATE TABLE IF NOT EXISTS `tbl_participant` (
   `participant_id` bigint NOT NULL,
-  `participant_name` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
-  `description` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `participant_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `address` varchar(500) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `logo_data_type` varchar(225) DEFAULT NULL,
   `logo` blob,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`participant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- operation_portal.tbl_participant_ndc definition
@@ -247,15 +247,15 @@ CREATE TABLE IF NOT EXISTS `tbl_role` (
 
 CREATE TABLE IF NOT EXISTS `tbl_scheduler_configs` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `cron_expression` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `cron_expression` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `is_active` tinyint(1) DEFAULT '1',
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
 -- operation_portal.tbl_user definition
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `tbl_user` (
   `updated_date` bigint DEFAULT NULL,
   `is_deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 -- operation_portal.tbl_blocked_action definition
