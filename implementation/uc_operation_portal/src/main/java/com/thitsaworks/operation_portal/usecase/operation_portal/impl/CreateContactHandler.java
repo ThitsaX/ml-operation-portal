@@ -27,8 +27,6 @@ public class CreateContactHandler
 
     private final CreateContactCommand createContactCommand;
 
-    private final PrincipalCache principalCache;
-
     private final UserPermissionManager userPermissionManager;
 
     public CreateContactHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -48,7 +46,6 @@ public class CreateContactHandler
               actionAuthorizationManager);
 
         this.createContactCommand = createContactCommand;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
     }
 
