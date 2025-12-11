@@ -41,6 +41,7 @@ import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class FinalizeSettlementHandler
@@ -57,7 +58,7 @@ public class FinalizeSettlementHandler
 
     private final GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery;
 
-    private final GetParticipantBalanceByCurrencyIdQuery getParticipantValueByCurrencyIdQuery;
+    private final AtomicBoolean isSettlementFinalized = new AtomicBoolean(false);
 
     @Autowired
     public FinalizeSettlementHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -69,8 +70,8 @@ public class FinalizeSettlementHandler
                                      SettlementHubClient settlementHubClient,
                                      ParticipantHubClient participantHubClient,
                                      HubParticipantQuery hubParticipantQuery,
-                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery,
-                                     GetParticipantBalanceByCurrencyIdQuery getParticipantValueByCurrencyIdQuery) {
+                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery
+                                    ) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -83,176 +84,191 @@ public class FinalizeSettlementHandler
         this.participantHubClient = participantHubClient;
         this.hubParticipantQuery = hubParticipantQuery;
         this.getNetTransferAmountBySettlementIdQuery = getNetTransferAmountBySettlementIdQuery;
-        this.getParticipantValueByCurrencyIdQuery = getParticipantValueByCurrencyIdQuery;
+
     }
 
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
-        GetNetTransferAmountBySettlementIdQuery.Output
-            output =
-            this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
-                input.settlementId()));
+        try {
 
-        List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
+            {
+                GetNetTransferAmountBySettlementIdQuery.Output
+                    output =
+                    this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
+                        input.settlementId()));
 
-        for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
+                List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
 
-            if (windowInfo.getCredit() != null && windowInfo.getCredit()
-                                                            .abs()
-                                                            .compareTo(windowInfo.getParticipantBalance()
-                                                                                 .abs()) > 0) {
+                for (SettlementWindowInfoData windowInfo : output.getWindowInfoList()) {
 
-                throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
+                    if (windowInfo.getCredit() != null && windowInfo.getCredit()
+                                                                    .abs()
+                                                                    .compareTo(windowInfo.getParticipantBalance()
+                                                                                         .abs()) > 0) {
+
+                        throw new ParticipantException(ParticipantErrors.ORG_INSUFFICIENT_BALANCE.format(windowInfo.getDfspName()));
+                    }
+
+                    GetNetTransferAmountBySettlementId.Detail detail = new GetNetTransferAmountBySettlementId.Detail(
+                        windowInfo.getDfspName(),
+                        windowInfo.getParticipantLimit(),
+                        windowInfo.getParticipantBalance(),
+                        windowInfo.getDebit(),
+                        windowInfo.getCredit(),
+                        windowInfo.getCurrencyId(),
+                        windowInfo.getParticipantSettlementCurrencyId());
+
+                    details.add(detail);
+                }
+
+                Settlement settlement = this.settlementHubClient.getSettlement(input.settlementId());
+
+                PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
+
+                List<SettlementParticipant> settlementParticipants = request.participants();
+
+                SettlementState settlementState = SettlementState.valueOf(settlement.getState());
+
+                if (this.isSettlementFinalized.get()) {
+                    return new Output(true);
+                }
+
+                this.isSettlementFinalized.set(true);
+
+                // call putUpdateSettlement until the settlementState is settled.
+                while (!settlementParticipants.getFirst()
+                                              .getAccounts()
+                                              .getFirst()
+                                              .getState()
+                                              .equals(SettlementState.SETTLED.toString())) {
+
+                    switch (settlementState) {
+
+                        case PS_TRANSFERS_RESERVED -> settlementState = SettlementState.PS_TRANSFERS_COMMITTED;
+                        case PS_TRANSFERS_COMMITTED -> settlementState = SettlementState.SETTLED;
+                    }
+
+                    for (SettlementParticipant participant : settlementParticipants) {
+                        for (SettlementAccount account : participant.getAccounts()) {
+                            account.setState(settlementState.toString());
+                        }
+                    }
+
+                    PutUpdateSettlement.Response
+                        putUpdateSettlementResponse =
+                        this.settlementHubClient.putUpdateSettlement(settlement.getId(),
+                                                                     new PutUpdateSettlement.Request(
+                                                                         settlementParticipants));
+
+                    settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
+
+                }
+
+                LOG.info(
+                    "Updating settlement state for settlementId: [{}] is finished. Now calling postParticipantBalance apis for related participant accounts.",
+                    settlement.getId());
+
+                if (SettlementState.SETTLED.equals(settlementState)) {
+
+                    // call postParticipantBalance for participant accounts
+                    List<HubParticipantDetailData>
+                        hubParticipantDetailDataList =
+                        this.hubParticipantQuery.getHubParticipantDetailDataList();
+
+                    ExtensionList extensionList = new ExtensionList();
+                    extensionList.addExtensionItem(new Extension().key("settlementId")
+                                                                  .value(settlement.getId()
+                                                                                   .toString()));
+
+                    for (SettlementParticipant participant : settlementParticipants) {
+
+                        for (SettlementAccount account : participant.getAccounts()) {
+
+                            String externalReference = "BOP settlement ID: " + settlement.getId();
+
+                            String
+                                reason =
+                                "Business Operations Portal settlement ID: " + settlement.getId() +
+                                    " finalization report processing";
+
+                            //  TODO: to confirm
+                            // if net amount is positive -> sender
+                            // if net amount is negative -> receiver
+                            BigDecimal amount = new BigDecimal(account.getNetSettlementAmount()
+                                                                      .getAmount());
+                            SettlementAction
+                                settlementAction =
+                                amount.signum() > 0 ? SettlementAction.recordFundsOutPrepareReserve :
+                                    SettlementAction.recordFundsIn;
+
+                            account.getNetSettlementAmount()
+                                   .setAmount(amount.abs()
+                                                    .toString());
+
+                            HubParticipantDetailData
+                                hubParticipantDetailData =
+                                hubParticipantDetailDataList.stream()
+                                                            .filter(participantDetailData -> participantDetailData.getParticipantId()
+                                                                                                                  .equals(
+                                                                                                                      participant.getId()))
+                                                            .findFirst()
+                                                            .orElse(null);
+
+                            if (hubParticipantDetailData == null) {
+                                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
+                                    "Participant with ID [" + participant.getId() + "] cannot find on Hub"));
+                            }
+
+                            Integer
+                                settleAccountId =
+                                hubParticipantDetailData.getAccounts()
+                                                        .stream()
+                                                        .filter(acc -> acc.getCurrencyId()
+                                                                          .equals(account.getNetSettlementAmount()
+                                                                                         .getCurrency()
+                                                                                         .toString()) &&
+                                                                           acc.getLedgerAccountTypeName()
+                                                                              .equals(SettlementLedgerAccountTypes.SETTLEMENT.toString()))
+                                                        .map(HubParticipantDetailData.AccountData::getParticipantCurrencyId)
+                                                        .findFirst()
+                                                        .orElse(null);
+
+                            if (settleAccountId == null) {
+                                throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
+                                    "Account with Currency [" + account.getNetSettlementAmount()
+                                                                       .getCurrency()
+                                                                       .toString() + "] and Ledger Account Type [" +
+                                        SettlementLedgerAccountTypes.SETTLEMENT.toString() + "] cannot find for [" +
+                                        hubParticipantDetailData.getParticipantName() + "] on Hub"));
+                            }
+
+                            PostParticipantBalance.Request
+                                postParticipantBalanceRequest =
+                                new PostParticipantBalance.Request(UUID.randomUUID()
+                                                                       .toString(),
+                                                                   externalReference,
+                                                                   settlementAction.toString(),
+                                                                   reason,
+                                                                   account.getNetSettlementAmount(),
+                                                                   extensionList);
+
+                            this.participantHubClient.postParticipantBalance(hubParticipantDetailData.getParticipantName(),
+                                                                             settleAccountId.toString(),
+                                                                             postParticipantBalanceRequest);
+                        }
+                    }
+
+                }
+
+                LOG.info("Successfully settled net amounts to participants for settlementId: [{}].",
+                         settlement.getId());
             }
 
-            GetNetTransferAmountBySettlementId.Detail
-                detail =
-                new GetNetTransferAmountBySettlementId.Detail(windowInfo.getDfspName(),
-                                                              windowInfo.getParticipantLimit(),
-                                                              windowInfo.getParticipantBalance(),
-                                                              windowInfo.getDebit(),
-                                                              windowInfo.getCredit(),
-                                                              windowInfo.getCurrencyId(),
-                                                              windowInfo.getParticipantSettlementCurrencyId());
-
-            details.add(detail);
-        }
-
-        Settlement settlement = this.settlementHubClient.getSettlement(input.settlementId());
-
-        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
-
-        List<SettlementParticipant> settlementParticipants = request.participants();
-
-        SettlementState settlementState = SettlementState.valueOf(settlement.getState());
-
-        if (SettlementState.SETTLED.equals(settlementState)) {
             return new Output(true);
+        } finally {
+            this.isSettlementFinalized.set(false);
         }
-
-        // call putUpdateSettlement until the settlementState is settled.
-        while (!settlementParticipants.getFirst()
-                                      .getAccounts()
-                                      .getFirst()
-                                      .getState()
-                                      .equals(SettlementState.SETTLED.toString())) {
-
-            switch (settlementState) {
-
-                case PS_TRANSFERS_RESERVED -> settlementState = SettlementState.PS_TRANSFERS_COMMITTED;
-                case PS_TRANSFERS_COMMITTED -> settlementState = SettlementState.SETTLED;
-            }
-
-            for (SettlementParticipant participant : settlementParticipants) {
-                for (SettlementAccount account : participant.getAccounts()) {
-                    account.setState(settlementState.toString());
-                }
-            }
-
-            PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
-                settlement.getId(),
-                new PutUpdateSettlement.Request(settlementParticipants));
-
-            settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
-
-        }
-
-        LOG.info(
-            "Updating settlement state for settlementId: [{}] is finished. Now calling postParticipantBalance apis for related participant accounts.",
-            settlement.getId());
-
-        if (SettlementState.SETTLED.equals(settlementState)) {
-
-            // call postParticipantBalance for participant accounts
-            List<HubParticipantDetailData> hubParticipantDetailDataList =
-                this.hubParticipantQuery.getHubParticipantDetailDataList();
-
-            ExtensionList extensionList = new ExtensionList();
-            extensionList.addExtensionItem(new Extension().key("settlementId")
-                                                          .value(settlement.getId()
-                                                                           .toString()));
-
-            for (SettlementParticipant participant : settlementParticipants) {
-
-                for (SettlementAccount account : participant.getAccounts()) {
-
-                    String externalReference = "BOP settlement ID: " + settlement.getId();
-
-                    String reason = "Business Operations Portal settlement ID: " + settlement.getId() +
-                                        " finalization report processing";
-
-                    //  TODO: to confirm
-                    // if net amount is positive -> sender
-                    // if net amount is negative -> receiver
-                    BigDecimal amount = new BigDecimal(account.getNetSettlementAmount()
-                                                              .getAmount());
-                    SettlementAction settlementAction =
-                        amount.signum() > 0 ?
-                            SettlementAction.recordFundsOutPrepareReserve :
-                            SettlementAction.recordFundsIn;
-
-                    account.getNetSettlementAmount()
-                           .setAmount(amount.abs()
-                                            .toString());
-
-                    HubParticipantDetailData hubParticipantDetailData =
-                        hubParticipantDetailDataList.stream()
-                                                    .filter(participantDetailData -> participantDetailData.getParticipantId()
-                                                                                                          .equals(
-                                                                                                              participant.getId()))
-                                                    .findFirst()
-                                                    .orElse(null);
-
-                    if (hubParticipantDetailData == null) {
-                        throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
-                            "Participant with ID [" + participant.getId() + "] cannot find on Hub"));
-                    }
-
-                    Integer
-                        settleAccountId =
-                        hubParticipantDetailData.getAccounts()
-                                                .stream()
-                                                .filter(acc -> acc.getCurrencyId()
-                                                                  .equals(account.getNetSettlementAmount()
-                                                                                 .getCurrency()
-                                                                                 .toString()) &&
-                                                                   acc.getLedgerAccountTypeName()
-                                                                      .equals(
-                                                                          SettlementLedgerAccountTypes.SETTLEMENT.toString()))
-                                                .map(HubParticipantDetailData.AccountData::getParticipantCurrencyId)
-                                                .findFirst()
-                                                .orElse(null);
-
-                    if (settleAccountId == null) {
-                        throw new HubServicesException(HubServicesErrors.HUB_PARTICIPANT_ERROR.defaultMessage(
-                            "Account with Currency [" + account.getNetSettlementAmount()
-                                                               .getCurrency()
-                                                               .toString() + "] and Ledger Account Type [" +
-                                SettlementLedgerAccountTypes.SETTLEMENT.toString() + "] cannot find for [" +
-                                hubParticipantDetailData.getParticipantName() + "] on Hub"));
-                    }
-
-                    PostParticipantBalance.Request postParticipantBalanceRequest =
-                        new PostParticipantBalance.Request(UUID.randomUUID()
-                                                               .toString(),
-                                                           externalReference,
-                                                           settlementAction.toString(),
-                                                           reason,
-                                                           account.getNetSettlementAmount(),
-                                                           extensionList);
-
-                    this.participantHubClient.postParticipantBalance(hubParticipantDetailData.getParticipantName(),
-                                                                     settleAccountId.toString(),
-                                                                     postParticipantBalanceRequest);
-                }
-            }
-
-        }
-
-        LOG.info("Successfully settled net amounts to participants for settlementId: [{}].", settlement.getId());
-
-        return new Output(true);
     }
 
 }
