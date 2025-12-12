@@ -28,8 +28,6 @@ public class GenerateSettlementBankReportController {
 
     private final GenerateSettlementBankReport generateSettlementBankReport;
 
-    private final GetUser getUser;
-
     @PostMapping("/secured/generateSettlementBankReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("currencyId") String currencyId,
@@ -51,11 +49,9 @@ public class GenerateSettlementBankReportController {
                                                .getAuthentication()
                                                .getDetails();
 
-        var getUser = this.getUser.execute(
-            new GetUser.Input(new UserId(userContext.userId().getId())));
-
         GenerateSettlementBankReport.Output output = this.generateSettlementBankReport.execute(
-                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, getUser.name()));
+                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
+                                                                                                                .getId()));
 
         var response = new Response(output.reportData());
 

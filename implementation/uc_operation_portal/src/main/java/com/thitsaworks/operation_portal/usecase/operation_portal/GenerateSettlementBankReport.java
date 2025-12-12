@@ -9,7 +9,7 @@ public interface GenerateSettlementBankReport extends
                  String currencyId,
                  String fileType,
                  String timezone,
-                 String user) {}
+                 Long userId) {}
 
     record Output(byte[] reportData) {}
 

@@ -83,8 +83,8 @@
 		<parameter name="settlementId" class="java.lang.String"/>
 		<parameter name="currencyId" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
-        <parameter name="report" class="java.lang.String"/>
-        <parameter name="user" class="java.lang.String"/>
+        <parameter name="reportFileType" class="java.lang.String"/>
+        <parameter name="userName" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
        ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
@@ -138,8 +138,8 @@
 	<parameter name="settlementId" class="java.lang.String"/>
 	<parameter name="currencyId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
-    <parameter name="report" class="java.lang.String"/>
-    <parameter name="user" class="java.lang.String"/>
+    <parameter name="reportFileType" class="java.lang.String"/>
+    <parameter name="userName" class="java.lang.String"/>
 	<queryString language="plsql">
 		<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
        ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
@@ -356,7 +356,7 @@
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<textField isStretchWithOverflow="true" pattern="d-MMM- yyyy">
+							<textField textAdjust="StretchHeight" pattern="d-MMM- yyyy">
 								<reportElement x="0" y="0" width="190" height="17" uuid="685b91fe-1171-4110-b294-883517c783b4"/>
 								<textElement textAlignment="Left">
 									<font fontName="Calibri" size="11"/>
@@ -386,7 +386,7 @@
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField isStretchWithOverflow="true">
+							<textField textAdjust="StretchHeight">
 								<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="500" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413"/>
 								<textElement textAlignment="Left">
 									<font fontName="Calibri" size="11"/>
@@ -504,8 +504,8 @@
 				<textElement textAlignment="Right">
 					<font fontName="Calibri" size="10" isItalic="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA["PDF".equalsIgnoreCase($P{report})
-        ? "Printed by: " + $P{user} + " on " +
+				<textFieldExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType})
+        ? "Printed by: " + $P{userName} + " on " +
           new java.text.SimpleDateFormat("M/dd/yyyy hh:mm a").format(new java.util.Date())
         : ""]]></textFieldExpression>
 			</textField>
