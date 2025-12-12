@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -51,6 +52,8 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
         params.put("settlementId", input.settlementId());
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timezoneOffset());
+        params.put("report", input.fileType());
+        params.put("user", input.user());
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(

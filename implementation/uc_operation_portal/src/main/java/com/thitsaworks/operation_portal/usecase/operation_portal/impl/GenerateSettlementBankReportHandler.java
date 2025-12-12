@@ -53,7 +53,8 @@ public class GenerateSettlementBankReportHandler
                 this.generateSettlementBankReportCommand.execute(new GenerateSettlementBankReportCommand.Input(input.settlementId(),
                                                                                                                input.currencyId(),
                                                                                                                input.fileType(),
-                                                                                                               input.timezone()));
+                                                                                                               input.timezone(),
+                                                                                                               input.user()));
 
         return new Output(output.settlementBankRptByte());
     }

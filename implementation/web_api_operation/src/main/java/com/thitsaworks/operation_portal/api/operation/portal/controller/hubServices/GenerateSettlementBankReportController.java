@@ -2,14 +2,18 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +27,8 @@ public class GenerateSettlementBankReportController {
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportController.class);
 
     private final GenerateSettlementBankReport generateSettlementBankReport;
+
+    private final GetUser getUser;
 
     @PostMapping("/secured/generateSettlementBankReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
@@ -40,8 +46,16 @@ public class GenerateSettlementBankReportController {
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
+        UserContext userContext =
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
+
+        var getUser = this.getUser.execute(
+            new GetUser.Input(new UserId(userContext.userId().getId())));
+
         GenerateSettlementBankReport.Output output = this.generateSettlementBankReport.execute(
-                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone));
+                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, getUser.name()));
 
         var response = new Response(output.reportData());
 
