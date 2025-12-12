@@ -50,7 +50,7 @@ public class Mobile implements Serializable {
 
         if (!Pattern.matches(FORMAT, value)) {
 
-            throw new InputException(new ErrorMessage("FORMAT_ERROR", "Invalid mobile format."));
+            throw new InputException(new ErrorMessage("FORMAT_ERROR", "Please include the country code (e.g., +1...)."));
         }
 
         this.value = value;

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -24,6 +25,13 @@ public class GetContactListController {
     private static final Logger LOG = LoggerFactory.getLogger(GetContactListController.class);
 
     private final GetContactList getContactList;
+
+    private final List<String> contactTypeOrder = List.of("TECHNICAL",
+                                                          "BUSINESS",
+                                                          "LEVEL1",
+                                                          "LEVEL2",
+                                                          "LEVEL3",
+                                                          "LEVEL4");
 
     @GetMapping(value = "/secured/getContactList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
@@ -37,6 +45,8 @@ public class GetContactListController {
 
         var response = new Response(output.contactInfoList()
                                           .stream()
+                                          .sorted(Comparator.comparing(
+                                              c -> this.contactTypeOrder.indexOf(c.contactType())))
                                           .map(contact -> new Response.ContactInfo(contact.contactId()
                                                                                           .getEntityId()
                                                                                           .toString(),
@@ -59,13 +69,12 @@ public class GetContactListController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(List<ContactInfo> contactInfoList) implements Serializable {
 
-        public record ContactInfo(
-            @JsonProperty("contactId") String contactId,
-            @JsonProperty("name") String name,
-            @JsonProperty("position") String position,
-            @JsonProperty("email") String email,
-            @JsonProperty("mobile") String mobile,
-            @JsonProperty("contactType") String contactType) implements Serializable {
+        public record ContactInfo(@JsonProperty("contactId") String contactId,
+                                  @JsonProperty("name") String name,
+                                  @JsonProperty("position") String position,
+                                  @JsonProperty("email") String email,
+                                  @JsonProperty("mobile") String mobile,
+                                  @JsonProperty("contactType") String contactType) implements Serializable {
         }
 
     }
