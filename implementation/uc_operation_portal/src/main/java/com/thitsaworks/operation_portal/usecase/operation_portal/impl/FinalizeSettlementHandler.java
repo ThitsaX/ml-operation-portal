@@ -130,6 +130,9 @@ public class FinalizeSettlementHandler
 
                 SettlementState settlementState = SettlementState.valueOf(settlement.getState());
 
+                if (SettlementState.SETTLED.equals(settlementState)) {
+                    return new Output(true);
+                }
                 if (this.isSettlementFinalized.get()) {
                     return new Output(true);
                 }
