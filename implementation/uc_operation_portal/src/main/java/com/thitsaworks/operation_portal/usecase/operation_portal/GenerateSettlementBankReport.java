@@ -8,7 +8,8 @@ public interface GenerateSettlementBankReport extends
     record Input(String settlementId,
                  String currencyId,
                  String fileType,
-                 String timezone) {}
+                 String timezone,
+                 Long userId) {}
 
     record Output(byte[] reportData) {}
 

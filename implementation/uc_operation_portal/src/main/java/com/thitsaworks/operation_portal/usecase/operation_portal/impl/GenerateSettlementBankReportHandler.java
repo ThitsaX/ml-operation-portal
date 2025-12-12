@@ -1,15 +1,18 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +29,8 @@ public class GenerateSettlementBankReportHandler
 
     private final ParticipantQuery participantQuery;
 
+    private final UserQuery userQuery;
+
     public GenerateSettlementBankReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                CreateOutputAuditCommand createOutputAuditCommand,
                                                CreateExceptionAuditCommand createExceptionAuditCommand,
@@ -33,7 +38,9 @@ public class GenerateSettlementBankReportHandler
                                                PrincipalCache principalCache,
                                                ParticipantQuery participantQuery,
                                                ActionAuthorizationManager actionAuthorizationManager,
-                                               GenerateSettlementBankReportCommand generateSettlementBankReportCommand) {
+                                               GenerateSettlementBankReportCommand generateSettlementBankReportCommand,
+                                               UserQuery userQuery
+                                               ) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -44,16 +51,20 @@ public class GenerateSettlementBankReportHandler
 
         this.generateSettlementBankReportCommand = generateSettlementBankReportCommand;
         this.participantQuery = participantQuery;
+        this.userQuery = userQuery;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        var getUser = this.userQuery.get(new UserId(input.userId()));
+
         GenerateSettlementBankReportCommand.Output output =
                 this.generateSettlementBankReportCommand.execute(new GenerateSettlementBankReportCommand.Input(input.settlementId(),
                                                                                                                input.currencyId(),
                                                                                                                input.fileType(),
-                                                                                                               input.timezone()));
+                                                                                                               input.timezone(),
+                                                                                                               getUser.name()));
 
         return new Output(output.settlementBankRptByte());
     }
