@@ -192,8 +192,7 @@ public class FinalizeSettlementHandler
 
                             String
                                 reason =
-                                "Business Operations Portal settlement ID: " + settlement.getId() +
-                                    " finalization report processing";
+                                "Settlement:" + settlement.getId();
 
                             //  TODO: to confirm
                             // if net amount is positive -> sender
