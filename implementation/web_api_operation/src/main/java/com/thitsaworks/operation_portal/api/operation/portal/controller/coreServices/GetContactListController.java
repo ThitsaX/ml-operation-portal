@@ -46,7 +46,10 @@ public class GetContactListController {
         var response = new Response(output.contactInfoList()
                                           .stream()
                                           .sorted(Comparator.comparing(
-                                              c -> this.contactTypeOrder.indexOf(c.contactType())))
+                                                                (GetContactList.Output.ContactInfo c) -> this.contactTypeOrder.indexOf(c.contactType()))
+                                                            .thenComparing(
+                                                                GetContactList.Output.ContactInfo::name,
+                                                                Comparator.nullsLast(String::compareToIgnoreCase)))
                                           .map(contact -> new Response.ContactInfo(contact.contactId()
                                                                                           .getEntityId()
                                                                                           .toString(),
