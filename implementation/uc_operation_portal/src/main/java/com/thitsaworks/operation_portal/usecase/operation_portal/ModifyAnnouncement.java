@@ -6,19 +6,18 @@ import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 import java.time.Instant;
 
 public interface ModifyAnnouncement extends
-                                            UseCase<ModifyAnnouncement.Input, ModifyAnnouncement.Output> {
+                                    UseCase<ModifyAnnouncement.Input, ModifyAnnouncement.Output> {
 
-    public record Input(
-            AnnouncementId announcementId,
-            String announcementTitle,
-            String announcementDetail,
-            Instant announcementDate,
-            boolean isDeleted
-    ) {}
+    record Input(AnnouncementId announcementId,
+                 String announcementTitle,
+                 String announcementDetail,
+                 Instant announcementDate,
+                 boolean isDeleted
+    ) { }
 
-    public record Output(
-            AnnouncementId announcementId,
-            boolean modified
-    ) {}
+    record Output(
+        AnnouncementId announcementId,
+        boolean modified
+    ) { }
 
 }

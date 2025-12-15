@@ -8,14 +8,13 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditComm
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifyJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
-import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.ScheduledJob;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component("SchedulingTester")
-public class SchedulingTester extends ScheduledJob<SchedulerConfigData, SchedulingTester.Output> {
+public class SchedulingTester {
 
     private static final Logger LOG = LoggerFactory.getLogger(SchedulingTester.class);
 
@@ -27,13 +26,10 @@ public class SchedulingTester extends ScheduledJob<SchedulerConfigData, Scheduli
                             ActionAuthorizationManager actionAuthorizationManager,
                             ObjectMapper objectMapper) {
 
-        super(createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
-              createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager, objectMapper);
     }
 
-    @Override
     protected SchedulingTester.Output onExecute(SchedulerConfigData schedulerConfigData)
-            throws DomainException, InterruptedException {
+        throws DomainException, InterruptedException {
 
         LOG.info("Running SchedulingTester job: [{}]", schedulerConfigData);
 
@@ -45,6 +41,6 @@ public class SchedulingTester extends ScheduledJob<SchedulerConfigData, Scheduli
 
     }
 
-    public record Output(String outputLog) {}
+    public record Output(String outputLog) { }
 
 }

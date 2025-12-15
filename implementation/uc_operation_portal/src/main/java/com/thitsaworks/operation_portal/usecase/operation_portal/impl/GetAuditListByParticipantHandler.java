@@ -30,6 +30,8 @@ public class GetAuditListByParticipantHandler
 
     private final UserPermissionManager userPermissionManager;
 
+    private final ActionAuthorizationManager actionAuthorizationManager;
+
     public GetAuditListByParticipantHandler(PrincipalCache principalCache,
                                             ActionAuthorizationManager actionAuthorizationManager,
                                             IAMQuery iamQuery,
@@ -42,6 +44,7 @@ public class GetAuditListByParticipantHandler
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
         this.userPermissionManager = userPermissionManager;
+        this.actionAuthorizationManager = actionAuthorizationManager;
     }
 
     @Override

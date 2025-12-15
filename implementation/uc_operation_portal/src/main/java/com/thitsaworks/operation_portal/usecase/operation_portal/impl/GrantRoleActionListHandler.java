@@ -1,13 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
-import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantRoleActionCommand;
-import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActionList;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
@@ -18,26 +14,18 @@ import java.net.ConnectException;
 
 @Service
 public class GrantRoleActionListHandler
-    extends OperationPortalAuditableUseCase<GrantRoleActionList.Input, GrantRoleActionList.Output>
+    extends OperationPortalUseCase<GrantRoleActionList.Input, GrantRoleActionList.Output>
     implements GrantRoleActionList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GrantRoleActionListHandler.class);
 
     private final GrantRoleActionCommand grantRoleActionCommand;
 
-    public GrantRoleActionListHandler(CreateInputAuditCommand createInputAuditCommand,
-                                      CreateOutputAuditCommand createOutputAuditCommand,
-                                      CreateExceptionAuditCommand createExceptionAuditCommand,
-                                      ObjectMapper objectMapper,
-                                      PrincipalCache principalCache,
+    public GrantRoleActionListHandler(PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       GrantRoleActionCommand grantRoleActionsCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
+        super(principalCache,
               actionAuthorizationManager);
 
         this.grantRoleActionCommand = grantRoleActionsCommand;
