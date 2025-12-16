@@ -116,14 +116,6 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         Contact contact = new Contact(name, title, email, mobile, contactType, this);
 
-        boolean contactExists = this.contacts.stream()
-                                             .anyMatch(c -> c.contactType.equals(contactType));
-
-        if (contactExists) {
-            throw new ParticipantException(
-                ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
-        }
-
         this.contacts.add(contact);
 
         return contact;
@@ -143,17 +135,6 @@ public class Participant extends JpaEntity<ParticipantId> {
         if (existingContact.isPresent()) {
 
             Contact contact = existingContact.get();
-
-            boolean isChangingType = !contact.contactType.equals(contactType);
-            boolean typeExist = this.contacts.stream()
-                                             .anyMatch(c -> c != contact &&
-                                                                c.contactType.equals(contactType));
-
-            if (isChangingType && typeExist) {
-                throw new ParticipantException(
-                    ParticipantErrors.CONTACT_TYPE_ALREADY_REGISTERED.format(contactType.name()));
-            }
-
             contact.name(name);
             contact.position(title);
             contact.email(email);
