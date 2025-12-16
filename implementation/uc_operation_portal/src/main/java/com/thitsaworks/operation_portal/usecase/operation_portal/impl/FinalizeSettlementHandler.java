@@ -1,9 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -16,7 +18,8 @@ import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowI
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountBySettlementIdQuery;
-import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataByParticipantNameAndCurrencyQuery;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAccount;
@@ -27,9 +30,12 @@ import com.thitsaworks.operation_portal.core.hub_services.support.SettlementStat
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
+import com.thitsaworks.operation_portal.usecase.util.HandleUpdateNdc;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +66,15 @@ public class FinalizeSettlementHandler
 
     private final AtomicBoolean isSettlementFinalized = new AtomicBoolean(false);
 
+    private final ParticipantNDCQuery participantNDCQuery;
+
+    private final HandleUpdateNdc handleUpdateNdc;
+
+    private final GetParticipantPositionsDataQuery getParticipantPositionsDataQuery;
+
+    private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery
+        getParticipantPositionsDataByParticipantNameAndCurrencyQuery;
+
     @Autowired
     public FinalizeSettlementHandler(CreateInputAuditCommand createInputAuditCommand,
                                      CreateOutputAuditCommand createOutputAuditCommand,
@@ -70,7 +85,10 @@ public class FinalizeSettlementHandler
                                      SettlementHubClient settlementHubClient,
                                      ParticipantHubClient participantHubClient,
                                      HubParticipantQuery hubParticipantQuery,
-                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery
+                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery,
+                                     ParticipantNDCQuery participantNDCQuery, HandleUpdateNdc handleUpdateNdc,
+                                     GetParticipantPositionsDataQuery getParticipantPositionsDataQuery,
+                                     GetParticipantPositionsDataByParticipantNameAndCurrencyQuery getParticipantPositionsDataByParticipantNameAndCurrencyQuery
                                     ) {
 
         super(createInputAuditCommand,
@@ -84,7 +102,11 @@ public class FinalizeSettlementHandler
         this.participantHubClient = participantHubClient;
         this.hubParticipantQuery = hubParticipantQuery;
         this.getNetTransferAmountBySettlementIdQuery = getNetTransferAmountBySettlementIdQuery;
-
+        this.participantNDCQuery = participantNDCQuery;
+        this.handleUpdateNdc = handleUpdateNdc;
+        this.getParticipantPositionsDataQuery = getParticipantPositionsDataQuery;
+        this.getParticipantPositionsDataByParticipantNameAndCurrencyQuery =
+            getParticipantPositionsDataByParticipantNameAndCurrencyQuery;
     }
 
     @Override
@@ -258,6 +280,48 @@ public class FinalizeSettlementHandler
                             this.participantHubClient.postParticipantBalance(hubParticipantDetailData.getParticipantName(),
                                                                              settleAccountId.toString(),
                                                                              postParticipantBalanceRequest);
+
+                            var ndcData = this.participantNDCQuery.get(hubParticipantDetailData.getParticipantName(),
+                                                                       account.getNetSettlementAmount()
+                                                                              .getCurrency()
+                                                                              .toString());
+                            boolean toRecalculateNDC = false;
+
+                            BigDecimal
+                                ndcPercent =
+                                ndcData.map(ParticipantNDC::getNdcPercent)
+                                       .orElse(BigDecimal.ZERO);
+
+                            toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
+
+                            GetParticipantPositionsDataQuery.Output
+                                participantData =
+                                this.getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(
+                                    hubParticipantDetailData.getParticipantName()));
+
+                            ApprovalRequestData approvalRequestData = new ApprovalRequestData();
+                            approvalRequestData.setAmount(new BigDecimal(account.getNetSettlementAmount()
+                                                                                .getAmount()));
+                            approvalRequestData.setCurrency(account.getNetSettlementAmount()
+                                                                   .getCurrency()
+                                                                   .toString());
+                            approvalRequestData.setParticipantName(hubParticipantDetailData.getParticipantName());
+                            approvalRequestData.setFundInOutAction(
+                                settlementAction.toString());
+
+                            approvalRequestData.setParticipantPositionCurrencyId(null);
+                            approvalRequestData.setParticipantSettlementCurrencyId(null);
+
+                            if (toRecalculateNDC) {
+                                this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
+                                                                     approvalRequestData,
+                                                                     hubParticipantDetailData.getParticipantName(),
+                                                                     account.getNetSettlementAmount()
+                                                                            .getCurrency()
+                                                                            .toString(),
+                                                                     PositionActionType.valueOf(
+                                                                         settlementAction.toString()));
+                            }
                         }
                     }
 
