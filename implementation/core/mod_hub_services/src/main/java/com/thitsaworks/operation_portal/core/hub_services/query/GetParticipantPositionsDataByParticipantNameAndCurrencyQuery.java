@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
-
-import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
+import com.thitsaworks.operation_portal.core.hub_services.data.ParticipantPositionData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import lombok.Value;
 
@@ -20,7 +19,7 @@ public interface GetParticipantPositionsDataByParticipantNameAndCurrencyQuery {
     @Value
     class Output {
 
-        private List<FinancialData> financialData;
+        private List<ParticipantPositionData> participantPositionData;
 
     }
 
