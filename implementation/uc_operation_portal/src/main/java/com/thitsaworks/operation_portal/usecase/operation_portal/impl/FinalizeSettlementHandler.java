@@ -70,8 +70,7 @@ public class FinalizeSettlementHandler
     private final HandleUpdateNdc handleUpdateNdc;
 
     private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery
-            participantPositionsDataByParticipantNameAndCurrencyQuery;
-
+        participantPositionsDataByParticipantNameAndCurrencyQuery;
 
     @Autowired
     public FinalizeSettlementHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -102,7 +101,7 @@ public class FinalizeSettlementHandler
         this.participantNDCQuery = participantNDCQuery;
         this.handleUpdateNdc = handleUpdateNdc;
         this.participantPositionsDataByParticipantNameAndCurrencyQuery =
-                participantPositionsDataByParticipantNameAndCurrencyQuery;
+            participantPositionsDataByParticipantNameAndCurrencyQuery;
     }
 
     @Override
@@ -222,6 +221,11 @@ public class FinalizeSettlementHandler
                                 amount.signum() > 0 ? SettlementAction.recordFundsOutPrepareReserve :
                                     SettlementAction.recordFundsIn;
 
+                            PositionActionType
+                                positionActionType =
+                                amount.signum() > 0 ? PositionActionType.WITHDRAW :
+                                    PositionActionType.DEPOSIT;
+
                             account.getNetSettlementAmount()
                                    .setAmount(amount.abs()
                                                     .toString());
@@ -291,10 +295,12 @@ public class FinalizeSettlementHandler
                             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
                             GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Output
-                                    participantPositionData =
-                                    this.participantPositionsDataByParticipantNameAndCurrencyQuery.execute(new GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Input(
-                                            hubParticipantDetailData.getParticipantName(),
-                                            account.getNetSettlementAmount().getCurrency().toString()));
+                                participantPositionData =
+                                this.participantPositionsDataByParticipantNameAndCurrencyQuery.execute(new GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Input(
+                                    hubParticipantDetailData.getParticipantName(),
+                                    account.getNetSettlementAmount()
+                                           .getCurrency()
+                                           .toString()));
 
                             String positionCurrencyId = "0";
                             String settlementCurrencyId = "0";
@@ -307,7 +313,7 @@ public class FinalizeSettlementHandler
                                                                    .toString());
                             approvalRequestData.setParticipantName(hubParticipantDetailData.getParticipantName());
                             approvalRequestData.setFundInOutAction(
-                                PositionActionType.UPDATE_NDC_PERCENTAGE.toString());
+                                positionActionType.toString());
 
                             if (participantPositionData != null) {
 
@@ -319,11 +325,15 @@ public class FinalizeSettlementHandler
 
                                     if (first.participantPositionCurrencyId() != null) {
 
-                                        positionCurrencyId = first.participantPositionCurrencyId().toString();
+                                        positionCurrencyId =
+                                            first.participantPositionCurrencyId()
+                                                 .toString();
                                     }
                                     if (first.participantSettlementCurrencyId() != null) {
 
-                                        settlementCurrencyId = first.participantSettlementCurrencyId().toString();
+                                        settlementCurrencyId =
+                                            first.participantSettlementCurrencyId()
+                                                 .toString();
                                     }
                                 }
                             }
@@ -338,7 +348,7 @@ public class FinalizeSettlementHandler
                                                                      account.getNetSettlementAmount()
                                                                             .getCurrency()
                                                                             .toString(),
-                                                                     PositionActionType.UPDATE_NDC_PERCENTAGE);
+                                                                     positionActionType);
                             }
                         }
                     }
