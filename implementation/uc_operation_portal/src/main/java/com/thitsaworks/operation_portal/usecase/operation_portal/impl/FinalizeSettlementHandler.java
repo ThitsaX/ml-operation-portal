@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
@@ -35,6 +36,8 @@ import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
 import com.thitsaworks.operation_portal.usecase.util.HandleUpdateNdc;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
+import com.thitsaworks.operation_portal.usecase.util.Utility;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +75,10 @@ public class FinalizeSettlementHandler
     private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery
         participantPositionsDataByParticipantNameAndCurrencyQuery;
 
+    private final UserPermissionManager userPermissionManager;
+
+    private final Utility utility;
+
     @Autowired
     public FinalizeSettlementHandler(CreateInputAuditCommand createInputAuditCommand,
                                      CreateOutputAuditCommand createOutputAuditCommand,
@@ -84,7 +91,8 @@ public class FinalizeSettlementHandler
                                      HubParticipantQuery hubParticipantQuery,
                                      GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery,
                                      ParticipantNDCQuery participantNDCQuery, HandleUpdateNdc handleUpdateNdc,
-                                     GetParticipantPositionsDataByParticipantNameAndCurrencyQuery participantPositionsDataByParticipantNameAndCurrencyQuery
+                                     GetParticipantPositionsDataByParticipantNameAndCurrencyQuery participantPositionsDataByParticipantNameAndCurrencyQuery,
+                                     UserPermissionManager userPermissionManager, Utility utility
                                     ) {
 
         super(createInputAuditCommand,
@@ -102,6 +110,8 @@ public class FinalizeSettlementHandler
         this.handleUpdateNdc = handleUpdateNdc;
         this.participantPositionsDataByParticipantNameAndCurrencyQuery =
             participantPositionsDataByParticipantNameAndCurrencyQuery;
+        this.userPermissionManager = userPermissionManager;
+        this.utility = utility;
     }
 
     @Override
@@ -110,6 +120,8 @@ public class FinalizeSettlementHandler
         try {
 
             {
+                var currentUser = this.userPermissionManager.getCurrentUser();
+
                 GetNetTransferAmountBySettlementIdQuery.Output
                     output =
                     this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
@@ -200,6 +212,9 @@ public class FinalizeSettlementHandler
                     extensionList.addExtensionItem(new Extension().key("settlementId")
                                                                   .value(settlement.getId()
                                                                                    .toString()));
+                    extensionList.addExtensionItem(new Extension().key("approveUser") //actually it is login user but in order to see at report
+                                                                  .value(this.utility.getEmail(new UserId(currentUser.principalId()
+                                                                                                                     .getId()))));
 
                     for (SettlementParticipant participant : settlementParticipants) {
 
