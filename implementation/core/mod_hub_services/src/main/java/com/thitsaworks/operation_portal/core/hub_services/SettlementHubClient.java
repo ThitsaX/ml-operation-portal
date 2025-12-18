@@ -50,13 +50,14 @@ public class SettlementHubClient {
 
         this.hubService = new RetrofitServiceBuilder<>(HubService.class,
                                                        this.settings.settlementEndpoint()).withHttpLogging(
-                                                                                                 HttpLoggingInterceptor.Level.BODY,
-                                                                                                 true)
-                                                                                             .withConverterFactories(new NullOrEmptyConverterFactory(),
-                                                                                                                     ScalarsConverterFactory.create(),
-                                                                                                                     JacksonConverterFactory.create(
-                                                                                                                         objectMapper))
-                                                                                             .build();
+                                                                                              HttpLoggingInterceptor.Level.BODY,
+                                                                                              true)
+                                                                                          .withConverterFactories(new NullOrEmptyConverterFactory(),
+                                                                                                                  ScalarsConverterFactory.create(),
+                                                                                                                  JacksonConverterFactory.create(
+                                                                                                                      objectMapper))
+                                                                                          .withTimeouts(120, 120, 120)
+                                                                                          .build();
 
         this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
 
@@ -65,7 +66,7 @@ public class SettlementHubClient {
     public PostCloseSettlementWindows.Response closeSettlementWindows(int windowsId,
 
                                                                       PostCloseSettlementWindows.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PostCloseSettlementWindows.Response response;
 
@@ -81,7 +82,9 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                ErrorInformation
+                    errorInformation =
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
                                                                                         .description(errorInformation.getErrorDescription()));
@@ -105,7 +108,7 @@ public class SettlementHubClient {
                                                                                 String state,
                                                                                 Integer participantId,
                                                                                 GetSettlementWindows.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         List<GetSettlementWindows.SettlementWindow> response;
 
@@ -113,7 +116,11 @@ public class SettlementHubClient {
 
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
-                                             (s, r) -> s.getSettlementWindows(fromDate,toDate,currency,state,participantId),
+                                             (s, r) -> s.getSettlementWindows(fromDate,
+                                                                              toDate,
+                                                                              currency,
+                                                                              state,
+                                                                              participantId),
                                              this.hubApiErrorDecoder)
                                      .body();
 
@@ -121,7 +128,9 @@ public class SettlementHubClient {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
-                ErrorInformation errorInformation = ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                ErrorInformation
+                    errorInformation =
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
                                                                                         .description(errorInformation.getErrorDescription()));
@@ -141,7 +150,7 @@ public class SettlementHubClient {
     }
 
     public GetSettlementWindows.SettlementWindow getSettlementWindowById(SettlementWindowId settlementWindowId)
-            throws HubServicesException {
+        throws HubServicesException {
 
         GetSettlementWindows.SettlementWindow response;
 
@@ -158,7 +167,7 @@ public class SettlementHubClient {
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation =
-                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
                                                                                         .description(errorInformation.getErrorDescription()));
@@ -176,8 +185,9 @@ public class SettlementHubClient {
         return response;
 
     }
+
     public PostCreateSettlement.Response createSettlement(PostCreateSettlement.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PostCreateSettlement.Response response;
 
@@ -186,14 +196,15 @@ public class SettlementHubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.postCreateSettlement(request),
-                                             this.hubApiErrorDecoder).body();
+                                             this.hubApiErrorDecoder)
+                                     .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation =
-                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
                                                                                  .description(errorInformation.getErrorDescription()));
@@ -212,7 +223,7 @@ public class SettlementHubClient {
     }
 
     public Settlement getSettlement(Integer settlementId)
-            throws HubServicesException {
+        throws HubServicesException {
 
         Settlement settlement;
 
@@ -220,15 +231,16 @@ public class SettlementHubClient {
 
             settlement = RetrofitRunner.invoke(this.hubService,
                                                null,
-                                             (s, r) -> s.getSettlementById(settlementId),
-                                             this.hubApiErrorDecoder).body();
+                                               (s, r) -> s.getSettlementById(settlementId),
+                                               this.hubApiErrorDecoder)
+                                       .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation =
-                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
                                                                                  .description(errorInformation.getErrorDescription()));
@@ -256,7 +268,7 @@ public class SettlementHubClient {
                                               String fromSettlementWindowDateTime,
                                               String toSettlementWindowDateTime)
 
-            throws HubServicesException {
+        throws HubServicesException {
 
         List<Settlement> settlementList;
 
@@ -264,22 +276,23 @@ public class SettlementHubClient {
 
             settlementList = RetrofitRunner.invoke(this.hubService, null,
                                                    (s, r) -> s.getSettlements(currency,
-                                                                                     participantId,
-                                                                                     settlementWindowId,
-                                                                                     accountId,
-                                                                                     state,
-                                                                                     fromDateTime,
-                                                                                     toDateTime,
-                                                                                     fromSettlementWindowDateTime,
-                                                                                     toSettlementWindowDateTime),
-                                                   this.hubApiErrorDecoder).body();
+                                                                              participantId,
+                                                                              settlementWindowId,
+                                                                              accountId,
+                                                                              state,
+                                                                              fromDateTime,
+                                                                              toDateTime,
+                                                                              fromSettlementWindowDateTime,
+                                                                              toSettlementWindowDateTime),
+                                                   this.hubApiErrorDecoder)
+                                           .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation =
-                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
                                                                                  .description(errorInformation.getErrorDescription()));
@@ -298,7 +311,7 @@ public class SettlementHubClient {
     }
 
     public PutUpdateSettlement.Response putUpdateSettlement(Integer settlementId, PutUpdateSettlement.Request request)
-            throws HubServicesException {
+        throws HubServicesException {
 
         PutUpdateSettlement.Response response;
 
@@ -307,14 +320,15 @@ public class SettlementHubClient {
             response = RetrofitRunner.invoke(this.hubService,
                                              request,
                                              (s, r) -> s.putUpdateSettlement(settlementId, request),
-                                             this.hubApiErrorDecoder).body();
+                                             this.hubApiErrorDecoder)
+                                     .body();
 
         } catch (RetrofitRunner.InvocationException e) {
 
             if (e.getErrorResponse() != null && e.getErrorResponse() instanceof ErrorInformationResponse) {
 
                 ErrorInformation errorInformation =
-                        ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
+                    ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
                 throw new HubServicesException(HubServicesErrors.SETTLEMENT_ERROR.code(errorInformation.getErrorCode())
                                                                                  .description(errorInformation.getErrorDescription()));
