@@ -117,7 +117,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                              .as("transferId")
                              .and(ConditionalOperators.IfNull.ifNull("quoteRequest.quoteId").then(""))
                              .as("quoteId")
-                             .and(ConditionalOperators.IfNull.ifNull("transferState").then(""))
+                             .and(ConditionalOperators.IfNull.ifNull("transferStateEnum").then(""))
                              .as("transferState")
                              .and(ConditionalOperators.IfNull.ifNull("transactionType").then(""))
                              .as("transferType")
