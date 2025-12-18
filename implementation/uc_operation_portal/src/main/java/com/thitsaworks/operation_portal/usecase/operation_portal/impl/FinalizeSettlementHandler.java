@@ -307,7 +307,7 @@ public class FinalizeSettlementHandler
                                                                    .toString());
                             approvalRequestData.setParticipantName(hubParticipantDetailData.getParticipantName());
                             approvalRequestData.setFundInOutAction(
-                                settlementAction.toString());
+                                PositionActionType.UPDATE_NDC_PERCENTAGE.toString());
 
                             if (participantPositionData != null) {
 
