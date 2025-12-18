@@ -338,8 +338,7 @@ public class FinalizeSettlementHandler
                                                                      account.getNetSettlementAmount()
                                                                             .getCurrency()
                                                                             .toString(),
-                                                                     PositionActionType.valueOf(
-                                                                         settlementAction.toString()));
+                                                                     PositionActionType.UPDATE_NDC_PERCENTAGE);
                             }
                         }
                     }
