@@ -75,13 +75,13 @@
         {
             "menuName": "Settlement Detail Report",
             "actionCodeList": [
-                "GenerateDetailReport"
+                "GenerateSettlementDetailReport"
             ]
         },
         {
             "menuName": "Settlement Summary Report",
             "actionCodeList": [
-                "GenerateSettlementReport"
+                "GenerateSettlementSummaryReport"
             ]
         },
         {

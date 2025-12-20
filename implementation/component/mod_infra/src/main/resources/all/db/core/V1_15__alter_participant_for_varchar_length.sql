@@ -1,0 +1,3 @@
+ALTER TABLE tbl_participant
+MODIFY COLUMN participant_name VARCHAR(256) NULL,
+MODIFY COLUMN description VARCHAR(512) NULL;

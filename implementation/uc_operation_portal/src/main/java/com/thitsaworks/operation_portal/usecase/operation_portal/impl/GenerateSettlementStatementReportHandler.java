@@ -24,7 +24,7 @@ public class GenerateSettlementStatementReportHandler
     extends OperationPortalAuditableUseCase<GenerateSettlementStatementReport.Input, GenerateSettlementStatementReport.Output>
     implements GenerateSettlementStatementReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementSummaryReportHandler.class);
 
     private final GenerateSettlementStatementReportCommand generateSettlementStatementReportCommand;
 
@@ -55,17 +55,15 @@ public class GenerateSettlementStatementReportHandler
 
         String
             dfspName =
-            input.fspId()
-                 .equalsIgnoreCase("all") ? input.fspId() : "";
+                input.fspId().equalsIgnoreCase("all") ? input.fspId().toUpperCase() : "";
 
         if (!input.fspId()
                   .equalsIgnoreCase("all")) {
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.fspId());
 
-            dfspName =
-                optionalParticipantData.isEmpty() ? input.fspId() : optionalParticipantData.get()
-                                                                                           .description();
+            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description().isEmpty()) ?
+                    input.fspId().toUpperCase() : optionalParticipantData.get().description();
         }
 
         GenerateSettlementStatementReportCommand.Output output = this.generateSettlementStatementReportCommand.execute(

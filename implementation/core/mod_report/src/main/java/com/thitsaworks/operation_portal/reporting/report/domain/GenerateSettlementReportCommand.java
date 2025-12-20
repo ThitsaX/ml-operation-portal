@@ -8,7 +8,7 @@ public interface GenerateSettlementReportCommand {
                  String fspName,
                  String settlementId,
                  String filetype,
-                 String timezoneOffset) { }
+                 String timezoneOffset, String userName) { }
 
     record Output(byte[] settlementRptByte) { }
 

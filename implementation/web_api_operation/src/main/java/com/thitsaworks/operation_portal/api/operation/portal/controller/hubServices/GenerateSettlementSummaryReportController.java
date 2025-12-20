@@ -3,14 +3,16 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementSummaryReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,11 +21,11 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class GenerateSettlementReportController {
+public class GenerateSettlementSummaryReportController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementSummaryReportController.class);
 
-    private final GenerateSettlementReport generateSettlementReport;
+    private final GenerateSettlementSummaryReport generateSettlementSummaryReport;
 
     @PostMapping("/secured/generateSettlementReport")
     public ResponseEntity<Response> execute
@@ -39,8 +41,17 @@ public class GenerateSettlementReportController {
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
-        GenerateSettlementReport.Output output = this.generateSettlementReport.execute(
-                new GenerateSettlementReport.Input(fspId, settlementId, fileType, timezone));
+        UserContext userContext =
+                (UserContext) SecurityContextHolder.getContext()
+                                                   .getAuthentication()
+                                                   .getDetails();
+
+        GenerateSettlementSummaryReport.Output output = this.generateSettlementSummaryReport.execute(
+                new GenerateSettlementSummaryReport.Input(fspId,
+                                                          settlementId,
+                                                          fileType,
+                                                          timezone,
+                                                          userContext.userId().getId()));
 
         var response = new Response(output.settlementByte());
 
