@@ -32,4 +32,7 @@ public class SettlementContent {
     @JsonProperty("changedDate")
     String changedDate;
 
+    @JsonProperty("closedDate")
+    String closedDate;
+
 }

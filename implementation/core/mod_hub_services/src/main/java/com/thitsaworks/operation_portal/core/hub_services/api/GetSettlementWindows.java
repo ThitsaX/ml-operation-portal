@@ -9,15 +9,16 @@ public class GetSettlementWindows {
     public record Request() { }
 
     public record SettlementWindow(
-                Integer settlementWindowId,
-                String state,
-                String reason,
-                String createdDate,
-                String changedDate,
-                List<SettlementContent> content
-        ) { }
+        Integer settlementWindowId,
+        String state,
+        String reason,
+        String createdDate,
+        String changedDate,
+        String closedDate,
+        List<SettlementContent> content
+    ) { }
 
-    }
+}
 
 
 
