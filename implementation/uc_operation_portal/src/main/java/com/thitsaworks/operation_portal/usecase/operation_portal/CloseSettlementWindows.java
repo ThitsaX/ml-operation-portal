@@ -20,6 +20,7 @@ public interface CloseSettlementWindows
         String state,
         String reason,
         String createdDate,
+        String closedDate,
         String changedDate
     ) implements Serializable { }
 

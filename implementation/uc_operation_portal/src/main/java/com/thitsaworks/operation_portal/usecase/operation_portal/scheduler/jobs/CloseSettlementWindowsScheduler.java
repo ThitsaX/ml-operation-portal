@@ -92,6 +92,7 @@ public class CloseSettlementWindowsScheduler
                                                              SettlementWindowState.CLOSED.toString(),
                                                              output.reason(),
                                                              output.createdDate(),
+                                                             output.closedDate(),
                                                              output.changedDate());
 
             settlementWindowsList.add(output);
