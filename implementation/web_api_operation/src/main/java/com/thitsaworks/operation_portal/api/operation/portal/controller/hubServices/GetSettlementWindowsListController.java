@@ -108,7 +108,7 @@ public class GetSettlementWindowsListController {
                                        @JsonProperty("reason") String reason,
                                        @JsonProperty("createdDate") String createdDate,
                                        @JsonProperty("changedDate") String changedDate,
-                                       @JsonProperty("changedDate") String closedDate,
+                                       @JsonProperty("closedDate") String closedDate,
                                        @JsonProperty("contentList") List<Content> contentList) implements Serializable {
 
         }
@@ -119,7 +119,7 @@ public class GetSettlementWindowsListController {
                               @JsonProperty("currencyId") String currencyId,
                               @JsonProperty("createdDate") String createdDate,
                               @JsonProperty("changedDate") String changedDate,
-                              @JsonProperty("changedDate") String closedDate) implements Serializable {
+                              @JsonProperty("closedDate") String closedDate) implements Serializable {
 
         }
 
