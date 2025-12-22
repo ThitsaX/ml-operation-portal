@@ -28,10 +28,8 @@ public class ModifyParticipantNDCCommandHandler implements ModifyParticipantNDCC
                                                                       .orElseThrow(() -> new ParticipantNDCException(
                                                                               ParticipantErrors.PARTICIPANT_NDC_NOT_FOUND.format(input.participantNDCId().getId().toString())));
 
-        //existingParticipantNDC.moveParticipantNDCToHistory();
 
-        this.participantNDCRepository.save(
-                existingParticipantNDC.ndcPercent(input.ndcPercent()));
+        this.participantNDCRepository.save(existingParticipantNDC.ndcPercent(input.ndcPercent()).updatedAt());
 
         return new Output(existingParticipantNDC.getParticipantNDCId());
     }

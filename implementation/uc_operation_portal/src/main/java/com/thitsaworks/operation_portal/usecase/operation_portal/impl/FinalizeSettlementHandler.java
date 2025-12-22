@@ -1,9 +1,12 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.component.fspiop.model.Extension;
 import com.thitsaworks.operation_portal.component.fspiop.model.ExtensionList;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -16,7 +19,7 @@ import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowI
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountBySettlementIdQuery;
-import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
+import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataByParticipantNameAndCurrencyQuery;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementAccount;
@@ -27,9 +30,14 @@ import com.thitsaworks.operation_portal.core.hub_services.support.SettlementStat
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.FinalizeSettlement;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
+import com.thitsaworks.operation_portal.usecase.util.HandleUpdateNdc;
+import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
+import com.thitsaworks.operation_portal.usecase.util.Utility;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +68,17 @@ public class FinalizeSettlementHandler
 
     private final AtomicBoolean isSettlementFinalized = new AtomicBoolean(false);
 
+    private final ParticipantNDCQuery participantNDCQuery;
+
+    private final HandleUpdateNdc handleUpdateNdc;
+
+    private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery
+        participantPositionsDataByParticipantNameAndCurrencyQuery;
+
+    private final UserPermissionManager userPermissionManager;
+
+    private final Utility utility;
+
     @Autowired
     public FinalizeSettlementHandler(CreateInputAuditCommand createInputAuditCommand,
                                      CreateOutputAuditCommand createOutputAuditCommand,
@@ -70,7 +89,10 @@ public class FinalizeSettlementHandler
                                      SettlementHubClient settlementHubClient,
                                      ParticipantHubClient participantHubClient,
                                      HubParticipantQuery hubParticipantQuery,
-                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery
+                                     GetNetTransferAmountBySettlementIdQuery getNetTransferAmountBySettlementIdQuery,
+                                     ParticipantNDCQuery participantNDCQuery, HandleUpdateNdc handleUpdateNdc,
+                                     GetParticipantPositionsDataByParticipantNameAndCurrencyQuery participantPositionsDataByParticipantNameAndCurrencyQuery,
+                                     UserPermissionManager userPermissionManager, Utility utility
                                     ) {
 
         super(createInputAuditCommand,
@@ -84,7 +106,12 @@ public class FinalizeSettlementHandler
         this.participantHubClient = participantHubClient;
         this.hubParticipantQuery = hubParticipantQuery;
         this.getNetTransferAmountBySettlementIdQuery = getNetTransferAmountBySettlementIdQuery;
-
+        this.participantNDCQuery = participantNDCQuery;
+        this.handleUpdateNdc = handleUpdateNdc;
+        this.participantPositionsDataByParticipantNameAndCurrencyQuery =
+            participantPositionsDataByParticipantNameAndCurrencyQuery;
+        this.userPermissionManager = userPermissionManager;
+        this.utility = utility;
     }
 
     @Override
@@ -93,6 +120,8 @@ public class FinalizeSettlementHandler
         try {
 
             {
+                var currentUser = this.userPermissionManager.getCurrentUser();
+
                 GetNetTransferAmountBySettlementIdQuery.Output
                     output =
                     this.getNetTransferAmountBySettlementIdQuery.execute(new GetNetTransferAmountBySettlementIdQuery.Input(
@@ -183,6 +212,9 @@ public class FinalizeSettlementHandler
                     extensionList.addExtensionItem(new Extension().key("settlementId")
                                                                   .value(settlement.getId()
                                                                                    .toString()));
+                    extensionList.addExtensionItem(new Extension().key("approveUser") //actually it is login user but in order to see at report
+                                                                  .value(this.utility.getEmail(new UserId(currentUser.principalId()
+                                                                                                                     .getId()))));
 
                     for (SettlementParticipant participant : settlementParticipants) {
 
@@ -203,6 +235,11 @@ public class FinalizeSettlementHandler
                                 settlementAction =
                                 amount.signum() > 0 ? SettlementAction.recordFundsOutPrepareReserve :
                                     SettlementAction.recordFundsIn;
+
+                            PositionActionType
+                                positionActionType =
+                                amount.signum() > 0 ? PositionActionType.WITHDRAW :
+                                    PositionActionType.DEPOSIT;
 
                             account.getNetSettlementAmount()
                                    .setAmount(amount.abs()
@@ -258,6 +295,76 @@ public class FinalizeSettlementHandler
                             this.participantHubClient.postParticipantBalance(hubParticipantDetailData.getParticipantName(),
                                                                              settleAccountId.toString(),
                                                                              postParticipantBalanceRequest);
+
+                            var ndcData = this.participantNDCQuery.get(hubParticipantDetailData.getParticipantName(),
+                                                                       account.getNetSettlementAmount()
+                                                                              .getCurrency()
+                                                                              .toString());
+                            boolean toRecalculateNDC = false;
+
+                            BigDecimal
+                                ndcPercent =
+                                ndcData.map(ParticipantNDC::getNdcPercent)
+                                       .orElse(BigDecimal.ZERO);
+
+                            toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
+
+                            GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Output
+                                participantPositionData =
+                                this.participantPositionsDataByParticipantNameAndCurrencyQuery.execute(new GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Input(
+                                    hubParticipantDetailData.getParticipantName(),
+                                    account.getNetSettlementAmount()
+                                           .getCurrency()
+                                           .toString()));
+
+                            String positionCurrencyId = "0";
+                            String settlementCurrencyId = "0";
+
+                            ApprovalRequestData approvalRequestData = new ApprovalRequestData();
+                            approvalRequestData.setAmount(new BigDecimal(account.getNetSettlementAmount()
+                                                                                .getAmount()));
+                            approvalRequestData.setCurrency(account.getNetSettlementAmount()
+                                                                   .getCurrency()
+                                                                   .toString());
+                            approvalRequestData.setParticipantName(hubParticipantDetailData.getParticipantName());
+                            approvalRequestData.setFundInOutAction(
+                                positionActionType.toString());
+
+                            if (participantPositionData != null) {
+
+                                var list = participantPositionData.getParticipantPositionData();
+
+                                if (list != null && !list.isEmpty() && list.get(0) != null) {
+
+                                    var first = list.get(0);
+
+                                    if (first.participantPositionCurrencyId() != null) {
+
+                                        positionCurrencyId =
+                                            first.participantPositionCurrencyId()
+                                                 .toString();
+                                    }
+                                    if (first.participantSettlementCurrencyId() != null) {
+
+                                        settlementCurrencyId =
+                                            first.participantSettlementCurrencyId()
+                                                 .toString();
+                                    }
+                                }
+                            }
+
+                            approvalRequestData.setParticipantPositionCurrencyId(positionCurrencyId);
+                            approvalRequestData.setParticipantSettlementCurrencyId(settlementCurrencyId);
+
+                            if (toRecalculateNDC) {
+                                this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
+                                                                     approvalRequestData,
+                                                                     hubParticipantDetailData.getParticipantName(),
+                                                                     account.getNetSettlementAmount()
+                                                                            .getCurrency()
+                                                                            .toString(),
+                                                                     positionActionType);
+                            }
                         }
                     }
 

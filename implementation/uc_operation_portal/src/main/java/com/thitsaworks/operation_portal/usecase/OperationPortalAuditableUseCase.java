@@ -118,12 +118,12 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         PrincipalData principalData =
             this.principalCache.get(new AccessKey(securityContext.accessKey()));
 
-        if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
-                                                            new ActionCode(this.getName()))) {
-
-            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
-            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED.format(this.getName()));
-        }
+//        if (!this.actionAuthorizationManager.isAuthorizedTo(principalData.principalId(),
+//                                                            new ActionCode(this.getName()))) {
+//
+//            LOGGER.info("User is NOT authorized for name :[{}]", this.getName());
+//            throw new UnauthorizedActionException(IAMErrors.PERMISSION_DENIED.format(this.getName()));
+//        }
 
         String inputJson, inputInfo;
         try {

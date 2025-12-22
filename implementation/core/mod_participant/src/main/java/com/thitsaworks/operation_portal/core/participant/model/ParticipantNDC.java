@@ -12,8 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
+import java.time.Instant;
 
 @Entity
 @Table(name = "tbl_participant_ndc")
@@ -35,10 +34,6 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
             precision = 7,
         scale = 4)
     protected BigDecimal ndcPercent;
-
-    // @OneToMany(cascade = {CascadeType.ALL}, mappedBy = "participantNDC", orphanRemoval = true, fetch = FetchType.LAZY)
-//    @Getter(AccessLevel.NONE)
-//    protected Set<ParticipantNDCHistory> participantNDCHistories = new HashSet<>();
 
     public ParticipantNDC(String participantName,
                           String currency,
@@ -69,15 +64,11 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         return this;
     }
 
-//    public ParticipantNDCHistory moveParticipantNDCToHistory() {
-//
-//        ParticipantNDCHistory participantNDCHistory =
-//                new ParticipantNDCHistory(this);
-//
-//        this.participantNDCHistories.add(participantNDCHistory);
-//        return participantNDCHistory;
-//
-//    }
+    public ParticipantNDC updatedAt() {
+
+        this.updatedAt = Instant.now();
+        return this;
+    }
 
     @Override
     public ParticipantNDCId getId() {

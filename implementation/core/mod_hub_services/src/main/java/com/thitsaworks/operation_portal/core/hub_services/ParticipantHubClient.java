@@ -54,6 +54,7 @@ public class ParticipantHubClient {
                                                                                                                      ScalarsConverterFactory.create(),
                                                                                                                      JacksonConverterFactory.create(
                                                                                                                          objectMapper))
+                                                                                             .withTimeouts(120, 120,  120)
                                                                                              .build();
 
         this.hubApiErrorDecoder = new HubApiErrorDecoder(objectMapper);
@@ -244,7 +245,7 @@ public class ParticipantHubClient {
 
             }
         }
-        
+
         return response;
     }
 

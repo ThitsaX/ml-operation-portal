@@ -53,18 +53,15 @@ public class GenerateSettlementAuditReportHandler
     protected Output onExecute(Input input) throws DomainException {
 
         String
-            dfspName =
-            input.dfspId()
-                 .equalsIgnoreCase("all") ? input.dfspId() : "";
+                dfspName = input.dfspId().equalsIgnoreCase("all") ? input.dfspId().toUpperCase() : "";
 
         if (!input.dfspId()
                   .equalsIgnoreCase("all")) {
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.dfspId());
 
-            dfspName =
-                optionalParticipantData.isEmpty() ? input.dfspId() : optionalParticipantData.get()
-                                                                                            .description();
+            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description().isEmpty()) ?
+                    input.dfspId().toUpperCase() : optionalParticipantData.get().description();
         }
 
         GenerateSettlementAuditReportCommand.Output output =
