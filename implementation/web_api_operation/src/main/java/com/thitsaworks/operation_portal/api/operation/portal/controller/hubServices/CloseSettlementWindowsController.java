@@ -43,7 +43,7 @@ public class CloseSettlementWindowsController {
                                                                                  request.reason,
                                                                                  request.settlementWindowId));
 
-        var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(),
+        var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(), output.closedDate(),
                                     output.changedDate());
 
         LOG.info("Close Settlement Window Response : [{}]", response);
@@ -63,6 +63,7 @@ public class CloseSettlementWindowsController {
                            @JsonProperty("state") String state,
                            @JsonProperty("reason") String reason,
                            @JsonProperty("createdDate") String createdDate,
+                           @JsonProperty("closedDate") String closedDate,
                            @JsonProperty("changedDate") String changedDate
     ) implements Serializable { }
 

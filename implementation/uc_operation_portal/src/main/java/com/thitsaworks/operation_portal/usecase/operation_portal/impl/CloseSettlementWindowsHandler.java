@@ -58,6 +58,7 @@ public class CloseSettlementWindowsHandler
             this.settlementHubClient.closeSettlementWindows(input.settlementWindowId(), request);
 
         return new Output(response.settlementWindowId(), request.state(), request.reason(), response.createdDate(),
+                          response.closedDate(),
                           response.changedDate());
     }
 

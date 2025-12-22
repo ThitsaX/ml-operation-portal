@@ -10,6 +10,7 @@ public class PostCloseSettlementWindows {
                            String state,
                            String reason,
                            String createdDate,
+                           String closedDate,
                            String changedDate) {
 
     }
