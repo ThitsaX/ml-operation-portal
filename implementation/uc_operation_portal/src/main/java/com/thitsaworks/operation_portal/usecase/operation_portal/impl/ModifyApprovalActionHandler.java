@@ -142,7 +142,7 @@ public class ModifyApprovalActionHandler
         extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
                                                                                .getId())));
         extension.setKey("approveUser");
-        extension.setValue(this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
+        extension.setValue(this.utility.getEmail(new UserId(input.responseUserId()
                                                                                .getId())));
         extensionList.addExtensionItem(extension);
         boolean toRecalculateNDC = false;
@@ -242,8 +242,8 @@ public class ModifyApprovalActionHandler
                 }
             }
 
-            String reason = actionType == PositionActionType.DEPOSIT ? "Admin portal funds in request" :
-                                "Admin portal funds out request";
+            String reason = actionType == PositionActionType.DEPOSIT ? "Deposit" :
+                                "Withdrawal";
 
             PostParticipantBalance.Request
                 request =
@@ -264,6 +264,11 @@ public class ModifyApprovalActionHandler
 
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
+            PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
+                approvalRequestData.getParticipantName(),
+                approvalRequestData.getParticipantSettlementCurrencyId(),
+                request);
+
             if (toRecalculateNDC) {
                 this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                      approvalRequestData,
@@ -271,11 +276,6 @@ public class ModifyApprovalActionHandler
                                                      currency,
                                                      actionType);
             }
-
-            PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
-                approvalRequestData.getParticipantName(),
-                approvalRequestData.getParticipantSettlementCurrencyId(),
-                request);
 
         }
 

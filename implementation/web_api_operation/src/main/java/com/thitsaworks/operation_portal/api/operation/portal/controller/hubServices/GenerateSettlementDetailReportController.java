@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateDetailReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementDetailReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class GenerateSettlementDetailReportController {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementDetailReportController.class);
 
-    private final GenerateDetailReport generateDetailReport;
+    private final GenerateSettlementDetailReport generateSettlementDetailReport;
 
     @PostMapping("/secured/generateDetailReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
@@ -36,8 +36,8 @@ public class GenerateSettlementDetailReportController {
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
-        GenerateDetailReport.Output output = this.generateDetailReport.execute(
-                new GenerateDetailReport.Input(fspId, settlementId, fileType, timezone));
+        GenerateSettlementDetailReport.Output output = this.generateSettlementDetailReport.execute(
+                new GenerateSettlementDetailReport.Input(fspId, settlementId, fileType, timezone));
 
         var response = new Response(output.detailReportData());
 

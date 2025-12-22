@@ -56,6 +56,8 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         params.put("dfspName", input.fspName());
         params.put("settlementId", input.settlementId());
         params.put("timezoneoffset", input.timezoneOffset());
+        params.put("report", input.filetype());
+        params.put("user", input.userName());
 
         InputStream jrxmlStream =
                 this.getClass().getClassLoader()
@@ -99,6 +101,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 cfg.setWhitePageBackground(false);
                 cfg.setOnePagePerSheet(false);
                 cfg.setCollapseRowSpan(false);
+                cfg.setWrapText(true);
                 xlsxExporter.setConfiguration(cfg);
 
                 xlsxExporter.exportReport();

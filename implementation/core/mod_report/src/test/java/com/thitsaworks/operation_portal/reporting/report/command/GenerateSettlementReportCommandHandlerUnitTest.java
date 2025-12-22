@@ -1,10 +1,10 @@
 package com.thitsaworks.operation_portal.reporting.report.command;
 
+import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.reporting.report.ReportConfiguration;
 import com.thitsaworks.operation_portal.reporting.report.TestSettings;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.impl.GenerateSettlementReportCommandHandler;
-import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -24,6 +24,11 @@ public class GenerateSettlementReportCommandHandlerUnitTest extends EnvAwareUnit
 
         FileOutputStream fout = new FileOutputStream(new File("C:\\settlement_report.xlsx"));
 
-        generateSettlementReportCommandHandler.execute(new GenerateSettlementReportCommand.Input("mmdokdollar", "1", "1" , ".xlsx", "0630"));
+        generateSettlementReportCommandHandler.execute(new GenerateSettlementReportCommand.Input("mmdokdollar",
+                                                                                                 "1",
+                                                                                                 "1",
+                                                                                                 ".xlsx",
+                                                                                                 "0630",
+                                                                                                 ""));
     }
 }

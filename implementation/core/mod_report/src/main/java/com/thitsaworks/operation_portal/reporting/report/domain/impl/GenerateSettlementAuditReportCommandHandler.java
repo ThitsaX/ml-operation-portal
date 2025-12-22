@@ -93,6 +93,9 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                 config.setRemoveEmptySpaceBetweenRows(true);
                 config.setIgnorePageMargins(true);
                 config.setCollapseRowSpan(false);
+                config.setWrapText(true);
+                config.setWhitePageBackground(false);
+                config.setIgnoreGraphics(false);
 
                 xlsxExporter.setConfiguration(config);
 

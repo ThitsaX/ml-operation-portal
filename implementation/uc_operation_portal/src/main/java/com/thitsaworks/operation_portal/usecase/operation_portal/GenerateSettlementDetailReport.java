@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface GenerateDetailReport extends
-                                      UseCase<GenerateDetailReport.Input, GenerateDetailReport.Output> {
+public interface GenerateSettlementDetailReport extends
+                                      UseCase<GenerateSettlementDetailReport.Input, GenerateSettlementDetailReport.Output> {
 
     record Input(String fspId,
                  String settlementId,
