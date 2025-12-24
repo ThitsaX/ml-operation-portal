@@ -11,18 +11,22 @@ import java.util.List;
 public interface GetParticipantList
     extends UseCase<GetParticipantList.Input, GetParticipantList.Output> {
 
-    record Input() {}
+    record Input() { }
 
     record Output(List<ParticipantInfo> participantInfoList) {
+
         public record ParticipantInfo(
-                ParticipantId participantId,
-                String participantName,
-                String description,
-                String address,
-                Mobile mobile,
-                String logoFileType,
-                byte[] logo,
-                Instant createdDate
-        ) implements Serializable {}
+            ParticipantId participantId,
+            int dfspId,
+            String participantName,
+            String description,
+            String address,
+            Mobile mobile,
+            String logoFileType,
+            byte[] logo,
+            Instant createdDate
+        ) implements Serializable { }
+
     }
+
 }

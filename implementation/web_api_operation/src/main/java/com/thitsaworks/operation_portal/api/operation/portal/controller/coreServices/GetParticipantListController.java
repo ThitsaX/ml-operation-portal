@@ -29,8 +29,7 @@ public class GetParticipantListController {
     @GetMapping(value = "/secured/getParticipantList")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
-        GetParticipantList.Output output = this.getParticipantList.execute(
-            new GetParticipantList.Input());
+        GetParticipantList.Output output = this.getParticipantList.execute(new GetParticipantList.Input());
 
         List<Response.ParticipantInfo> participantInfoList = new ArrayList<>();
 
@@ -39,6 +38,7 @@ public class GetParticipantListController {
             participantInfoList.add(new Response.ParticipantInfo(participant.participantId()
                                                                             .getId()
                                                                             .toString(),
+                                                                 participant.dfspId(),
                                                                  participant.participantName(),
                                                                  participant.description(),
                                                                  participant.logoFileType(),
@@ -60,13 +60,12 @@ public class GetParticipantListController {
         implements Serializable {
 
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public record ParticipantInfo(
-            @JsonProperty("participantId") String participantId,
-            @JsonProperty("participantName") String participantName,
-            @JsonProperty("description") String description,
-            @JsonProperty("logoFileType") String logoFileType,
-            @JsonProperty("logo") String logoBase64) implements Serializable {
-        }
+        public record ParticipantInfo(@JsonProperty("participantId") String participantId,
+                                      @JsonProperty("dfspId") int dfspId,
+                                      @JsonProperty("participantName") String participantName,
+                                      @JsonProperty("description") String description,
+                                      @JsonProperty("logoFileType") String logoFileType,
+                                      @JsonProperty("logo") String logoBase64) implements Serializable { }
 
     }
 

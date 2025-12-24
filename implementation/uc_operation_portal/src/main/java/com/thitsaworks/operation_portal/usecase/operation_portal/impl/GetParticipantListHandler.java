@@ -44,18 +44,23 @@ public class GetParticipantListHandler
         for (ParticipantData participantData : participantDataList) {
 
             if (participantData.participantName() != null &&
-                    !participantData.participantName().getValue().toLowerCase().contains("hub")) {
+                    !participantData.participantName()
+                                    .getValue()
+                                    .toLowerCase()
+                                    .contains("hub")) {
 
                 participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
+                                                                                      participantData.dfspId(),
                                                                                       participantData.participantName()
                                                                                                      .getValue(),
+
                                                                                       participantData.description(),
                                                                                       participantData.address(),
                                                                                       participantData.mobile(),
                                                                                       participantData.logoFileType(),
                                                                                       participantData.logo(),
                                                                                       Instant.ofEpochSecond(
-                                                                                              participantData.createdDate())));
+                                                                                          participantData.createdDate())));
             }
         }
 

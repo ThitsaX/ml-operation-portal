@@ -49,6 +49,9 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Convert(converter = ParticipantName.JpaConverter.class)
     protected ParticipantName participantName;
 
+    @Column(name = "dfsp_id")
+    protected int dfspId;
+
     @Column(name = "description")
     protected String description;
 
