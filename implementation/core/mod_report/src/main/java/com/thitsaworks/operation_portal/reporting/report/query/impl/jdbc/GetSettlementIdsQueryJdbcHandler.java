@@ -39,7 +39,7 @@ public class GetSettlementIdsQueryJdbcHandler implements GetSettlementIdsQuery {
         try {
 
             results = this.jdbcTemplate.query(
-                "SELECT spc.settlementId as settlementId FROM settlementParticipantCurrency spc \n" +
+                "SELECT DISTINCT spc.settlementId as settlementId FROM settlementParticipantCurrency spc \n" +
                     " JOIN participantCurrency pc ON pc.participantCurrencyId = spc.participantCurrencyId \n" +
                     " WHERE (? IS NULL OR pc.participantId = ?) \n" +
                     " AND spc.createdDate BETWEEN \n" +
