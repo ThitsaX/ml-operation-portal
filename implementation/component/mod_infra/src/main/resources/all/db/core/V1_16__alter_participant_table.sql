@@ -1,1 +1,1 @@
-ALTER TABLE `operation_portal`.`tbl_participant` ADD COLUMN `dfsp-id` INT NULL AFTER `participant_id`;
+ALTER TABLE `operation_portal`.`tbl_participant` ADD COLUMN `dfsp_id` INT NULL AFTER `participant_id`;
