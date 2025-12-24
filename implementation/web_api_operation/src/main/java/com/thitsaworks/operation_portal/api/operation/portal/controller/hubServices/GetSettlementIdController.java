@@ -28,7 +28,7 @@ public class GetSettlementIdController {
     @GetMapping("/secured/getSettlementId")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
-                                            @RequestParam("dfspId") String dfspId,
+                                            @RequestParam(value = "dfspId", required = false) String dfspId,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
