@@ -41,7 +41,7 @@ public class GetSettlementIdsQueryJdbcHandler implements GetSettlementIdsQuery {
             results = this.jdbcTemplate.query(
                 "SELECT spc.settlementId as settlementId FROM settlementParticipantCurrency spc \n" +
                     " JOIN participantCurrency pc ON pc.participantCurrencyId = spc.participantCurrencyId \n" +
-                    " WHERE (? IS NULL OR pc.participantCurrencyId = ?) \n" +
+                    " WHERE (? IS NULL OR pc.participantId = ?) \n" +
                     " AND spc.createdDate BETWEEN \n" +
                     " (CASE WHEN SUBSTRING(?,1,1) = '-' THEN \n" +
                     "   CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE \n" +
