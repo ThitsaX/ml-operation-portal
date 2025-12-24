@@ -39,7 +39,9 @@ public class GetSettlementIdsQueryJdbcHandler implements GetSettlementIdsQuery {
         try {
 
             results = this.jdbcTemplate.query(
-                "SELECT settlementId FROM settlement WHERE createdDate BETWEEN \n" +
+                "SELECT spc.settlementId as settlementId FROM settlementParticipantCurrency spc \n" +
+                    " JOIN participantCurrency pc ON pc.participantCurrencyId = spc.participantCurrencyId \n" +
+                    " WHERE pc.participantCurrencyId = ? AND spc.createdDate BETWEEN \n" +
                     " (CASE WHEN SUBSTRING(?,1,1) = '-' THEN \n" +
                     " CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE \n" +
                     " CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END) \n" +
@@ -48,6 +50,7 @@ public class GetSettlementIdsQueryJdbcHandler implements GetSettlementIdsQuery {
                     " CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE\n" +
                     " CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END) ;",
                 new SettlementIdDataMapper(),
+                input.dfspId(),
                 timezone,
                 input.startDate(), timezone, timezone,
                 input.startDate(), timezone, timezone,

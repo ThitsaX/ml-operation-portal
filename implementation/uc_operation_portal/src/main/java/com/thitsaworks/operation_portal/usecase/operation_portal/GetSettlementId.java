@@ -11,6 +11,7 @@ public interface GetSettlementId extends
 
     record Input(Instant startDate,
                  Instant endDate,
+                 Integer dfspId,
                  String timezoneOffset) { }
 
     record Output(List<SettlementIdData> settlementIds) { }

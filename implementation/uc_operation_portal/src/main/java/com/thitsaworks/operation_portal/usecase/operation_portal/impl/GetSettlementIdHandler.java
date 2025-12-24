@@ -38,6 +38,7 @@ public class GetSettlementIdHandler extends OperationPortalUseCase<GetSettlement
         GetSettlementIdsQuery.Output output = this.getSettlementIdsQuery.execute(
             new GetSettlementIdsQuery.Input(Timestamp.from(input.startDate()),
                                             Timestamp.from(input.endDate()),
+                                            input.dfspId(),
                                             input.timezoneOffset()));
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
