@@ -47,27 +47,29 @@ public class CreateParticipantHandler
     public Output onExecute(Input input) throws DomainException {
 
         CreateParticipantCommand.Output output = this.createParticipantCommand.execute(
-            new CreateParticipantCommand.Input(input.participantName(),
-                                               input.description(),
-                                               input.address(),
-                                               input.mobile(),
-                                               input.status(),
-                                               input.contactInfoList()
-                                                    .stream()
-                                                    .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
-                                                                                                                info.position(),
-                                                                                                                info.email(),
-                                                                                                                info.mobile(),
-                                                                                                                info.contactType()))
-                                                    .collect(Collectors.toList()),
-                                               input.liquidityProfileInfoList()
-                                                    .stream()
-                                                    .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(
-                                                        info.accountName(),
-                                                        info.accountNumber(),
-                                                        info.currency(),
-                                                        info.status()))
-                                                    .collect(Collectors.toList())));
+            new CreateParticipantCommand.Input(
+                input.participantId(),
+                input.participantName(),
+                input.description(),
+                input.address(),
+                input.mobile(),
+                input.status(),
+                input.contactInfoList()
+                     .stream()
+                     .map(info -> new CreateParticipantCommand.Input.ContactInfo(info.name(),
+                                                                                 info.position(),
+                                                                                 info.email(),
+                                                                                 info.mobile(),
+                                                                                 info.contactType()))
+                     .collect(Collectors.toList()),
+                input.liquidityProfileInfoList()
+                     .stream()
+                     .map(info -> new CreateParticipantCommand.Input.LiquidityProfileInfo(
+                         info.accountName(),
+                         info.accountNumber(),
+                         info.currency(),
+                         info.status()))
+                     .collect(Collectors.toList())));
 
         return new CreateParticipant.Output(output.created(), output.participantId());
     }

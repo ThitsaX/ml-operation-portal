@@ -14,7 +14,8 @@ import java.util.List;
 public interface CreateParticipant
     extends UseCase<CreateParticipant.Input, CreateParticipant.Output> {
 
-    record Input(ParticipantName participantName,
+    record Input(int participantId,
+                 ParticipantName participantName,
                  String description,
                  String address,
                  Mobile mobile,

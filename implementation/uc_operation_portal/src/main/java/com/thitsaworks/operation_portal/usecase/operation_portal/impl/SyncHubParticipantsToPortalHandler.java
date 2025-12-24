@@ -65,8 +65,10 @@ public class SyncHubParticipantsToPortalHandler
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
                 CreateParticipantCommand.Output output =
-                    this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName(
-                        hubParticipant.name()),
+                    this.createParticipantCommand.execute(new CreateParticipantCommand.Input(Integer.parseInt(
+                        hubParticipant.participantId()),
+                                                                                             new ParticipantName(
+                                                                                                 hubParticipant.name()),
                                                                                              hubParticipant.description(),
                                                                                              null,
                                                                                              null,

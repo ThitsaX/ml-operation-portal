@@ -13,7 +13,8 @@ import java.util.List;
 
 public interface CreateParticipantCommand {
 
-    record Input(ParticipantName participantName,
+    record Input(int dfspId,
+                 ParticipantName participantName,
                  String description,
                  String address,
                  Mobile mobile,

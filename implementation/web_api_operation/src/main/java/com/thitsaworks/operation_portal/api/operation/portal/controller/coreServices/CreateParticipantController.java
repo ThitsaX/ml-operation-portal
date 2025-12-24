@@ -74,13 +74,15 @@ public class CreateParticipantController {
         }
 
         CreateParticipant.Output output = this.createParticipant.execute(
-            new CreateParticipant.Input(new ParticipantName(request.participantName()),
-                                        request.description(),
-                                        request.address(),
-                                        new Mobile(request.mobile()),
-                                        ParticipantStatus.valueOf(request.participantStatus()),
-                                        contactInfoList,
-                                        liquidityProfileInfoList));
+            new CreateParticipant.Input(
+                request.dfspId(),
+                new ParticipantName(request.participantName()),
+                request.description(),
+                request.address(),
+                new Mobile(request.mobile()),
+                ParticipantStatus.valueOf(request.participantStatus()),
+                contactInfoList,
+                liquidityProfileInfoList));
 
         Response response = new Response(output.participantId()
                                                .getId()
@@ -94,6 +96,7 @@ public class CreateParticipantController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
+        @NotNull @JsonProperty("dfspId") int dfspId,
         @NotNull @NotBlank @JsonProperty("participantName") String participantName,
         @NotNull @JsonProperty("description") String description,
         @NotNull @JsonProperty("address") String address,

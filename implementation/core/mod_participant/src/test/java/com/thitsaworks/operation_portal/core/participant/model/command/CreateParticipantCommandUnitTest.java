@@ -27,7 +27,7 @@ public class CreateParticipantCommandUnitTest {
     @Test
     public void test_createParticipantSuccessfully() throws Exception {
 
-        this.createParticipantCommand.execute(new CreateParticipantCommand.Input(new ParticipantName("abcdefg"),
+        this.createParticipantCommand.execute(new CreateParticipantCommand.Input(1, new ParticipantName("abcdefg"),
                                                                                  "Vision Fund",
                                                                                  "address",
                                                                                  new Mobile("+959250661838"),
