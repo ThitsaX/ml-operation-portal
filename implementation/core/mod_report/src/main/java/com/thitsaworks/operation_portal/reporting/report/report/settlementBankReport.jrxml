@@ -381,7 +381,8 @@
 									<textElement verticalAlignment="Top">
 										<font fontName="Calibri" size="11"/>
 									</textElement>
-									<textFieldExpression><![CDATA[$F{participant}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{participant} == null ? "-" :
+$F{participant}.replaceAll("(.{1,35})(\\s+|$)", "$1\n")]]></textFieldExpression>
 								</textField>
 							</frame>
 						</jr:detailCell>
@@ -427,7 +428,8 @@
 									<textElement verticalAlignment="Top">
 										<font fontName="Calibri" size="11"/>
 									</textElement>
-									<textFieldExpression><![CDATA[$F{settlementBankAccount}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{settlementBankAccount} == null ? "-" :
+$F{settlementBankAccount}.replaceAll("(.{1,68})(\\s+|$)", "$1\n")]]></textFieldExpression>
 								</textField>
 							</frame>
 						</jr:detailCell>
