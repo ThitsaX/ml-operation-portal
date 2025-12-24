@@ -11,6 +11,7 @@ public interface GetSettlementIdsQuery {
     record Input(
             Timestamp startDate,
             Timestamp endDate,
+            Integer dfspId,
             String timezoneOffset
     ) {}
 

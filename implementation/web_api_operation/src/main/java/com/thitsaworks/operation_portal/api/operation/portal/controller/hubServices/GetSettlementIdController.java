@@ -28,14 +28,15 @@ public class GetSettlementIdController {
     @GetMapping("/secured/getSettlementId")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
+                                            @RequestParam("dfspId") Integer dfspId,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Get SettlementId Request : startDate = [{}], endDate = [{}], timezoneOffset = [{}]",
-                 startDate, endDate, timezoneOffset);
+        LOG.info("Get SettlementId Request : startDate = [{}], endDate = [{}], dfspId = [{}], timezoneOffset = [{}]",
+                 startDate, endDate, dfspId, timezoneOffset);
 
         GetSettlementId.Output output = this.getSettlementId.execute(
-            new GetSettlementId.Input(Instant.parse(startDate), Instant.parse(endDate), timezoneOffset));
+            new GetSettlementId.Input(Instant.parse(startDate), Instant.parse(endDate), dfspId ,timezoneOffset));
 
         List<SettlementIdInfo>
             settlementIdInfoList =
