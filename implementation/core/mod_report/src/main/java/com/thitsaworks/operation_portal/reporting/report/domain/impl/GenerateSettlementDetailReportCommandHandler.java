@@ -12,6 +12,7 @@ import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.export.SimpleCsvExporterConfiguration;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
@@ -51,6 +52,7 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
         params.put("fspId", input.fspId());
         params.put("dfspName", input.dfspName());
         params.put("timezoneoffset", input.timezoneOffset());
+        params.put("report", input.fileType());
 
         InputStream
                 jrxmlStream =
@@ -98,6 +100,13 @@ public class GenerateSettlementDetailReportCommandHandler implements GenerateSet
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
                 csvExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 csvExporter.setExporterOutput(new SimpleWriterExporterOutput(csvReport));
+
+                SimpleCsvExporterConfiguration config =
+                        new SimpleCsvExporterConfiguration();
+
+                config.setForceFieldEnclosure(false);
+                csvExporter.setConfiguration(config);
+
                 csvExporter.exportReport();
                 rptBytes = csvReport.toByteArray();
 

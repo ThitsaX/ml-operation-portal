@@ -262,7 +262,26 @@ ORDER BY p.name, settlementWindowId]]>
 		<queryString language="plsql">
 			<![CDATA[SELECT 'Settlement ID'   AS label, CAST($P{settlementId} AS CHAR(200)) AS value
 					UNION ALL
-					SELECT 'Settlement Created Date' AS label,  CAST($P{settlementCreatedDate} AS CHAR(200)) AS value
+					SELECT 'Settlement Created Date' AS label,
+       CONCAT(
+         DATE_FORMAT(
+           CASE
+             WHEN SUBSTRING($P{timezoneoffset},1,1) = '-'
+             THEN CONVERT_TZ(s.createdDate, '+00:00',
+                  CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+             ELSE CONVERT_TZ(s.createdDate, '+00:00',
+                  CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+           END,
+           '%Y-%m-%dT%H:%i:%s'
+         ),
+         CASE
+           WHEN SUBSTRING($P{timezoneoffset},1,1) = '-'
+           THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+           ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2))
+         END
+       ) AS value
+FROM settlement s
+WHERE s.settlementId = $P{settlementId}
 					UNION ALL
 					SELECT 'DFSP ID'   AS label, CAST($P{dfspId} AS CHAR(200)) AS value
 					UNION ALL

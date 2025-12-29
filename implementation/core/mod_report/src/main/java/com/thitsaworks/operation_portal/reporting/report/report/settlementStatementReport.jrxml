@@ -240,7 +240,7 @@ SELECT 'TimeZoneOffSet' AS label,
 							  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
 							  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
 							  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal'
-							  ELSE 'NDC Amount Update' END AS processDescription,  
+							  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription,  
 							  NULL AS fundsIn, 
 							  NULL AS fundsOut, 
 							  NULL AS balance, 
@@ -469,7 +469,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 							  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
 							  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
 							  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal' 
-							  ELSE 'NDC Amount Update' END AS processDescription,  
+							  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription,  
 							  NULL AS fundsIn, 
 							  NULL AS fundsOut, 
 							  NULL AS balance, 
