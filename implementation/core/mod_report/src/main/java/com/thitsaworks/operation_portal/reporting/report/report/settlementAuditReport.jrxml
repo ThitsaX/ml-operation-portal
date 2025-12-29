@@ -863,25 +863,6 @@ ORDER BY dfspId, currency, createdDate;]]>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
-								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
-									<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
-									<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
-									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
-									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-								</reportElement>
-								<textElement>
-									<font fontName="Calibri" size="11"/>
-									<paragraph lineSpacing="Single"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="300" uuid="166c6715-bf52-428d-b897-364c61696c3d">
-						<jr:detailCell style="Table_TD" height="17">
-							<property name="com.jaspersoft.studio.unit.width" value="px"/>
-							<property name="com.jaspersoft.studio.unit.height" value="px"/>
 							<textField textAdjust="StretchHeight">
 								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
 									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
