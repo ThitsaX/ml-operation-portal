@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="NoPages" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -80,6 +80,7 @@
 		<parameter name="dfspId" class="java.lang.String"/>
 		<parameter name="dfspName" class="java.lang.String"/>
 		<parameter name="currencyId" class="java.lang.String"/>
+		<parameter name="report" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[WITH base AS ( 
@@ -302,12 +303,50 @@ ORDER BY dfspId, currency, createdDate;]]>
 			<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
 		</field>
 	</subDataset>
+	<subDataset name="header" uuid="d44912b1-e131-4631-999f-7ae1ee4d6872">
+		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
+		<parameter name="startDate" class="java.lang.String"/>
+		<parameter name="endDate" class="java.lang.String"/>
+		<parameter name="dfspId" class="java.lang.String"/>
+		<parameter name="dfspName" class="java.lang.String"/>
+		<parameter name="currencyId" class="java.lang.String"/>
+		<parameter name="timezoneoffset" class="java.lang.String"/>
+		<parameter name="report" class="java.lang.String"/>
+		<queryString language="plsql">
+			<![CDATA[SELECT 'DFSP ID'   AS label, CAST($P{dfspId} AS CHAR(200)) AS value
+					UNION ALL
+					SELECT 'DFSP Name'   AS label, CAST($P{dfspName} AS CHAR(1000)) AS value
+					UNION ALL
+					SELECT 'From Date' AS label,
+      CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS value
+					UNION ALL
+					SELECT 'To Date' AS label,
+       CONCAT(DATE_FORMAT($P{endDate},'%Y-%m-%dT%H:%i:%s'),
+		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS value
+UNION ALL
+					SELECT 'Currency'   AS label, CAST($P{currencyId} AS CHAR(200)) AS value
+					UNION ALL
+					
+					SELECT 'TimeZoneOffSet' AS label,
+					       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-'
+		            THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+		            ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2))
+      				END AS value]]>
+		</queryString>
+		<field name="label" class="java.lang.String"/>
+		<field name="value" class="java.lang.String"/>
+	</subDataset>
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
 	<parameter name="dfspId" class="java.lang.String"/>
 	<parameter name="dfspName" class="java.lang.String"/>
 	<parameter name="currencyId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
+	<parameter name="report" class="java.lang.String"/>
 	<queryString language="plsql">
 		<![CDATA[WITH base AS ( 
 SELECT * FROM (
@@ -530,187 +569,6 @@ ORDER BY dfspId, currency, createdDate;]]>
 	</field>
 	<title>
 		<band height="300" splitType="Prevent">
-			<staticText>
-				<reportElement x="0" y="0" width="180" height="17" uuid="c6a46694-b85a-471f-920d-c69d331dfce2">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[DFSP ID]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="30" width="180" height="17" uuid="2fa6a843-3466-4caa-9093-3f6895c3ac43">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[DFSP Name]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="60" width="180" height="17" uuid="2f6b6be3-6890-4758-b52a-41e8a1506dc1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[From Date]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="90" width="180" height="17" uuid="05110c68-acef-4bed-a8ae-6a79a46abbb1">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[To Date]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="120" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Currency]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="150" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-				</textElement>
-				<text><![CDATA[TimeZoneOffSet]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="180" width="180" height="17" uuid="487fcb6d-59c9-48cd-ade4-d1ca3130e17d">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-			</staticText>
-			<textField>
-				<reportElement x="180" y="0" width="300" height="17" uuid="d105dc37-e3af-4736-a863-cb59a2a4a2a4">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{dfspId}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="180" y="30" width="300" height="17" uuid="02b1f4e3-4a44-4f67-94bf-95a1501f232c">
-					<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
-					<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
-					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
-					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{dfspName}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="180" y="60" width="300" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{fromDate}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="180" y="90" width="300" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{toDate}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="180" y="120" width="300" height="17" uuid="acaf955e-c322-44b4-b96a-d6194c159c97"/>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{currencyId}]]></textFieldExpression>
-			</textField>
-			<textField pattern="dd-MMM-yyyy">
-				<reportElement x="180" y="150" width="300" height="17" uuid="6939a2b0-3ba1-4d42-b930-534b6da3b499"/>
-				<box>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Left">
-					<font fontName="Calibri" size="11" isBold="false"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{timezoneoffset}]]></textFieldExpression>
-			</textField>
 			<componentElement>
 				<reportElement style="Style1" isPrintRepeatedValues="false" x="0" y="217" width="2000" height="50" uuid="2520620f-7d5f-4a9b-9abe-7cea469734dd">
 					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
@@ -735,11 +593,17 @@ ORDER BY dfspId, currency, createdDate;]]>
 						<datasetParameter name="dfspId">
 							<datasetParameterExpression><![CDATA[$P{dfspId}]]></datasetParameterExpression>
 						</datasetParameter>
+						<datasetParameter name="dfspName">
+							<datasetParameterExpression><![CDATA[$P{dfspName}]]></datasetParameterExpression>
+						</datasetParameter>
 						<datasetParameter name="currencyId">
 							<datasetParameterExpression><![CDATA[$P{currencyId}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="timezoneoffset">
 							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="report">
+							<datasetParameterExpression><![CDATA[$P{report}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="ORACLE_REF_CURSOR">
 							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>
@@ -928,6 +792,112 @@ ORDER BY dfspId, currency, createdDate;]]>
 									<font fontName="Calibri" size="11"/>
 								</textElement>
 								<textFieldExpression><![CDATA[$F{madeBy}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement x="0" y="140" width="180" height="17" uuid="539d5840-3837-4640-bbf6-8669fef818d1">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineColor="#000000"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement x="0" y="30" width="480" height="60" uuid="04048f9a-706e-40be-97b5-dafafb4574ab">
+					<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.VerticalRowLayout"/>
+					<property name="com.jaspersoft.studio.table.style.table_header" value="Table 2_TH"/>
+					<property name="com.jaspersoft.studio.table.style.column_header" value="Table 2_CH"/>
+					<property name="com.jaspersoft.studio.table.style.detail" value="Table 2_TD"/>
+				</reportElement>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="header" uuid="fc889f8c-059b-43a2-904f-3c1edf33ea97">
+						<datasetParameter name="startDate">
+							<datasetParameterExpression><![CDATA[$P{startDate}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="endDate">
+							<datasetParameterExpression><![CDATA[$P{endDate}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="dfspId">
+							<datasetParameterExpression><![CDATA[$P{dfspId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="dfspName">
+							<datasetParameterExpression><![CDATA[$P{dfspName}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="currencyId">
+							<datasetParameterExpression><![CDATA[$P{currencyId}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="timezoneoffset">
+							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="report">
+							<datasetParameterExpression><![CDATA[$P{report}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="ORACLE_REF_CURSOR">
+							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>
+						</datasetParameter>
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="180" uuid="e61f3aa2-37f8-427c-8012-0b111794372b">
+						<jr:detailCell style="Table_TD" height="17">
+							<textField>
+								<reportElement x="0" y="0" width="180" height="17" uuid="260dcf28-b8da-4955-be3c-cafaeb0beae4"/>
+								<textElement>
+									<font fontName="Calibri" size="11" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{label}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="300" uuid="166c6715-bf52-428d-b897-364c61696c3d">
+						<jr:detailCell style="Table_TD" height="17">
+							<property name="com.jaspersoft.studio.unit.width" value="px"/>
+							<property name="com.jaspersoft.studio.unit.height" value="px"/>
+							<textField textAdjust="StretchHeight">
+								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
+									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
+									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+									<printWhenExpression><![CDATA["pdf".equalsIgnoreCase($P{report})]]></printWhenExpression>
+								</reportElement>
+								<textElement>
+									<font fontName="Calibri" size="11"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
+									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
+									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+									<printWhenExpression><![CDATA["xlsx".equalsIgnoreCase($P{report})]]></printWhenExpression>
+								</reportElement>
+								<textElement>
+									<font fontName="Calibri" size="11"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+							</textField>
+							<textField>
+								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
+									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
+									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+									<printWhenExpression><![CDATA["csv".equalsIgnoreCase($P{report})]]></printWhenExpression>
+								</reportElement>
+								<textElement>
+									<font fontName="Calibri" size="11"/>
+									<paragraph lineSpacing="Single"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
