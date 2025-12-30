@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="NoPages" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -184,21 +184,7 @@ seq AS (
 				        PARTITION BY b.dfspId, b.currency
 				        ORDER BY b.createdDate
 				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-		      ) AS grp,
-		       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndc END AS ndc_anchor, 
-			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
-			      OVER (
-			        PARTITION BY b.dfspId, b.currency
-			        ORDER BY b.createdDate
-			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-			      ) AS ndc_grp,
-			       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndcPercent END AS ndc_percent_anchor, 
-			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
-			      OVER (
-			        PARTITION BY b.dfspId, b.currency
-			        ORDER BY b.createdDate
-			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-			      ) AS ndc_percent_grp
+		      ) AS grp 
 		  FROM base b
 )
 SELECT
@@ -212,26 +198,19 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  CASE
-		    WHEN processDescription LIKE 'NDC%' THEN
-		      COALESCE(
-		        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
-		          OVER (PARTITION BY dfspId, currency, grp),
-		        0
-		      )
-		    ELSE ABS(balance)
-		  END AS balance,
-		  COALESCE(
-	    MAX(ndc_percent_anchor) OVER (PARTITION BY dfspId, currency, ndc_percent_grp),
-	    '-'
-	  ) AS ndcPercent, 
-	  COALESCE(
-	    MAX(ndc_anchor) OVER (PARTITION BY dfspId, currency, ndc_grp),
-	    0
-	  ) AS ndc, 
+		  CASE WHEN processDescription LIKE 'NDC%' THEN
+		    COALESCE( CASE
+		        WHEN ndcPercent IS NOT NULL AND ndcPercent <> '-' AND REPLACE(ndcPercent, '%', '') <> ''
+		        THEN ROUND( ndc / (CAST(REPLACE(ndcPercent, '%', '') AS DECIMAL(10,2)) / 100), 2 )
+		      END, MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END) OVER (PARTITION BY dfspId, currency, grp), 0)
+		  ELSE ABS(balance) END AS balance,
+		  ndcPercent, 
+		  ndc, 
 		  currency,
 		  settlementBankAccount,
-		  madeBy, 
+		  COALESCE(SUBSTRING_INDEX(MAX(CASE WHEN madeBy IS NOT NULL AND madeBy <> '' THEN CONCAT(DATE_FORMAT(createdDate,'%Y%m%d%H%i%s'), '|', madeBy)
+        END) OVER (PARTITION BY dfspId, currency  ORDER BY createdDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+    	  '|', -1),'') AS madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
@@ -449,21 +428,7 @@ seq AS (
 				        PARTITION BY b.dfspId, b.currency
 				        ORDER BY b.createdDate
 				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-		      ) AS grp,
-		       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndc END AS ndc_anchor, 
-			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
-			      OVER (
-			        PARTITION BY b.dfspId, b.currency
-			        ORDER BY b.createdDate
-			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-			      ) AS ndc_grp,
-			       CASE WHEN b.processDescription LIKE 'NDC%' THEN b.ndcPercent END AS ndc_percent_anchor, 
-			    SUM(CASE WHEN b.processDescription LIKE 'NDC%' THEN 1 ELSE 0 END)
-			      OVER (
-			        PARTITION BY b.dfspId, b.currency
-			        ORDER BY b.createdDate
-			        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-			      ) AS ndc_percent_grp
+		      ) AS grp 
 		  FROM base b
 )
 SELECT
@@ -477,26 +442,19 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  CASE
-		    WHEN processDescription LIKE 'NDC%' THEN
-		      COALESCE(
-		        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
-		          OVER (PARTITION BY dfspId, currency, grp),
-		       0
-		      )
-		    ELSE ABS(balance)
-		  END AS balance,
-		  COALESCE(
-	    MAX(ndc_percent_anchor) OVER (PARTITION BY dfspId, currency, ndc_percent_grp),
-	    '-'
-	  ) AS ndcPercent, 
-	  COALESCE(
-	    MAX(ndc_anchor) OVER (PARTITION BY dfspId, currency, ndc_grp),
-	    0
-	  ) AS ndc, 
+		  CASE WHEN processDescription LIKE 'NDC%' THEN
+		    COALESCE( CASE
+		        WHEN ndcPercent IS NOT NULL AND ndcPercent <> '-' AND REPLACE(ndcPercent, '%', '') <> ''
+		        THEN ROUND( ndc / (CAST(REPLACE(ndcPercent, '%', '') AS DECIMAL(10,2)) / 100), 2 )
+		      END, MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END) OVER (PARTITION BY dfspId, currency, grp), 0)
+		  ELSE ABS(balance) END AS balance,
+		  ndcPercent, 
+		  ndc,
 		  currency,
 		  settlementBankAccount,
-		  madeBy, 
+		  COALESCE(SUBSTRING_INDEX(MAX(CASE WHEN madeBy IS NOT NULL AND madeBy <> '' THEN CONCAT(DATE_FORMAT(createdDate,'%Y%m%d%H%i%s'), '|', madeBy)
+        END) OVER (PARTITION BY dfspId, currency  ORDER BY createdDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
+    	  '|', -1),'') AS madeBy, 
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
@@ -687,7 +645,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{fundsIn}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsIn} == null || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsIn})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -701,7 +659,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{fundsOut}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsOut} == null || $F{fundsOut}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{fundsOut}.compareTo(java.math.BigDecimal.ZERO) == 0.00)? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsOut})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -715,7 +673,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{balance}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{balance} == null || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{balance})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -743,7 +701,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{ndc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{ndc} == null || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{ndc})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
