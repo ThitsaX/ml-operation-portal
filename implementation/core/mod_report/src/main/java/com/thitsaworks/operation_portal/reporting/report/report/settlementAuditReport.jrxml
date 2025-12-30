@@ -140,7 +140,7 @@ SELECT * FROM (
 				  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
 				  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
 				  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal' 
-				  ELSE 'NDC Amount Update' END AS processDescription,  
+				  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription,  
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
 				  0 AS balance, 
@@ -405,7 +405,7 @@ SELECT * FROM (
 				  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
 				  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
 				  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal' 
-				  ELSE 'NDC Amount Update' END AS processDescription, 
+				  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription, 
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
 				  0 AS balance, 
@@ -863,35 +863,12 @@ ORDER BY dfspId, currency, createdDate;]]>
 						<jr:detailCell style="Table_TD" height="17">
 							<property name="com.jaspersoft.studio.unit.width" value="px"/>
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField textAdjust="StretchHeight">
-								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
-									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
-									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-									<printWhenExpression><![CDATA["pdf".equalsIgnoreCase($P{report})]]></printWhenExpression>
-								</reportElement>
-								<textElement>
-									<font fontName="Calibri" size="11"/>
-									<paragraph lineSpacing="Single"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
-							</textField>
 							<textField>
 								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
+									<property name="net.sf.jasperreports.export.xlsx.wrap.text" value="true"/>
+									<property name="net.sf.jasperreports.export.xls.wrap.text" value="true"/>
 									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-									<printWhenExpression><![CDATA["xlsx".equalsIgnoreCase($P{report})]]></printWhenExpression>
-								</reportElement>
-								<textElement>
-									<font fontName="Calibri" size="11"/>
-									<paragraph lineSpacing="Single"/>
-								</textElement>
-								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
-							</textField>
-							<textField>
-								<reportElement x="0" y="0" width="300" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
-									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
-									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-									<printWhenExpression><![CDATA["csv".equalsIgnoreCase($P{report})]]></printWhenExpression>
 								</reportElement>
 								<textElement>
 									<font fontName="Calibri" size="11"/>
