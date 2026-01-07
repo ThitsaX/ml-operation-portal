@@ -69,7 +69,7 @@ public class GenerateSettlementAuditReportHandler
                                                                                                              input.endDate(),
                                                                                                              input.dfspId(),
                                                                                                              dfspName,
-                                                                                                             input.currencyId(),
+                                                                                                             input.currencyId().toUpperCase(),
                                                                                                              input.fileType(),
                                                                                                              input.timezone()));
 

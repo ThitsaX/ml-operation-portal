@@ -72,7 +72,7 @@ public class GenerateSettlementStatementReportHandler
                                                                input.startDate(),
                                                                input.endDate(),
                                                                input.fileType(),
-                                                               input.currencyId(),
+                                                               input.currencyId().toUpperCase(),
                                                                input.timezoneOffSet()));
 
         return new Output(output.settlementStatementRptByte());

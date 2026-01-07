@@ -61,7 +61,7 @@ public class GenerateSettlementBankReportHandler
 
         GenerateSettlementBankReportCommand.Output output =
                 this.generateSettlementBankReportCommand.execute(new GenerateSettlementBankReportCommand.Input(input.settlementId(),
-                                                                                                               input.currencyId(),
+                                                                                                               input.currencyId().toUpperCase(),
                                                                                                                input.fileType(),
                                                                                                                input.timezone(),
                                                                                                                getUser.name()));

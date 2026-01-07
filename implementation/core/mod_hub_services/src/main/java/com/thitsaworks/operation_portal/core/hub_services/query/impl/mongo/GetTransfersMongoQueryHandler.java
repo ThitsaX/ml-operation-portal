@@ -73,16 +73,16 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
             final long skipN = (long) (page - 1) * pageSize;
 
             final AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
-                                                                            .addFieldWithValue("_createdAt",
+                                                                            .addFieldWithValue("_lastUpdated",
                                                                                                ConvertOperators.ToDate.toDate(
-                                                                                                       "$createdAt"))
+                                                                                                       "$lastUpdated"))
                                                                             .build();
 
             final Instant start = Instant.parse(input.getFromDate());
 
             final Instant end = Instant.parse(input.getToDate());
 
-            final Criteria baseDate = Criteria.where("_createdAt").gte(Date.from(start)).lte(Date.from(end));
+            final Criteria baseDate = Criteria.where("_lastUpdated").gte(Date.from(start)).lte(Date.from(end));
 
             final List<Criteria> filters = new ArrayList<>();
 
@@ -196,7 +196,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
                              .as("windowId")
                              .and(ConditionalOperators.IfNull.ifNull("settlementMatch.settlementId").then(""))
                              .as("settlementBatch")
-                             .and("_createdAt")
+                             .and("_lastUpdated")
                              .as("submittedOnDate");
 
             final SortOperation sort = sort(Sort.Direction.DESC, "submittedOnDate");
