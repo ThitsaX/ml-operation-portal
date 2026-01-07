@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,9 @@ public class GetSettlementIdController {
     @GetMapping("/secured/getSettlementId")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
-                                            @RequestParam(value = "dfspId", required = false) String dfspId,
+                                            @RequestParam(
+                                                value = "dfspId",
+                                                required = false) String dfspId,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
         throws DomainException, JsonProcessingException {
 
@@ -44,12 +47,14 @@ public class GetSettlementIdController {
                                       timezoneOffset));
 
         List<SettlementIdInfo>
-            settlementIdInfoList =
-            output.settlementIds()
-                  .stream()
-                  .map(idType -> new SettlementIdInfo(
-                      idType.getSettlementId()))
-                  .toList();
+            settlementIdInfoList = output.settlementIds()
+                                         .stream()
+                                         .map(idType -> new SettlementIdInfo(
+                                             idType.getSettlementId()))
+                                         .sorted(Comparator.comparing(SettlementIdInfo::settlementId)
+                                                           .reversed())
+                                         .toList();
+
         var response = new Response(settlementIdInfoList);
 
         LOG.info("Get SettlementId Response : [{}]", response);
