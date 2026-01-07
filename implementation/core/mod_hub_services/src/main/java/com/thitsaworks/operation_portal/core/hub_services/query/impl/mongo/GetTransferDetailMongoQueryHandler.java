@@ -54,9 +54,9 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
         try {
 
             AddFieldsOperation normalizeCreatedAt = AddFieldsOperation.builder()
-                                                                      .addFieldWithValue("_createdAt",
+                                                                      .addFieldWithValue("_lastUpdated",
                                                                                          ConvertOperators.ToDate.toDate(
-                                                                                                 "$createdAt"))
+                                                                                                 "$lastUpdated"))
                                                                       .build();
 
             Criteria root = Criteria.where("transferId").is(transferId);
@@ -137,7 +137,7 @@ public class GetTransferDetailMongoQueryHandler implements GetTransferDetailQuer
                              .as("payeeDfspFeeAmount")
                              .and("transferTerms.payeeFspCommission.amount")
                              .as("payeeDfspCommissionAmount")
-                             .and("createdAt").as("submittedOnDate")
+                             .and("lastUpdated").as("submittedOnDate")
                              .and(ConditionalOperators.IfNull.ifNull("transferSettlementWindowId").then(""))
                              .as("windowId")
                              .and(ConditionalOperators.IfNull.ifNull("$settlementMatch.settlementId").then(""))

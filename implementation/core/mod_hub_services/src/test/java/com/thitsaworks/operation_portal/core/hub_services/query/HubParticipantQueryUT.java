@@ -1,8 +1,12 @@
 package com.thitsaworks.operation_portal.core.hub_services.query;
 
 import com.thitsaworks.operation_portal.core.hub_services.HubServicesConfiguration;
+import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.TestSettings;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
+import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantDetailData;
+import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
+import org.hibernate.validator.internal.IgnoreForbiddenApisErrors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
@@ -21,6 +25,9 @@ public class HubParticipantQueryUT {
 
     @Autowired
     private HubParticipantQuery hubParticipantQuery;
+
+    @Autowired
+    private SettlementHubClient settlementHubClient;
 
     @Test
     public void getByNameHubParticipants() throws Exception {
@@ -44,4 +51,26 @@ public class HubParticipantQueryUT {
 
     }
 
+    @Test
+    public void getHubParticipantDetailDataList() throws Exception {
+
+        List<HubParticipantDetailData> hubParticipantDataList = hubParticipantQuery.getHubParticipantDetailDataList();
+
+        for (HubParticipantDetailData hubParticipantData : hubParticipantDataList) {
+            LOG.info("Hub Participant : {}", hubParticipantData);
+        }
+
+    }
+
+    @Test
+    public void getSettlementById() throws Exception {
+
+        Settlement output = this.settlementHubClient.getSettlement(107);
+
+       if (output != null)
+       {
+            LOG.info("Settlement Output : {}", output);
+        }
+
+    }
 }
