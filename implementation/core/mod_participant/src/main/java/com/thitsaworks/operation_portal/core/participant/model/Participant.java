@@ -50,7 +50,7 @@ public class Participant extends JpaEntity<ParticipantId> {
     protected ParticipantName participantName;
 
     @Column(name = "dfsp_id")
-    protected int dfspId;
+    protected Integer dfspId;
 
     @Column(name = "description")
     protected String description;
@@ -97,7 +97,8 @@ public class Participant extends JpaEntity<ParticipantId> {
     @Getter(AccessLevel.NONE)
     protected Set<LiquidityProfile> liquidityProfiles = new HashSet<>();
 
-    public Participant(ParticipantName participantName,
+    public Participant(Integer dfspId,
+                       ParticipantName participantName,
                        String description,
                        String address,
                        Mobile mobile,
@@ -107,6 +108,7 @@ public class Participant extends JpaEntity<ParticipantId> {
 
         this.participantId = new ParticipantId(Snowflake.get()
                                                         .nextId());
+        this.dfspId = dfspId;
         this.participantName = participantName;
         this.description = description;
         this.address = address;

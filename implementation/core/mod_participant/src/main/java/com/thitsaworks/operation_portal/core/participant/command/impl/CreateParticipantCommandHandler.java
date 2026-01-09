@@ -31,7 +31,8 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
         if (participantByParticipantName.isEmpty()) {
 
-            Participant participant = new Participant(input.participantName(),
+            Participant participant = new Participant(input.dfspId(),
+                                                      input.participantName(),
                                                       input.description(),
                                                       input.address(),
                                                       input.mobile(),
@@ -71,7 +72,8 @@ public class CreateParticipantCommandHandler implements CreateParticipantCommand
 
         } else {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTERED.format(input.participantName().getValue()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_ALREADY_REGISTERED.format(input.participantName()
+                                                                                                        .getValue()));
         }
     }
 

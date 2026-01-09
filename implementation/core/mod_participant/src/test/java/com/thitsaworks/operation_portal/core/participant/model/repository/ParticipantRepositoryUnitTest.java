@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.core.participant.model.repository;
 
-import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
+import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
 import com.thitsaworks.operation_portal.component.test.EnvAwareUnitTest;
 import com.thitsaworks.operation_portal.core.participant.model.Participant;
@@ -20,7 +20,8 @@ public class ParticipantRepositoryUnitTest extends EnvAwareUnitTest {
     @Test
     public void test_createParticipantSuccessfully() {
 
-        Participant participant = new Participant(new ParticipantName("okdollar"),
+        Participant participant = new Participant(1,
+                                                  new ParticipantName("okdollar"),
                                                   "OK Dollar",
                                                   "Sanchaung Township, Yangon.",
                                                   new Mobile("+959400547258"),

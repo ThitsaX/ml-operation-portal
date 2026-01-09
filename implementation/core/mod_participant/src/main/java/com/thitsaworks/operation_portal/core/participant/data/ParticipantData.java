@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 public record ParticipantData(ParticipantId participantId,
                               String description,
-                              int dfspId,
+                              Integer dfspId,
                               ParticipantName participantName,
                               String address,
                               Mobile mobile,
