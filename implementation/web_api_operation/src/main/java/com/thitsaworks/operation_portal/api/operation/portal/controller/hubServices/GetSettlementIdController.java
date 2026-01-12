@@ -51,7 +51,7 @@ public class GetSettlementIdController {
                                          .stream()
                                          .map(idType -> new SettlementIdInfo(
                                              idType.getSettlementId()))
-                                         .sorted(Comparator.comparing(SettlementIdInfo::settlementId)
+                                         .sorted(Comparator.comparingLong(s -> Long.parseLong(s.toString()))
                                                            .reversed())
                                          .toList();
 
