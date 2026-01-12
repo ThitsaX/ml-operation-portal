@@ -64,7 +64,7 @@ public class GenerateSettlementSummaryReportHandler
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.fspId());
 
-            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description().isEmpty()) ?
+            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description() == null || optionalParticipantData.get().description().isEmpty()) ?
                     input.fspId().toUpperCase() : optionalParticipantData.get().description();
         }
 

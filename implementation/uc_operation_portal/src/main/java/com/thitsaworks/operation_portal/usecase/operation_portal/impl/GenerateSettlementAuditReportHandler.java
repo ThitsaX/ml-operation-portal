@@ -60,7 +60,7 @@ public class GenerateSettlementAuditReportHandler
 
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.dfspId());
 
-            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description().isEmpty()) ?
+            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description() == null || optionalParticipantData.get().description().isEmpty()) ?
                     input.dfspId().toUpperCase() : optionalParticipantData.get().description();
         }
 

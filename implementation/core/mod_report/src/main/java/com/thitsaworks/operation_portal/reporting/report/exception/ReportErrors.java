@@ -17,6 +17,7 @@ public class ReportErrors {
     public static final ErrorMessage FILE_FORMAT_NOT_ALLOWED_EXCEPTION = new ErrorMessage("FILE_FORMAT_NOT_ALLOWED_EXCEPTION", "The file format is required or the requested file format is not allowed.");
     public static final ErrorMessage RESULT_NOT_FOUND_EXCEPTION = new ErrorMessage("RESULT_NOT_FOUND_EXCEPTION", "The results for the selected periods or criteria were not found.");
     public static final ErrorMessage SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement summary report.");
+    public static final ErrorMessage TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION = new ErrorMessage("TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION", "Failed to extract transaction detail report.");
 
     //@@formatter:on
 }

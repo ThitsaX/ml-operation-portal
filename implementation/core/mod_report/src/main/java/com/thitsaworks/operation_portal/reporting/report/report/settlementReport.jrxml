@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementLatest" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="988" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="settlementSummary" pageWidth="1008" pageHeight="612" orientation="Landscape" columnWidth="988" leftMargin="10" rightMargin="10" topMargin="10" bottomMargin="10" uuid="3ad2ed36-2654-4270-91a8-48f316681348">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 	<property name="net.sf.jasperreports.export.xls.one.page.per.sheet=true" value="true"/>
@@ -620,7 +620,12 @@ ORDER BY p.name, settlementWindowId]]>
 									<font fontName="Calibri" size="11"/>
 									<paragraph lineSpacing="Single"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{value} == null
+? ""
+: ($F{value}.length() >= 30
+    ? $F{value}.replaceAll("(.{1,30})(\\s+|$)", "$1\n")
+    : $F{value}
+  )]]></textFieldExpression>
 							</textField>
 							<textField>
 								<reportElement x="0" y="0" width="158" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
@@ -749,7 +754,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								<property name="com.jaspersoft.studio.unit.width" value="px"/>
 								<textField textAdjust="StretchHeight">
-									<reportElement positionType="Float" x="0" y="0" width="158" height="17" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
+									<reportElement positionType="Float" stretchType="ContainerBottom" x="0" y="0" width="158" height="17" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
 										<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 										<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 										<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{report})]]></printWhenExpression>
@@ -765,7 +770,7 @@ ORDER BY p.name, settlementWindowId]]>
 										<font fontName="Calibri" size="11"/>
 										<paragraph lineSpacing="Single"/>
 									</textElement>
-									<textFieldExpression><![CDATA[$F{dfspName}]]></textFieldExpression>
+									<textFieldExpression><![CDATA[$F{dfspName} == null ? "" : $F{dfspName}.replaceAll("(.{1,30})(\\s+|$)", "$1\n")]]></textFieldExpression>
 								</textField>
 								<textField>
 									<reportElement x="0" y="0" width="158" height="17" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
@@ -832,7 +837,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<jr:detailCell height="17">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
-									<textField textAdjust="StretchHeight">
+									<textField textAdjust="StretchHeight" pattern="#,##0">
 										<reportElement positionType="Float" x="0" y="0" width="100" height="17" uuid="1d6501e1-a806-44fa-8a4f-2cd2ed0a839f">
 											<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 											<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -847,7 +852,7 @@ ORDER BY p.name, settlementWindowId]]>
 										<textElement textAlignment="Right">
 											<font fontName="Calibri" size="11"/>
 										</textElement>
-										<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("#,##0").format($F{sentVolume}),"")]]></textFieldExpression>
+										<textFieldExpression><![CDATA[($F{sentVolume} == null || $F{sentVolume}.doubleValue() == 0) ? 0 : $F{sentVolume}]]></textFieldExpression>
 									</textField>
 								</jr:detailCell>
 							</jr:column>
@@ -873,7 +878,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<jr:detailCell height="17">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
-									<textField textAdjust="StretchHeight">
+									<textField textAdjust="StretchHeight" pattern="###,#,##0.00">
 										<reportElement positionType="Float" x="0" y="0" width="100" height="17" uuid="1ee62b6f-34a3-42fa-89f7-92a8ae642500">
 											<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 											<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -888,7 +893,7 @@ ORDER BY p.name, settlementWindowId]]>
 										<textElement textAlignment="Right">
 											<font fontName="Calibri" size="11"/>
 										</textElement>
-										<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("###,#,##0.00").format($F{sentAmount}),"")]]></textFieldExpression>
+										<textFieldExpression><![CDATA[($F{sentAmount} == null || $F{sentAmount}.doubleValue() == 0) ? 0 : $F{sentAmount}]]></textFieldExpression>
 									</textField>
 								</jr:detailCell>
 							</jr:column>
@@ -933,7 +938,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<jr:detailCell height="17">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
-									<textField textAdjust="StretchHeight">
+									<textField textAdjust="StretchHeight" pattern="#,##0">
 										<reportElement positionType="Float" x="0" y="0" width="100" height="17" uuid="92a517ae-cc96-4e55-9d7d-f3230ac2c6c3">
 											<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 											<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -948,7 +953,7 @@ ORDER BY p.name, settlementWindowId]]>
 										<textElement textAlignment="Right">
 											<font fontName="Calibri" size="11"/>
 										</textElement>
-										<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("###,#,##0").format($F{receivedVolume}),"")]]></textFieldExpression>
+										<textFieldExpression><![CDATA[($F{receivedVolume} == null || $F{receivedVolume}.doubleValue() == 0) ? 0 : $F{receivedVolume}]]></textFieldExpression>
 									</textField>
 								</jr:detailCell>
 							</jr:column>
@@ -974,7 +979,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<jr:detailCell height="17">
 									<property name="com.jaspersoft.studio.unit.height" value="px"/>
 									<property name="com.jaspersoft.studio.unit.width" value="px"/>
-									<textField textAdjust="StretchHeight">
+									<textField textAdjust="StretchHeight" pattern="###,#,##0.00">
 										<reportElement positionType="Float" x="0" y="0" width="100" height="17" uuid="9558c4da-dfbd-4220-a56b-0612b7afc5ad">
 											<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 											<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -989,7 +994,7 @@ ORDER BY p.name, settlementWindowId]]>
 										<textElement textAlignment="Right">
 											<font fontName="Calibri" size="11"/>
 										</textElement>
-										<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("###,#,##0.00").format($F{receivedAmount}),"")]]></textFieldExpression>
+										<textFieldExpression><![CDATA[($F{receivedAmount} == null || $F{receivedAmount}.doubleValue() == 0) ? 0 : $F{receivedAmount}]]></textFieldExpression>
 									</textField>
 								</jr:detailCell>
 							</jr:column>
@@ -1016,7 +1021,7 @@ ORDER BY p.name, settlementWindowId]]>
 							<jr:detailCell height="17">
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								<property name="com.jaspersoft.studio.unit.width" value="px"/>
-								<textField textAdjust="StretchHeight">
+								<textField textAdjust="StretchHeight" pattern="#,##0">
 									<reportElement positionType="Float" x="0" y="0" width="70" height="17" uuid="0fb76444-e395-4029-ad01-e458f8f234e7">
 										<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 										<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -1031,7 +1036,7 @@ ORDER BY p.name, settlementWindowId]]>
 									<textElement textAlignment="Right">
 										<font fontName="Calibri" size="11"/>
 									</textElement>
-									<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("#,##0").format($F{totalVolume}),"")]]></textFieldExpression>
+									<textFieldExpression><![CDATA[($F{totalVolume} == null || $F{totalVolume}.doubleValue() == 0) ? 0 : $F{totalVolume}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -1057,7 +1062,7 @@ ORDER BY p.name, settlementWindowId]]>
 							<jr:detailCell height="17">
 								<property name="com.jaspersoft.studio.unit.height" value="px"/>
 								<property name="com.jaspersoft.studio.unit.width" value="px"/>
-								<textField textAdjust="StretchHeight">
+								<textField textAdjust="StretchHeight" pattern="#,##0.00">
 									<reportElement positionType="Float" x="0" y="0" width="100" height="17" uuid="f2324e43-12f7-4943-bdcb-d06132c5af5c">
 										<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 										<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -1072,7 +1077,7 @@ ORDER BY p.name, settlementWindowId]]>
 									<textElement textAlignment="Right">
 										<font fontName="Calibri" size="11"/>
 									</textElement>
-									<textFieldExpression><![CDATA[CONCATENATE(new DecimalFormat("#,##0.00").format($F{totalAmount}),"")]]></textFieldExpression>
+									<textFieldExpression><![CDATA[($F{totalAmount} == null || $F{totalAmount}.doubleValue() == 0) ? 0.00: $F{totalAmount}]]></textFieldExpression>
 								</textField>
 							</jr:detailCell>
 						</jr:column>
@@ -1113,8 +1118,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{netAmount}.signum() == -1 ? CONCATENATE("(",new DecimalFormat("#,##0.00").format($F{netAmount}.abs()),")"):
-CONCATENATE(new DecimalFormat("#,##0.00").format($F{netAmount}),"")]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{netAmount} == null || $F{netAmount}.doubleValue() == 0) ? 0.00 : ($F{netAmount}.signum() == -1 ? $F{netAmount}.abs() : $F{netAmount})]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
