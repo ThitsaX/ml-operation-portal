@@ -49,10 +49,11 @@ public class GetSettlementIdController {
         List<SettlementIdInfo>
             settlementIdInfoList = output.settlementIds()
                                          .stream()
-                                         .map(idType -> new SettlementIdInfo(
-                                             idType.getSettlementId()))
-                                         .sorted(Comparator.comparingLong(s -> Long.parseLong(s.toString()))
-                                                           .reversed())
+                                         .map(idType -> new SettlementIdInfo(idType.getSettlementId()))
+                                         .sorted(
+                                             Comparator.comparingInt(
+                                                           d -> Integer.parseInt(((SettlementIdInfo) d).settlementId()))
+                                                       .reversed())
                                          .toList();
 
         var response = new Response(settlementIdInfoList);
