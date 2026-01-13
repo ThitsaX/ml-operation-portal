@@ -97,8 +97,8 @@
 			   tSS.name AS  transactionNature,
 			   CONCAT(
 				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(tF.completedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(tF.completedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+				CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+				ELSE CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
 				END,'%Y-%m-%dT%H:%i:%s'),
 				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
@@ -124,6 +124,14 @@
 				IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount				
 			FROM transferFulfilment tF
 			INNER JOIN transfer t ON t.transferId = tF.transferId
+			LEFT JOIN (
+			SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
+			(
+				SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+			    FROM transferStateChange tsa
+			  ) x
+			  WHERE x.rn = 1
+			) tss ON tss.transferId = t.transferId
 			INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
 			AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
 			INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
@@ -319,8 +327,8 @@ WHERE s.settlementId = $P{settlementId}
 				   tSS.name AS  transactionNature,
 				   CONCAT(
 					DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-					CONVERT_TZ(tF.completedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-					ELSE CONVERT_TZ(tF.completedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+					CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+					ELSE CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
 					END,'%Y-%m-%dT%H:%i:%s'),
 					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 					ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
@@ -346,6 +354,14 @@ WHERE s.settlementId = $P{settlementId}
 					IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount				
 				FROM transferFulfilment tF
 				INNER JOIN transfer t ON t.transferId = tF.transferId
+				LEFT JOIN (
+					SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
+					(
+						SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+					    FROM transferStateChange tsa
+					  ) x
+					  WHERE x.rn = 1
+					) tss ON tss.transferId = t.transferId
 				INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
 				AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
 				INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
