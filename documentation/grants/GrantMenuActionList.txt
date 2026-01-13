@@ -103,6 +103,18 @@
             ]
         },
         {
+            "menuName": "Transaction Detailed Report",
+            "actionCodeList": [
+                "GenerateTransactionDetailReport"
+            ]
+        },
+        {
+           "menuName": "Management Summary Report",
+           "actionCodeList": [
+                "GenerateManagementSummaryReport"
+            ]
+        },
+        {
             "menuName": "Pending Approvals",
             "actionCodeList": [
                 "GetPendingApprovalList",
