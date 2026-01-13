@@ -455,7 +455,7 @@ $F{settlementBankAccount}.replaceAll("(.{1,68})(\\s+|$)", "$1\n")]]></textFieldE
 				<textFieldExpression><![CDATA[$F{settlementBankAccount} == null ? "-" :
 $F{settlementBankAccount}.replaceAll("(.{1,68})(\\s+|$)", "$1\n")]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField pattern="#,##0.00">
 				<reportElement stretchType="ContainerBottom" x="605" y="0" width="200" height="17" uuid="3b5b5e34-ccd0-4955-818a-7cfa38504797">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="5b0a09ff-e867-4421-abc5-7ce4d22fe518"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -468,7 +468,7 @@ $F{settlementBankAccount}.replaceAll("(.{1,68})(\\s+|$)", "$1\n")]]></textFieldE
 				<textElement textAlignment="Right">
 					<font fontName="Calibri" size="11"/>
 				</textElement>
-				<textFieldExpression><![CDATA[($F{transfer} == null || $F{transfer}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{transfer})]]></textFieldExpression>
+				<textFieldExpression><![CDATA[($F{transfer} == null || $F{transfer}.doubleValue() == 0) ? "-" : $F{transfer}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement stretchType="ContainerBottom" x="805" y="0" width="129" height="17" uuid="a7db219b-5a5d-488b-afc8-62863c3957bd">
@@ -504,6 +504,7 @@ $F{settlementBankAccount}.replaceAll("(.{1,68})(\\s+|$)", "$1\n")]]></textFieldE
 			<textField>
 				<reportElement x="0" y="80" width="934" height="17" uuid="1fbb8334-41ad-4beb-8117-ad1c6de4ac9c">
 					<property name="net.sf.jasperreports.export.pdf" value="true"/>
+					<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType})]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
 					<font fontName="Calibri" size="10" isItalic="true"/>

@@ -60,7 +60,7 @@ public class GenerateSettlementDetailReportHandler
             Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.fspId());
 
             dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description() == null || optionalParticipantData.get().description().isEmpty()) ?
-                    input.fspId().toUpperCase() : optionalParticipantData.get().description();
+                    input.fspId() : optionalParticipantData.get().description();
         }
 
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(

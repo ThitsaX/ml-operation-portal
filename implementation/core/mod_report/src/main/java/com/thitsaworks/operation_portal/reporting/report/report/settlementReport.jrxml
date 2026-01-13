@@ -1103,7 +1103,7 @@ ORDER BY p.name, settlementWindowId]]>
 						</jr:columnHeader>
 						<jr:detailCell height="17">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField textAdjust="StretchHeight" pattern="#,#00.00#;#,#00.00#">
+							<textField textAdjust="StretchHeight" pattern="#,##0.00;(#,##0.00)">
 								<reportElement positionType="Float" x="0" y="0" width="76" height="17" uuid="13f0f922-b3eb-49b5-9d95-343473e2652a">
 									<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 									<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
@@ -1118,7 +1118,7 @@ ORDER BY p.name, settlementWindowId]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{netAmount} == null || $F{netAmount}.doubleValue() == 0) ? 0.00 : ($F{netAmount}.signum() == -1 ? $F{netAmount}.abs() : $F{netAmount})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{netAmount} == null ? java.math.BigDecimal.ZERO : $F{netAmount}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
