@@ -15,7 +15,7 @@ public class LogSpringBeanAspect {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LogSpringBeanAspect.class);
 
-    @Around("(@within(org.springframework.stereotype.Service) || @within(org.springframework.stereotype.Component)) && (execution(* *.execute(..)) || execution(* *.onExecute(..)))")
+    @Around("(@within(org.springframework.stereotype.Service) || @within(org.springframework.stereotype.Component)) && (execution(* com.thitsaworks.operation_portal..*.execute(..)) || execution(* com.thitsaworks.operation_portal..*.onExecute(..)))")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String methodName = joinPoint.getSignature().toShortString();
