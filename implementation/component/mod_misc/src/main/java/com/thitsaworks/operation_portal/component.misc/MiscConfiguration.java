@@ -6,9 +6,13 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.thitsaworks.operation_portal.component.misc.spring.SpringContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
+@EnableAspectJAutoProxy(
+    proxyTargetClass = true,
+    exposeProxy = true)
 @ComponentScan("com.thitsaworks.operation_portal.component.misc")
 public class MiscConfiguration {
 
