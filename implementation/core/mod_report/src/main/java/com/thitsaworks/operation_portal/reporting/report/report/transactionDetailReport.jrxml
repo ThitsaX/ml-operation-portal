@@ -46,6 +46,7 @@
 		<parameter name="startDate" class="java.lang.String"/>
 		<parameter name="endDate" class="java.lang.String"/>
 		<parameter name="state" class="java.lang.String"/>
+		<parameter name="dfspId" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT     t.transferId,
@@ -99,7 +100,8 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
     (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
     CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
     CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-	 AND ($P{state} ='All' OR tst.enumeration = $P{state})]]>
+	 AND ($P{state} ='All' OR tst.enumeration = $P{state})
+	  AND (($P{dfspId} ='All')  OR (payee.name = $P{dfspId}  OR payer.name = $P{dfspId}))]]>
 		</queryString>
 		<field name="transferId" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="transferId"/>
@@ -198,6 +200,7 @@ SELECT 'TimeZoneOffSet' AS label,
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
 	<parameter name="state" class="java.lang.String"/>
+	<parameter name="dfspId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
 		<![CDATA[SELECT     t.transferId,
@@ -251,7 +254,8 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
     (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
     CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
     CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-	 AND ($P{state} ='All' OR tst.transferStateId IN (SELECT DISTINCT transferStateId FROM transferState WHERE enumeration = IFNULL($P{state},enumeration)))]]>
+	 AND ($P{state} ='All' OR tst.enumeration = $P{state})
+	  AND (($P{dfspId} ='All')  OR (payee.name = $P{dfspId}  OR payer.name = $P{dfspId}))]]>
 	</queryString>
 	<field name="transferId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="transferId"/>
@@ -498,9 +502,8 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Transfer Type]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1371" y="99" width="120" height="17" uuid="6b9e9c07-5e42-4e4e-9dcc-4944eaa1e1d6">
+				<reportElement x="1371" y="99" width="148" height="17" uuid="6b9e9c07-5e42-4e4e-9dcc-4944eaa1e1d6">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<box>
 					<pen lineWidth="0.5"/>
@@ -515,7 +518,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1491" y="99" width="148" height="17" uuid="0c337b89-eac7-4573-b5a0-923be0445190">
+				<reportElement x="1519" y="99" width="148" height="17" uuid="0c337b89-eac7-4573-b5a0-923be0445190">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -532,7 +535,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Payee Received Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1639" y="99" width="110" height="17" uuid="6613d15a-4e01-46f7-8a33-b383ca52b4dd">
+				<reportElement x="1667" y="99" width="110" height="17" uuid="6613d15a-4e01-46f7-8a33-b383ca52b4dd">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -549,7 +552,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Fee]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1749" y="99" width="110" height="17" uuid="41bed3ca-2820-40e4-8ec5-f292ea131bf8">
+				<reportElement x="1777" y="99" width="110" height="17" uuid="41bed3ca-2820-40e4-8ec5-f292ea131bf8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -566,7 +569,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Commission]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1859" y="99" width="110" height="17" uuid="008bb93d-f7a2-4fff-8ff8-4d407b1ad866">
+				<reportElement x="1887" y="99" width="110" height="17" uuid="008bb93d-f7a2-4fff-8ff8-4d407b1ad866">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -600,7 +603,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<text><![CDATA[Transfer ID]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="1969" y="99" width="110" height="17" uuid="adf40a8b-cc7b-4f76-8036-17b99ae4fbbb">
+				<reportElement x="1997" y="99" width="110" height="17" uuid="adf40a8b-cc7b-4f76-8036-17b99ae4fbbb">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2c5cbe6e-f6d5-4bc2-955b-48059f072255"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -743,7 +746,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[$F{transferType}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="1371" y="0" width="120" height="17" uuid="72ff0258-94aa-4170-abfb-6993d0053db2">
+				<reportElement x="1371" y="0" width="148" height="17" uuid="72ff0258-94aa-4170-abfb-6993d0053db2">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -760,7 +763,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="1491" y="0" width="148" height="17" uuid="f0545739-8124-4be7-b152-a1d9e4b811c8">
+				<reportElement x="1519" y="0" width="148" height="17" uuid="f0545739-8124-4be7-b152-a1d9e4b811c8">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -777,7 +780,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[$F{payeeReceivedAmount}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="1639" y="0" width="110" height="17" uuid="ea782fe6-2b3e-4668-8f13-5e057c9bb657">
+				<reportElement x="1667" y="0" width="110" height="17" uuid="ea782fe6-2b3e-4668-8f13-5e057c9bb657">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -794,7 +797,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[($F{payeeDfspFeeAmount} == null || $F{payeeDfspFeeAmount}.doubleValue() == 0) ? "-" : $F{payeeDfspFeeAmount}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0.00">
-				<reportElement x="1749" y="0" width="110" height="17" uuid="ab0234c8-5cc9-48f8-928e-37252e5f545f">
+				<reportElement x="1777" y="0" width="110" height="17" uuid="ab0234c8-5cc9-48f8-928e-37252e5f545f">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -811,7 +814,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[($F{payeeDfspCommissionAmount} == null || $F{payeeDfspCommissionAmount}.doubleValue() == 0) ? "-" : $F{payeeDfspCommissionAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1859" y="0" width="110" height="17" uuid="c6f765d5-44bf-42a1-b3de-e1f3bb1a9368">
+				<reportElement x="1887" y="0" width="110" height="17" uuid="c6f765d5-44bf-42a1-b3de-e1f3bb1a9368">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -828,7 +831,7 @@ WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{t
 				<textFieldExpression><![CDATA[$F{currencyId}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="1969" y="0" width="110" height="17" uuid="2881f078-9240-4dfa-8e4b-a1c05ad6b850">
+				<reportElement x="1997" y="0" width="110" height="17" uuid="2881f078-9240-4dfa-8e4b-a1c05ad6b850">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="2c5cbe6e-f6d5-4bc2-955b-48059f072255"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>

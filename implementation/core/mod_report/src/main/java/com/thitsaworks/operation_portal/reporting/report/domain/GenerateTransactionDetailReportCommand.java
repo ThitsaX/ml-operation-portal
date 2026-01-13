@@ -9,6 +9,8 @@ public interface GenerateTransactionDetailReportCommand {
     record Input(Instant startDate,
                  Instant endDate,
                  String state,
+
+                 String dfspId,
                  String filetype,
                  String timeZoneOffset) { }
 

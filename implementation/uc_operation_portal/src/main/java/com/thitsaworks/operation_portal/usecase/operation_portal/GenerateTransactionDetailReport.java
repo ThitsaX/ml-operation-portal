@@ -10,6 +10,7 @@ public interface GenerateTransactionDetailReport extends
     record Input(Instant startDate,
                  Instant endDate,
                  String state,
+                 String dfspId,
                  String fileType,
                  String timezone) {}
 
