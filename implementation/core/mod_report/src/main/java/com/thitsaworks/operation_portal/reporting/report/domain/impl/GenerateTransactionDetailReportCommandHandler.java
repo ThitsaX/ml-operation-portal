@@ -1,7 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
@@ -11,7 +10,6 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
@@ -53,6 +51,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
         params.put("startDate", input.startDate().toString());
         params.put("endDate", input.endDate().toString());
         params.put("state", input.state());
+        params.put("dfspId", input.dfspId());
         params.put("timezoneoffset", input.timeZoneOffset());
 
         LOG.info("Params : {}", params);

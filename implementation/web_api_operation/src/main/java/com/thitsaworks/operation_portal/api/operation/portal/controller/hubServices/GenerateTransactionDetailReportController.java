@@ -30,15 +30,17 @@ public class GenerateTransactionDetailReportController {
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
                                             @RequestParam("state") String state,
+                                            @RequestParam("dfspId") String dfspId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
             throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Generate Transaction Detail Report Request : startDate = [{}], state = [{}], fileType = [{}], timezoneOffset = [{}]",
+                "Generate Transaction Detail Report Request : startDate = [{}], state = [{}], dfspId = [{}], fileType = [{}], timezoneOffset = [{}]",
                 startDate,
                 endDate,
                 state,
+                dfspId,
                 fileType,
                 timezoneOffset);
 
@@ -46,7 +48,7 @@ public class GenerateTransactionDetailReportController {
 
         GenerateTransactionDetailReport.Output output =
                 this.generateTransactionDetailReport.execute(new GenerateTransactionDetailReport.Input(Instant.parse(
-                        startDate), Instant.parse(endDate), state, fileType, timezone));
+                        startDate), Instant.parse(endDate), state, dfspId, fileType, timezone));
 
         var response = new Response(output.reportData());
 
