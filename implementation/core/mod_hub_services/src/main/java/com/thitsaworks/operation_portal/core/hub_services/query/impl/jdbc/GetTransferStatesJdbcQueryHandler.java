@@ -37,7 +37,7 @@ public class GetTransferStatesJdbcQueryHandler implements GetTransferStatesQuery
         try {
 
             results = this.jdbcTemplate.query(
-                "SELECT DISTINCT enumeration FROM transferState WHERE enumeration IN ('ABORTED','COMMITTED');",
+                "SELECT DISTINCT enumeration FROM transferState WHERE enumeration NOT IN ('SETTLED');",
                 new TransferStateDataMapper());
 
         } catch (Exception e) {
