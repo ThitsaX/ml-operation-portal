@@ -31,10 +31,14 @@ public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, @NotNull String beanName) {
 
-        Class<?> clazz = bean.getClass();
+        Class<?> clazz = bean.getClass();// Handle CGLIB proxies
+        if (clazz.getName().contains("$$")) {
+            clazz = clazz.getSuperclass();
+        }
 
+        Class<?> finalClazz = clazz;
         if (TARGET_PACKAGE_LIST.stream()
-                 .anyMatch(pkg -> clazz.getPackageName().startsWith(pkg))) {
+                               .anyMatch(pkg -> finalClazz.getPackageName().startsWith(pkg))) {
 
             String simpleName = clazz.getSimpleName();
             String actionName = simpleName.replaceFirst("(Handler|UseCase)$", "");
