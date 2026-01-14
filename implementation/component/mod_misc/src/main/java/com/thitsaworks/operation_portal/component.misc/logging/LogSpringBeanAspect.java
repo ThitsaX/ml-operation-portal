@@ -9,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Aspect
 @Component
 public class LogSpringBeanAspect {
@@ -24,23 +22,23 @@ public class LogSpringBeanAspect {
     }
 
     @Around(
-        "(" +
-            "@within(org.springframework.stereotype.Service) || " +
-            "@within(org.springframework.stereotype.Component) || " +
-            "@target(org.springframework.stereotype.Controller) || " +
-            "@target(org.springframework.web.bind.annotation.RestController)" +
-            ") && (" +
-            "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
-            "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
-            ")"
+            "(" +
+                    "@within(org.springframework.stereotype.Service) || " +
+                    "@within(org.springframework.stereotype.Component) || " +
+                    "@target(org.springframework.stereotype.Controller) || " +
+                    "@target(org.springframework.web.bind.annotation.RestController)" +
+                    ") && (" +
+                    "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
+                    "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
+                    ")"
     )
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
 
         String methodName = joinPoint.getSignature().toShortString();
         Object[] args = joinPoint.getArgs();
 
-        String rawArgs = objectMapper.writeValueAsString(args);
-        String safeArgs = MaskPassword.maskPassword(objectMapper, rawArgs);
+        String rawArgs = this.objectMapper.writeValueAsString(args);
+        String safeArgs = MaskPassword.maskPassword(this.objectMapper, rawArgs);
 
         LOGGER.info("Entering method: {} with arguments: {}", methodName, safeArgs);
 
@@ -49,12 +47,15 @@ public class LogSpringBeanAspect {
             result = joinPoint.proceed();
         } catch (Throwable throwable) {
             LOGGER.error(
-                "Exception in method: {} with message: {}", methodName, throwable.getMessage(),
-                throwable);
+                    "Exception in method: {} with message: {}", methodName, throwable.getMessage(),
+                    throwable);
             throw throwable;
         }
 
-        LOGGER.info("Exiting method: {} with result: {}", methodName, safeArgs);
+        String rawResult = this.objectMapper.writeValueAsString(result);
+        String safeResult = MaskPassword.maskPassword(this.objectMapper, rawResult);
+
+        LOGGER.info("Exiting method: {} with result: {}", methodName, safeResult);
 
         return result;
     }

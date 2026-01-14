@@ -34,22 +34,19 @@ public class MaskPassword {
         if (node.isObject()) {
             ObjectNode objectNode = (ObjectNode) node;
 
-            // Process all fields in the current object
             node.fields().forEachRemaining(entry -> {
                 String fieldName = entry.getKey();
                 JsonNode valueNode = entry.getValue();
 
-                // If the field is sensitive, mask it
-                if (isSensitiveField(fieldName)) {
+                if (SENSITIVE_FIELDS.stream()
+                        .anyMatch(fieldName.toLowerCase()::contains)) {
                     objectNode.put(fieldName, MASK);
                 }
-                // If the value is an object or array, process it recursively
                 else if (valueNode.isObject() || valueNode.isArray()) {
                     maskSensitiveFields(valueNode);
                 }
             });
         }
-        // Handle arrays
         else if (node.isArray()) {
             for (JsonNode arrayItem : node) {
                 if (arrayItem.isObject() || arrayItem.isArray()) {
@@ -57,11 +54,6 @@ public class MaskPassword {
                 }
             }
         }
-    }
-
-    private static boolean isSensitiveField(String fieldName) {
-        return SENSITIVE_FIELDS.stream()
-                               .anyMatch(fieldName.toLowerCase()::contains);
     }
 
     public static String toMaskedString(Object obj) {
