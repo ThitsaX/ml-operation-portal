@@ -26,8 +26,11 @@ public class LogAspect {
         Object result;
 
         try {
+
             result = joinPoint.proceed();
+
         } catch (Throwable throwable) {
+
             LOGGER.error("Exception in method: {} with message: {}", methodName, throwable.getMessage(), throwable);
             throw throwable;
         }

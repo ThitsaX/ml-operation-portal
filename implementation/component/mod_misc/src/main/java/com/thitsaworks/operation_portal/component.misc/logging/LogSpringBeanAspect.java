@@ -8,7 +8,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
 @Aspect
 @Component
 public class LogSpringBeanAspect {
@@ -43,12 +42,16 @@ public class LogSpringBeanAspect {
         LOGGER.info("Entering method: {} with arguments: {}", methodName, safeArgs);
 
         Object result;
+
         try {
+
             result = joinPoint.proceed();
+
         } catch (Throwable throwable) {
-            LOGGER.error(
-                    "Exception in method: {} with message: {}", methodName, throwable.getMessage(),
+
+            LOGGER.error("Exception in method: {} with message: {}", methodName, throwable.getMessage(),
                     throwable);
+
             throw throwable;
         }
 

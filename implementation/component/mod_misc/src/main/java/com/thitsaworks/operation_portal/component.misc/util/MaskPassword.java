@@ -31,7 +31,9 @@ public class MaskPassword {
     }
 
     private static void maskSensitiveFields(JsonNode node) {
+
         if (node.isObject()) {
+
             ObjectNode objectNode = (ObjectNode) node;
 
             node.fields().forEachRemaining(entry -> {
@@ -48,8 +50,11 @@ public class MaskPassword {
             });
         }
         else if (node.isArray()) {
+
             for (JsonNode arrayItem : node) {
+
                 if (arrayItem.isObject() || arrayItem.isArray()) {
+
                     maskSensitiveFields(arrayItem);
                 }
             }
