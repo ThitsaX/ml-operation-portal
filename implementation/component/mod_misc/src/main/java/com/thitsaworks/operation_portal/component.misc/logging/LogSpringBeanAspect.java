@@ -8,6 +8,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
 @Aspect
 @Component
 public class LogSpringBeanAspect {
@@ -17,27 +18,38 @@ public class LogSpringBeanAspect {
     private final ObjectMapper objectMapper;
 
     public LogSpringBeanAspect(ObjectMapper objectMapper) {
+
         this.objectMapper = objectMapper;
     }
 
     @Around(
-            "(" +
-                    "@within(org.springframework.stereotype.Service) || " +
-                    "@within(org.springframework.stereotype.Component) || " +
-                    "@target(org.springframework.stereotype.Controller) || " +
-                    "@target(org.springframework.web.bind.annotation.RestController)" +
-                    ") && (" +
-                    "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
-                    "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
-                    ")"
+        "(" +
+            "@within(org.springframework.stereotype.Service) || " +
+            "@within(org.springframework.stereotype.Component) || " +
+            "@target(org.springframework.stereotype.Controller) || " +
+            "@target(org.springframework.web.bind.annotation.RestController)" +
+            ") && (" +
+            "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
+            "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
+            ")"
     )
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        String methodName = joinPoint.getSignature().toShortString();
+        String
+            methodName =
+            joinPoint.getSignature()
+                     .toShortString();
         Object[] args = joinPoint.getArgs();
 
-        String rawArgs = this.objectMapper.writeValueAsString(args);
-        String safeArgs = MaskPassword.maskPassword(this.objectMapper, rawArgs);
+        String safeArgs = "[]";
+        if (args != null && args.length > 0) {
+            try {
+                String rawArgs = this.objectMapper.writeValueAsString(args);
+                safeArgs = MaskPassword.maskPassword(this.objectMapper, rawArgs);
+            } catch (Exception e) {
+                safeArgs = "[Arguments could not be serialized]";
+            }
+        }
 
         LOGGER.info("Entering method: {} with arguments: {}", methodName, safeArgs);
 
@@ -50,14 +62,20 @@ public class LogSpringBeanAspect {
         } catch (Throwable throwable) {
 
             LOGGER.error("Exception in method: {} with message: {}", methodName, throwable.getMessage(),
-                    throwable);
+                         throwable);
 
             throw throwable;
         }
 
-        String rawResult = this.objectMapper.writeValueAsString(result);
-        String safeResult = MaskPassword.maskPassword(this.objectMapper, rawResult);
-
+        String safeResult = "{}";
+        if (result != null) {
+            try {
+                String rawResult = this.objectMapper.writeValueAsString(result);
+                safeResult = MaskPassword.maskPassword(this.objectMapper, rawResult);
+            } catch (Exception e) {
+                safeResult = "[Result could not be serialized]";
+            }
+        }
         LOGGER.info("Exiting method: {} with result: {}", methodName, safeResult);
 
         return result;
