@@ -44,9 +44,12 @@ public class LogSpringBeanAspect {
         String safeArgs = "[]";
         if (args != null && args.length > 0) {
             try {
+
                 String rawArgs = this.objectMapper.writeValueAsString(args);
                 safeArgs = MaskPassword.maskPassword(this.objectMapper, rawArgs);
+
             } catch (Exception e) {
+
                 safeArgs = "[Arguments could not be serialized]";
             }
         }
@@ -70,9 +73,12 @@ public class LogSpringBeanAspect {
         String safeResult = "{}";
         if (result != null) {
             try {
+
                 String rawResult = this.objectMapper.writeValueAsString(result);
                 safeResult = MaskPassword.maskPassword(this.objectMapper, rawResult);
+
             } catch (Exception e) {
+
                 safeResult = "[Result could not be serialized]";
             }
         }
