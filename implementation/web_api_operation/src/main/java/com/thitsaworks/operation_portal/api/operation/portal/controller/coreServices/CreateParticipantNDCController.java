@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateParticipantNDC;
 import jakarta.validation.Valid;
@@ -28,20 +29,24 @@ public class CreateParticipantNDCController {
 
     private final CreateParticipantNDC createParticipantNDC;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createParticipantNDC")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws JsonProcessingException, DomainException {
+        throws JsonProcessingException, DomainException {
 
-        LOG.info("Create Participant NDC Request : [{}]", request);
+        LOG.info("Create Participant NDC Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.createParticipantNDC.execute(new CreateParticipantNDC.Input(request.participantName,
                                                                                       request.currency,
                                                                                       request.ndcPercent,
                                                                                       request.ndcAmount));
 
-        var response = new Response(output.participantNDCId().getEntityId().toString());
+        var response = new Response(output.participantNDCId()
+                                          .getEntityId()
+                                          .toString());
 
-        LOG.info("Create Participant NDC Response : [{}]", response);
+        LOG.info("Create Participant NDC Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -51,9 +56,9 @@ public class CreateParticipantNDCController {
     public record Request(@NotNull @NotBlank @JsonProperty("participantName") String participantName,
                           @NotNull @NotBlank @JsonProperty("currency") String currency,
                           @JsonProperty("ndcPercent") BigDecimal ndcPercent,
-                          @JsonProperty("ndcAmount") BigDecimal ndcAmount) implements Serializable {}
+                          @JsonProperty("ndcAmount") BigDecimal ndcAmount) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("participantNDCId") String participantNDCId) implements Serializable {}
+    public record Response(@JsonProperty("participantNDCId") String participantNDCId) implements Serializable { }
 
 }

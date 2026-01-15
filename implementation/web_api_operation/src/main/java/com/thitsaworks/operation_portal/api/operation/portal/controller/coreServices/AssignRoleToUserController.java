@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -28,10 +30,13 @@ public class AssignRoleToUserController {
 
     private final AssignRoleToUser assignRoleToUser;
 
-    @PostMapping("/secured/assignRoleToUser")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Assign Role To User Request : [{}]", request);
+    @PostMapping("/secured/assignRoleToUser")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Assign Role To User Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var
             output =
@@ -42,7 +47,7 @@ public class AssignRoleToUserController {
                                           .getId()
                                           .toString());
 
-        LOG.info("Assign Role To User Response : [{}]", response);
+        LOG.info("Assign Role To User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -50,8 +55,8 @@ public class AssignRoleToUserController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
-                          @NotNull @NotBlank @JsonProperty("roleId") String roleId) implements Serializable {}
+                          @NotNull @NotBlank @JsonProperty("roleId") String roleId) implements Serializable { }
 
-    public record Response(@JsonProperty("principalRoleId") String principalRoleId) implements Serializable {}
+    public record Response(@JsonProperty("principalRoleId") String principalRoleId) implements Serializable { }
 
 }

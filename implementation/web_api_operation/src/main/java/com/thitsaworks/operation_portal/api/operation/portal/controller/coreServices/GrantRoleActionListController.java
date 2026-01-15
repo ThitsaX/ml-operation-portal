@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantRoleActionList;
@@ -27,10 +29,13 @@ public class GrantRoleActionListController {
 
     private final GrantRoleActionList grantRoleActionList;
 
-    @PostMapping("/secured/grantRoleActionList")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Grant Role Action List Request : [{}]", request);
+    @PostMapping("/secured/grantRoleActionList")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Grant Role Action List Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         List<GrantRoleActionList.Input.RoleGrant> roleGrantList = new ArrayList<>();
         for (var singleRoleGrant : request.roleGrantList()) {
@@ -50,7 +55,7 @@ public class GrantRoleActionListController {
 
         var response = new Response(output.granted());
 
-        LOG.info("Grant Role Action List Response : [{}]", response);
+        LOG.info("Grant Role Action List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -60,11 +65,11 @@ public class GrantRoleActionListController {
     public record Request(@JsonProperty("roleGrantList") List<RoleGrant> roleGrantList) implements Serializable {
 
         public record RoleGrant(@JsonProperty("roleName") String roleName,
-                                @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable {}
+                                @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable { }
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("granted") boolean granted) implements Serializable {}
+    public record Response(@JsonProperty("granted") boolean granted) implements Serializable { }
 
 }

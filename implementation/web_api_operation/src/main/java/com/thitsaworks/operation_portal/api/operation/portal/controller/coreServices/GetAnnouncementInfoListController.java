@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementInfoList;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class GetAnnouncementInfoListController {
     private static final Logger LOG = LoggerFactory.getLogger(GetAnnouncementInfoListController.class);
 
     private final GetAnnouncementInfoList getAnnouncementInfoList;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/public/getAnnouncements")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
@@ -54,7 +57,7 @@ public class GetAnnouncementInfoListController {
         }
         Response response = new Response(announcementInfoList);
 
-        LOG.info("Get Announcement Info List Response : [{}]", response);
+        LOG.info("Get Announcement Info List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

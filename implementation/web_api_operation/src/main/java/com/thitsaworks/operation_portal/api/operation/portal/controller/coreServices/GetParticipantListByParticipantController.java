@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListByParticipant;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +27,10 @@ public class GetParticipantListByParticipantController {
 
     private final GetParticipantListByParticipant getParticipantListByParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getParticipantListByParticipant")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var input = new GetParticipantListByParticipant.Input();
         var output = this.getParticipantListByParticipant.execute(input);
@@ -47,7 +51,7 @@ public class GetParticipantListByParticipantController {
 
         var response = new Response(participantInfoList);
 
-        LOG.info("Get Participant List By Participant Response : [{}]", response);
+        LOG.info("Get Participant List By Participant Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

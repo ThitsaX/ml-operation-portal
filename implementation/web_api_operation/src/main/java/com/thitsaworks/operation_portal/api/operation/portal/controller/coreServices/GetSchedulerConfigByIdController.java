@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
@@ -24,8 +26,11 @@ public class GetSchedulerConfigByIdController {
 
     private final GetSchedulerConfigById getSchedulerConfigById;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getSchedulerConfigById")
-    public ResponseEntity<Response> execute(@Valid @RequestParam Long schedulerConfigId) throws DomainException {
+    public ResponseEntity<Response> execute(@Valid @RequestParam Long schedulerConfigId)
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Scheduler Config by Id Request : schedulerConfigId = [{}]", schedulerConfigId);
 
@@ -35,7 +40,8 @@ public class GetSchedulerConfigByIdController {
 
         var response = new Response(output.config());
 
-        LOG.info("Get Scheduler Config by Id Response : [{}]", response);
+        LOG.info("Get Scheduler Config by Id Response : [{}]", this.objectMapper.writeValueAsString(response));
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

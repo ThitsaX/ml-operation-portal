@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferStateList;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,11 @@ public class GetAllTransferStateController {
 
     private final GetTransferStateList getTransferStateList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getAllTransferState")
     public ResponseEntity<Response> execute() throws DomainException,
                                                      JsonProcessingException {
-
 
         GetTransferStateList.Output output = this.getTransferStateList.execute(new GetTransferStateList.Input());
 
@@ -41,7 +43,7 @@ public class GetAllTransferStateController {
 
         var response = new Response(transferStateInfoList);
 
-        LOG.info("Get All Transfer State Response : [{}]", response);
+        LOG.info("Get All Transfer State Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

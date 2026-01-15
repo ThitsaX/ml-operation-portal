@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -28,32 +30,35 @@ public class BlockUserActionListController {
 
     private final BlockUserActionList blockUserActionList;
 
-    @PostMapping("/secured/blockUserActionList")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Block User Action List Request : [{}]", request);
+    @PostMapping("/secured/blockUserActionList")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Block User Action List Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var
             output =
             blockUserActionList.execute(new BlockUserActionList.Input(new PrincipalId(Long.parseLong(request.userId())),
                                                                       request.actionIdList()
-                                                                       .stream()
-                                                                       .map(id -> new ActionId(Long.parseLong(
-                                                                           id)))
-                                                                       .toList()));
+                                                                             .stream()
+                                                                             .map(id -> new ActionId(Long.parseLong(
+                                                                                 id)))
+                                                                             .toList()));
 
         var response = new Response(output.blocked());
 
-        LOG.info("Block User Action List Response : [{}]", response);
+        LOG.info("Block User Action List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotEmpty @JsonProperty("userId") String userId,
-                          @JsonProperty("actionIdList") List<String> actionIdList) {}
+                          @JsonProperty("actionIdList") List<String> actionIdList) { }
 
-    public record Response(@JsonProperty("blocked") boolean blocked) {}
+    public record Response(@JsonProperty("blocked") boolean blocked) { }
 
 }
 

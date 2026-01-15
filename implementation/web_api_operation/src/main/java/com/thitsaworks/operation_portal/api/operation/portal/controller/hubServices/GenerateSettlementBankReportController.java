@@ -2,12 +2,11 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
-import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +27,21 @@ public class GenerateSettlementBankReportController {
 
     private final GenerateSettlementBankReport generateSettlementBankReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateSettlementBankReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("currencyId") String currencyId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Generate Settlement Bank Report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
-                settlementId,
-                currencyId,
-                fileType,
-                timezoneOffset);
+            "Generate Settlement Bank Report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
+            settlementId,
+            currencyId,
+            fileType,
+            timezoneOffset);
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
@@ -50,17 +51,17 @@ public class GenerateSettlementBankReportController {
                                                .getDetails();
 
         GenerateSettlementBankReport.Output output = this.generateSettlementBankReport.execute(
-                new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
-                                                                                                                .getId()));
+            new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
+                                                                                                            .getId()));
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Settlement Bank Report Response : [{}]", response);
+        LOG.info("Generate Settlement Bank Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
-    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable {}
+    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable { }
 
 }

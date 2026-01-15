@@ -2,11 +2,14 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantUserListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,8 +28,10 @@ public class GetParticipantUserListByParticipantController {
 
     private final GetParticipantUserListByParticipant getParticipantUserListByParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getParticipantUserListByParticipant")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         GetParticipantUserListByParticipant.Input input = new GetParticipantUserListByParticipant.Input();
         GetParticipantUserListByParticipant.Output output = this.getParticipantUserListByParticipant.execute(input);
@@ -45,16 +50,19 @@ public class GetParticipantUserListByParticipantController {
                                          .sorted(Comparator.comparing(Response.User::email))
                                          .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        LOG.info("Get Participant User List By Participant Response : [{}]", users);
+        var response = new Response(users);
 
-        return ResponseEntity.ok(new Response(users));
+        LOG.info("Get Participant User List By Participant Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("userList") Set<User> userList) {
 
         public record User(@JsonProperty("userId") String userId,
-                           @JsonProperty("email") String email) implements Serializable {}
+                           @JsonProperty("email") String email) implements Serializable { }
 
     }
 

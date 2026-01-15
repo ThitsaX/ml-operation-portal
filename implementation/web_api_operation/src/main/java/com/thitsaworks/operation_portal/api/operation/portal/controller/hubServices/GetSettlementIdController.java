@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementId;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class GetSettlementIdController {
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementIdController.class);
 
     private final GetSettlementId getSettlementId;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getSettlementId")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
@@ -58,7 +61,7 @@ public class GetSettlementIdController {
 
         var response = new Response(settlementIdInfoList);
 
-        LOG.info("Get SettlementId Response : [{}]", response);
+        LOG.info("Get SettlementId Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

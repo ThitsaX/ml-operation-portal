@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetContactList;
@@ -26,6 +28,8 @@ public class GetContactListController {
 
     private final GetContactList getContactList;
 
+    private final ObjectMapper objectMapper;
+
     private final List<String> contactTypeOrder = List.of("TECHNICAL",
                                                           "BUSINESS",
                                                           "LEVEL1",
@@ -35,7 +39,7 @@ public class GetContactListController {
 
     @GetMapping(value = "/secured/getContactList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Contact List Request : [{}]", participantId);
 
@@ -64,7 +68,7 @@ public class GetContactListController {
                                                                                    contact.contactType()))
                                           .toList());
 
-        LOG.info("Get Contact List Response : [{}]", response);
+        LOG.info("Get Contact List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

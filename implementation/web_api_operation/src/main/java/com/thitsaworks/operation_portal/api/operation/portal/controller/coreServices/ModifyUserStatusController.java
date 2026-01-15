@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -29,22 +30,24 @@ public class ModifyUserStatusController {
 
     private final ModifyUserStatus modifyUserStatus;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifyUserStatus")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify User Status Request : [{}]", request);
+        LOG.info("Modify User Status Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         ModifyUserStatus.Output
             output =
             this.modifyUserStatus.execute(new ModifyUserStatus.Input(new UserId(Long.parseLong(request.userId())),
                                                                      request.userStatus()
-                                                                .equalsIgnoreCase("ACTIVE") ?
-                                                             PrincipalStatus.ACTIVE :
-                                                             PrincipalStatus.INACTIVE));
+                                                                            .equalsIgnoreCase("ACTIVE") ?
+                                                                         PrincipalStatus.ACTIVE :
+                                                                         PrincipalStatus.INACTIVE));
         var response = new Response(output.removed());
 
-        LOG.info("Modify User Status Response : [{}]", response);
+        LOG.info("Modify User Status Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

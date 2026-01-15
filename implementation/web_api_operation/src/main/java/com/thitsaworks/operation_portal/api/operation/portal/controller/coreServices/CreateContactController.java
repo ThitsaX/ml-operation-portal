@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.Email;
@@ -32,11 +33,13 @@ public class CreateContactController {
 
     private final CreateContact createContact;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/createContact")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create New Contact Request : [{}]", request);
+        LOG.info("Create New Contact Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         CreateContact.Output output = this.createContact.execute(
             new CreateContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -52,7 +55,7 @@ public class CreateContactController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Create New Contact Response : [{}]", response);
+        LOG.info("Create New Contact Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

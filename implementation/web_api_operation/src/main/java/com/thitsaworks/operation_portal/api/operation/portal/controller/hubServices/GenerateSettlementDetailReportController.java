@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementDetailReport;
@@ -24,6 +25,8 @@ public class GenerateSettlementDetailReportController {
 
     private final GenerateSettlementDetailReport generateSettlementDetailReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateDetailReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("fspId") String fspId,
@@ -37,11 +40,11 @@ public class GenerateSettlementDetailReportController {
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
         GenerateSettlementDetailReport.Output output = this.generateSettlementDetailReport.execute(
-                new GenerateSettlementDetailReport.Input(fspId, settlementId, fileType, timezone));
+            new GenerateSettlementDetailReport.Input(fspId, settlementId, fileType, timezone));
 
         var response = new Response(output.detailReportData());
 
-        LOG.info("Generate Detail Report Response : [{}]", response);
+        LOG.info("Generate Detail Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

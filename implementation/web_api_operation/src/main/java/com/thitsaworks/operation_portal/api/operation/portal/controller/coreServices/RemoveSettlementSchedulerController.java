@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.common.identifier.SettlementModelId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -28,22 +29,24 @@ public class RemoveSettlementSchedulerController {
 
     private final RemoveSettlementScheduler removeSettlementScheduler;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/removeSettlementScheduler")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Remove Settlement Scheduler Request : [{}]", request);
+        LOG.info("Remove Settlement Scheduler Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         RemoveSettlementScheduler.Output output = this.removeSettlementScheduler.execute(
-                new RemoveSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
-                                                    new SchedulerConfigId(Long.parseLong(request.schedulerConfigId()))));
+            new RemoveSettlementScheduler.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
+                                                new SchedulerConfigId(Long.parseLong(request.schedulerConfigId()))));
 
         var response = new Response(output.removed(),
                                     output.schedulerConfigId()
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Remove Settlement Scheduler Response : [{}]", response);
+        LOG.info("Remove Settlement Scheduler Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

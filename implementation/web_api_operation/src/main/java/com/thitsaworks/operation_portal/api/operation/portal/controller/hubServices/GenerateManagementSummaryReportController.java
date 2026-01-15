@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
@@ -18,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,6 +28,8 @@ public class GenerateManagementSummaryReportController {
 
     private final GenerateManagementSummaryReport generateManagementSummaryReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateManagementSummaryReport")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
@@ -35,8 +37,12 @@ public class GenerateManagementSummaryReportController {
                                             @RequestParam("fileType") String fileType)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Generate Management Summary Report Request : startDate = [{}], endDate = [{}], timezoneOffset = [{}], fileType = [{}]",
-                 startDate, endDate, timezoneOffset, fileType);
+        LOG.info(
+            "Generate Management Summary Report Request : startDate = [{}], endDate = [{}], timezoneOffset = [{}], fileType = [{}]",
+            startDate,
+            endDate,
+            timezoneOffset,
+            fileType);
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
@@ -45,12 +51,19 @@ public class GenerateManagementSummaryReportController {
                                                .getAuthentication()
                                                .getDetails();
 
-        GenerateManagementSummaryReport.Output output = this.generateManagementSummaryReport.execute(new GenerateManagementSummaryReport.Input(
-            startDate, endDate, timezone ,fileType,userContext.userId().getId()));
+        GenerateManagementSummaryReport.Output
+            output =
+            this.generateManagementSummaryReport.execute(new GenerateManagementSummaryReport.Input(
+                startDate,
+                endDate,
+                timezone,
+                fileType,
+                userContext.userId()
+                           .getId()));
 
         var response = new Response(output.detailReportByte());
 
-        LOG.info("Generate Management Summary Report Response : [{}]", response);
+        LOG.info("Generate Management Summary Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

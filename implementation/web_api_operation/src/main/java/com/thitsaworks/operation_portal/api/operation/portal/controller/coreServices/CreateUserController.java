@@ -2,13 +2,12 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
-import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateUser;
 import jakarta.validation.Valid;
@@ -35,11 +34,14 @@ public class CreateUserController {
 
     private final CreateUser createUser;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-        throws DomainException, JsonProcessingException {
+        throws Exception {
 
-        LOG.info("Onboard User Request : [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Onboard User Request : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(request)));
 
         CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
                                                                                 new Email(request.email()),
@@ -63,7 +65,7 @@ public class CreateUserController {
                                                .toString(),
                                          output.created());
 
-        LOG.info("Onboard User Response : [{}]", response);
+        LOG.info("Onboard User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

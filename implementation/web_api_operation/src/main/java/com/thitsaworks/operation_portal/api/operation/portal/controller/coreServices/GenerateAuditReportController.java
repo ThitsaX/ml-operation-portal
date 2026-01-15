@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -27,6 +28,8 @@ public class GenerateAuditReportController {
     private static final Logger LOG = LoggerFactory.getLogger(GenerateAuditReportController.class);
 
     private final GenerateAuditReport generateAuditReport;
+
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/secured/generateAuditReport")
     public ResponseEntity<Response> execute(@RequestParam("fromDate") String fromDate,
@@ -58,7 +61,7 @@ public class GenerateAuditReportController {
 
         var response = new Response(output.rptBytes());
 
-        LOG.info("Generate Audit Report Response : [{}]", response);
+        LOG.info("Generate Audit Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

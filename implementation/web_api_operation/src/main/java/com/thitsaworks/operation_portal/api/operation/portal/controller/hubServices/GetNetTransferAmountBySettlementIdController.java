@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountBySettlementId;
@@ -28,6 +29,8 @@ public class GetNetTransferAmountBySettlementIdController {
     private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountBySettlementIdController.class);
 
     private final GetNetTransferAmountBySettlementId getNetTransferAmountBySettlementId;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/secured/getNetTransferAmountBySettlementId")
     public ResponseEntity<GetNetTransferAmountBySettlementIdController.Response> execute(@RequestParam
@@ -66,7 +69,8 @@ public class GetNetTransferAmountBySettlementIdController {
                                           .toList()
         );
 
-        LOG.info("Get Net Transfer Amount By Window Id Response : [{}]", response);
+        LOG.info("Get Net Transfer Amount By Window Id Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

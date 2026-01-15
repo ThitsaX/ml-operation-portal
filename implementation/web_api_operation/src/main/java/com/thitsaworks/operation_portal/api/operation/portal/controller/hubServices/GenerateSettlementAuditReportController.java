@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementAuditReport;
@@ -26,6 +27,8 @@ public class GenerateSettlementAuditReportController {
 
     private final GenerateSettlementAuditReport generateSettlementAuditReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateSettlementAuditReport")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
                                             @RequestParam("endDate") String endDate,
@@ -43,11 +46,11 @@ public class GenerateSettlementAuditReportController {
 
         GenerateSettlementAuditReport.Output output =
             this.generateSettlementAuditReport.execute(new GenerateSettlementAuditReport.Input(Instant.parse(
-                    startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezone));
+                startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezone));
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Settlement Audit Report Response : [{}]", response);
+        LOG.info("Generate Settlement Audit Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

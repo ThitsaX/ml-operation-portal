@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CloseSettlementWindows;
@@ -27,11 +28,13 @@ public class CloseSettlementWindowsController {
 
     private final CloseSettlementWindows closeSettlementWindows;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/closeSettlementWindow")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Close Settlement Window Request : [{}]", request);
+        LOG.info("Close Settlement Window Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -43,10 +46,14 @@ public class CloseSettlementWindowsController {
                                                                                  request.reason,
                                                                                  request.settlementWindowId));
 
-        var response = new Response(output.settlementWindowId(), output.state(), output.reason(), output.createdDate(), output.closedDate(),
+        var response = new Response(output.settlementWindowId(),
+                                    output.state(),
+                                    output.reason(),
+                                    output.createdDate(),
+                                    output.closedDate(),
                                     output.changedDate());
 
-        LOG.info("Close Settlement Window Response : [{}]", response);
+        LOG.info("Close Settlement Window Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

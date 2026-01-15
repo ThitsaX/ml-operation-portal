@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
@@ -34,11 +35,13 @@ public class CreateParticipantController {
 
     private final CreateParticipant createParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create Participant Request : [{}]", request);
+        LOG.info("Create Participant Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         List<CreateParticipant.Input.ContactInfo> contactInfoList = new ArrayList<>();
         List<CreateParticipant.Input.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
@@ -88,7 +91,7 @@ public class CreateParticipantController {
                                                .getId()
                                                .toString(), output.created());
 
-        LOG.info("Create Participant Response : [{}]", response);
+        LOG.info("Create Participant Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

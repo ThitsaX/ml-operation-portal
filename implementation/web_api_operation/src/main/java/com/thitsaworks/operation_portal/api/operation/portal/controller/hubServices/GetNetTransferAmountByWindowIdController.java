@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetNetTransferAmountByWindowId;
@@ -28,6 +29,8 @@ public class GetNetTransferAmountByWindowIdController {
     private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdController.class);
 
     private final GetNetTransferAmountByWindowId getNetTransferAmountByWindowId;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping(value = "/secured/getNetTransferAmountByWindowId")
     public ResponseEntity<Response> execute(@RequestParam
@@ -61,7 +64,8 @@ public class GetNetTransferAmountByWindowIdController {
                                           .toList()
         );
 
-        LOG.info("Get Net Transfer Amount By Window Id Response : [{}]", response);
+        LOG.info("Get Net Transfer Amount By Window Id Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -77,6 +81,6 @@ public class GetNetTransferAmountByWindowIdController {
     public record Detail(@JsonProperty("participantName") String participantName,
                          @JsonProperty("debitAmount") BigDecimal debitAmount,
                          @JsonProperty("creditAmount") BigDecimal creditAmount,
-                         @JsonProperty("currency") String currency) implements Serializable {}
+                         @JsonProperty("currency") String currency) implements Serializable { }
 
 }

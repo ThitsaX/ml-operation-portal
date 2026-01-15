@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SettlementModelId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementSchedulerList;
@@ -25,30 +27,33 @@ public class GetSettlementSchedulerListController {
 
     private final GetSettlementSchedulerList getSettlementSchedulerList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getSettlementSchedulerList")
     public ResponseEntity<Response> execute(@RequestParam("settlementModelId") String settlementModelId)
-            throws DomainException {
+        throws DomainException, JsonProcessingException {
 
         var output = this.getSettlementSchedulerList.execute(new GetSettlementSchedulerList.Input(new SettlementModelId(
-                Long.parseLong(settlementModelId))));
+            Long.parseLong(settlementModelId))));
 
         List<Response.SettlementSchedulerData>
-                settlementSchedulerList =
-                output.schedulerConfigDataList()
-                      .stream()
-                      .map(sc -> new Response.SettlementSchedulerData(
-                              sc.schedulerConfigId().getEntityId().toString(),
-                              sc.name(),
-                              sc.jobName(),
-                              sc.cronExpression(),
-                              sc.description(),
-                              sc.zoneId(),
-                              sc.active()))
-                      .toList();
+            settlementSchedulerList = output.schedulerConfigDataList()
+                                            .stream()
+                                            .map(sc -> new Response.SettlementSchedulerData(
+                                                sc.schedulerConfigId()
+                                                  .getEntityId()
+                                                  .toString(),
+                                                sc.name(),
+                                                sc.jobName(),
+                                                sc.cronExpression(),
+                                                sc.description(),
+                                                sc.zoneId(),
+                                                sc.active()))
+                                            .toList();
 
         Response response = new Response(settlementSchedulerList);
 
-        LOG.info("Get Settlement Scheduler List Response : [{}]", response);
+        LOG.info("Get Settlement Scheduler List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -57,13 +62,13 @@ public class GetSettlementSchedulerListController {
     public record Response(List<SettlementSchedulerData> settlementSchedulerList) implements Serializable {
 
         public record SettlementSchedulerData(
-                @JsonProperty("schedulerConfigId") String schedulerConfigId,
-                @JsonProperty("name") String name,
-                @JsonProperty("jobName") String jobName,
-                @JsonProperty("cronExpression") String cronExpression,
-                @JsonProperty("description") String description,
-                @JsonProperty("zoneId") String zoneId,
-                @JsonProperty("active") boolean active) implements Serializable {}
+            @JsonProperty("schedulerConfigId") String schedulerConfigId,
+            @JsonProperty("name") String name,
+            @JsonProperty("jobName") String jobName,
+            @JsonProperty("cronExpression") String cronExpression,
+            @JsonProperty("description") String description,
+            @JsonProperty("zoneId") String zoneId,
+            @JsonProperty("active") boolean active) implements Serializable { }
 
     }
 

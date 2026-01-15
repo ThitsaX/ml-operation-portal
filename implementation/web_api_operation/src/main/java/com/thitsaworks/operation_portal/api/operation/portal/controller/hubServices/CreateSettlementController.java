@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementParticipant;
@@ -31,16 +32,13 @@ public class CreateSettlementController {
 
     private final CreateSettlement createSettlement;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createSettlement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Settlement Request : [{}]", request);
-
-        UserContext userContext =
-                (UserContext) SecurityContextHolder.getContext()
-                                                   .getAuthentication()
-                                                   .getDetails();
+        LOG.info("Create Settlement Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.createSettlement.execute(new CreateSettlement.Input(request.settlementModel,
                                                                               request.reason,
@@ -51,7 +49,7 @@ public class CreateSettlementController {
                                     output.settlementWindowList(),
                                     output.settlementParticipantList());
 
-        LOG.info("Create Settlement Response : [{}]", response);
+        LOG.info("Create Settlement Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -59,17 +57,17 @@ public class CreateSettlementController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @JsonProperty("settlementModel") String settlementModel,
-            @JsonProperty("reason") String reason,
-            @JsonProperty("settlementWindowIdList") List<SettlementWindowId> settlementWindowIdList
-    ) implements Serializable {}
+        @JsonProperty("settlementModel") String settlementModel,
+        @JsonProperty("reason") String reason,
+        @JsonProperty("settlementWindowIdList") List<SettlementWindowId> settlementWindowIdList
+    ) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonProperty("settlementId") Integer settlementId,
-            @JsonProperty("state") String state,
-            @JsonProperty("settlementWindowList") List<SettlementWindow> settlementWindowList,
-            @JsonProperty("participantList") List<SettlementParticipant> participantList
-    ) implements Serializable {}
+        @JsonProperty("settlementId") Integer settlementId,
+        @JsonProperty("state") String state,
+        @JsonProperty("settlementWindowList") List<SettlementWindow> settlementWindowList,
+        @JsonProperty("participantList") List<SettlementParticipant> participantList
+    ) implements Serializable { }
 
 }

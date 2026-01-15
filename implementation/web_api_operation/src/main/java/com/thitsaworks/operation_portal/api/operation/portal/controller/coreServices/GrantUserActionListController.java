@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -30,10 +32,13 @@ public class GrantUserActionListController {
 
     private final GrantUserActionList grantUserActionList;
 
-    @PostMapping("/secured/grantUserActionList")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Grant User Action List Request : [{}]", request);
+    @PostMapping("/secured/grantUserActionList")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Grant User Action List Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         List<ActionId> actionIdList = new ArrayList<>();
         request.actionIdList()
@@ -46,16 +51,16 @@ public class GrantUserActionListController {
 
         var response = new Response(output.resultCode());
 
-        LOG.info("Grant User Action List Response : [{}]", response);
+        LOG.info("Grant User Action List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank @JsonProperty("userId") String userId,
-                          @JsonProperty("actionIdList") List<String> actionIdList) implements Serializable {}
+                          @JsonProperty("actionIdList") List<String> actionIdList) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("granted") boolean granted) implements Serializable {}
+    public record Response(@JsonProperty("granted") boolean granted) implements Serializable { }
 
 }

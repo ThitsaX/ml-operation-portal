@@ -2,12 +2,15 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.support.SettlementWindowState;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowsList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +29,8 @@ public class GetSettlementWindowsListController {
 
     private final GetSettlementWindowsList getSettlementWindowsList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getSettlementWindowsList")
     public ResponseEntity<Response> execute(@RequestParam("fromDate") String fromDate,
                                             @RequestParam("toDate") String toDate,
@@ -37,7 +42,8 @@ public class GetSettlementWindowsListController {
                                                 required = false) String state,
                                             @RequestParam(
                                                 value = "participantId",
-                                                required = false) Integer participantId) throws DomainException {
+                                                required = false) Integer participantId)
+        throws DomainException, JsonProcessingException {
 
         LOG.info(
             "Get Settlement Windows By Params Request : FromDateTime =[{}], ToDateTime =[{}], Currency =[{}],State  = [{}],ParticipantId =[{}] ",
@@ -95,9 +101,12 @@ public class GetSettlementWindowsListController {
                                                 .reversed());
 
         }
-        LOG.info("Get Settlement Windows By Params Response : [{}]", settlementWindowList);
 
-        return ResponseEntity.ok(new Response(settlementWindowList));
+        var response = new Response(settlementWindowList);
+
+        LOG.info("Get Settlement Windows By Params Response : [{}]", this.objectMapper.writeValueAsString(response));
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)

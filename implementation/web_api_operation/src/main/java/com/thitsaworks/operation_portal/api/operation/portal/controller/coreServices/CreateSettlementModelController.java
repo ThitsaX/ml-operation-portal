@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSettlementModel;
 import jakarta.validation.Valid;
@@ -26,28 +27,32 @@ public class CreateSettlementModelController {
 
     private final CreateSettlementModel createSettlementModel;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/createSettlementModel")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create New Settlement Model Request : [{}]", request);
+        LOG.info("Create Settlement Model Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         CreateSettlementModel.Output output = this.createSettlementModel.execute(
-                new CreateSettlementModel.Input(request.name(),
-                                                request.modelType(),
-                                                (request.currencyId().isEmpty() || request.currencyId().isBlank()) ?
-                                                        null : request.currencyId(),
-                                                request.zoneId(),
-                                                request.requireLiquidityCheck(),
-                                                request.autoPositionReset(),
-                                                request.adjustPosition()));
+            new CreateSettlementModel.Input(request.name(),
+                                            request.modelType(),
+                                            (request.currencyId()
+                                                    .isEmpty() || request.currencyId()
+                                                                         .isBlank()) ?
+                                                null : request.currencyId(),
+                                            request.zoneId(),
+                                            request.requireLiquidityCheck(),
+                                            request.autoPositionReset(),
+                                            request.adjustPosition()));
 
         var response = new Response(output.created(),
                                     output.settlementModelId()
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Create New Settlement Model Response : [{}]", response);
+        LOG.info("Create New Settlement Model Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

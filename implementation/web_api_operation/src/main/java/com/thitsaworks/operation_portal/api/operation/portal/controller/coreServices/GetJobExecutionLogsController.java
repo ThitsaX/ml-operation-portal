@@ -1,7 +1,10 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
+import com.esotericsoftware.kryo.util.ObjectMap;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
@@ -31,6 +34,8 @@ public class GetJobExecutionLogsController {
 
     private final GetJobExecutionLogList getJobExecutionLogList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping
     public ResponseEntity<Response> execute(
         @RequestParam(value = "jobName", required = false) String jobName,
@@ -41,7 +46,7 @@ public class GetJobExecutionLogsController {
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
         @RequestParam(value = "sortBy", required = false) String sortBy,
         @RequestParam(value = "sortDirection", required = false) Sort.Direction sortDirection
-                                           ) throws DomainException {
+                                           ) throws DomainException, JsonProcessingException {
 
         LOG.info("Fetching Job Execution Logs Request :  jobName = [{}], jobStatus = [{}], startDate = [{}], endDate = [{}], sortBy = [{}], sortDirection = [{}]",
                   jobName, status, startDate, endDate, sortBy, sortDirection);
@@ -58,7 +63,7 @@ public class GetJobExecutionLogsController {
 
         var response = new Response(output.logs());
 
-        LOG.info("Get Job Execution Logs Response : [{}]", response);
+        LOG.info("Get Job Execution Logs Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

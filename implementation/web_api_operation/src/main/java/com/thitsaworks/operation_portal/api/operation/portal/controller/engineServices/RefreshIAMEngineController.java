@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.engineServices;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RefreshIAMEngine;
 import lombok.RequiredArgsConstructor;
@@ -21,14 +23,16 @@ public class RefreshIAMEngineController {
 
     private final RefreshIAMEngine refreshIAMEngine;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/refreshIAMEngine")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var output = this.refreshIAMEngine.execute(new RefreshIAMEngine.Input());
 
         var response = new Response(output.refreshed());
 
-        LOG.info("Refresh IAM Engine Response : [{}]", response);
+        LOG.info("Refresh IAM Engine Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
