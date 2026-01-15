@@ -54,7 +54,7 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
     private final MongoTemplate reportingMongoReadTemplate;
 
-    private static final DateTimeFormatter WITH_OFFSET = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+    private static final DateTimeFormatter WITH_OFFSET = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx");
 
     @Autowired
     public GetTransfersMongoQueryHandler(
@@ -245,7 +245,13 @@ public class GetTransfersMongoQueryHandler implements GetTransfersQuery {
 
                 final Object submitted = d.get("submittedOnDate");
 
-                final ZoneId zone = parseZoneFlexible(input.getTimeZone());
+                ZoneId zone;
+
+                if ("0000".equals(input.getTimeZone())) {
+                    zone = ZoneOffset.UTC;
+                } else {
+                    zone = parseZoneFlexible(input.getTimeZone());
+                }
 
                 final String submittedOnDate =
                         (submitted instanceof Date dateVal)
