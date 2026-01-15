@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetLiquidityProfileList;
@@ -25,9 +27,11 @@ public class GetLiquidityProfileListController {
 
     private final GetLiquidityProfileList getLiquidityProfileList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getLiquidityProfileList")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Liquidity Profile List Request : ParticipantId = [{}]", participantId);
 
@@ -49,7 +53,7 @@ public class GetLiquidityProfileListController {
                                                                                             profile.isActive()))
                                           .toList());
 
-        LOG.info("Get Liquidity Profile List Response : [{}]", response);
+        LOG.info("Get Liquidity Profile List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

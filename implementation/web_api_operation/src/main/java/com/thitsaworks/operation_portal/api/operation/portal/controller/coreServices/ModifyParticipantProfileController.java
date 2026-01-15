@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.Mobile;
@@ -32,11 +33,13 @@ public class ModifyParticipantProfileController {
 
     private final ModifyParticipantProfile modifyParticipantProfile;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifyParticipant")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Participant Profile Request : [{}]", request);
+        LOG.info("Modify Participant Profile Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         UserContext
             userContext =
@@ -59,7 +62,7 @@ public class ModifyParticipantProfileController {
                                           .getId()
                                           .toString(), output.modified());
 
-        LOG.info("Modify Participant Profile Response : [{}]", response);
+        LOG.info("Modify Participant Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

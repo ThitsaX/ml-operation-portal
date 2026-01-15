@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAnnouncement;
 import jakarta.validation.Valid;
@@ -29,12 +30,14 @@ public class CreateAnnouncementController {
 
     private final CreateAnnouncement createAnnouncement;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createAnnouncement")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody CreateAnnouncementController.Request request)
         throws DomainException, ParseException, JsonProcessingException {
 
-        LOG.info("Create Announcement Request : [{}]", request);
+        LOG.info("Create Announcement Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         CreateAnnouncement.Output output = this.createAnnouncement.execute(
             new CreateAnnouncement.Input(request.announcementTitle,
@@ -44,7 +47,7 @@ public class CreateAnnouncementController {
         Response response = new Response(
             output.created());
 
-        LOG.info("Create Announcement Response : [{}]", response);
+        LOG.info("Create Announcement Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

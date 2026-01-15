@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantProfile;
@@ -25,9 +27,11 @@ public class GetParticipantProfileController {
 
     private final GetParticipantProfile getParticipantProfile;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getParticipantProfile")
     public ResponseEntity<Response> execute(@RequestParam("participantId") String participantId)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Participant Profile Request : ParticipantId = [{}]", participantId);
 
@@ -42,14 +46,15 @@ public class GetParticipantProfileController {
                                     output.participantName(),
                                     output.description(),
                                     output.address(),
-                                    output.mobile() != null ? output.mobile().getValue() : null,
+                                    output.mobile() != null ? output.mobile()
+                                                                    .getValue() : null,
                                     output.logoFileType(),
                                     output.logoBase64() == null ? null : Base64.getEncoder()
                                                                                .encodeToString(output.logoBase64()),
                                     output.createdDate()
                                           .getEpochSecond());
 
-        LOG.info("Get Participant Profile Response : [{}]", response);
+        LOG.info("Get Participant Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

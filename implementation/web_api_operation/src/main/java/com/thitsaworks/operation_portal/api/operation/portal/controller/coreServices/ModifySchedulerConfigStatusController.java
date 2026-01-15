@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySchedulerConfigStatus;
@@ -22,17 +24,22 @@ public class ModifySchedulerConfigStatusController {
 
     private final ModifySchedulerConfigStatus modifySchedulerConfigStatus;
 
-    @PostMapping("/secured/modifySchedulerConfigStatus")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        logger.info("Modify Scheduler Config Status Request : [{}]", request);
+    @PostMapping("/secured/modifySchedulerConfigStatus")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        logger.info("Modify Scheduler Config Status Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.modifySchedulerConfigStatus.execute(new ModifySchedulerConfigStatus.Input(
-                new SchedulerConfigId(Long.parseLong(request.schedulerConfigId())), request.active()));
+            new SchedulerConfigId(Long.parseLong(request.schedulerConfigId())), request.active()));
 
-        var response = new Response(output.modified(), output.schedulerConfigData().toString());
+        var response = new Response(output.modified(),
+                                    output.schedulerConfigData()
+                                          .toString());
 
-        logger.info("Modify Scheduler Config Status Response : [{}]", response);
+        logger.info("Modify Scheduler Config Status Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -40,16 +47,16 @@ public class ModifySchedulerConfigStatusController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @JsonIgnoreProperties("schedulerConfigId") String schedulerConfigId,
-            @JsonIgnoreProperties("active") boolean active
+        @JsonIgnoreProperties("schedulerConfigId") String schedulerConfigId,
+        @JsonIgnoreProperties("active") boolean active
     ) {
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
-            @JsonIgnoreProperties("modified") boolean modified,
-            @JsonIgnoreProperties("schedulerConfigData") String schedulerConfigData
+        @JsonIgnoreProperties("modified") boolean modified,
+        @JsonIgnoreProperties("schedulerConfigData") String schedulerConfigData
     ) {
 
     }

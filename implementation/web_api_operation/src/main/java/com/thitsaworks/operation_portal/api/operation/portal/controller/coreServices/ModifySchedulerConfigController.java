@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySchedulerConfig;
@@ -27,45 +29,46 @@ public class ModifySchedulerConfigController {
 
     private final ModifySchedulerConfig modifySchedulerConfig;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifySchedulerConfig")
     public ResponseEntity<Response> execute(
         @Valid @RequestBody Request request
-    ) throws DomainException {
+                                           ) throws DomainException, JsonProcessingException {
 
         LOG.info("Updating Scheduler Configuration Request : schedulerConfigId : [{}]", request.schedulerConfigId());
 
         ModifySchedulerConfig.Output output = this.modifySchedulerConfig.execute(
-            new ModifySchedulerConfig.Input(
-                    new SchedulerConfigId(request.schedulerConfigId()),
-                    request.name(),
-                    request.jobName(),
-                    request.description(),
-                    request.cronExpression(),
-                    ZoneId.of(request.zoneId()),
-                    request.active()
-            )
-        );
+            new ModifySchedulerConfig.Input(new SchedulerConfigId(request.schedulerConfigId()),
+                                            request.name(),
+                                            request.jobName(),
+                                            request.description(),
+                                            request.cronExpression(),
+                                            ZoneId.of(request.zoneId()),
+                                            request.active())
+                                                                                );
 
         var response = new Response(output.updated());
 
-        LOG.info("Updating Scheduler Configuration Response : [{}]", response);
+        LOG.info("Updating Scheduler Configuration Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(
-            @NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId,
-            @NotBlank @JsonProperty("name") String name,
-            @NotBlank @JsonProperty("jobName") String jobName,
-            @NotBlank @JsonProperty("description") String description,
-            @NotBlank @JsonProperty("cronExpression") String cronExpression,
-            @NotNull @JsonProperty("zoneId") String zoneId,
-            @NotNull @JsonProperty("active") Boolean active
-    ) {}
+        @NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId,
+        @NotBlank @JsonProperty("name") String name,
+        @NotBlank @JsonProperty("jobName") String jobName,
+        @NotBlank @JsonProperty("description") String description,
+        @NotBlank @JsonProperty("cronExpression") String cronExpression,
+        @NotNull @JsonProperty("zoneId") String zoneId,
+        @NotNull @JsonProperty("active") Boolean active
+    ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("updated") boolean updated
-    ) {}
+    ) { }
+
 }

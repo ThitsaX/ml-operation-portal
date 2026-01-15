@@ -2,11 +2,14 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetRoleListByParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,9 +26,11 @@ public class GetRoleListByParticipantController {
 
     private final GetRoleListByParticipant getRoleListByParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getRoleListByParticipant")
     public ResponseEntity<Response> execute(@RequestParam("participantName") String participantName)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info("Get Role List By User Id Request : participantName : [{}]", participantName);
 
@@ -40,9 +45,9 @@ public class GetRoleListByParticipantController {
                                                                          role.active()))
                                           .toList());
 
-        LOG.info("Get Role List By User Id Response : [{}]", response);
+        LOG.info("Get Role List By User Id Response : [{}]", this.objectMapper.writeValueAsString(response));
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -50,7 +55,7 @@ public class GetRoleListByParticipantController {
 
         public record Role(@JsonProperty("roleId") String roleId,
                            @JsonProperty("name") String name,
-                           @JsonProperty("active") boolean active) implements Serializable {}
+                           @JsonProperty("active") boolean active) implements Serializable { }
 
     }
 

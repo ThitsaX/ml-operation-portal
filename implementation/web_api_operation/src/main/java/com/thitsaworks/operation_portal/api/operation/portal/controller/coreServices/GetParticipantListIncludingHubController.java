@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantListIncludingHub;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,8 @@ public class GetParticipantListIncludingHubController {
 
     private final GetParticipantListIncludingHub getParticipantListIncludingHub;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getParticipantListIncludingHub")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
@@ -48,7 +51,7 @@ public class GetParticipantListIncludingHubController {
 
         Response response = new Response(participantInfoList);
 
-        LOG.info("Get Participants List Including Hub Response : [{}]", response);
+        LOG.info("Get Participants List Including Hub Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

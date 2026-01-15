@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.api.operation.portal.controller.coreServices;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetActionListByUser;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +26,10 @@ public class GetActionListByUserController {
 
     private final GetActionListByUser getActionListByUser;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getActionListByUser")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var input = new GetActionListByUser.Input();
         var output = this.getActionListByUser.execute(input);
@@ -40,7 +44,7 @@ public class GetActionListByUserController {
 
         var response = new Response(actionNames);
 
-        LOG.info("Get Action List By User Response : [{}]", response);
+        LOG.info("Get Action List By User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

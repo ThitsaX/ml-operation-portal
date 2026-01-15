@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateSchedulerConfig;
 import jakarta.validation.Valid;
@@ -25,11 +27,13 @@ public class CreateSchedulerConfigController {
 
     private final CreateSchedulerConfig createSchedulerConfig;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/createSchedulerConfig")
     public ResponseEntity<Response> execute(
-        @Valid @RequestBody Request request) throws DomainException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Scheduler Config Request : [{}]" , request);
+        LOG.info("Create Scheduler Config Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         CreateSchedulerConfig.Output output = this.createSchedulerConfig.execute(
             new CreateSchedulerConfig.Input(
@@ -39,11 +43,11 @@ public class CreateSchedulerConfigController {
                 request.cronExpression(),
                 ZoneId.of(request.zoneId())
             )
-        );
+                                                                                );
 
         var response = new Response(output.created());
 
-        LOG.info("Create Scheduler Config Response : [{}]",response);
+        LOG.info("Create Scheduler Config Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -56,10 +60,11 @@ public class CreateSchedulerConfigController {
         @NotBlank @JsonProperty("cronExpression") String cronExpression,
         @NotBlank @JsonProperty("zoneId") String zoneId
 
-    ) {}
+    ) { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("created") boolean created
-    ) {}
+    ) { }
+
 }

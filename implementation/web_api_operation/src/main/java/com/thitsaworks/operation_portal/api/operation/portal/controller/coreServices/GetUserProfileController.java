@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -28,10 +29,11 @@ public class GetUserProfileController {
 
     private final GetUserProfile getUserProfile;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getUserProfile")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
-
 
         UserContext
             userContext =
@@ -40,7 +42,8 @@ public class GetUserProfileController {
                                                .getDetails();
 
         GetUserProfile.Output output = this.getUserProfile.execute(
-                new GetUserProfile.Input(new UserId(userContext.userId().getId())));
+            new GetUserProfile.Input(new UserId(userContext.userId()
+                                                           .getId())));
 
         List<Long> menuIds = output.permittedMenuAndActionList()
                                    .entrySet()
@@ -48,7 +51,8 @@ public class GetUserProfileController {
                                    .flatMap(entry -> entry.getKey()
                                                           .stream())
                                    .map(menu -> menu.menuId()
-                                                    .getId()).distinct()
+                                                    .getId())
+                                   .distinct()
                                    .sorted()
                                    .toList();
 
@@ -58,7 +62,8 @@ public class GetUserProfileController {
                                          .flatMap(entry -> entry.getValue()
                                                                 .stream())
                                          .map(action -> action.actionCode()
-                                                              .getValue()).distinct()
+                                                              .getValue())
+                                         .distinct()
                                          .sorted()
                                          .toList();
 
@@ -75,7 +80,7 @@ public class GetUserProfileController {
                                     output.description(),
                                     output.logoFileType(),
                                     output.logoBase64() == null ? null : Base64.getEncoder()
-                                                                         .encodeToString(output.logoBase64()),
+                                                                               .encodeToString(output.logoBase64()),
                                     output.roleList(),
                                     output.participantId()
                                           .getId()
@@ -84,7 +89,7 @@ public class GetUserProfileController {
                                     menuIds,
                                     actionCodes);
 
-        LOG.info("Get User Profile Response : [{}]", response);
+        LOG.info("Get User Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

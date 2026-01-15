@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetUser;
@@ -29,6 +30,8 @@ public class GetUserController {
 
     private final GetUser getUser;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getUser")
     public ResponseEntity<Response> execute(@Valid @RequestParam String userId)
         throws DomainException, JsonProcessingException {
@@ -50,7 +53,7 @@ public class GetUserController {
                                     output.roleList(),
                                     output.createdDate());
 
-        LOG.info("Get User Response : [{}]", response);
+        LOG.info("Get User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

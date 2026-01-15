@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.component.misc.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -21,7 +22,7 @@ public class MaskPassword {
         SENSITIVE_FIELDS.add("passwordplain");
     }
 
-    public static String maskPassword(ObjectMapper objectMapper, String jsonString) throws Exception {
+    public static String maskPassword(ObjectMapper objectMapper, String jsonString) throws JsonProcessingException {
 
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 

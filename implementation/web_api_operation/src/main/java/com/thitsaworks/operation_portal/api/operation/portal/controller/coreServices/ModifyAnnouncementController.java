@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AnnouncementId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifyAnnouncement;
@@ -29,22 +30,24 @@ public class ModifyAnnouncementController {
 
     private final ModifyAnnouncement modifyExistingAnnouncement;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/modifyAnnouncement")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Announcement Request : [{}]", request);
+        LOG.info("Modify Announcement Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         ModifyAnnouncement.Output output = this.modifyExistingAnnouncement.execute(
-            new ModifyAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId)),
-                                         request.announcementTitle,
-                                         request.announcementDetail,
-                                         Instant.parse(request.announcementDate),
-                                         request.isDeleted));
+            new ModifyAnnouncement.Input(new AnnouncementId(Long.parseLong(request.announcementId())),
+                                         request.announcementTitle(),
+                                         request.announcementDetail(),
+                                         Instant.parse(request.announcementDate()),
+                                         request.isDeleted()));
 
         Response response = new Response(output.modified());
 
-        LOG.info("Modify Announcement Response : [{}]", response);
+        LOG.info("Modify Announcement Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
