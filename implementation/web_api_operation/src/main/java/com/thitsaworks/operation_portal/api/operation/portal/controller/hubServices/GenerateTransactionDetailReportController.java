@@ -33,22 +33,22 @@ public class GenerateTransactionDetailReportController {
                                             @RequestParam("dfspId") String dfspId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Generate Transaction Detail Report Request : startDate = [{}], state = [{}], dfspId = [{}], fileType = [{}], timezoneOffset = [{}]",
-                startDate,
-                endDate,
-                state,
-                dfspId,
-                fileType,
-                timezoneOffset);
+            "Generate Transaction Detail Report Request : startDate = [{}], endDate = [{}], state = [{}], dfspId = [{}], fileType = [{}], timezoneOffset = [{}]",
+            startDate,
+            endDate,
+            state,
+            dfspId,
+            fileType,
+            timezoneOffset);
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
         GenerateTransactionDetailReport.Output output =
-                this.generateTransactionDetailReport.execute(new GenerateTransactionDetailReport.Input(Instant.parse(
-                        startDate), Instant.parse(endDate), state, dfspId, fileType, timezone));
+            this.generateTransactionDetailReport.execute(new GenerateTransactionDetailReport.Input(Instant.parse(
+                startDate), Instant.parse(endDate), state, dfspId, fileType, timezone));
 
         var response = new Response(output.reportData());
 
@@ -59,6 +59,6 @@ public class GenerateTransactionDetailReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable {}
+    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
 
 }
