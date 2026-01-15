@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.GreetingId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.UpdateGreeting;
@@ -28,11 +30,13 @@ public class UpdateGreetingController {
 
     private final UpdateGreeting updateGreeting;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/updateGreeting")
     public ResponseEntity<Response> execute(
-        @Valid @RequestBody Request request) throws DomainException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOGGER.info("Update Greeting Request : [{}]", request);
+        LOGGER.info("Update Greeting Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var input = new UpdateGreeting.Input(new GreetingId(Long.parseLong(request.greetingId())),
                                              request.greetingTitle(),
@@ -45,7 +49,8 @@ public class UpdateGreetingController {
         var response = new Response(output.greetingId()
                                           .toString());
 
-        LOGGER.info("Update Greeting Response : [{}]", response);
+        LOGGER.info("Update Greeting Response : [{}]", this.objectMapper.writeValueAsString(response));
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

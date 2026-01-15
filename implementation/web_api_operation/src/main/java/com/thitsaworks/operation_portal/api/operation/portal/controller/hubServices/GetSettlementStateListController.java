@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementStateList;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,10 @@ public class GetSettlementStateListController {
 
     private final GetSettlementStateList getSettlementStateList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getSettlementStateList")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var output = this.getSettlementStateList.execute(new GetSettlementStateList.Input());
 
@@ -32,12 +36,12 @@ public class GetSettlementStateListController {
 
         for (var settlementStateData : output.settlementStates()) {
             settlementStateDataList.add(new Response.SettlementStateData(settlementStateData.settlementStateId(),
-                    settlementStateData.enumeration()));
+                                                                         settlementStateData.enumeration()));
         }
 
         var response = new Response(settlementStateDataList);
 
-        LOGGER.info("Get Settlement State Response : [{}]", response);
+        LOGGER.info("Get Settlement State Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -46,8 +50,8 @@ public class GetSettlementStateListController {
     public record Response(@JsonProperty("settlementStateList") List<SettlementStateData> settlementStateDataList) {
 
         public record SettlementStateData(
-                @JsonProperty("settlementStateId") String settlementStateId,
-                @JsonProperty("enumeration") String enumeration
+            @JsonProperty("settlementStateId") String settlementStateId,
+            @JsonProperty("enumeration") String enumeration
         ) {
 
         }

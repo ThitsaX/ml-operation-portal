@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetHubCurrencyList;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +25,10 @@ public class GetHubCurrenciesController {
 
     private final GetHubCurrencyList getHubCurrencyList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getHubCurrency")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
-
 
         var output = this.getHubCurrencyList.execute(new GetHubCurrencyList.Input());
 
@@ -39,7 +41,7 @@ public class GetHubCurrenciesController {
 
         var response = new Response(currencyInfoList);
 
-        LOG.info("Get Hub Currencies Response : [{}]", response);
+        LOG.info("Get Hub Currencies Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

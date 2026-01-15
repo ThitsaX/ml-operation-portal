@@ -23,11 +23,9 @@ public class LogSpringBeanAspect {
     }
 
     @Around(
-        "(" +
+            "(" +
             "@within(org.springframework.stereotype.Service) || " +
-            "@within(org.springframework.stereotype.Component) || " +
-            "@target(org.springframework.stereotype.Controller) || " +
-            "@target(org.springframework.web.bind.annotation.RestController)" +
+            "@within(org.springframework.stereotype.Component) " +
             ") && (" +
             "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
             "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +

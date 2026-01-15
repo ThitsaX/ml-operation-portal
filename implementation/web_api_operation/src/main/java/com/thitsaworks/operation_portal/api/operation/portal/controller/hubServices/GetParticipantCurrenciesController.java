@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipantCurrencies;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ public class GetParticipantCurrenciesController {
 
     private final GetParticipantCurrencies getParticipantCurrencies;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getParticipantCurrency")
     public ResponseEntity<Response> execute(@RequestParam("dfspId") String dfspId)
         throws DomainException, JsonProcessingException {
@@ -41,7 +44,7 @@ public class GetParticipantCurrenciesController {
 
         var response = new Response(currencyInfoList);
 
-        LOG.info("Get Participant Currencies Response : [{}]", response);
+        LOG.info("Get Participant Currencies Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

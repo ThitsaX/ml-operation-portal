@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateFeeSettlementReport;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,8 @@ public class GenerateFeeSettlementReportController {
 
     private final GenerateFeeSettlementReport generateFeeSettlementReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateFeeReport")
     public ResponseEntity<Response> execute(
         @RequestParam("startDate") String startDate, @RequestParam("endDate") String endDate,
@@ -46,7 +49,7 @@ public class GenerateFeeSettlementReportController {
 
         var response = new Response(output.rptData());
 
-        LOG.info("Generate Fee Report Response : [{}]", response);
+        LOG.info("Generate Fee Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

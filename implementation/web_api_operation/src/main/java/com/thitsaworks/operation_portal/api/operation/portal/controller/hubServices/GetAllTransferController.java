@@ -2,10 +2,10 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.util.TimeZoneConverter;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferList;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,8 @@ public class GetAllTransferController {
     private static final Logger LOG = LoggerFactory.getLogger(GetAllTransferController.class);
 
     private final GetTransferList getTransferList;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getAllTransfer")
     public ResponseEntity<Response> execute(
@@ -99,7 +100,7 @@ public class GetAllTransferController {
 
         var response = new Response(transferInfoList, output.totalPage());
 
-        LOG.info("Get All Transfer Response : [{}]", response);
+        LOG.info("Get All Transfer Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

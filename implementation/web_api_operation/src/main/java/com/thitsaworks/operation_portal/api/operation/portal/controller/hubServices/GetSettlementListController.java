@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.fspiop.model.Money;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementList;
@@ -26,6 +27,8 @@ public class GetSettlementListController {
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementListController.class);
 
     private final GetSettlementList getSettlementList;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getSettlementList")
     public ResponseEntity<Response> execute(@RequestParam(
@@ -144,7 +147,7 @@ public class GetSettlementListController {
 
         var response = new Response(settlementList);
 
-        LOG.info("Get Settlements By Params Response : [{}]", response);
+        LOG.info("Get Settlements By Params Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetTransferDetail;
@@ -26,6 +27,8 @@ public class GetTransferDetailsController {
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferDetailsController.class);
 
     private final GetTransferDetail getTransferDetail;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getTransferDetail")
     public ResponseEntity<Response> execute(@Valid @RequestParam String transferId, String timezone)
@@ -80,7 +83,7 @@ public class GetTransferDetailsController {
 
         var response = new Response(transferInfo, payerInfo, payeeInfo, errorInfo);
 
-        LOG.info("Get Transfer Detail Response : [{}]", response);
+        LOG.info("Get Transfer Detail Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

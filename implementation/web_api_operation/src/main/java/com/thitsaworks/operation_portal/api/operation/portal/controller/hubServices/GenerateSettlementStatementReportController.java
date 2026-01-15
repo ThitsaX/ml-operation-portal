@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementStatementReport;
@@ -24,6 +25,8 @@ public class GenerateSettlementStatementReportController {
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementStatementReportController.class);
 
     private final GenerateSettlementStatementReport generateSettlementStatementReport;
+
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/secured/generateSettlementStatementReport")
     public ResponseEntity<Response> execute(
@@ -55,7 +58,8 @@ public class GenerateSettlementStatementReportController {
 
         var response = new Response(output.statementData());
 
-        LOG.info("Generate Settlement Statement Report Response : [{}]", response);
+        LOG.info("Generate Settlement Statement Report Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
