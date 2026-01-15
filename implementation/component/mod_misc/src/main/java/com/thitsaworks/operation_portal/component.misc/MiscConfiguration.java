@@ -10,9 +10,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-//@EnableAspectJAutoProxy(
-//    proxyTargetClass = true,
-//    exposeProxy = true)
 @ComponentScan("com.thitsaworks.operation_portal.component.misc")
 public class MiscConfiguration {
 

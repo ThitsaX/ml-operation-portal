@@ -18,26 +18,47 @@ public class MaskPassword {
         SENSITIVE_FIELDS.add("password");
         SENSITIVE_FIELDS.add("secretkey");
         SENSITIVE_FIELDS.add("accesskey");
+        SENSITIVE_FIELDS.add("passwordplain");
     }
 
     public static String maskPassword(ObjectMapper objectMapper, String jsonString) throws Exception {
 
         JsonNode jsonNode = objectMapper.readTree(jsonString);
 
-        if (jsonNode.isObject()) {
-
-            ObjectNode objectNode = (ObjectNode) jsonNode;
-
-            jsonNode.fieldNames()
-                    .forEachRemaining(fieldName -> {
-                        if (SENSITIVE_FIELDS.stream()
-                                            .anyMatch(fieldName.toLowerCase()::contains)) {
-                            objectNode.put(fieldName, MASK);
-                        }
-                    });
-        }
+        maskSensitiveFields(jsonNode);
 
         return objectMapper.writeValueAsString(jsonNode);
+    }
+
+    private static void maskSensitiveFields(JsonNode node) {
+
+        if (node.isObject()) {
+
+            ObjectNode objectNode = (ObjectNode) node;
+
+            node.fields().forEachRemaining(entry -> {
+                String fieldName = entry.getKey();
+                JsonNode valueNode = entry.getValue();
+
+                if (SENSITIVE_FIELDS.stream()
+                        .anyMatch(fieldName.toLowerCase()::contains)) {
+                    objectNode.put(fieldName, MASK);
+                }
+                else if (valueNode.isObject() || valueNode.isArray()) {
+                    maskSensitiveFields(valueNode);
+                }
+            });
+        }
+        else if (node.isArray()) {
+
+            for (JsonNode arrayItem : node) {
+
+                if (arrayItem.isObject() || arrayItem.isArray()) {
+
+                    maskSensitiveFields(arrayItem);
+                }
+            }
+        }
     }
 
     public static String toMaskedString(Object obj) {
