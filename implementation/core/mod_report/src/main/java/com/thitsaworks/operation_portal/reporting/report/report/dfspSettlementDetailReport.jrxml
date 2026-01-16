@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detailReport" pageWidth="3000" pageHeight="1200" columnWidth="2960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="bc3e963e-1b1b-435c-9282-bb968d48ca8a">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -1069,7 +1069,7 @@ WHERE s.settlementId = $P{settlementId}
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="16">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
+							<textField pattern="#,##0.00#">
 								<reportElement mode="Opaque" x="0" y="0" width="100" height="16" uuid="871c9318-8df1-4c3b-974f-b095bb65b098"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1085,8 +1085,7 @@ WHERE s.settlementId = $P{settlementId}
         : (
             Math.round($F{payeeDfspFeeAmount}.doubleValue() * 100) == 0
           ? "-"
-          : new java.text.DecimalFormat("#,##0.00")
-                .format($F{payeeDfspFeeAmount})
+          : $F{payeeDfspFeeAmount}
         )]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
@@ -1112,7 +1111,7 @@ WHERE s.settlementId = $P{settlementId}
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="16">
 							<property name="com.jaspersoft.studio.unit.height" value="px"/>
-							<textField>
+							<textField pattern="#,##0.00#">
 								<reportElement mode="Opaque" x="0" y="0" width="180" height="16" uuid="871c9318-8df1-4c3b-974f-b095bb65b098"/>
 								<box>
 									<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
@@ -1125,8 +1124,7 @@ WHERE s.settlementId = $P{settlementId}
 								</textElement>
 								<textFieldExpression><![CDATA[$F{payeeDfspCommissionAmount} == null ? "-" : (
             Math.round($F{payeeDfspCommissionAmount}.doubleValue() * 100) == 0
-          ? "-" : new java.text.DecimalFormat("#,##0.00")
-                .format($F{payeeDfspCommissionAmount}) )]]></textFieldExpression>
+          ? "-" : $F{payeeDfspCommissionAmount} )]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
