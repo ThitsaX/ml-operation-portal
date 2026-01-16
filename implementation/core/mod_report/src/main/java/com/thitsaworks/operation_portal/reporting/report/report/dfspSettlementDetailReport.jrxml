@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="detailReport" pageWidth="3000" pageHeight="1200" columnWidth="2960" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="bc3e963e-1b1b-435c-9282-bb968d48ca8a">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -87,75 +87,82 @@
 		<parameter name="report" class="java.lang.String"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT
-			( SELECT participantId FROM participant WHERE NAME = $P{fspId} AND name != 'Hub') AS  ParticipantID,
-			   IFNULL(pPayer.name,'') AS  payerFspid,
-			   IFNULL(oPayer.description,pPayer.name) AS  payerFspName,
-			   IFNULL(pPayee.name,'') AS  payeeFspid,
-			   IFNULL(oPayee.description,pPayee.name) AS  payeeFspName,
-			   tF.transferId,
-			   tS.name AS  transactionType,
-			   tSS.name AS  transactionNature,
-			   CONCAT(
-				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-				END,'%Y-%m-%dT%H:%i:%s'),
-				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
-				) AS  lastModifiedDate,
-			   pITPayer.name AS  payerIdentifierType,
-			   CAST(qpPayer.partyIdentifierValue AS CHAR) AS  payerIdentifierValue,
-			   pITPayee.name AS  payeeIdentifierType,
-			   CAST(qpPayee.partyIdentifierValue AS CHAR) AS  payeeIdentifierValue,
-			   ROUND(IF(pPayee.name = $P{fspId}  , t.amount, 0),2) AS  receivedAmount,
-			   ROUND( IF(pPayer.name = $P{fspId}   , t.amount, 0),2) AS  sentAmount,
-			    c.currencyId,
-			    s.settlementId,
-			   CONCAT(
-				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-				END,'%Y-%m-%dT%H:%i:%s'),
-				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
-				) AS  settlementCreatedDate, sSW.settlementWindowId,
-				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset ,
-				IF(qR.payeeFspFeeAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspFeeAmount, 2), 2), '') AS payeeDfspFeeAmount,
-				IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount				
-			FROM transferFulfilment tF
-			INNER JOIN transfer t ON t.transferId = tF.transferId
-			LEFT JOIN (
-			SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
-			(
-				SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
-			    FROM transferStateChange tsa
-			  ) x
-			  WHERE x.rn = 1
-			) tss ON tss.transferId = t.transferId
-			INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
-			AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
-			INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
-			INNER JOIN participant pPayer ON pPayer.participantId = pCPayer.participantId
-			INNER JOIN transferParticipant tPPayee ON tPPayee.transferId = tF.transferId
-			AND tPPayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
-			INNER JOIN participantCurrency pCPayee ON pCPayee.participantCurrencyId = tPPayee.participantCurrencyId
-			INNER JOIN participant pPayee ON pPayee.participantId = pCPayee.participantId
-			INNER JOIN settlementWindow sW on sW.settlementWindowId = tF.settlementWindowId
-			INNER JOIN settlementSettlementWindow sSW on tF.settlementWindowId = sSW.settlementWindowId
-			INNER JOIN settlementWindowStateChange sWSC on sW.currentStateChangeId = sWSC.settlementWindowStateChangeId
-			INNER JOIN settlement s on sSW.settlementId = s.settlementId              
-			INNER JOIN currency c ON c.currencyId = pCPayer.currencyId
-			INNER JOIN quote q on q.transactionReferenceId = tF.transferId
-			LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
-			INNER JOIN quoteParty qpPayer on qpPayer.quoteId = q.quoteId AND qpPayer.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYER')
-			INNER JOIN partyIdentifierType pITPayer ON pITPayer.partyIdentifierTypeId = qpPayer.partyIdentifierTypeId
-			INNER JOIN quoteParty qpPayee on qpPayee.quoteId = q.quoteId AND qpPayee.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYEE')
-			INNER JOIN partyIdentifierType pITPayee ON pITPayee.partyIdentifierTypeId = qpPayee.partyIdentifierTypeId
-			INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
-			LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId
-			LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = pPayer.name
-			LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = pPayee.name
-			WHERE tF.isValid AND s.settlementId = $P{settlementId} AND (pPayee.name = $P{fspId}  OR pPayer.name = $P{fspId})]]>
+				( SELECT participantId FROM participant WHERE NAME = $P{fspId} AND name != 'Hub') AS  ParticipantID,
+				   IFNULL(pPayer.name,'') AS  payerFspid,
+				   IFNULL(oPayer.description,pPayer.name) AS  payerFspName,
+			       IFNULL(pPayee.name,'') AS  payeeFspid,
+			       IFNULL(oPayee.description,pPayee.name) AS  payeeFspName,
+				   tF.transferId,
+				   tS.name AS  transactionType,
+				   tSS.name AS  transactionNature,
+				   CONCAT(
+					DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+					CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+					ELSE CONVERT_TZ(tss.CreatedDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+					END,'%Y-%m-%dT%H:%i:%s'),
+					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+					ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
+					) AS  lastModifiedDate,
+				   pITPayer.name AS  payerIdentifierType,
+				  CAST(qpPayer.partyIdentifierValue AS CHAR) AS  payerIdentifierValue,
+			   	  pITPayee.name AS  payeeIdentifierType,
+			      CAST(qpPayee.partyIdentifierValue AS CHAR) AS  payeeIdentifierValue,
+				   ROUND(IF(pPayee.name = $P{fspId}  , t.amount, 0),2) AS  receivedAmount,
+				   ROUND( IF(pPayer.name = $P{fspId}   , t.amount, 0),2) AS  sentAmount,
+				    c.currencyId,
+				    s.settlementId,
+				   CONCAT(
+					DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+					CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+					ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+					END,'%Y-%m-%dT%H:%i:%s'),
+					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
+					ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
+					) AS  settlementCreatedDate, sSW.settlementWindowId,
+					CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset ,
+					IF(qR.payeeFspFeeAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspFeeAmount, 2), 2), '') AS payeeDfspFeeAmount,
+					IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount				
+				FROM transferFulfilment tF
+				INNER JOIN transfer t ON t.transferId = tF.transferId
+				LEFT JOIN (
+					SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
+					(
+						SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+					    FROM transferStateChange tsa
+					    WHERE EXISTS (
+			    			SELECT 1 
+							  FROM transferFulfilment tF
+							  JOIN settlementSettlementWindow sSW
+						    ON sSW.settlementWindowId = tF.settlementWindowId
+						   AND sSW.settlementId = $P{settlementId}
+						  WHERE tF.isValid AND tF.transferId = tsa.transferId)
+					  ) x
+					  WHERE x.rn = 1
+					) tss ON tss.transferId = t.transferId
+				INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
+				AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
+				INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
+				INNER JOIN participant pPayer ON pPayer.participantId = pCPayer.participantId
+				INNER JOIN transferParticipant tPPayee ON tPPayee.transferId = tF.transferId
+				AND tPPayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
+				INNER JOIN participantCurrency pCPayee ON pCPayee.participantCurrencyId = tPPayee.participantCurrencyId
+				INNER JOIN participant pPayee ON pPayee.participantId = pCPayee.participantId
+				INNER JOIN settlementWindow sW on sW.settlementWindowId = tF.settlementWindowId
+				INNER JOIN settlementSettlementWindow sSW on tF.settlementWindowId = sSW.settlementWindowId
+				INNER JOIN settlementWindowStateChange sWSC on sW.currentStateChangeId = sWSC.settlementWindowStateChangeId
+				INNER JOIN settlement s on sSW.settlementId = s.settlementId              
+				INNER JOIN currency c ON c.currencyId = pCPayer.currencyId
+				INNER JOIN quote q on q.transactionReferenceId = tF.transferId
+				LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId				
+				INNER JOIN quoteParty qpPayer on qpPayer.quoteId = q.quoteId AND qpPayer.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYER')
+				INNER JOIN partyIdentifierType pITPayer ON pITPayer.partyIdentifierTypeId = qpPayer.partyIdentifierTypeId
+				INNER JOIN quoteParty qpPayee on qpPayee.quoteId = q.quoteId AND qpPayee.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYEE')
+				INNER JOIN partyIdentifierType pITPayee ON pITPayee.partyIdentifierTypeId = qpPayee.partyIdentifierTypeId
+				INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
+				LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId
+				LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = pPayer.name
+			    LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = pPayee.name
+				WHERE tF.isValid AND s.settlementId = $P{settlementId} AND (pPayee.name = $P{fspId}  OR pPayer.name = $P{fspId})]]>
 		</queryString>
 		<field name="ParticipantID" class="java.lang.Long">
 			<property name="com.jaspersoft.studio.field.name" value="ParticipantID"/>
@@ -359,6 +366,13 @@ WHERE s.settlementId = $P{settlementId}
 					(
 						SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 					    FROM transferStateChange tsa
+					    WHERE EXISTS (
+			    			SELECT 1 
+							  FROM transferFulfilment tF
+							  JOIN settlementSettlementWindow sSW
+						    ON sSW.settlementWindowId = tF.settlementWindowId
+						   AND sSW.settlementId = $P{settlementId}
+						  WHERE tF.isValid AND tF.transferId = tsa.transferId)
 					  ) x
 					  WHERE x.rn = 1
 					) tss ON tss.transferId = t.transferId
