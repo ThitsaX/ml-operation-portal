@@ -89,9 +89,9 @@
 			<![CDATA[SELECT
 				( SELECT participantId FROM participant WHERE NAME = $P{fspId} AND name != 'Hub') AS  ParticipantID,
 				   IFNULL(pPayer.name,'') AS  payerFspid,
-				   IFNULL(oPayer.description,pPayer.name) AS  payerFspName,
+				   IFNULL(pPayer.description,pPayer.name) AS  payerFspName,
 			       IFNULL(pPayee.name,'') AS  payeeFspid,
-			       IFNULL(oPayee.description,pPayee.name) AS  payeeFspName,
+			       IFNULL(pPayee.description,pPayee.name) AS  payeeFspName,
 				   tF.transferId,
 				   tS.name AS  transactionType,
 				   tSS.name AS  transactionNature,
@@ -125,9 +125,9 @@
 				FROM transferFulfilment tF
 				INNER JOIN transfer t ON t.transferId = tF.transferId
 				LEFT JOIN (
-					SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
+					SELECT transferId, CreatedDate FROM 
 					(
-						SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+						SELECT transferId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 					    FROM transferStateChange tsa
 					    WHERE EXISTS (
 			    			SELECT 1 
@@ -138,7 +138,7 @@
 						  WHERE tF.isValid AND tF.transferId = tsa.transferId)
 					  ) x
 					  WHERE x.rn = 1
-					) tss ON tss.transferId = t.transferId
+					) tss ON tss.transferId = tF.transferId
 				INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
 				AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
 				INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
@@ -159,9 +159,7 @@
 				INNER JOIN quoteParty qpPayee on qpPayee.quoteId = q.quoteId AND qpPayee.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYEE')
 				INNER JOIN partyIdentifierType pITPayee ON pITPayee.partyIdentifierTypeId = qpPayee.partyIdentifierTypeId
 				INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
-				LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId
-				LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = pPayer.name
-			    LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = pPayee.name
+				LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId 
 				WHERE tF.isValid AND s.settlementId = $P{settlementId} AND (pPayee.name = $P{fspId}  OR pPayer.name = $P{fspId})]]>
 		</queryString>
 		<field name="ParticipantID" class="java.lang.Long">
@@ -326,9 +324,9 @@ WHERE s.settlementId = $P{settlementId}
 		<![CDATA[SELECT
 				( SELECT participantId FROM participant WHERE NAME = $P{fspId} AND name != 'Hub') AS  ParticipantID,
 				   IFNULL(pPayer.name,'') AS  payerFspid,
-				   IFNULL(oPayer.description,pPayer.name) AS  payerFspName,
+				   IFNULL(pPayer.description,pPayer.name) AS  payerFspName,
 			       IFNULL(pPayee.name,'') AS  payeeFspid,
-			       IFNULL(oPayee.description,pPayee.name) AS  payeeFspName,
+			       IFNULL(pPayee.description,pPayee.name) AS  payeeFspName,
 				   tF.transferId,
 				   tS.name AS  transactionType,
 				   tSS.name AS  transactionNature,
@@ -362,9 +360,9 @@ WHERE s.settlementId = $P{settlementId}
 				FROM transferFulfilment tF
 				INNER JOIN transfer t ON t.transferId = tF.transferId
 				LEFT JOIN (
-					SELECT transferStateChangeId, transferId, transferStateId, CreatedDate FROM 
+					SELECT transferId, CreatedDate FROM 
 					(
-						SELECT transferStateChangeId, transferId, transferStateId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+						SELECT transferId, CreatedDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 					    FROM transferStateChange tsa
 					    WHERE EXISTS (
 			    			SELECT 1 
@@ -375,7 +373,7 @@ WHERE s.settlementId = $P{settlementId}
 						  WHERE tF.isValid AND tF.transferId = tsa.transferId)
 					  ) x
 					  WHERE x.rn = 1
-					) tss ON tss.transferId = t.transferId
+					) tss ON tss.transferId = tF.transferId
 				INNER JOIN transferParticipant tPPayer ON tPPayer.transferId = tF.transferId
 				AND tPPayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
 				INNER JOIN participantCurrency pCPayer ON pCPayer.participantCurrencyId = tPPayer.participantCurrencyId
@@ -396,9 +394,7 @@ WHERE s.settlementId = $P{settlementId}
 				INNER JOIN quoteParty qpPayee on qpPayee.quoteId = q.quoteId AND qpPayee.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYEE')
 				INNER JOIN partyIdentifierType pITPayee ON pITPayee.partyIdentifierTypeId = qpPayee.partyIdentifierTypeId
 				INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
-				LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId
-				LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = pPayer.name
-			    LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = pPayee.name
+				LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId 
 				WHERE tF.isValid AND s.settlementId = $P{settlementId} AND (pPayee.name = $P{fspId}  OR pPayer.name = $P{fspId})]]>
 	</queryString>
 	<field name="ParticipantID" class="java.lang.Long">
