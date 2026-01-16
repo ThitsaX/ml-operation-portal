@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -29,6 +30,8 @@ public class GetAuditListByParticipantController {
 
     private final GetAuditListByParticipant getAuditListByParticipant;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getAuditListByParticipant")
     public ResponseEntity<Response> execute(
         @RequestParam("fromDate") String fromDate,
@@ -42,11 +45,12 @@ public class GetAuditListByParticipantController {
         @RequestParam("page") Integer page,
         @RequestParam("pageSize") Integer pageSize) throws DomainException, JsonProcessingException {
 
-        LOG.info("Get Audit List By Participant Request : fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
-                 fromDate,
-                 toDate,
-                 userId,
-                 actionId);
+        LOG.info(
+            "Get Audit List By Participant Request : fromDate = [{}], toDate = [{}], userId = [{}], actionId = [{}]",
+            fromDate,
+            toDate,
+            userId,
+            actionId);
 
         GetAuditListByParticipant.Output output = this.getAuditListByParticipant.execute(
             new GetAuditListByParticipant.Input(Instant.parse(fromDate),
@@ -72,7 +76,7 @@ public class GetAuditListByParticipantController {
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());
 
-        LOG.info("Get Audit List By Participant Response : [{}]", response);
+        LOG.info("Get Audit List By Participant Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

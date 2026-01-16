@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateLiquidityProfile;
@@ -28,11 +29,13 @@ public class CreateLiquidityProfileController {
 
     private final CreateLiquidityProfile createLiquidityProfile;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createLiquidityProfile")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create New Liquidity Profile Request : [{}]", request);
+        LOG.info("Create New Liquidity Profile Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         CreateLiquidityProfile.Output output = this.createLiquidityProfile.execute(
             new CreateLiquidityProfile.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -46,7 +49,7 @@ public class CreateLiquidityProfileController {
                                                .getEntityId()
                                                .toString());
 
-        LOG.info("Create New Liquidity Profile Response : [{}]", response);
+        LOG.info("Create New Liquidity Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

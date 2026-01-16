@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.Password;
@@ -31,11 +32,14 @@ public class ChangeCurrentPasswordController {
 
     private final ChangeCurrentPassword changeCurrentPassword;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/changePassword")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-        throws DomainException, JsonProcessingException {
+        throws JsonProcessingException, DomainException {
 
-        LOG.info("Change Current Password Request : [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Change Current Password Request : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(request)));
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -53,7 +57,8 @@ public class ChangeCurrentPasswordController {
                                           .toString(),
                                     output.secretKey());
 
-        LOG.info("Change Current Password Response : [{}]", MaskPassword.toMaskedString(response));
+        LOG.info("Change Current Password Response : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(response)));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

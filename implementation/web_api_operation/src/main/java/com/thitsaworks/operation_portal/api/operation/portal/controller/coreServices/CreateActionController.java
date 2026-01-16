@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateAction;
@@ -27,11 +29,13 @@ public class CreateActionController {
 
     private final CreateAction createAction;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/createAction")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
-        LOG.info("Create Action Request : [{}]", request);
+        LOG.info("Create Action Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.createAction.execute(new CreateAction.Input(new ActionCode(request.name()),
                                                                       request.description(),
@@ -40,7 +44,7 @@ public class CreateActionController {
         var response = new Response(output.actionId()
                                           .toString());
 
-        LOG.info("Create Action Response : [{}]", response);
+        LOG.info("Create Action Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -50,6 +54,6 @@ public class CreateActionController {
                           @NotNull @NotBlank @JsonProperty("description") String description,
                           @NotNull @NotBlank @JsonProperty("scope") String scope) implements Serializable { }
 
-    public record Response(@JsonProperty("actionId") String actionId) implements Serializable {}
+    public record Response(@JsonProperty("actionId") String actionId) implements Serializable { }
 
 }

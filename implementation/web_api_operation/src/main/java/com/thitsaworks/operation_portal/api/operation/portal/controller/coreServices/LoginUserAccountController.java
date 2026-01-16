@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.Email;
-import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.LoginUserAccount;
 import jakarta.validation.Valid;
@@ -29,11 +29,14 @@ public class LoginUserAccountController {
 
     private final LoginUserAccount loginUserAccount;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/public/loginUserAccount")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws Exception {
 
-        LOG.info("Login User Account Request : [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Login User Account Request : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(request)));
 
         LoginUserAccount.Output output = this.loginUserAccount.execute(
             new LoginUserAccount.Input(new Email(request.email()),
@@ -43,7 +46,8 @@ public class LoginUserAccountController {
                                           .getId()
                                           .toString(), output.secretKey());
 
-        LOG.info("Login User Account Response : [{}]", MaskPassword.toMaskedString(response));
+        LOG.info("Login User Account Response : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(response)));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

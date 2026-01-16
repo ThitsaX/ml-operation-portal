@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.LiquidityProfileId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -28,10 +30,13 @@ public class RemoveLiquidityProfileController {
 
     private final RemoveLiquidityProfile removeLiquidityProfile;
 
-    @PostMapping(value = "/secured/removeLiquidityProfile")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Remove Liquidity Profile Request : [{}]", request);
+    @PostMapping(value = "/secured/removeLiquidityProfile")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Remove Liquidity Profile Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var
             output =
@@ -42,7 +47,7 @@ public class RemoveLiquidityProfileController {
 
         var response = new Response(output.removed());
 
-        LOG.info("Remove Liquidity Profile Response : [{}]", response);
+        LOG.info("Remove Liquidity Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

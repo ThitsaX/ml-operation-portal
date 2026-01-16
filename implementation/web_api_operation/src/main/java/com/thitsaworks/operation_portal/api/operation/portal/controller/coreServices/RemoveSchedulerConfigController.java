@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RemoveSchedulerConfig;
@@ -26,26 +28,31 @@ public class RemoveSchedulerConfigController {
 
     private final RemoveSchedulerConfig removeSchedulerConfig;
 
-    @PostMapping("/secured/removeSchedulerConfig")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Remove Scheduler Config Request : [{}]", request);
+    @PostMapping("/secured/removeSchedulerConfig")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Remove Scheduler Config Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         RemoveSchedulerConfig.Output output = this.removeSchedulerConfig.execute(
-                new RemoveSchedulerConfig.Input(new SchedulerConfigId(request.schedulerConfigId))
-                                                                                );
+            new RemoveSchedulerConfig.Input(new SchedulerConfigId(request.schedulerConfigId)));
 
         var response = new Response(output.deleted());
 
-        LOG.info("Remove Scheduler Config Response : [{}]", response);
+        LOG.info("Remove Scheduler Config Response : [{}]", this.objectMapper.writeValueAsString(response));
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Request(@NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId) implements Serializable {}
+    public record Request(@NotNull @JsonProperty("schedulerConfigId") Long schedulerConfigId)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(
         @JsonProperty("removed") boolean removed
-    ) {}
+    ) { }
+
 }

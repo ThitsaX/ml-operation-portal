@@ -52,8 +52,8 @@
 			<![CDATA[SELECT     t.transferId,
 			   CONCAT(
 				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(IFNULL(tff.completedDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(IFNULL(tff.completedDate,t.createdDate), '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+				CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+				ELSE CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
 				END,'%Y-%m-%dT%H:%i:%s'),
 				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
@@ -81,9 +81,9 @@ LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
 LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
 LEFT JOIN transferFulfilment tff ON tff.transferId = t.transferId
 LEFT JOIN (
-		SELECT transferStateChangeId, transferId, transferStateId FROM 
+		SELECT transferStateChangeId, transferId, transferStateId,createdDate FROM 
 		(
-			SELECT transferStateChangeId, transferId, transferStateId, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+			SELECT transferStateChangeId, transferId, transferStateId,createdDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 		    FROM transferStateChange tsa
 		  ) x
 		  WHERE x.rn = 1
@@ -93,7 +93,7 @@ LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
 INNER JOIN currency c ON c.currencyId = payercurrency.currencyId
 LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = payer.name
 LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = payee.name
-WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
     CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
     CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
     AND 
@@ -206,8 +206,8 @@ SELECT 'TimeZoneOffSet' AS label,
 		<![CDATA[SELECT     t.transferId,
 			   CONCAT(
 				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(IFNULL(tff.completedDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(IFNULL(tff.completedDate,t.createdDate), '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
+				CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
+				ELSE CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
 				END,'%Y-%m-%dT%H:%i:%s'),
 				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
@@ -235,9 +235,9 @@ LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
 LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
 LEFT JOIN transferFulfilment tff ON tff.transferId = t.transferId
 LEFT JOIN (
-		SELECT transferStateChangeId, transferId, transferStateId FROM 
+		SELECT transferStateChangeId, transferId, transferStateId,createdDate FROM 
 		(
-			SELECT transferStateChangeId, transferId, transferStateId, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
+			SELECT transferStateChangeId, transferId, transferStateId,createdDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 		    FROM transferStateChange tsa
 		  ) x
 		  WHERE x.rn = 1
@@ -247,7 +247,7 @@ LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
 INNER JOIN currency c ON c.currencyId = payercurrency.currencyId
 LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = payer.name
 LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = payee.name
-WHERE (IFNULL(tff.completedDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
     CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
     CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
     AND 

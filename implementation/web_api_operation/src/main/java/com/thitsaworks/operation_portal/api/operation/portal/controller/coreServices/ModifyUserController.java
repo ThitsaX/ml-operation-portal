@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
@@ -31,11 +32,13 @@ public class ModifyUserController {
 
     private final ModifyUser modifyUser;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifyUser")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify User Request : [{}]", request);
+        LOG.info("Modify User Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.modifyUser.execute(new ModifyUser.Input(new UserId(Long.parseLong(request.userId())),
                                                                   request.name(),
@@ -53,7 +56,7 @@ public class ModifyUserController {
                                           .getId()
                                           .toString(), output.modified());
 
-        LOG.info("Modify User Response : [{}]", response);
+        LOG.info("Modify User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

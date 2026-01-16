@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.common.type.Password;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -10,7 +11,6 @@ import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ResetCurrentPassword;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,18 +30,21 @@ public class ResetCurrentPasswordController {
 
     private final ResetCurrentPassword resetCurrentPassword;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/resetPassword")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Reset Current Password Request : [{}]", MaskPassword.toMaskedString(request));
+        LOG.info("Reset Current Password Request : [{}]",
+                 MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(request)));
 
         ResetCurrentPassword.Output output = this.resetCurrentPassword.execute(
             new ResetCurrentPassword.Input(new Email(request.email()), new Password(request.password())));
 
         var response = new Response(output.updated());
 
-        LOG.info("Reset Current Password Response : [{}]", response);
+        LOG.info("Reset Current Password Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

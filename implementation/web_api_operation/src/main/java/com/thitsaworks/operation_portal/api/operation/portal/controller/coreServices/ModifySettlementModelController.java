@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SettlementModelId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.ModifySettlementModel;
@@ -27,28 +28,30 @@ public class ModifySettlementModelController {
 
     private final ModifySettlementModel modifySettlementModel;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifySettlementModel")
     public ResponseEntity<Response> execute(
-            @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
+        @Valid @RequestBody Request request) throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Settlement Model Request : [{}]", request);
+        LOG.info("Modify Settlement Model Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         ModifySettlementModel.Output output = this.modifySettlementModel.execute(
-                new ModifySettlementModel.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
-                                                request.name(),
-                                                request.modelType(),
-                                                request.currencyId(),
-                                                request.active(),
-                                                request.autoCloseWindow(),
-                                                request.manualCloseWindow(),
-                                                request.zoneId()));
+            new ModifySettlementModel.Input(new SettlementModelId(Long.parseLong(request.settlementModelId())),
+                                            request.name(),
+                                            request.modelType(),
+                                            request.currencyId(),
+                                            request.active(),
+                                            request.autoCloseWindow(),
+                                            request.manualCloseWindow(),
+                                            request.zoneId()));
 
         var response = new Response(output.modified(),
                                     output.settlementModelId()
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Modify Settlement Model Response : [{}]", response);
+        LOG.info("Modify Settlement Model Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

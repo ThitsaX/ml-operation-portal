@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
@@ -25,6 +26,8 @@ public class GenerateTransactionDetailReportController {
     private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionDetailReportController.class);
 
     private final GenerateTransactionDetailReport generateTransactionDetailReport;
+
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/secured/generateTransactionDetailReport")
     public ResponseEntity<Response> execute(@RequestParam("startDate") String startDate,
@@ -52,7 +55,7 @@ public class GenerateTransactionDetailReportController {
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Transaction Detail Report Response : [{}]", response);
+        LOG.info("Generate Transaction Detail Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

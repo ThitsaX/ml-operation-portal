@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetParticipant;
@@ -26,6 +27,8 @@ public class GetParticipantController {
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantController.class);
 
     private final GetParticipant getParticipant;
+
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getParticipant")
     public ResponseEntity<Response> execute(
@@ -83,7 +86,7 @@ public class GetParticipantController {
                                     contactInfoList,
                                     liquidityProfileInfoList);
 
-        LOG.info("Get Existing Participant Response : [{}]", response);
+        LOG.info("Get Existing Participant Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

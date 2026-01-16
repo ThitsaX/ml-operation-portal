@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
@@ -27,6 +28,8 @@ public class GenerateSettlementSummaryReportController {
 
     private final GenerateSettlementSummaryReport generateSettlementSummaryReport;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/generateSettlementReport")
     public ResponseEntity<Response> execute
         (@RequestParam("fspId") String fspId,
@@ -42,20 +45,21 @@ public class GenerateSettlementSummaryReportController {
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
         UserContext userContext =
-                (UserContext) SecurityContextHolder.getContext()
-                                                   .getAuthentication()
-                                                   .getDetails();
+            (UserContext) SecurityContextHolder.getContext()
+                                               .getAuthentication()
+                                               .getDetails();
 
         GenerateSettlementSummaryReport.Output output = this.generateSettlementSummaryReport.execute(
-                new GenerateSettlementSummaryReport.Input(fspId,
-                                                          settlementId,
-                                                          fileType,
-                                                          timezone,
-                                                          userContext.userId().getId()));
+            new GenerateSettlementSummaryReport.Input(fspId,
+                                                      settlementId,
+                                                      fileType,
+                                                      timezone,
+                                                      userContext.userId()
+                                                                 .getId()));
 
         var response = new Response(output.settlementByte());
 
-        LOG.info("Generate Settlement Report Response : [{}]", response);
+        LOG.info("Generate Settlement Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GrantMenuActionList;
@@ -27,10 +29,13 @@ public class GrantMenuActionListController {
 
     private final GrantMenuActionList grantMenuActionList;
 
-    @PostMapping("/secured/grantMenuActionList")
-    public ResponseEntity<Response> execute(@Valid @RequestBody Request request) throws DomainException {
+    private final ObjectMapper objectMapper;
 
-        LOG.info("Grant Menu Action List Request : [{}]", request);
+    @PostMapping("/secured/grantMenuActionList")
+    public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
+        throws DomainException, JsonProcessingException {
+
+        LOG.info("Grant Menu Action List Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         List<GrantMenuActionList.Input.MenuGrant> menuGrantList = new ArrayList<>();
         for (var singleMenuGrant : request.menuGrantList()) {
@@ -50,7 +55,7 @@ public class GrantMenuActionListController {
 
         var response = new Response(output.granted());
 
-        LOG.info("Grant Menu Action List Response : [{}]", response);
+        LOG.info("Grant Menu Action List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -60,10 +65,10 @@ public class GrantMenuActionListController {
     public record Request(List<MenuGrant> menuGrantList) implements Serializable {
 
         public record MenuGrant(@JsonProperty("menuName") String menuName,
-                                @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable {}
+                                @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable { }
 
     }
 
-    public record Response(@JsonProperty("granted") boolean granted) implements Serializable {}
+    public record Response(@JsonProperty("granted") boolean granted) implements Serializable { }
 
 }

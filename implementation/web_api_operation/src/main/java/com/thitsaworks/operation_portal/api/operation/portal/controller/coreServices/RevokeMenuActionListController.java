@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.RevokeMenuActionList;
@@ -28,11 +30,13 @@ public class RevokeMenuActionListController {
 
     private final RevokeMenuActionList revokeMenuActionList;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/revokeMenuActionList")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
-        throws DomainException {
+        throws DomainException, JsonProcessingException {
 
-        LOG.info("Revoke Menu Action List Request : [{}]", request);
+        LOG.info("Revoke Menu Action List Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         List<ActionCode> actionCodeList = new ArrayList<>();
 
@@ -45,16 +49,16 @@ public class RevokeMenuActionListController {
 
         var response = new Response(output.revoked());
 
-        LOG.info("Revoke Menu Action List Response : [{}]", response);
+        LOG.info("Revoke Menu Action List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotBlank @JsonProperty("menuName") String menuName,
-                          @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable {}
+                          @JsonProperty("actionCodeList") List<String> actionCodeList) implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("revoked") boolean revoked) implements Serializable {}
+    public record Response(@JsonProperty("revoked") boolean revoked) implements Serializable { }
 
 }

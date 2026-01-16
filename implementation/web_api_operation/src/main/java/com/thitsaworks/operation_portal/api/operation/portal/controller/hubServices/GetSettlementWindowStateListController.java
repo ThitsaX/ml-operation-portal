@@ -2,6 +2,8 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.hubServ
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetSettlementWindowStateList;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,10 @@ public class GetSettlementWindowStateListController {
 
     private final GetSettlementWindowStateList getSettlementWindowStateList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping("/secured/getSettlementWindowStateList")
-    public ResponseEntity<Response> execute() throws DomainException {
+    public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
 
         var output = this.getSettlementWindowStateList.execute(new GetSettlementWindowStateList.Input());
 
@@ -32,26 +36,24 @@ public class GetSettlementWindowStateListController {
 
         for (var settlementWindowStateData : output.settlementWindowStates()) {
             settlementWindowStateDataList.add(new Response.SettlementWindowStateData(settlementWindowStateData.settlementWindowId(),
-                    settlementWindowStateData.enumeration()));
+                                                                                     settlementWindowStateData.enumeration()));
         }
 
         var response = new Response(settlementWindowStateDataList);
 
-        LOG.info("Get Settlement Window State Response : [{}]", response);
+        LOG.info("Get Settlement Window State Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response( @JsonProperty("settlementWindowStateList") List<SettlementWindowStateData> settlementWindowStateDataList) {
+    public record Response(@JsonProperty("settlementWindowStateList") List<SettlementWindowStateData> settlementWindowStateDataList) {
 
         public record SettlementWindowStateData(@JsonProperty("settlementWindowStateId") String settlementWindowStateId,
                                                 @JsonProperty("enumeration") String enumeration) {
 
         }
+
     }
-
-
-
 
 }

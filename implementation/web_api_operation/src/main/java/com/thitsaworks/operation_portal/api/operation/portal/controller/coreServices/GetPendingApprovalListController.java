@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetPendingApprovalList;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +27,18 @@ public class GetPendingApprovalListController {
 
     private final GetPendingApprovalList getPendingApprovalList;
 
+    private final ObjectMapper objectMapper;
+
     @GetMapping(value = "/secured/getPendingApprovalList")
     public ResponseEntity<Response> execute() throws DomainException, JsonProcessingException {
-
 
         var output = this.getPendingApprovalList.execute(new GetPendingApprovalList.Input());
 
         var response = new Response(output.pendingApprovalList()
                                           .stream()
                                           .sorted(Comparator.comparing(
-                                              request -> request.requestedDateTime().getEpochSecond(),
+                                              request -> request.requestedDateTime()
+                                                                .getEpochSecond(),
                                               Comparator.reverseOrder()))
                                           .map(request -> new Response.PendingApproval(request.approvalRequestId()
                                                                                               .getEntityId()
@@ -51,7 +54,7 @@ public class GetPendingApprovalListController {
                                                                                               .name()))
                                           .toList());
 
-        LOG.info("Get Pending Approval List Response : [{}]", response);
+        LOG.info("Get Pending Approval List Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -61,7 +64,7 @@ public class GetPendingApprovalListController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("pendingApprovalList") List<PendingApproval> pendingApprovalList)
-            implements Serializable {
+        implements Serializable {
 
         public record PendingApproval(@JsonProperty("approvalRequestId") String approvalRequestId,
                                       @JsonProperty("requestedAction") String requestedAction,
@@ -70,7 +73,7 @@ public class GetPendingApprovalListController {
                                       @JsonProperty("amount") BigDecimal amount,
                                       @JsonProperty("requestedBy") String requestedBy,
                                       @JsonProperty("requestedDateTime") long requestedDateTime,
-                                      @JsonProperty("action") String action) implements Serializable {}
+                                      @JsonProperty("action") String action) implements Serializable { }
 
     }
 

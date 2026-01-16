@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateApprovalRequest;
@@ -30,11 +31,13 @@ public class CreateApprovalRequestController {
 
     private final CreateApprovalRequest createApprovalRequest;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/createApprovalRequest")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Create Approval Request : [{}]", request);
+        LOG.info("Create Approval Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         UserContext userContext =
             (UserContext) SecurityContextHolder.getContext()
@@ -43,7 +46,7 @@ public class CreateApprovalRequestController {
 
         var output = this.createApprovalRequest.execute(new CreateApprovalRequest.Input(request.requestedAction(),
                                                                                         request.participantName(),
-                                                                                        request.currency,
+                                                                                        request.currency(),
                                                                                         request.settlementCurrencyId(),
                                                                                         request.positionCurrencyId(),
                                                                                         request.amount(),
@@ -53,7 +56,7 @@ public class CreateApprovalRequestController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Create Approval Request Response : [{}]", response);
+        LOG.info("Create Approval Request Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

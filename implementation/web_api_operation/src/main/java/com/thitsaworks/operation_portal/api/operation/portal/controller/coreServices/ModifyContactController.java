@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ContactId;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.type.ContactType;
@@ -32,11 +33,13 @@ public class ModifyContactController {
 
     private final ModifyContact modifyContact;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping("/secured/modifyContact")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws DomainException, JsonProcessingException {
 
-        LOG.info("Modify Contact Request : [{}]", request);
+        LOG.info("Modify Contact Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         ModifyContact.Output output = this.modifyContact.execute(
             new ModifyContact.Input(new ParticipantId(Long.parseLong(request.participantId())),
@@ -44,13 +47,13 @@ public class ModifyContactController {
                                     request.name(),
                                     request.position(),
                                     request.email() != null ? new Email(request.email()) : null,
-                                    request.mobile() !=  null ? new Mobile(request.mobile()) : null,
+                                    request.mobile() != null ? new Mobile(request.mobile()) : null,
                                     ContactType.valueOf(request.contactType()
                                                                .toUpperCase())));
 
         var response = new Response(output.modified());
 
-        LOG.info("Modify Contact Response : [{}]", response);
+        LOG.info("Modify Contact Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -63,7 +66,8 @@ public class ModifyContactController {
                           @NotNull @JsonProperty("position") String position,
                           @NotNull @JsonProperty("email") String email,
                           @NotNull @JsonProperty("mobile") String mobile,
-                          @NotNull @NotBlank @JsonProperty("contactType") String contactType) implements Serializable { }
+                          @NotNull @NotBlank @JsonProperty("contactType") String contactType)
+        implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("modified") boolean modified) implements Serializable {

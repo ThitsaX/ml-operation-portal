@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.common.identifier.ApprovalRequestId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
@@ -31,11 +32,13 @@ public class ModifyApprovalActionController {
 
     private final ModifyApprovalAction modifyApprovalAction;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/modifyApprovalAction")
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws JsonProcessingException, DomainException {
 
-        LOG.info("Update Approval Request : [{}]", request);
+        LOG.info("Update Approval Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         UserContext
             userContext =
@@ -52,7 +55,7 @@ public class ModifyApprovalActionController {
                                           .getEntityId()
                                           .toString());
 
-        LOG.info("Update Approval Response : [{}]", response);
+        LOG.info("Update Approval Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
@@ -64,6 +67,6 @@ public class ModifyApprovalActionController {
         implements Serializable { }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("approvalRequestId") String approvalRequestId) implements Serializable {}
+    public record Response(@JsonProperty("approvalRequestId") String approvalRequestId) implements Serializable { }
 
 }

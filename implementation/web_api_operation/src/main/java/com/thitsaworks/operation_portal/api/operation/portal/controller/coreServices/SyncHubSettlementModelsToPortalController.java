@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.api.operation.portal.controller.coreSer
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SyncHubSettlementModelsToPortal;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,8 @@ public class SyncHubSettlementModelsToPortalController {
 
     private final SyncHubSettlementModelsToPortal syncHubSettlementModelsToPortal;
 
+    private final ObjectMapper objectMapper;
+
     @PostMapping(value = "/secured/syncHubSettlementModelsToPortal")
     public ResponseEntity<Response> execute()
         throws DomainException, JsonProcessingException {
@@ -30,7 +33,8 @@ public class SyncHubSettlementModelsToPortalController {
 
         var response = new Response(output.synced());
 
-        LOG.info("Sync Hub Settlement Models To Portal Response : [{}]", response);
+        LOG.info("Sync Hub Settlement Models To Portal Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
