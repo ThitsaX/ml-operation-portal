@@ -638,7 +638,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 					<jr:column width="93" uuid="8cf862af-63cd-4dd9-b8cf-1eb53759652a">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column4"/>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField pattern="#,##0.00#">
+							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="93" height="17" uuid="8923edf8-8ce8-437f-8206-33be49778688"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
@@ -650,7 +650,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField pattern="#,##0.00#">
+							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
@@ -662,7 +662,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 					<jr:column width="93" uuid="98fdaedf-70ce-4212-80cc-8af32a463124">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column6"/>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField pattern="#,##0.00#">
+							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="93" height="17" uuid="88b84be4-e2ec-4805-b03f-2915e986df24"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
@@ -688,7 +688,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 					<jr:column width="93" uuid="79fddbd2-6b94-4338-b13f-aa78c1e26b1f">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column5"/>
 						<jr:detailCell style="Table_TD" height="17">
-							<textField pattern="#,##0.00#">
+							<textField pattern="#,##0.00">
 								<reportElement x="0" y="0" width="93" height="17" uuid="0de8e0ec-fc5c-4c7a-896f-cd9bdd1cd0e4"/>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
