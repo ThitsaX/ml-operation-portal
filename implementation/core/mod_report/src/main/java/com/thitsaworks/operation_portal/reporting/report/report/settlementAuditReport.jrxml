@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="NoPages" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -643,7 +643,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{fundsIn} == null || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsIn})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsIn} == null || $F{fundsIn}.compareTo(java.math.BigDecimal.ZERO) == 0 ) ? "-" : $F{fundsIn}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -655,7 +655,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{fundsOut} == null || $F{fundsOut}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{fundsOut}.compareTo(java.math.BigDecimal.ZERO) == 0.00)? "-" : new java.text.DecimalFormat("#,##0.00").format($F{fundsOut})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{fundsOut} == null || $F{fundsOut}.compareTo(java.math.BigDecimal.ZERO) == 0 )? "-" : $F{fundsOut}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -667,7 +667,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{balance} == null || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{balance})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{balance} == null || $F{balance}.compareTo(java.math.BigDecimal.ZERO) == 0 ) ? "-" : $F{balance}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -693,7 +693,7 @@ ORDER BY dfspId, currency, createdDate;]]>
 								<textElement textAlignment="Right">
 									<font fontName="Calibri" size="11"/>
 								</textElement>
-								<textFieldExpression><![CDATA[($F{ndc} == null || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0 || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0.00) ? "-" : new java.text.DecimalFormat("#,##0.00").format($F{ndc})]]></textFieldExpression>
+								<textFieldExpression><![CDATA[($F{ndc} == null || $F{ndc}.compareTo(java.math.BigDecimal.ZERO) == 0) ? "-" : $F{ndc}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
