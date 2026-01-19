@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementBankReport" pageWidth="1008" pageHeight="612" orientation="Landscape" whenNoDataType="NoPages" columnWidth="936" leftMargin="36" rightMargin="36" topMargin="36" bottomMargin="36" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -58,8 +58,8 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), '-', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
-			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), ' - ', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
+			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
@@ -113,8 +113,8 @@
       END,'%Y-%m-%dT%H:%i:%s'),
       CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
       ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS createdDate,
-			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), '-', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
-			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+			IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI , ''), ' - ', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI , '')),'') AS participant,
+			IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 			SUM(tp.amount) AS transfer,
 			pc.currencyId AS currency,
 			CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
