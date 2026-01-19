@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transactionDetailReport" pageWidth="2200" pageHeight="1000" orientation="Landscape" columnWidth="2160" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="bc3e963e-1b1b-435c-9282-bb968d48ca8a">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -65,8 +65,8 @@
 			   IFNULL(a.name,'') AS transferType, 
 				ROUND(qR.transferAmount, 2) AS amount,	
 			   ROUND(qR.payeeReceiveAmount, 2) AS  payeeReceivedAmount, 
-			   IF(qR.payeeFspFeeAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspFeeAmount, 2), 2), '') AS payeeDfspFeeAmount,
-				IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount,
+			   IF(qR.payeeFspFeeAmount IS NOT NULL, ROUND(qR.payeeFspFeeAmount, 2), NULL) AS payeeDfspFeeAmount,
+				IF(qR.payeeFspCommissionAmount IS NOT NULL, ROUND(qR.payeeFspCommissionAmount, 2), NULL) AS payeeDfspCommissionAmount,
 				c.currencyId,
 				IFNULL(tst.enumeration,'')  AS 'status',
 				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset 
@@ -219,8 +219,8 @@ SELECT 'TimeZoneOffSet' AS label,
 			   IFNULL(a.name,'') AS transferType, 
 				ROUND(qR.transferAmount, 2) AS amount,	
 			   ROUND(qR.payeeReceiveAmount, 2) AS  payeeReceivedAmount, 
-			   IF(qR.payeeFspFeeAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspFeeAmount, 2), 2), '') AS payeeDfspFeeAmount,
-				IF(qR.payeeFspCommissionAmount IS NOT NULL, FORMAT(ROUND(qR.payeeFspCommissionAmount, 2), 2), '') AS payeeDfspCommissionAmount,
+			  IF(qR.payeeFspFeeAmount IS NOT NULL, ROUND(qR.payeeFspFeeAmount, 2), NULL) AS payeeDfspFeeAmount,
+				IF(qR.payeeFspCommissionAmount IS NOT NULL, ROUND(qR.payeeFspCommissionAmount, 2), NULL) AS payeeDfspCommissionAmount,
 				c.currencyId,
 				IFNULL(tst.enumeration,'')  AS 'status',
 				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset 
