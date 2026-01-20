@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettlementAudit" pageWidth="2500" pageHeight="10000" whenNoDataType="NoPages" columnWidth="2440" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -95,7 +95,7 @@ SELECT * FROM (
 				 '-' AS ndcPercent,
 				 0 AS ndc,
 				 pc.currencyId AS currency,
-				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 				 IFNULL(texApproveUser.value,'') AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
@@ -126,7 +126,7 @@ SELECT * FROM (
 		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
 		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
+			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
 		
 		GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
 		   tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texApproveUser.value, op.description, lp.bank_name, lp.account_name, lp.account_number
@@ -136,18 +136,24 @@ SELECT * FROM (
 		SELECT  pl.createdDate  AS createdDate,
 				  p.name AS dfspId, 
 				  IFNULL(op.description, p.name) AS dfspName, 
-				  CASE WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update' 
-				  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
-				  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
-				  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal' 
-				  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription,  
+				  CASE
+			        WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update'
+			        WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update'
+			        WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit'
+			        WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal'
+			        WHEN (ar.requested_action IS NULL
+	              AND ndc_percent.dfspCode = p.name
+	              AND ndc_percent.currency = pc.currencyId
+	              AND ABS(TIMESTAMPDIFF(SECOND, ndc_percent.updatedDate, pl.createdDate)) <= 2) THEN 'NDC Amount Update Due to Settlement'
+	        		ELSE 'NDC Amount Update Due to Initial Onboarding'
+	      	  END AS processDescription, 
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
 				  0 AS balance, 
 				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
 				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
 				  pc.currencyId AS currency,
-				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 				  IFNULL(u.email,'') AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
@@ -173,7 +179,7 @@ SELECT * FROM (
 		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
 		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId}) 
+			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
   ) Q
 ),
 seq AS (
@@ -186,7 +192,116 @@ seq AS (
 				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 		      ) AS grp 
 		  FROM base b
+),
+final AS (
+  SELECT
+    s.*,
+    s.createdDate AS createdDate_raw,
+    
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription LIKE 'Settlement:%'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription = 'Deposit'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription = 'Withdraw'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      ELSE s.createdDate
+    END AS pair_createdDate,
+ 
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription LIKE 'Settlement:%'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription = 'Deposit'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription = 'Withdrawal'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      ELSE NULL
+    END AS pair_balance,
+
+    CASE
+      WHEN s.processDescription LIKE 'Settlement:%' THEN 1
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN 2
+
+      WHEN s.processDescription = 'Deposit' THEN 1
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN 2
+
+      WHEN s.processDescription = 'Withdrawal' THEN 1
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
+
+      ELSE 3
+    END AS pair_sort
+  FROM seq s
 )
+
 SELECT
 		  CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
 		       ELSE CONVERT_TZ(createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
@@ -198,12 +313,20 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  CASE WHEN processDescription LIKE 'NDC%' THEN
-		    COALESCE( CASE
-		        WHEN ndcPercent IS NOT NULL AND ndcPercent <> '-' AND REPLACE(ndcPercent, '%', '') <> ''
-		        THEN ROUND( ndc / (CAST(REPLACE(ndcPercent, '%', '') AS DECIMAL(10,2)) / 100), 2 )
-		      END, MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END) OVER (PARTITION BY dfspId, currency, grp), 0)
-		  ELSE ABS(balance) END AS balance,
+		  
+		  CASE WHEN processDescription IN (
+	      'NDC Amount Update Due to Settlement',
+	      'NDC Amount Updated Due to Deposit',
+	      'NDC Amount Updated Due to Withdrawal')
+	      THEN COALESCE(pair_balance, 0)
+   	   WHEN processDescription LIKE 'NDC%' THEN
+	      COALESCE(
+	        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
+	          OVER (PARTITION BY dfspId, currency, grp),
+	        0
+	      )
+     ELSE ABS(balance) END AS balance,
+  
 		  ndcPercent, 
 		  ndc, 
 		  currency,
@@ -218,8 +341,20 @@ SELECT
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
 		,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
-FROM seq
-ORDER BY dfspId, currency, createdDate;]]>
+FROM final
+WHERE NOT (
+    COALESCE(NULLIF(fundsIn, ''), 0) = 0
+AND COALESCE(NULLIF(fundsOut, ''), 0) = 0
+AND COALESCE(NULLIF(balance, ''), 0) = 0
+AND (ndcPercent IS NULL OR ndcPercent = '' OR ndcPercent = '-' OR ndcPercent = 0)
+AND COALESCE(NULLIF(ndc, ''), 0) = 0
+)
+ORDER BY
+  dfspId,
+  currency,
+  pair_createdDate,
+  pair_sort,
+  createdDate_raw;]]>
 		</queryString>
 		<field name="createdDate" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
@@ -339,7 +474,7 @@ SELECT * FROM (
 				 '-' AS ndcPercent,
 				 0 AS ndc,
 				 pc.currencyId AS currency,
-				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				 IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 				 IFNULL(texApproveUser.value,'') AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
@@ -370,7 +505,7 @@ SELECT * FROM (
 		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
 		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
+			AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
 		
 		GROUP BY tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason, 
 		   tp.amount, ppc.value, pc.currencyId,pc.participantCurrencyId,texApproveUser.value, op.description, lp.bank_name, lp.account_name, lp.account_number
@@ -380,18 +515,24 @@ SELECT * FROM (
 		SELECT  pl.createdDate  AS createdDate,
 				  p.name AS dfspId, 
 				  IFNULL(op.description, p.name) AS dfspName, 
-				  CASE WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update' 
-				  WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update' 
-				  WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit' 
-				  WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal' 
-				  ELSE 'NDC Amount Update Due to Settlement' END AS processDescription, 
+				  CASE
+			        WHEN ar.requested_action = 'UPDATE_NDC_FIXED' THEN 'NDC Amount Update'
+			        WHEN ar.requested_action = 'UPDATE_NDC_PERCENTAGE' THEN 'NDC % Update'
+			        WHEN ar.requested_action = 'DEPOSIT' THEN 'NDC Amount Updated Due to Deposit'
+			        WHEN ar.requested_action = 'WITHDRAW' THEN 'NDC Amount Updated Due to Withdrawal'
+			        WHEN (ar.requested_action IS NULL
+	              AND ndc_percent.dfspCode = p.name
+	              AND ndc_percent.currency = pc.currencyId
+	              AND ABS(TIMESTAMPDIFF(SECOND, ndc_percent.updatedDate, pl.createdDate)) <= 2) THEN 'NDC Amount Update Due to Settlement'
+	        		ELSE 'NDC Amount Update Due to Initial Onboarding'
+	      	  END AS processDescription, 
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
 				  0 AS balance, 
 				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
 				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
 				  pc.currencyId AS currency,
-				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), '-', IFNULL(lp.account_name, ''), '-', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
+				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
 				  IFNULL(u.email,'') AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
@@ -417,7 +558,7 @@ SELECT * FROM (
 		          (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 		          CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
 		          CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId}) 
+			 AND ($P{currencyId} = 'All' OR pc.currencyId= $P{currencyId})
   ) Q
 ),
 seq AS (
@@ -430,7 +571,116 @@ seq AS (
 				        ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
 		      ) AS grp 
 		  FROM base b
+),
+final AS (
+  SELECT
+    s.*,
+    s.createdDate AS createdDate_raw,
+    
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription LIKE 'Settlement:%'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription = 'Deposit'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
+        COALESCE(
+          (
+            SELECT st.createdDate
+            FROM seq st
+            WHERE st.dfspId = s.dfspId
+              AND st.currency = s.currency
+              AND st.processDescription = 'Withdraw'
+              AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+            ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+            LIMIT 1
+          ),
+          s.createdDate
+        )
+
+      ELSE s.createdDate
+    END AS pair_createdDate,
+ 
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription LIKE 'Settlement:%'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription = 'Deposit'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
+        (
+          SELECT ABS(st.balance)
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription = 'Withdrawal'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        )
+
+      ELSE NULL
+    END AS pair_balance,
+
+    CASE
+      WHEN s.processDescription LIKE 'Settlement:%' THEN 1
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN 2
+
+      WHEN s.processDescription = 'Deposit' THEN 1
+      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN 2
+
+      WHEN s.processDescription = 'Withdrawal' THEN 1
+      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
+
+      ELSE 3
+    END AS pair_sort
+  FROM seq s
 )
+
 SELECT
 		  CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
 		       ELSE CONVERT_TZ(createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
@@ -442,19 +692,27 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  CASE WHEN processDescription LIKE 'NDC%' THEN
-		    COALESCE( CASE
-		        WHEN ndcPercent IS NOT NULL AND ndcPercent <> '-' AND REPLACE(ndcPercent, '%', '') <> ''
-		        THEN ROUND( ndc / (CAST(REPLACE(ndcPercent, '%', '') AS DECIMAL(10,2)) / 100), 2 )
-		      END, MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END) OVER (PARTITION BY dfspId, currency, grp), 0)
-		  ELSE ABS(balance) END AS balance,
+		  
+		  CASE WHEN processDescription IN (
+	      'NDC Amount Update Due to Settlement',
+	      'NDC Amount Updated Due to Deposit',
+	      'NDC Amount Updated Due to Withdrawal')
+	      THEN COALESCE(pair_balance, 0)
+   	   WHEN processDescription LIKE 'NDC%' THEN
+	      COALESCE(
+	        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
+	          OVER (PARTITION BY dfspId, currency, grp),
+	        0
+	      )
+     ELSE ABS(balance) END AS balance,
+  
 		  ndcPercent, 
-		  ndc,
+		  ndc, 
 		  currency,
 		  settlementBankAccount,
 		  COALESCE(SUBSTRING_INDEX(MAX(CASE WHEN madeBy IS NOT NULL AND madeBy <> '' THEN CONCAT(DATE_FORMAT(createdDate,'%Y%m%d%H%i%s'), '|', madeBy)
         END) OVER (PARTITION BY dfspId, currency  ORDER BY createdDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
-    	  '|', -1),'') AS madeBy, 
+    	  '|', -1),'') AS madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
@@ -462,8 +720,20 @@ SELECT
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS toDate
 		,CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset
-FROM seq
-ORDER BY dfspId, currency, createdDate;]]>
+FROM final
+WHERE NOT (
+    COALESCE(NULLIF(fundsIn, ''), 0) = 0
+AND COALESCE(NULLIF(fundsOut, ''), 0) = 0
+AND COALESCE(NULLIF(balance, ''), 0) = 0
+AND (ndcPercent IS NULL OR ndcPercent = '' OR ndcPercent = '-' OR ndcPercent = 0)
+AND COALESCE(NULLIF(ndc, ''), 0) = 0
+)
+ORDER BY
+  dfspId,
+  currency,
+  pair_createdDate,
+  pair_sort,
+  createdDate_raw;]]>
 	</queryString>
 	<field name="createdDate" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
