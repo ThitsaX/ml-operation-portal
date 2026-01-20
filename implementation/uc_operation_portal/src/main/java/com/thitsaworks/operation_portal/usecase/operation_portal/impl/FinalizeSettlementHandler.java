@@ -231,6 +231,9 @@ public class FinalizeSettlementHandler
                             // if net amount is negative -> receiver
                             BigDecimal amount = new BigDecimal(account.getNetSettlementAmount()
                                                                       .getAmount());
+                            if (amount.signum() == 0) {
+                                break;
+                            }
                             SettlementAction
                                 settlementAction =
                                 amount.signum() > 0 ? SettlementAction.recordFundsOutPrepareReserve :
