@@ -1154,7 +1154,7 @@ WHERE s.settlementId = $P{settlementId}
 								<textElement>
 									<font fontName="Calibri" size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Hub Fee]]></text>
+								<text><![CDATA[HUB Fee]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table_TD" height="16">

@@ -365,7 +365,7 @@ final AS (
             FROM seq st
             WHERE st.dfspId = s.dfspId
               AND st.currency = s.currency
-              AND st.processDescription = 'Withdraw'
+              AND st.processDescription = 'Withdrawal'
               AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
             ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
             LIMIT 1
@@ -745,7 +745,7 @@ final AS (
             FROM seq st
             WHERE st.dfspId = s.dfspId
               AND st.currency = s.currency
-              AND st.processDescription = 'Withdraw'
+              AND st.processDescription = 'Withdrawal'
               AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
             ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
             LIMIT 1
