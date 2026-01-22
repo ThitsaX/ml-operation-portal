@@ -62,7 +62,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         InputStream jrxmlStream =
                 this.getClass().getClassLoader()
                     .getResourceAsStream(
-                            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
+                            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport_Latest.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
@@ -102,6 +102,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 cfg.setOnePagePerSheet(false);
                 cfg.setCollapseRowSpan(false);
                 cfg.setWrapText(true);
+                cfg.setIgnoreGraphics(false);
                 xlsxExporter.setConfiguration(cfg);
 
                 xlsxExporter.exportReport();
