@@ -16,6 +16,7 @@ import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,12 +88,17 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
             if (input.fileType()
                      .equalsIgnoreCase("xlsx")  ) {
 
+                SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
+                xlsxConfig.setIgnorePageMargins(true);
+
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+                xlsxExporter.setConfiguration(xlsxConfig);
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
+
 
             } else if (input.fileType()
                             .equalsIgnoreCase("pdf")) {
