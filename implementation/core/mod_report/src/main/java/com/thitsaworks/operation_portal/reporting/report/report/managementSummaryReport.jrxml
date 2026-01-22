@@ -382,7 +382,7 @@ ORDER BY
 		</band>
 	</title>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField textAdjust="StretchHeight">
 				<reportElement stretchType="ContainerBottom" x="0" y="0" width="110" height="20" isPrintWhenDetailOverflows="true" uuid="81d758d4-2776-4d96-9d72-87194cf772b1">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c364b175-23c5-47ff-8f4f-7157e9523915"/>
@@ -511,19 +511,20 @@ ORDER BY
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="45">
+		<band height="35" splitType="Prevent">
+			<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType})]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="15" width="950" height="30" uuid="c31b9f77-5e85-418b-9dbc-649a94136cf5">
+				<reportElement x="0" y="5" width="950" height="30" uuid="c31b9f77-5e85-418b-9dbc-649a94136cf5">
 					<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType})]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font fontName="Calibri" size="11"/>
 				</textElement>
 				<textFieldExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType})? (
-						    "Printed by: " + $P{userName} + " on " + new java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a").format(
-						        new java.util.Date(System.currentTimeMillis() + (($P{timezoneOffset}.startsWith("-") ? -1 : 1) * (
-						                    Integer.parseInt($P{timezoneOffset}.replace(":", "").replace("-", "").substring(0, 2)) * 60 * 60 * 1000L
-						                  	+ Integer.parseInt($P{timezoneOffset}.replace(":", "").replace("-", "").substring(2, 4)) * 60 * 1000L))))): ""]]></textFieldExpression>
+                        "Printed by: " + $P{userName} + " on " + new java.text.SimpleDateFormat("dd/MM/yyyy hh:mm a").format(
+                            new java.util.Date(System.currentTimeMillis() + (($P{timezoneOffset}.startsWith("-") ? -1 : 1) * (
+                                        Integer.parseInt($P{timezoneOffset}.replace(":", "").replace("-", "").substring(0, 2)) * 60 * 60 * 1000L
+                                        + Integer.parseInt($P{timezoneOffset}.replace(":", "").replace("-", "").substring(2, 4)) * 60 * 1000L))))): ""]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageFooter>
