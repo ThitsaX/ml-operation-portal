@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.api.operation.portal.security.ApiAuthent
 import com.thitsaworks.operation_portal.api.operation.portal.security.ApiAuthenticator;
 import com.thitsaworks.operation_portal.api.operation.portal.security.AuthFilterExceptionHandler;
 import com.thitsaworks.operation_portal.api.operation.portal.security.Authenticator;
+import com.thitsaworks.operation_portal.api.operation.portal.security.MDCFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -29,7 +30,8 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    ApiAuthenticationTokenFilter authenticationTokenFilter,
-                                                   WebConfiguration.Settings settings) throws Exception {
+                                                   WebConfiguration.Settings settings,
+                                                   MDCFilter mdcFilter) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
             .sessionManagement((sessionManagement)
                                        -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -40,6 +42,7 @@ public class WebSecurityConfiguration {
                                                    .requestMatchers("/", "/public/**").permitAll()
                                                    .requestMatchers("/secured/**").authenticated())
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterAfter(mdcFilter, ApiAuthenticationTokenFilter.class)
             .addFilterBefore(authFilterExceptionHandler(), ApiAuthenticationTokenFilter.class)
             // enable CORS with default permissive settings
 
@@ -90,5 +93,8 @@ public class WebSecurityConfiguration {
 
         return new ApiAuthenticationEntryPoint();
     }
+
+    @Bean
+    public MDCFilter mdcFilter() { return new MDCFilter(); }
 
 }

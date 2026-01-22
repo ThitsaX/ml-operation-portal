@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.usecase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
+import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -26,6 +27,7 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.net.ConnectException;
@@ -140,12 +142,12 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         var action = this.actionAuthorizationManager.getAction(new ActionCode(this.getName()));
 
         OperationPortalAuditableUseCase.auditId.set(
-            this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                    action.actionId(),
-                    new UserId(
-                        principalId.getId()),
-                    principalData.realmId(),
-                    inputInfo))
+            this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(action.actionId(),
+                                                                                   new UserId(principalId.getId()),
+                                                                                   principalData.realmId(),
+                                                                                   new RequestId(Long.valueOf(MDC.get(
+                                                                                       "REQ_ID"))),
+                                                                                   inputInfo))
                                         .auditId());
     }
 

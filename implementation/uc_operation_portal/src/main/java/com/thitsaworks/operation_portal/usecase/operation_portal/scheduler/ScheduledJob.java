@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
+import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -21,6 +22,7 @@ import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationM
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -82,9 +84,13 @@ public abstract class ScheduledJob<I, O> {
                 }
 
             } catch (AuditException e) {
-                LOG.info("Audit Exception: [{}]", e.getErrorMessage().getDefaultMessage());
+                LOG.info("Audit Exception: [{}]",
+                         e.getErrorMessage()
+                          .getDefaultMessage());
             } catch (DomainException e) {
-                LOG.info("JobExecutionLog Exception: [{}]", e.getErrorMessage().getDefaultMessage());
+                LOG.info("JobExecutionLog Exception: [{}]",
+                         e.getErrorMessage()
+                          .getDefaultMessage());
             }
 
         }
@@ -92,17 +98,21 @@ public abstract class ScheduledJob<I, O> {
     }
 
     protected void beforeExecute(SchedulerConfigData schedulerConfigData)
-            throws DomainException, JsonProcessingException {
+        throws DomainException, JsonProcessingException {
 
-        LocalDateTime startTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
+        LocalDateTime
+            startTime =
+            LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()))
+                         .withNano(0);
 
         LOG.info("Scheduler Job: [{}] initiated at: [{} ({})]",
                  schedulerConfigData.name(), startTime, schedulerConfigData.zoneId());
 
         ScheduledJob.jobExecutionLogId.set(this.createJobExecutionLogCommand.execute(new CreateJobExecutionLogCommand.Input(
-                schedulerConfigData.name(),
-                JobStatus.STARTED,
-                startTime)).jobExecutionLogId());
+                                                   schedulerConfigData.name(),
+                                                   JobStatus.STARTED,
+                                                   startTime))
+                                                                            .jobExecutionLogId());
 
         var action = this.actionAuthorizationManager.getAction(new ActionCode(schedulerConfigData.jobName()));
 
@@ -117,18 +127,23 @@ public abstract class ScheduledJob<I, O> {
         }
 
         ScheduledJob.auditId.set(
-                this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(
-                        action.actionId(),
-                        null,
-                        null,
-                        inputInfo)).auditId());
+            this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(action.actionId(),
+                                                                                   null,
+                                                                                   null,
+                                                                                   new RequestId(Long.valueOf(MDC.get(
+                                                                                       "REQ_ID"))),
+                                                                                   inputInfo))
+                                        .auditId());
 
     }
 
     protected void afterExecute(SchedulerConfigData schedulerConfigData, O output)
-            throws DomainException {
+        throws DomainException {
 
-        LocalDateTime endTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
+        LocalDateTime
+            endTime =
+            LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()))
+                         .withNano(0);
 
         LOG.info("Scheduler Job: [{}] executed successfully at: [{} ({})]",
                  schedulerConfigData.name(), endTime, schedulerConfigData.zoneId());
@@ -167,6 +182,6 @@ public abstract class ScheduledJob<I, O> {
     }
 
     protected abstract O onExecute(SchedulerConfigData schedulerConfigData)
-            throws DomainException, InterruptedException;
+        throws DomainException, InterruptedException;
 
 }
