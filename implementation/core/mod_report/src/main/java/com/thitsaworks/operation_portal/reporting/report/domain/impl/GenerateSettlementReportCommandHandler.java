@@ -62,7 +62,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         InputStream jrxmlStream =
                 this.getClass().getClassLoader()
                     .getResourceAsStream(
-                            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport_Latest.jrxml");
+                            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
