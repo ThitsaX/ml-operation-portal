@@ -8,6 +8,8 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRCsvExporter;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
@@ -72,6 +74,19 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("settlementBankReport");
+
+            // Remove pageFooter for Excel, keep for PDF
+            if (input.fileType().equalsIgnoreCase("xlsx")) {
+                JRDesignBand pageFooter = (JRDesignBand) design.getPageFooter();
+                if (pageFooter != null) {
+                    pageFooter.setHeight(0);
+                    // Remove all elements from the band
+                    for (int i = pageFooter.getChildren().size() - 1; i >= 0; i--) {
+                        pageFooter.removeElement((JRDesignElement) pageFooter.getChildren().get(i));
+                    }
+                }
+            }
+
             JasperReport settlementBankReport = JasperCompileManager.compileReport(design);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(settlementBankReport, params,
