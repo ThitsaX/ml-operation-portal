@@ -71,7 +71,10 @@ public class GetAuditListByParticipantController {
                                                               .getEpochSecond(),
                                                      auditInfo.action(),
                                                      auditInfo.madeBy() != null ? auditInfo.madeBy()
-                                                                                           .getValue() : ""));
+                                                                                           .getValue() : "",
+                                                     auditInfo.requestId() != null ? auditInfo.requestId()
+                                                                                              .getEntityId()
+                                                                                              .toString() : null));
         }
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());
@@ -90,7 +93,8 @@ public class GetAuditListByParticipantController {
         public record AuditInfo(@JsonProperty("auditId") String auditId,
                                 @JsonProperty("date") long date,
                                 @JsonProperty("action") String action,
-                                @JsonProperty("madeBy") String madeBy
+                                @JsonProperty("madeBy") String madeBy,
+                                @JsonProperty("traceId") String requestId
 
         ) implements Serializable { }
 

@@ -40,7 +40,8 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                                          user.email,
                                          action.actionCode,
                                          audit.createdAt,
-                                         audit.auditId)
+                                         audit.auditId,
+                                         audit.requestId)
                                  .from(audit)
                                  .leftJoin(participant)
                                  .on(participant.participantId.id.eq(audit.realmId.id))
@@ -83,7 +84,8 @@ public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByPar
                 tuple.get(audit.createdAt),
                 Objects.requireNonNull(tuple.get(action.actionCode))
                        .getValue(),
-                tuple.get(user.email)));
+                tuple.get(user.email),
+                tuple.get(audit.requestId)));
         }
         long total = results.getTotal();
         int totalPages = (int) Math.ceil((double) total / pageable.getPageSize());
