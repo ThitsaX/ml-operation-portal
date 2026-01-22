@@ -13,7 +13,7 @@
 	<property name="net.sf.jasperreports.export.xlsx.sheet.names.0" value="ManagementSummaryReport"/>
 	<property name="net.sf.jasperreports.export.pdf.create.batch.mode.bookmarks" value="true"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Central Ledger Data Adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="STG Data Adapter "/>
 	<parameter name="startDate" class="java.lang.String"/>
 	<parameter name="endDate" class="java.lang.String"/>
 	<parameter name="timezoneOffset" class="java.lang.String"/>
@@ -112,7 +112,7 @@ ORDER BY
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Calibri" size="11"/>
+					<font fontName="Calibri" size="11" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Start Date]]></text>
@@ -130,7 +130,7 @@ ORDER BY
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Calibri" size="11"/>
+					<font fontName="Calibri" size="11" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[End Date]]></text>
@@ -148,7 +148,7 @@ ORDER BY
 					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement verticalAlignment="Middle">
-					<font fontName="Calibri" size="11"/>
+					<font fontName="Calibri" size="11" isBold="true"/>
 					<paragraph leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[TimeZoneOffSet]]></text>
@@ -181,8 +181,7 @@ ORDER BY
         : "+00:00"
     )
 )
-.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))
-]]></textFieldExpression>
+.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="110" y="20" width="170" height="20" uuid="cf41f7dd-f04e-49d5-9d57-cf4bec6fc9f5">
@@ -212,8 +211,7 @@ ORDER BY
         : "+00:00"
     )
 )
-.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))
-]]></textFieldExpression>
+.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy">
 				<reportElement x="110" y="40" width="170" height="20" uuid="e9dd5127-c9e2-4f0e-a703-4cb61761a025">

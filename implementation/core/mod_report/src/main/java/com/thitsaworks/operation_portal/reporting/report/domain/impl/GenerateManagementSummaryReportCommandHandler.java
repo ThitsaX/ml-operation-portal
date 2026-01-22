@@ -14,6 +14,7 @@ import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,13 +44,13 @@ public class GenerateManagementSummaryReportCommandHandler implements GenerateMa
         Map<String, Object> params = new HashMap<String, Object>();
 
         params.put("startDate" , input.startDate());
-        params.put("endDate",input.endDate());
+        params.put("endDate" , input.endDate());
         params.put("timezoneOffset" , input.timezoneOffset());
         params.put("reportFileType" , input.fileType());
         params.put("userName" , input.userName());
 
         InputStream jrxmlStream = this.getClass().getClassLoader()
-                .getResourceAsStream("com/thitsaworks/operation_portal/reporting/report/report/managementSummaryReport.jrxml");
+                                      .getResourceAsStream("com/thitsaworks/operation_portal/reporting/report/report/managementSummaryReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();
@@ -70,11 +71,15 @@ public class GenerateManagementSummaryReportCommandHandler implements GenerateMa
             }
 
             byte[] rptBytes = new byte[0];
-            if (input.fileType().equalsIgnoreCase("xlsx")){
+            if (input.fileType().equalsIgnoreCase("xlsx")) {
+                SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
+                xlsxConfig.setIgnorePageMargins(true);
+
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
+                xlsxExporter.setConfiguration(xlsxConfig);
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
             }else if (input.fileType().equalsIgnoreCase("pdf")){
