@@ -323,7 +323,7 @@
 		</band>
 	</title>
 	<detail>
-		<band height="20" splitType="Stretch">
+		<band height="20" splitType="Prevent">
 			<textField textAdjust="StretchHeight">
 				<reportElement stretchType="ContainerBottom" x="0" y="0" width="200" height="20" isPrintWhenDetailOverflows="true" uuid="81d758d4-2776-4d96-9d72-87194cf772b1">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c364b205-23c5-47ff-8f4f-7157e9523915"/>

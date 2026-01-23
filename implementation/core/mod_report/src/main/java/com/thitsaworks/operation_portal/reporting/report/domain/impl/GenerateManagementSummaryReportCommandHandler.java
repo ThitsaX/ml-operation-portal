@@ -8,6 +8,8 @@ import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JRDesignBand;
+import net.sf.jasperreports.engine.design.JRDesignElement;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
@@ -62,34 +64,43 @@ public class GenerateManagementSummaryReportCommandHandler implements GenerateMa
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("managementSummaryReport");
+
+            // Remove pageFooter for Excel, keep for PDF
+            if (input.fileType().equalsIgnoreCase("xlsx")) {
+                JRDesignBand pageFooter = (JRDesignBand) design.getPageFooter();
+                if (pageFooter != null) {
+                    pageFooter.setHeight(0);
+                    // Remove all elements from the band
+                    for (int i = pageFooter.getChildren().size() - 1; i >= 0; i--) {
+                        pageFooter.removeElement((JRDesignElement) pageFooter.getChildren().get(i));
+                    }
+                }
+            }
+
             JasperReport detailReport = JasperCompileManager.compileReport(design);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(detailReport, params, conn);
 
-            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()){
+            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
             byte[] rptBytes = new byte[0];
             if (input.fileType().equalsIgnoreCase("xlsx")) {
-                SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
-                xlsxConfig.setIgnorePageMargins(true);
-
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
                 xlsxExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 xlsxExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(xlsReport));
-                xlsxExporter.setConfiguration(xlsxConfig);
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
-            }else if (input.fileType().equalsIgnoreCase("pdf")){
+            } else if (input.fileType().equalsIgnoreCase("pdf")) {
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
                 pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
                 pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
                 pdfExporter.exportReport();
                 rptBytes = pdfReport.toByteArray();
-            }else {
+            } else {
                 throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
             }
             return new Output(rptBytes);

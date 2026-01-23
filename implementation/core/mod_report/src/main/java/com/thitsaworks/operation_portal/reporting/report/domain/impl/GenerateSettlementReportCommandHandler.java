@@ -102,6 +102,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 cfg.setOnePagePerSheet(false);
                 cfg.setCollapseRowSpan(false);
                 cfg.setWrapText(true);
+                cfg.setIgnoreGraphics(false);
                 xlsxExporter.setConfiguration(cfg);
 
                 xlsxExporter.exportReport();
