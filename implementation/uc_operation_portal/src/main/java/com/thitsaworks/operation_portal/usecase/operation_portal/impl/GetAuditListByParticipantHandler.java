@@ -82,7 +82,7 @@ public class GetAuditListByParticipantHandler
                                                    data.date(),
                                                    data.action(),
                                                    data.madeBy(),
-                                                   data.requestId()));
+                                                   data.traceId()));
         }
 
         return new Output(auditInfoList, output.totalElements(), output.totalPages());

@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.usecase;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
-import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.TraceId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -145,8 +145,8 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
             this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(action.actionId(),
                                                                                    new UserId(principalId.getId()),
                                                                                    principalData.realmId(),
-                                                                                   new RequestId(Long.valueOf(MDC.get(
-                                                                                       "REQ_ID"))),
+                                                                                   new TraceId(Long.valueOf(MDC.get(
+                                                                                       "TRACE_ID"))),
                                                                                    inputInfo))
                                         .auditId());
     }

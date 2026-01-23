@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.audit.data;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.TraceId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.core.audit.model.Audit;
 
@@ -11,7 +11,7 @@ public record AuditData(AuditId auditId,
                         ActionId actionId,
                         UserId userId,
                         RealmId realmId,
-                        RequestId requestId,
+                        TraceId traceId,
                         String inputInfo,
                         String outputInfo,
                         String exceptionInfo) {
@@ -22,7 +22,7 @@ public record AuditData(AuditId auditId,
              audit.getActionId(),
              audit.getUserId(),
              audit.getRealmId(),
-             audit.getRequestId(),
+             audit.getTraceId(),
              audit.getInputInfo(),
              audit.getOutputInfo(),
              audit.getException());

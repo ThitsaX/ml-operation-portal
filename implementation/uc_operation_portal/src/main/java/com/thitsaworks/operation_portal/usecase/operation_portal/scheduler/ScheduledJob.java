@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.JobExecutionLogId;
-import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.TraceId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.component.common.type.JobStatus;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
@@ -130,8 +130,8 @@ public abstract class ScheduledJob<I, O> {
             this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(action.actionId(),
                                                                                    null,
                                                                                    null,
-                                                                                   new RequestId(Long.valueOf(MDC.get(
-                                                                                       "REQ_ID"))),
+                                                                                   new TraceId(Long.valueOf(MDC.get(
+                                                                                       "TRACE_ID"))),
                                                                                    inputInfo))
                                         .auditId());
 

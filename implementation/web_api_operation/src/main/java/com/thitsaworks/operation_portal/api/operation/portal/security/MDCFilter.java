@@ -23,14 +23,14 @@ public class MDCFilter extends OncePerRequestFilter {
 
         try {
 
-            MDC.put("REQ_ID",
+            MDC.put("TRACE_ID",
                     String.valueOf(Snowflake.get()
                                             .nextId()));
 
             filterChain.doFilter(cachedRequest, response);
 
         } finally {
-            MDC.remove("REQ_ID");
+            MDC.remove("TRACE_ID");
         }
     }
 
