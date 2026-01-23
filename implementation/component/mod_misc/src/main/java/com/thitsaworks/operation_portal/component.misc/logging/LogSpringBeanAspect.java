@@ -5,6 +5,7 @@ import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -17,26 +18,32 @@ public class LogSpringBeanAspect {
 
     private final ObjectMapper objectMapper;
 
+    private static final String POINTCUT = "(" +
+                                               "@within(org.springframework.stereotype.Service) || " +
+                                               "@within(org.springframework.stereotype.Component) || " +
+                                               "execution(* com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase+.execute(..)) || " +
+                                               "execution(* com.thitsaworks.operation_portal.usecase.OperationPortalUseCase+.execute(..)) " +
+                                               ") && (" +
+                                               "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
+                                               "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
+                                               ") && (" +
+                                               "!@within(com.thitsaworks.operation_portal.component.misc.logging.NoLogging) && " +
+                                               "!@annotation(com.thitsaworks.operation_portal.component.misc.logging.NoLogging)" +
+                                               ")";
+
     public LogSpringBeanAspect(ObjectMapper objectMapper) {
 
         this.objectMapper = objectMapper;
     }
 
-    @Around(
-            "(" +
-            "@within(org.springframework.stereotype.Service) || " +
-            "@within(org.springframework.stereotype.Component) " +
-            ") && (" +
-            "execution(* com.thitsaworks.operation_portal..*.execute(..)) || " +
-            "execution(* com.thitsaworks.operation_portal..*.onExecute(..))" +
-            ")"
-    )
+    @Pointcut(POINTCUT)
+    public void loggingPointcut() { }
+
+    @Around("loggingPointcut()")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
 
-        String
-            methodName =
-            joinPoint.getSignature()
-                     .toShortString();
+        String methodName = joinPoint.getSignature()
+                                     .toShortString();
         Object[] args = joinPoint.getArgs();
 
         String safeArgs = "[]";

@@ -79,8 +79,6 @@ public class GetAuditListByParticipantController {
 
         var response = new Response(auditInfoList, output.total(), output.totalPages());
 
-        LOG.info("Get Audit List By Participant Response : [{}]", this.objectMapper.writeValueAsString(response));
-
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }

@@ -5,6 +5,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.audit.model.QAudit;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
+@NoLogging
 @RequiredArgsConstructor
 public class GetAllAuditByParticipantJpaQueryHandler implements GetAllAuditByParticipantQuery {
 
