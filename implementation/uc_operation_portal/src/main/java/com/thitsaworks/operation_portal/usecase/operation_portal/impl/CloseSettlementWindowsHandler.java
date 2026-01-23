@@ -53,9 +53,14 @@ public class CloseSettlementWindowsHandler
             input.state(),
             input.reason());
 
+        LOG.info("Close Settlement Windows Request from op to mojaloop system : {}", request);
+
         PostCloseSettlementWindows.Response
             response =
             this.settlementHubClient.closeSettlementWindows(input.settlementWindowId(), request);
+
+        LOG.info("Close Settlement Windows Response from mojaloop to op system : {}", response);
+
 
         return new Output(input.settlementWindowId(),
                           request.state(),

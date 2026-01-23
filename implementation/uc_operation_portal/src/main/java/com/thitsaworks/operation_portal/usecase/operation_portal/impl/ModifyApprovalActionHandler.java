@@ -143,11 +143,19 @@ public class ModifyApprovalActionHandler
                                                                                .getId())));
         extension.setKey("approveUser");
         extension.setValue(this.utility.getEmail(new UserId(input.responseUserId()
-                                                                               .getId())));
+                                                                 .getId())));
         extensionList.addExtensionItem(extension);
         boolean toRecalculateNDC = false;
 
         if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
+
+            LOG.info(
+                "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                toRecalculateNDC,
+                approvalRequestData,
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                  approvalRequestData,
@@ -157,6 +165,14 @@ public class ModifyApprovalActionHandler
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
+
+            LOG.info(
+                "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                toRecalculateNDC,
+                approvalRequestData,
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                  approvalRequestData,
@@ -214,7 +230,13 @@ public class ModifyApprovalActionHandler
                     throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
                 }
 
+                LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}",
+                         participantName,
+                         currency);
+
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
+
+                LOG.info("ParticipantNDC Query Response : {}", ndcData);
 
                 BigDecimal
                     ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
@@ -255,7 +277,11 @@ public class ModifyApprovalActionHandler
                                                    money,
                                                    extensionList);
 
+            LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}", participantName, currency);
+
             var ndcData = this.participantNDCQuery.get(participantName, currency);
+
+            LOG.info("ParticipantNDC Query Response : {}", ndcData);
 
             BigDecimal
                 ndcPercent =
@@ -264,12 +290,30 @@ public class ModifyApprovalActionHandler
 
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
+            LOG.info(
+                "Post Participant Balance Request from op to mojaloop : participantName : {}, participantSettlementCurrencyId : {}, request : {}",
+                approvalRequestData.getParticipantName(),
+                approvalRequestData.getParticipantSettlementCurrencyId(),
+                request);
+
             PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
                 approvalRequestData.getParticipantName(),
                 approvalRequestData.getParticipantSettlementCurrencyId(),
                 request);
 
+            LOG.info(
+                "Post Participant Balance Response from mojaloop to op : {}", response);
+
             if (toRecalculateNDC) {
+
+                LOG.info(
+                    "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                    toRecalculateNDC,
+                    approvalRequestData,
+                    participantName,
+                    currency,
+                    actionType);
+
                 this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                      approvalRequestData,
                                                      participantName,

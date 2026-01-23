@@ -1,5 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.util;
 
+import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
+import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
+import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
+import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
 import com.thitsaworks.operation_portal.core.hub_services.data.ParticipantBalanceData;
 import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantBalanceByCurrencyIdQuery;
@@ -12,10 +16,8 @@ import com.thitsaworks.operation_portal.core.participant.exception.ParticipantEx
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantNDCException;
 import com.thitsaworks.operation_portal.core.participant.model.ParticipantNDC;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantNDCQuery;
-import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
-import com.thitsaworks.operation_portal.core.hub_services.api.PutUpdateParticipantLimit;
-import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
-import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,11 +28,18 @@ import java.util.Optional;
 @Service
 public class HandleUpdateNdc {
 
+    private static final Logger LOG = LoggerFactory.getLogger(HandleUpdateNdc.class);
+
     private final GetParticipantBalanceByCurrencyIdQuery getParticipantValueByCurrencyIdQuery;
+
     private final ParticipantNDCQuery participantNDCQuery;
+
     private final CreateParticipantNDCCommand createParticipantNDCCommand;
+
     private final ModifyParticipantNDCCommand modifyParticipantNDCCommand;
+
     private final CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand;
+
     private final ParticipantHubClient participantHubClient;
 
     public HandleUpdateNdc(GetParticipantBalanceByCurrencyIdQuery getParticipantValueByCurrencyIdQuery,
@@ -39,6 +48,7 @@ public class HandleUpdateNdc {
                            ModifyParticipantNDCCommand modifyParticipantNDCCommand,
                            CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
                            ParticipantHubClient participantHubClient) {
+
         this.getParticipantValueByCurrencyIdQuery = getParticipantValueByCurrencyIdQuery;
         this.participantNDCQuery = participantNDCQuery;
         this.createParticipantNDCCommand = createParticipantNDCCommand;
@@ -91,8 +101,15 @@ public class HandleUpdateNdc {
                                                                             balanceInfo.getParticipantBalanceData()
                                                                                        .changedDate());
 
+            LOG.info("Compute NDC Amount Request : approvalRequestData : {}, balanceData : {}",
+                     approvalRequestData,
+                     new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData));
+
             calculatedNdcLimit = computeNdcAmount(approvalRequestData,
                                                   new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData));
+
+            LOG.info("Compute NDC Amount Response : {}", calculatedNdcLimit);
+
         } else {
 
             if (approvalRequestData.getAmount()
@@ -123,9 +140,19 @@ public class HandleUpdateNdc {
                                                                                                 calculatedNdcLimit,
                                                                                                 10));
 
+        LOG.info("Put Update Participant Limit Request from op to mojaloop : participantName : {}, request : {}",
+                 approvalRequestData.getParticipantName(),
+                 request);
+
         this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.getParticipantName(), request);
 
+        LOG.info("Put Update Participant Limit Response from op to mojaloop");
+
+        LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}", participantName, currency);
+
         var optionalNdc = this.participantNDCQuery.get(participantName, currency);
+
+        LOG.info("ParticipantNDC Query Response : {}", optionalNdc);
 
         if (optionalNdc.isEmpty()) {
 
@@ -142,14 +169,26 @@ public class HandleUpdateNdc {
             BigDecimal ndcAmount;
 
             if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
+
                 ndcAmount = BigDecimal.ZERO;
+
+                LOG.info("NDC Amount : {} if actionType = {}", ndcAmount, actionType);
+
             } else if (actionType == PositionActionType.WITHDRAW || actionType == PositionActionType.DEPOSIT) {
                 // keep the current percent (no overwrite)
+
                 ndcAmount =
                     optionalNdc.get()
                                .getNdcPercent();
+
+                LOG.info("NDC Amount : {} if actionType = {}", ndcAmount, actionType);
+
             } else {
+
                 ndcAmount = approvalRequestData.getAmount(); // other action types, if any
+
+                LOG.info("NDC Amount : {} if other actionType", ndcAmount);
+
             }
 
             this.createParticipantNDCHistoryCommand.execute(
@@ -183,7 +222,13 @@ public class HandleUpdateNdc {
         if (req.getFundInOutAction()
                .equalsIgnoreCase("WITHDRAW") || req.getFundInOutAction()
                                                    .equalsIgnoreCase("DEPOSIT")) {
+
+            LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}", req.getParticipantName(), req.getCurrency());
+
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
+
+            LOG.info("ParticipantNDC Query Response : {}", ndcData);
+
 
             ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
                                 .orElse(BigDecimal.ZERO)
@@ -215,4 +260,5 @@ public class HandleUpdateNdc {
         return calculatedNdcValue;
 
     }
+
 }
