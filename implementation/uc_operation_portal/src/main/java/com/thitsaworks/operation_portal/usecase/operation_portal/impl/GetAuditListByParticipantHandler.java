@@ -2,6 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@NoLogging
 public class GetAuditListByParticipantHandler
     extends OperationPortalUseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output>
     implements GetAuditListByParticipant {

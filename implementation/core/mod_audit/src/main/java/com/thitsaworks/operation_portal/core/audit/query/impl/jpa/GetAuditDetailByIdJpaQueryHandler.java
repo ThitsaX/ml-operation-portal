@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.audit.query.impl.jpa;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.audit.data.AuditData;
 import com.thitsaworks.operation_portal.core.audit.exception.AuditErrors;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@NoLogging
 @RequiredArgsConstructor
 public class GetAuditDetailByIdJpaQueryHandler implements GetAuditDetailByIdQuery {
 
