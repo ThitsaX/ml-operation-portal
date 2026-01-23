@@ -557,7 +557,7 @@ ORDER BY p.name]]>
 									<font fontName="Calibri" size="11"/>
 									<paragraph lineSpacing="Single"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{value} == null ? "" : $F{value}.replaceAll("(.{1,30})(\\s+|$)", "$1\n")]]></textFieldExpression>
 							</textField>
 							<textField>
 								<reportElement x="0" y="0" width="158" height="17" uuid="d766cbd6-5666-43ca-ab45-8509c8ea0413">
@@ -824,9 +824,10 @@ ORDER BY p.name]]>
 				<textFieldExpression><![CDATA[$F{participantId}]]></textFieldExpression>
 			</textField>
 			<textField textAdjust="StretchHeight">
-				<reportElement positionType="Float" stretchType="ContainerBottom" x="130" y="0" width="158" height="17" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
+				<reportElement positionType="Float" stretchType="ContainerHeight" x="130" y="0" width="158" height="17" isPrintWhenDetailOverflows="true" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+					<property name="net.sf.jasperreports.print.keep.full.text" value="true"/>
 					<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{report})]]></printWhenExpression>
 				</reportElement>
 				<box topPadding="1" leftPadding="1" bottomPadding="1" rightPadding="1">
@@ -840,10 +841,10 @@ ORDER BY p.name]]>
 					<font fontName="Calibri" size="11"/>
 					<paragraph lineSpacing="Single"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{dfspName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{dfspName} == null ? "" : $F{dfspName}.replaceAll("(.{1,30})(\\s+|$)", "$1\n")]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement stretchType="ContainerBottom" x="130" y="0" width="158" height="17" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
+				<reportElement stretchType="ContainerBottom" x="130" y="0" width="158" height="17" isPrintWhenDetailOverflows="true" uuid="cb127d8a-744a-4ed6-a457-4b2bb2947fc0">
 					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
 					<printWhenExpression><![CDATA["XLSX".equalsIgnoreCase($P{report})]]></printWhenExpression>
