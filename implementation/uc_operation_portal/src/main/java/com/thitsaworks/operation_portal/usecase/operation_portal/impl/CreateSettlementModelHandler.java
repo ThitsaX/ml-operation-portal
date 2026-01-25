@@ -60,11 +60,15 @@ public class CreateSettlementModelHandler
         Optional<SettlementModelData> optionalSettlementModelData =
                 this.settlementModelQuery.get(input.settlementModelName());
 
+        LOG.info("Settlement Model Query Request: {}", optionalSettlementModelData);
+
         if (optionalSettlementModelData.isPresent()) {
 
             throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_ALREADY_REGISTERED.format(input.settlementModelName()));
 
         }
+
+        LOG.info("Settlement Model Query Response:{}", optionalSettlementModelData);
 
         List<SchedulerConfigId> schedulerConfigIdList = new ArrayList<>();
 
@@ -81,6 +85,8 @@ public class CreateSettlementModelHandler
                 input.autoPositionReset(),
                 input.adjustPosition(),
                 schedulerConfigIdList));
+
+        LOG.info("Created settlement model Response: {}", output);
 
         return new Output(output.created(), output.settlementModelId());
 

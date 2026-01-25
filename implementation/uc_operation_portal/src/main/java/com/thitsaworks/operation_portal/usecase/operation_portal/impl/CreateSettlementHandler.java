@@ -69,12 +69,20 @@ public class CreateSettlementHandler
             this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(input.settlementModel(),
                                                                                        input.reason(),
                                                                                        input.settlementWindowIdList()));
+        LOG.info("Created Settlement Request : SettlementModel : {}, Reason : {}, SettementWindowIdList : {}",
+                input.settlementModel(),
+                input.reason(),
+                input.settlementWindowIdList());
+
+        LOG.info("Created Settlement Request from op to mojaloop system : {}", response);
 
         Settlement settlement = this.settlementHubClient.getSettlement(response.id());
 
         PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
 
         List<SettlementParticipant> settlementParticipants = request.participants();
+
+        LOG.info("Settlement Participants Request from op to mojaloop system : {}", settlementParticipants);
 
         SettlementState settlementState = SettlementState.valueOf(settlement.getState());
 
@@ -102,6 +110,16 @@ public class CreateSettlementHandler
             settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
 
         }
+
+        LOG.info("Created settlement Response from mojaloop to op system : SettlementID: {}, SettlementModel: {}, State: {}, Reason: {}, CreatedDate: {}, ChangedDate: {}, SettlementWindows: {}, Participants: {}",
+                 response.id(),
+                 response.settlementModel(),
+                 response.state(),
+                 response.reason(),
+                 response.createdDate(),
+                 response.changedDate(),
+                 response.settlementWindows(),
+                 response.participants());
 
         return new Output(response.id(),
                           response.settlementModel(),
