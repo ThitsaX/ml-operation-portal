@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.time.Instant;
 @Entity
 @Table(name = "tbl_participant_ndc")
 @Getter
+@ToString
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
 

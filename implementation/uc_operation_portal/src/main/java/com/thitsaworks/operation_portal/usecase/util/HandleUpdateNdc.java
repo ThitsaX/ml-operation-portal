@@ -51,7 +51,8 @@ public class HandleUpdateNdc {
                            CreateParticipantNDCCommand createParticipantNDCCommand,
                            ModifyParticipantNDCCommand modifyParticipantNDCCommand,
                            CreateParticipantNDCHistoryCommand createParticipantNDCHistoryCommand,
-                           ParticipantHubClient participantHubClient) {
+                           ParticipantHubClient participantHubClient,
+                           ObjectMapper objectMapper) {
 
         this.getParticipantValueByCurrencyIdQuery = getParticipantValueByCurrencyIdQuery;
         this.participantNDCQuery = participantNDCQuery;
@@ -59,7 +60,7 @@ public class HandleUpdateNdc {
         this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
         this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;
         this.participantHubClient = participantHubClient;
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     public void handleUpdateNdc(Boolean ToCalculateNdc,
