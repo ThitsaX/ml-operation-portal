@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.core.audit.model;
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
-import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.TraceId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -32,7 +32,7 @@ public class Audit extends JpaEntity<AuditId> {
     protected UserId userId;
 
     @Embedded
-    protected RequestId requestId;
+    protected TraceId traceId;
 
     @Embedded
     @AttributeOverride(
@@ -52,7 +52,7 @@ public class Audit extends JpaEntity<AuditId> {
     public Audit(ActionId actionId,
                  UserId userId,
                  RealmId realmId,
-                 RequestId requestId,
+                 TraceId traceId,
                  String inputInfo,
                  String outputInfo) {
 
@@ -61,7 +61,7 @@ public class Audit extends JpaEntity<AuditId> {
         this.actionId = actionId;
         this.userId = userId;
         this.realmId = realmId;
-        this.requestId = requestId;
+        this.traceId = traceId;
         this.inputInfo = inputInfo;
         this.outputInfo = outputInfo;
     }

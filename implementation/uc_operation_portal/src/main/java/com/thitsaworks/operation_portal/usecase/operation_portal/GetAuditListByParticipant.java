@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
-import com.thitsaworks.operation_portal.component.common.identifier.RequestId;
+import com.thitsaworks.operation_portal.component.common.identifier.TraceId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.Email;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
@@ -30,7 +30,7 @@ public interface GetAuditListByParticipant
                                 Instant date,
                                 String action,
                                 Email madeBy,
-                                RequestId requestId) implements Serializable {
+                                TraceId traceId) implements Serializable {
 
         }
 

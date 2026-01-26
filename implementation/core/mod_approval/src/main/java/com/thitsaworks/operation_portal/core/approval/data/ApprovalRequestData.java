@@ -6,12 +6,14 @@ import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType
 import com.thitsaworks.operation_portal.core.approval.model.ApprovalRequest;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 
 @Getter
 @Setter
+@ToString
 public class ApprovalRequestData {
 
     private ApprovalRequestId approvalRequestId;

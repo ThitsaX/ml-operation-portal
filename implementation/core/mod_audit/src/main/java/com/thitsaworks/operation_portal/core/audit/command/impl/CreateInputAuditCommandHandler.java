@@ -24,7 +24,7 @@ public class CreateInputAuditCommandHandler implements CreateInputAuditCommand {
         Audit audit = new Audit(input.actionId(),
                                 input.actionBy(),
                                 input.realmId(),
-                                input.requestId(),
+                                input.traceId(),
                                 input.inputInfo(),
                                 null);
 

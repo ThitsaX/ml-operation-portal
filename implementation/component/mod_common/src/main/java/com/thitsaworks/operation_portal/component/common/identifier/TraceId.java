@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
-public class RequestId extends JpaId<Long> {
+public class TraceId extends JpaId<Long> {
 
-    @Column(name = "request_id")
+    @Column(name = "trace_id")
     private Long id;
 
     @Override

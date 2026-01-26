@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ApprovalActionType;
@@ -49,6 +50,8 @@ public class ModifyApprovalActionHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(ModifyApprovalActionHandler.class);
 
+    private final ObjectMapper objectMapper;
+
     private final ModifyApprovalActionCommand modifyApprovalActionCommand;
 
     private final ApprovalRequestQuery approvalRequestQuery;
@@ -95,12 +98,19 @@ public class ModifyApprovalActionHandler
         this.getParticipantValueByCurrencyIdQuery = getParticipantValueByCurrencyIdQuery;
         this.getParticipantLimitByCurrencyIdQuery = getParticipantLimitByCurrencyIdQuery;
         this.handleUpdateNdc = handleUpdateNdc;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    protected Output onExecute(Input input) throws DomainException, ConnectException {
+    protected Output onExecute(Input input) throws DomainException, ConnectException, JsonProcessingException {
+
+        LOG.info("Get Pending Approval Request by Id Query Request : approvalRequestId : {}",
+                 input.approvalRequestId());
 
         var approvalRequestData = this.approvalRequestQuery.getPendingApprovalRequestByID(input.approvalRequestId());
+
+        LOG.info("Get Pending Approval Response By Id Query Response : {}",
+                 this.objectMapper.writeValueAsString(approvalRequestData));
 
         if (this.isSelfApprovalAttempt(approvalRequestData.getRequestedBy(), input.responseUserId())) {
             throw new IAMException(IAMErrors.SELF_APPROVAL_NOT_ALLOWED);
@@ -143,11 +153,19 @@ public class ModifyApprovalActionHandler
                                                                                .getId())));
         extension.setKey("approveUser");
         extension.setValue(this.utility.getEmail(new UserId(input.responseUserId()
-                                                                               .getId())));
+                                                                 .getId())));
         extensionList.addExtensionItem(extension);
         boolean toRecalculateNDC = false;
 
         if (actionType == PositionActionType.UPDATE_NDC_FIXED) {
+
+            LOG.info(
+                "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                toRecalculateNDC,
+                this.objectMapper.writeValueAsString(approvalRequestData),
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                  approvalRequestData,
@@ -157,6 +175,14 @@ public class ModifyApprovalActionHandler
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
+
+            LOG.info(
+                "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                toRecalculateNDC,
+                this.objectMapper.writeValueAsString(approvalRequestData),
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                  approvalRequestData,
@@ -214,7 +240,13 @@ public class ModifyApprovalActionHandler
                     throw new ParticipantException(ParticipantErrors.INSUFFICIENT_BALANCE);
                 }
 
+                LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}",
+                         participantName,
+                         currency);
+
                 var ndcData = this.participantNDCQuery.get(participantName, currency);
+
+                LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
 
                 BigDecimal
                     ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
@@ -255,7 +287,13 @@ public class ModifyApprovalActionHandler
                                                    money,
                                                    extensionList);
 
+            LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}",
+                     participantName,
+                     currency);
+
             var ndcData = this.participantNDCQuery.get(participantName, currency);
+
+            LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
 
             BigDecimal
                 ndcPercent =
@@ -264,12 +302,31 @@ public class ModifyApprovalActionHandler
 
             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
+            LOG.info(
+                "Post Participant Balance Request from op to mojaloop : participantName : {}, participantSettlementCurrencyId : {}, request : {}",
+                approvalRequestData.getParticipantName(),
+                approvalRequestData.getParticipantSettlementCurrencyId(),
+                this.objectMapper.writeValueAsString(request));
+
             PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
                 approvalRequestData.getParticipantName(),
                 approvalRequestData.getParticipantSettlementCurrencyId(),
                 request);
 
+            LOG.info(
+                "Post Participant Balance Response from mojaloop to op : {}",
+                this.objectMapper.writeValueAsString(response));
+
             if (toRecalculateNDC) {
+
+                LOG.info(
+                    "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                    toRecalculateNDC,
+                    this.objectMapper.writeValueAsString(approvalRequestData),
+                    participantName,
+                    currency,
+                    actionType);
+
                 this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                      approvalRequestData,
                                                      participantName,

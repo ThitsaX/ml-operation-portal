@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 @RequiredArgsConstructor
 @AllArgsConstructor
 public class HubParticipantDetailData implements Serializable {
@@ -23,6 +25,7 @@ public class HubParticipantDetailData implements Serializable {
 
     @Getter
     @Setter
+    @ToString
     @RequiredArgsConstructor
     @AllArgsConstructor
     public static class AccountData implements Serializable {
