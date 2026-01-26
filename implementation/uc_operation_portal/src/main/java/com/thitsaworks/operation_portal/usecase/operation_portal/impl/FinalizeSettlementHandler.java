@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
@@ -58,6 +59,8 @@ public class FinalizeSettlementHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(FinalizeSettlementHandler.class);
 
+    private final ObjectMapper objectMapper;
+
     private final SettlementHubClient settlementHubClient;
 
     private final ParticipantHubClient participantHubClient;
@@ -112,10 +115,11 @@ public class FinalizeSettlementHandler
             participantPositionsDataByParticipantNameAndCurrencyQuery;
         this.userPermissionManager = userPermissionManager;
         this.utility = utility;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public Output onExecute(Input input) throws DomainException, ConnectException {
+    public Output onExecute(Input input) throws DomainException, ConnectException, JsonProcessingException {
 
         try {
 
@@ -151,7 +155,12 @@ public class FinalizeSettlementHandler
                     details.add(detail);
                 }
 
+                LOG.info("Get Settlement Request from op to mojaloop : settlementId : {}", input.settlementId());
+
                 Settlement settlement = this.settlementHubClient.getSettlement(input.settlementId());
+
+                LOG.info("Get Settlement Response from mojaloop to op : {}",
+                         this.objectMapper.writeValueAsString(settlement));
 
                 PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
 
@@ -187,11 +196,19 @@ public class FinalizeSettlementHandler
                         }
                     }
 
+                    LOG.info("Put Update Settlement Request from op to mojaloop : settlementId : {}, request : {}",
+                             settlement.getId(),
+                             this.objectMapper.writeValueAsString(new PutUpdateSettlement.Request(
+                                 settlementParticipants)));
+
                     PutUpdateSettlement.Response
                         putUpdateSettlementResponse =
                         this.settlementHubClient.putUpdateSettlement(settlement.getId(),
                                                                      new PutUpdateSettlement.Request(
                                                                          settlementParticipants));
+
+                    LOG.info("Put Update Settlement Response from mojaloop to op : {}",
+                             this.objectMapper.writeValueAsString(putUpdateSettlementResponse));
 
                     settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
 
@@ -203,10 +220,15 @@ public class FinalizeSettlementHandler
 
                 if (SettlementState.SETTLED.equals(settlementState)) {
 
+                    LOG.info("Get Hub Participant Detail Data List Query Request : [no param]");
+
                     // call postParticipantBalance for participant accounts
                     List<HubParticipantDetailData>
                         hubParticipantDetailDataList =
                         this.hubParticipantQuery.getHubParticipantDetailDataList();
+
+                    LOG.info("Get Hub Participant Detail Data List Query Response : {}",
+                             this.objectMapper.writeValueAsString(hubParticipantDetailDataList));
 
                     ExtensionList extensionList = new ExtensionList();
                     extensionList.addExtensionItem(new Extension().key("settlementId")
@@ -295,14 +317,31 @@ public class FinalizeSettlementHandler
                                                                    account.getNetSettlementAmount(),
                                                                    extensionList);
 
+                            LOG.info(
+                                "Post Participant Balance Request from op to mojaloop : participantName : {}, settleAccountId : {}, request : {}",
+                                hubParticipantDetailData.getParticipantName(),
+                                settleAccountId,
+                                this.objectMapper.writeValueAsString(postParticipantBalanceRequest));
+
                             this.participantHubClient.postParticipantBalance(hubParticipantDetailData.getParticipantName(),
                                                                              settleAccountId.toString(),
                                                                              postParticipantBalanceRequest);
+
+                            LOG.info("Post Participant Balance Response from mojaloop to op : [no response]");
+
+                            LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}",
+                                     hubParticipantDetailData.getParticipantName(),
+                                     account.getNetSettlementAmount()
+                                            .getCurrency()
+                                            .toString());
 
                             var ndcData = this.participantNDCQuery.get(hubParticipantDetailData.getParticipantName(),
                                                                        account.getNetSettlementAmount()
                                                                               .getCurrency()
                                                                               .toString());
+
+                            LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
+
                             boolean toRecalculateNDC = false;
 
                             BigDecimal
@@ -360,6 +399,17 @@ public class FinalizeSettlementHandler
                             approvalRequestData.setParticipantSettlementCurrencyId(settlementCurrencyId);
 
                             if (toRecalculateNDC) {
+
+                                LOG.info(
+                                    "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
+                                    toRecalculateNDC,
+                                    this.objectMapper.writeValueAsString(approvalRequestData),
+                                    hubParticipantDetailData.getParticipantName(),
+                                    account.getNetSettlementAmount()
+                                           .getCurrency()
+                                           .toString(),
+                                    positionActionType);
+
                                 this.handleUpdateNdc.handleUpdateNdc(toRecalculateNDC,
                                                                      approvalRequestData,
                                                                      hubParticipantDetailData.getParticipantName(),

@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.AccessKey;
 import com.thitsaworks.operation_portal.component.common.identifier.AuditId;
@@ -215,6 +216,6 @@ public abstract class OperationPortalAuditableUseCase<I, O> implements UseCase<I
         throw new RuntimeException(exception);
     }
 
-    protected abstract O onExecute(I input) throws DomainException, ConnectException;
+    protected abstract O onExecute(I input) throws DomainException, ConnectException, JsonProcessingException;
 
 }

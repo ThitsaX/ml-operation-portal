@@ -25,12 +25,14 @@ import java.util.Optional;
 
 @Service
 public class CreateSettlementModelHandler
-        extends OperationPortalAuditableUseCase<CreateSettlementModel.Input, CreateSettlementModel.Output>
-        implements CreateSettlementModel {
+    extends OperationPortalAuditableUseCase<CreateSettlementModel.Input, CreateSettlementModel.Output>
+    implements CreateSettlementModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementModelHandler.class);
 
     private final SettlementModelQuery settlementModelQuery;
+
+    private final ObjectMapper objectMapper;
 
     private final CreateSettlementModelCommand createSettlementModelCommand;
 
@@ -52,15 +54,18 @@ public class CreateSettlementModelHandler
 
         this.settlementModelQuery = settlementModelQuery;
         this.createSettlementModelCommand = createSettlementModelCommand;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        Optional<SettlementModelData> optionalSettlementModelData =
-                this.settlementModelQuery.get(input.settlementModelName());
+        LOG.info("Settlement Model Query Request : settlementModelName : {}", input.settlementModelName());
 
-        LOG.info("Settlement Model Query Request: {}", optionalSettlementModelData);
+        Optional<SettlementModelData> optionalSettlementModelData =
+            this.settlementModelQuery.get(input.settlementModelName());
+
+        LOG.info("Settlement Model Query Response : {}", optionalSettlementModelData);
 
         if (optionalSettlementModelData.isPresent()) {
 
@@ -68,25 +73,21 @@ public class CreateSettlementModelHandler
 
         }
 
-        LOG.info("Settlement Model Query Response:{}", optionalSettlementModelData);
-
         List<SchedulerConfigId> schedulerConfigIdList = new ArrayList<>();
 
         var output = this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
 
-                input.settlementModelName(),
-                input.modelType(),
-                input.currencyID(),
-                true,
-                false,
-                true,
-                input.zoneId(),
-                input.requireLiquidityCheck(),
-                input.autoPositionReset(),
-                input.adjustPosition(),
-                schedulerConfigIdList));
-
-        LOG.info("Created settlement model Response: {}", output);
+            input.settlementModelName(),
+            input.modelType(),
+            input.currencyID(),
+            true,
+            false,
+            true,
+            input.zoneId(),
+            input.requireLiquidityCheck(),
+            input.autoPositionReset(),
+            input.adjustPosition(),
+            schedulerConfigIdList));
 
         return new Output(output.created(), output.settlementModelId());
 

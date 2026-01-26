@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
@@ -25,6 +26,8 @@ public class CloseSettlementWindowsHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsHandler.class);
 
+    private final ObjectMapper objectMapper;
+
     private final SettlementHubClient settlementHubClient;
 
     @Autowired
@@ -44,23 +47,25 @@ public class CloseSettlementWindowsHandler
               actionAuthorizationManager);
 
         this.settlementHubClient = settlementHubClient;
+        this.objectMapper = objectMapper;
     }
 
     @Override
-    public Output onExecute(Input input) throws DomainException, ConnectException {
+    public Output onExecute(Input input) throws DomainException, ConnectException, JsonProcessingException {
 
         PostCloseSettlementWindows.Request request = new PostCloseSettlementWindows.Request(
             input.state(),
             input.reason());
 
-        LOG.info("Close Settlement Windows Request from op to mojaloop system : {}", request);
+        LOG.info("Close Settlement Windows Request from op to mojaloop : {}",
+                 this.objectMapper.writeValueAsString(request));
 
         PostCloseSettlementWindows.Response
             response =
             this.settlementHubClient.closeSettlementWindows(input.settlementWindowId(), request);
 
-        LOG.info("Close Settlement Windows Response from mojaloop to op system : {}", response);
-
+        LOG.info("Close Settlement Windows Response from mojaloop to op : {}",
+                 this.objectMapper.writeValueAsString(response));
 
         return new Output(input.settlementWindowId(),
                           request.state(),

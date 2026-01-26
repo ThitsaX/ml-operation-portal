@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.PositionActionType;
 import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.hub_services.ParticipantHubClient;
@@ -30,6 +32,8 @@ public class HandleUpdateNdc {
 
     private static final Logger LOG = LoggerFactory.getLogger(HandleUpdateNdc.class);
 
+    private final ObjectMapper objectMapper;
+
     private final GetParticipantBalanceByCurrencyIdQuery getParticipantValueByCurrencyIdQuery;
 
     private final ParticipantNDCQuery participantNDCQuery;
@@ -55,6 +59,7 @@ public class HandleUpdateNdc {
         this.modifyParticipantNDCCommand = modifyParticipantNDCCommand;
         this.createParticipantNDCHistoryCommand = createParticipantNDCHistoryCommand;
         this.participantHubClient = participantHubClient;
+        this.objectMapper = new ObjectMapper();
     }
 
     public void handleUpdateNdc(Boolean ToCalculateNdc,
@@ -62,7 +67,7 @@ public class HandleUpdateNdc {
                                 String participantName,
                                 String currency,
                                 PositionActionType actionType)
-        throws HubServicesException, ParticipantException, ParticipantNDCException {
+        throws HubServicesException, ParticipantException, ParticipantNDCException, JsonProcessingException {
 
         BigDecimal calculatedNdcLimit;
         int
@@ -102,8 +107,8 @@ public class HandleUpdateNdc {
                                                                                        .changedDate());
 
             LOG.info("Compute NDC Amount Request : approvalRequestData : {}, balanceData : {}",
-                     approvalRequestData,
-                     new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData));
+                     this.objectMapper.writeValueAsString(approvalRequestData),
+                     this.objectMapper.writeValueAsString(new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData)));
 
             calculatedNdcLimit = computeNdcAmount(approvalRequestData,
                                                   new GetParticipantBalanceByCurrencyIdQuery.Output(balanceData));
@@ -142,17 +147,17 @@ public class HandleUpdateNdc {
 
         LOG.info("Put Update Participant Limit Request from op to mojaloop : participantName : {}, request : {}",
                  approvalRequestData.getParticipantName(),
-                 request);
+                 this.objectMapper.writeValueAsString(request));
 
         this.participantHubClient.putUpdateParticipantLimit(approvalRequestData.getParticipantName(), request);
 
-        LOG.info("Put Update Participant Limit Response from op to mojaloop");
+        LOG.info("Put Update Participant Limit Response from op to mojaloop : [no response]");
 
-        LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}", participantName, currency);
+        LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}", participantName, currency);
 
         var optionalNdc = this.participantNDCQuery.get(participantName, currency);
 
-        LOG.info("ParticipantNDC Query Response : {}", optionalNdc);
+        LOG.info("Get ParticipantNDC Query Response : {}", optionalNdc);
 
         if (optionalNdc.isEmpty()) {
 
@@ -223,11 +228,11 @@ public class HandleUpdateNdc {
                .equalsIgnoreCase("WITHDRAW") || req.getFundInOutAction()
                                                    .equalsIgnoreCase("DEPOSIT")) {
 
-            LOG.info("ParticipantNDC Query Request : participantName : {}, currency : {}", req.getParticipantName(), req.getCurrency());
+            LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}", req.getParticipantName(), req.getCurrency());
 
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
-            LOG.info("ParticipantNDC Query Response : {}", ndcData);
+            LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
 
 
             ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
