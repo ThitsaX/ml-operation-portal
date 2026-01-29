@@ -26,20 +26,57 @@ The following MySQL databases **must be created before Vault setup**.
 
 ---
 
-## 2. Vault Configuration Reference
+## 2. Vault Configuration 
 
 This section shows **only the fields DevOps may change** in Vault for the Operation Portal.
 
-| Component | Vault Path | Fields to Change |
-|---------|-----------|------------------|
-| **Redis** | `operation_portal/redis/settings` | `redisUrl` |
-| **MySQL – Portal (Flyway)** | `operation_portal/mysql/portal_data/flyway/settings` | `url`, `username`, `password` |
-| **MySQL – Portal (Write DB)** | `operation_portal/mysql/portal_data/write_db/settings` | `url`, `username`, `password` |
-| **MySQL – Portal (Read DB)** | `operation_portal/mysql/portal_data/read_db/settings` | `url`, `username`, `password` |
-| **MySQL – Hub (Write DB)** | `operation_portal/mysql/hub_data/write_db/settings` | `url`, `username`, `password` |
-| **MySQL – Hub (Read DB)** | `operation_portal/mysql/hub_data/read_db/settings` | `url`, `username`, `password` |
-| **MongoDB – Hub (Write DB)** | `operation_portal/mongo/hub_data/write_db/settings` | `uri` (includes username, password, host), `database` |
-| **MongoDB – Hub (Read DB)** | `operation_portal/mongo/hub_data/read_db/settings` | `uri` (includes username, password, host), `database` |
+### Redis
+- **Vault Path:** `operation_portal/redis/settings`
+- **Fields to Change:** `redisUrl`
+
+---
+
+### MySQL – Portal Data
+
+**Flyway (Migrations)**
+- **Vault Path:** `operation_portal/mysql/portal_data/flyway/settings`
+- **Fields to Change:** `url`, `username`, `password`
+
+**Write Database**
+- **Vault Path:** `operation_portal/mysql/portal_data/write_db/settings`
+- **Fields to Change:** `url`, `username`, `password`
+
+**Read Database**
+- **Vault Path:** `operation_portal/mysql/portal_data/read_db/settings`
+- **Fields to Change:** `url`, `username`, `password`
+
+---
+
+### MySQL – Hub Data
+
+**Write Database**
+- **Vault Path:** `operation_portal/mysql/hub_data/write_db/settings`
+- **Fields to Change:** `url`, `username`, `password`
+
+**Read Database**
+- **Vault Path:** `operation_portal/mysql/hub_data/read_db/settings`
+- **Fields to Change:** `url`, `username`, `password`
+
+---
+
+### MongoDB 
+
+**Write Database**
+- **Vault Path:** `operation_portal/mongo/hub_data/write_db/settings`
+- **Fields to Change:**  
+  - `uri` (includes username, password, host)  
+  - `database`
+
+**Read Database**
+- **Vault Path:** `operation_portal/mongo/hub_data/read_db/settings`
+- **Fields to Change:**  
+  - `uri` (includes username, password, host)  
+  - `database`
 
 ---
 
