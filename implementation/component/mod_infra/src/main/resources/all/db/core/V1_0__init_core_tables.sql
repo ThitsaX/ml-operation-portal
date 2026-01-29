@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `tbl_contact` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`contact_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_contact_history definition
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS `tbl_contact_history` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`contact_history_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_extra_property definition
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS `tbl_extra_property` (
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`extra_property_id`),
   UNIQUE KEY `participant_id_property_key` (`participant_id`,`property_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_greeting definition
@@ -184,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `tbl_participant` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`participant_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_participant_ndc definition
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `tbl_user` (
   `updated_date` bigint DEFAULT NULL,
   `is_deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_blocked_action definition
