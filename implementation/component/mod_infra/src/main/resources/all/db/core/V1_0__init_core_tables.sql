@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT EXISTS `operation_portal` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+CREATE DATABASE IF NOT EXISTS `operation_portal` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 USE `operation_portal`;
 
 -- operation_portal.tbl_action definition
@@ -11,21 +11,21 @@ CREATE TABLE IF NOT EXISTS `tbl_action` (
   `scope` varchar(255) NOT NULL,
   `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`action_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_announcement definition
 
 CREATE TABLE IF NOT EXISTS `tbl_announcement` (
   `announcement_id` bigint NOT NULL,
-  `announcement_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `announcement_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `announcement_date` bigint DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   `announcement_detail` text,
   `is_deleted` bit(1) DEFAULT NULL,
   PRIMARY KEY (`announcement_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_approval_request definition
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `tbl_approval_request` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`approval_request_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_audit definition
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `tbl_audit` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`audit_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_contact definition
@@ -69,10 +69,10 @@ CREATE TABLE IF NOT EXISTS `tbl_contact` (
   `contact_id` bigint NOT NULL,
   `participant_id` bigint DEFAULT NULL,
   `name` varchar(200) DEFAULT NULL,
-  `position` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `position` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `contact_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`contact_id`)
@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `tbl_contact_history` (
   `name` varchar(200) DEFAULT NULL,
   `position` varchar(100) DEFAULT NULL,
   `email` varchar(100) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `contact_type` varchar(50) DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
@@ -101,9 +101,9 @@ CREATE TABLE IF NOT EXISTS `tbl_contact_history` (
 CREATE TABLE IF NOT EXISTS `tbl_extra_property` (
   `extra_property_id` bigint NOT NULL,
   `participant_id` bigint DEFAULT NULL,
-  `property_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `property_key` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `label` varchar(100) DEFAULT NULL,
-  `property_value` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `property_value` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`extra_property_id`),
@@ -115,32 +115,32 @@ CREATE TABLE IF NOT EXISTS `tbl_extra_property` (
 
 CREATE TABLE IF NOT EXISTS `tbl_greeting` (
   `greeting_id` bigint NOT NULL,
-  `greeting_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `greeting_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   `greeting_detail` text,
   `is_deleted` bit(1) DEFAULT NULL,
   `greeting_date` bigint DEFAULT NULL,
   PRIMARY KEY (`greeting_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_job_execution_logs definition
 
 CREATE TABLE IF NOT EXISTS `tbl_job_execution_logs` (
   `job_execution_log_id` bigint NOT NULL,
-  `job_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `job_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `start_time` datetime NOT NULL,
   `end_time` datetime DEFAULT NULL,
-  `execution_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `execution_message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`job_execution_log_id`),
   KEY `idx_job_name` (`job_name`),
   KEY `idx_status` (`status`),
   KEY `idx_start_time` (`start_time`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_liquidity_profile definition
@@ -155,7 +155,7 @@ CREATE TABLE IF NOT EXISTS `tbl_liquidity_profile` (
   `is_active` bit(1) DEFAULT NULL,
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_menu definition
@@ -168,17 +168,17 @@ CREATE TABLE IF NOT EXISTS `tbl_menu` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`menu_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_participant definition
 
 CREATE TABLE IF NOT EXISTS `tbl_participant` (
   `participant_id` bigint NOT NULL,
-  `participant_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `participant_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `address` varchar(500) DEFAULT NULL,
-  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `mobile` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `logo_data_type` varchar(225) DEFAULT NULL,
   `logo` blob,
   `created_date` bigint DEFAULT NULL,
@@ -197,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `tbl_participant_ndc` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`participant_ndc_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_participant_ndc_history definition
@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `tbl_participant_ndc_history` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`participant_ndc_history_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_principal definition
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS `tbl_principal` (
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`principal_id`),
   UNIQUE KEY `access_key` (`access_key`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_role definition
@@ -240,22 +240,22 @@ CREATE TABLE IF NOT EXISTS `tbl_role` (
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_scheduler_configs definition
 
 CREATE TABLE IF NOT EXISTS `tbl_scheduler_configs` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `cron_expression` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cron_expression` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_active` tinyint(1) DEFAULT '1',
   `created_date` bigint DEFAULT NULL,
   `updated_date` bigint DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_user definition
@@ -288,7 +288,7 @@ CREATE TABLE IF NOT EXISTS `tbl_blocked_action` (
   KEY `tbl_blocked_action_tbl_user_FK` (`principal_id`),
   CONSTRAINT `tbl_blocked_action_tbl_action_FK` FOREIGN KEY (`action_id`) REFERENCES `tbl_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_blocked_action_tbl_user_FK` FOREIGN KEY (`principal_id`) REFERENCES `tbl_principal` (`principal_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_menu_grant definition
@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `tbl_menu_grant` (
   KEY `tbl_menu_grant_tbl_menu_FK` (`menu_id`),
   CONSTRAINT `tbl_menu_grant_tbl_action_FK` FOREIGN KEY (`action_id`) REFERENCES `tbl_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_menu_grant_tbl_menu_FK` FOREIGN KEY (`menu_id`) REFERENCES `tbl_menu` (`menu_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_principal_grant definition
@@ -320,7 +320,7 @@ CREATE TABLE IF NOT EXISTS `tbl_principal_grant` (
   KEY `tbl_principal_grant_tbl_action_FK` (`action_id`),
   CONSTRAINT `tbl_principal_grant_tbl_action_FK` FOREIGN KEY (`action_id`) REFERENCES `tbl_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_principal_grant_tbl_principal_FK` FOREIGN KEY (`principal_id`) REFERENCES `tbl_principal` (`principal_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_principal_role definition
@@ -336,7 +336,7 @@ CREATE TABLE IF NOT EXISTS `tbl_principal_role` (
   KEY `tbl_principal_role_tbl_role_FK` (`role_id`),
   CONSTRAINT `tbl_principal_role_tbl_principal_FK` FOREIGN KEY (`principal_id`) REFERENCES `tbl_principal` (`principal_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_principal_role_tbl_role_FK` FOREIGN KEY (`role_id`) REFERENCES `tbl_role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 -- operation_portal.tbl_role_grant definition
@@ -352,7 +352,7 @@ CREATE TABLE IF NOT EXISTS `tbl_role_grant` (
   KEY `tbl_role_grant_tbl_role_FK` (`role_id`),
   CONSTRAINT `tbl_role_grant_tbl_action_FK` FOREIGN KEY (`action_id`) REFERENCES `tbl_action` (`action_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tbl_role_grant_tbl_role_FK` FOREIGN KEY (`role_id`) REFERENCES `tbl_role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 
 
