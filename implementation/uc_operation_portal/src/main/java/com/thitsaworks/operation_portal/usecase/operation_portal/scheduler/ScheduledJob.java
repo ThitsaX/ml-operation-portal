@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.component.misc.exception.DomainException
 import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.exception.SystemException;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -53,7 +54,9 @@ public abstract class ScheduledJob<I, O> {
     void run(SchedulerConfigData schedulerConfigData) {
 
         try {
-
+            MDC.put("TRACE_ID",
+                    String.valueOf(Snowflake.get()
+                                            .nextId()));
             this.beforeExecute(schedulerConfigData);
 
             O output = this.onExecute(schedulerConfigData);
