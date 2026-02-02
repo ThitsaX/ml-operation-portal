@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="transactionDetailReport" pageWidth="2200" pageHeight="1000" orientation="Landscape" columnWidth="2160" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="bc3e963e-1b1b-435c-9282-bb968d48ca8a">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
@@ -40,126 +40,6 @@
 	<property name="net.sf.jasperreports.export.csv.cell.locked" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.sheet.names.sheet1" value="TransactionDetailReport"/>
 	<property name="net.sf.jasperreports.export.xls.sheet.names.sheet1" value="TransactionDetailReport"/>
-	<subDataset name="sDetailReport" uuid="f5c5cb9d-e802-4012-b214-430fd8043431">
-		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
-		<parameter name="startDate" class="java.lang.String"/>
-		<parameter name="endDate" class="java.lang.String"/>
-		<parameter name="state" class="java.lang.String"/>
-		<parameter name="dfspId" class="java.lang.String"/>
-		<parameter name="timezoneoffset" class="java.lang.String"/>
-		<queryString language="plsql">
-			<![CDATA[SELECT     t.transferId,
-			   CONCAT(
-				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-				CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
-				ELSE CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
-				END,'%Y-%m-%dT%H:%i:%s'),
-				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
-				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
-				) AS  transactionDate,			   
-			   IFNULL(payer.name,'') AS  senderDfspId,
-			   IFNULL(oPayer.description,payer.name) AS  senderDfspName,
-			   IFNULL(payee.name,'') AS  receiverDfspId,
-			   IFNULL(oPayee.description,payee.name) AS  receiverDfspName,			   
-			   IFNULL(a.name,'') AS transferType, 
-				ROUND(qR.transferAmount, 2) AS amount,	
-			   ROUND(qR.payeeReceiveAmount, 2) AS  payeeReceivedAmount, 
-			   IF(qR.payeeFspFeeAmount IS NOT NULL, ROUND(qR.payeeFspFeeAmount, 2), NULL) AS payeeDfspFeeAmount,
-				IF(qR.payeeFspCommissionAmount IS NOT NULL, ROUND(qR.payeeFspCommissionAmount, 2), NULL) AS payeeDfspCommissionAmount,
-				c.currencyId,
-				IFNULL(tst.enumeration,'')  AS 'status',
-				CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)) ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END AS timezoneoffset 
-FROM transfer t
-LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
-LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId
-LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId
-LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
-LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId
-LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
-LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
-LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
-LEFT JOIN transferFulfilment tff ON tff.transferId = t.transferId
-LEFT JOIN (
-		SELECT transferStateChangeId, transferId, transferStateId,createdDate FROM 
-		(
-			SELECT transferStateChangeId, transferId, transferStateId,createdDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
-		    FROM transferStateChange tsa
-		  ) x
-		  WHERE x.rn = 1
-		) tss ON tss.transferId = t.transferId
-LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId 
-LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
-INNER JOIN currency c ON c.currencyId = payercurrency.currencyId
-LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = payer.name
-LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = payee.name
-WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-    CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-    CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
-    AND 
-    (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-    CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-    CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-	 AND ($P{state} ='All' OR tst.enumeration = $P{state})
-	  AND (($P{dfspId} ='All')  OR (payee.name = $P{dfspId}  OR payer.name = $P{dfspId}))]]>
-		</queryString>
-		<field name="transferId" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="transferId"/>
-			<property name="com.jaspersoft.studio.field.label" value="transferId"/>
-		</field>
-		<field name="transactionDate" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="transactionDate"/>
-			<property name="com.jaspersoft.studio.field.label" value="transactionDate"/>
-		</field>
-		<field name="senderDfspId" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="senderDfspId"/>
-			<property name="com.jaspersoft.studio.field.label" value="senderDfspId"/>
-		</field>
-		<field name="senderDfspName" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="senderDfspName"/>
-			<property name="com.jaspersoft.studio.field.label" value="senderDfspName"/>
-		</field>
-		<field name="receiverDfspId" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="receiverDfspId"/>
-			<property name="com.jaspersoft.studio.field.label" value="receiverDfspId"/>
-		</field>
-		<field name="receiverDfspName" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="receiverDfspName"/>
-			<property name="com.jaspersoft.studio.field.label" value="receiverDfspName"/>
-		</field>
-		<field name="transferType" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="transferType"/>
-			<property name="com.jaspersoft.studio.field.label" value="transferType"/>
-		</field>
-		<field name="amount" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="amount"/>
-			<property name="com.jaspersoft.studio.field.label" value="amount"/>
-		</field>
-		<field name="payeeReceivedAmount" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="payeeReceivedAmount"/>
-			<property name="com.jaspersoft.studio.field.label" value="payeeReceivedAmount"/>
-		</field>
-		<field name="payeeDfspFeeAmount" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="payeeDfspFeeAmount"/>
-			<property name="com.jaspersoft.studio.field.label" value="payeeDfspFeeAmount"/>
-		</field>
-		<field name="payeeDfspCommissionAmount" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="payeeDfspCommissionAmount"/>
-			<property name="com.jaspersoft.studio.field.label" value="payeeDfspCommissionAmount"/>
-		</field>
-		<field name="currencyId" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="currencyId"/>
-			<property name="com.jaspersoft.studio.field.label" value="currencyId"/>
-		</field>
-		<field name="status" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="status"/>
-			<property name="com.jaspersoft.studio.field.label" value="status"/>
-		</field>
-		<field name="timezoneoffset" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="timezoneoffset"/>
-			<property name="com.jaspersoft.studio.field.label" value="timezoneoffset"/>
-		</field>
-	</subDataset>
 	<subDataset name="header" uuid="d44912b1-e131-4631-999f-7ae1ee4d6872">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="CentralLedgerAdapter"/>
@@ -213,9 +93,9 @@ SELECT 'TimeZoneOffSet' AS label,
 				ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END
 				) AS  transactionDate,			   
 			   IFNULL(payer.name,'') AS  senderDfspId,
-			   IFNULL(oPayer.description,payer.name) AS  senderDfspName,
+			   IFNULL(payer.description,payer.name) AS  senderDfspName,
 			   IFNULL(payee.name,'') AS  receiverDfspId,
-			   IFNULL(oPayee.description,payee.name) AS  receiverDfspName,			   
+			   IFNULL(payee.description,payee.name) AS  receiverDfspName,			   
 			   IFNULL(a.name,'') AS transferType, 
 				ROUND(qR.transferAmount, 2) AS amount,	
 			   ROUND(qR.payeeReceiveAmount, 2) AS  payeeReceivedAmount, 
@@ -239,14 +119,19 @@ LEFT JOIN (
 		(
 			SELECT transferStateChangeId, transferId, transferStateId,createdDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
 		    FROM transferStateChange tsa
+		    WHERE (tsa.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		    CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		    CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
+		    AND 
+		    (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+		    CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+		    CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
 		  ) x
 		  WHERE x.rn = 1
 		) tss ON tss.transferId = t.transferId
 LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId 
 LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
-INNER JOIN currency c ON c.currencyId = payercurrency.currencyId
-LEFT JOIN operation_portal.tbl_participant oPayer ON oPayer.participant_name = payer.name
-LEFT JOIN operation_portal.tbl_participant oPayee ON oPayee.participant_name = payee.name
+INNER JOIN currency c ON c.currencyId = payercurrency.currencyId 
 WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
     CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
     CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
