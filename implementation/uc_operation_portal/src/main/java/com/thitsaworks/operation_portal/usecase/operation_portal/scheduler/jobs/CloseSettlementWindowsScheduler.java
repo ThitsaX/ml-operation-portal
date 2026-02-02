@@ -27,7 +27,7 @@ import java.util.List;
 
 @Component("CloseSettlementWindowsScheduler")
 public class CloseSettlementWindowsScheduler
-        extends ScheduledJob<SchedulerConfigData, List<PostCloseSettlementWindows.Response>> {
+    extends ScheduledJob<SchedulerConfigData, List<PostCloseSettlementWindows.Response>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsScheduler.class);
 
@@ -72,7 +72,10 @@ public class CloseSettlementWindowsScheduler
 
         List<PostCloseSettlementWindows.Response> settlementWindowsList = new ArrayList<>();
 
-        LocalDateTime runningTime = LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId())).withNano(0);
+        LocalDateTime
+            runningTime =
+            LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()))
+                         .withNano(0);
 
         String reason =
             String.format("Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
@@ -84,16 +87,17 @@ public class CloseSettlementWindowsScheduler
         for (var settlementWindow : settlementWindowList) {
 
             var output = this.settlementHubClient.closeSettlementWindows(settlementWindow.settlementWindowId(),
-                                                            new PostCloseSettlementWindows.Request(
-                                                                SettlementWindowState.CLOSED.toString(),
-                                                                reason));
+                                                                         new PostCloseSettlementWindows.Request(
+                                                                             SettlementWindowState.CLOSED.toString(),
+                                                                             reason));
 
             output = new PostCloseSettlementWindows.Response(settlementWindow.settlementWindowId(),
                                                              SettlementWindowState.CLOSED.toString(),
-                                                             output.reason(),
-                                                             output.createdDate(),
-                                                             output.closedDate(),
-                                                             output.changedDate());
+                                                             output.getReason(),
+                                                             output.getCreatedDate(),
+                                                             output.getClosedDate(),
+                                                             output.getChangedDate(),
+                                                             output.getErrorInformation());
 
             settlementWindowsList.add(output);
         }

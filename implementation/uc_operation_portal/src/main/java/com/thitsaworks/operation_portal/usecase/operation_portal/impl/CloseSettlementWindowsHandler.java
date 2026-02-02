@@ -68,11 +68,12 @@ public class CloseSettlementWindowsHandler
                  this.objectMapper.writeValueAsString(response));
 
         return new Output(input.settlementWindowId(),
-                          request.state(),
-                          request.reason(),
-                          response.createdDate(),
-                          response.closedDate(),
-                          response.changedDate());
+                          request.getState(),
+                          request.getReason(),
+                          response.getCreatedDate(),
+                          response.getClosedDate(),
+                          response.getChangedDate(),
+                          response.getErrorInformation());
     }
 
 }

@@ -68,7 +68,7 @@ public class SettlementHubClient {
                                                                       PostCloseSettlementWindows.Request request)
         throws HubServicesException {
 
-        PostCloseSettlementWindows.Response response;
+        PostCloseSettlementWindows.Response response =new PostCloseSettlementWindows.Response();
 
         try {
 
@@ -86,8 +86,10 @@ public class SettlementHubClient {
                     errorInformation =
                     ((ErrorInformationResponse) e.getErrorResponse()).getErrorInformation();
 
-                throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR.code(errorInformation.getErrorCode())
-                                                                                        .description(errorInformation.getErrorDescription()));
+              response.setErrorInformation(errorInformation);
+              return  response;
+
+
 
             } else if (e.getCause() instanceof ConnectException) {
 

@@ -83,15 +83,20 @@ public abstract class ScheduledJob<I, O> {
                 AuditId auditId = ScheduledJob.auditId.get();
 
                 if (auditId != null) {
-                    this.createExceptionAuditCommand.execute(new CreateExceptionAuditCommand.Input(auditId,
-                                                                                                   exception.getMessage()));
+                    String errorMessage = exception.getMessage();
+                    if (exception instanceof DomainException domainException) {
+                        errorMessage = domainException.getErrorMessage().getCode() + " - " + 
+                                     (domainException.getErrorMessage().getDescription().isEmpty() 
+                                         ? domainException.getErrorMessage().getDefaultMessage()
+                                         : domainException.getErrorMessage().getDescription());
+                    }
+                    
+                    try {
+                        this.createExceptionAuditCommand.execute(new CreateExceptionAuditCommand.Input(auditId, errorMessage));
+                    } catch (AuditException e) {
+                        LOG.error("Failed to create exception audit: [{}]", e.getErrorMessage().getDefaultMessage());
+                    }
                 }
-
-            } catch (AuditException e) {
-
-                LOG.info("Audit Exception: [{}]",
-                         e.getErrorMessage()
-                          .getDefaultMessage());
 
             } catch (DomainException e) {
 
