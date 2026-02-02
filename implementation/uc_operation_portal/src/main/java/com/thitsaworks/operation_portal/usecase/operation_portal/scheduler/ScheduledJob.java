@@ -54,6 +54,7 @@ public abstract class ScheduledJob<I, O> {
     void run(SchedulerConfigData schedulerConfigData) {
 
         try {
+
             MDC.put("TRACE_ID",
                     String.valueOf(Snowflake.get()
                                             .nextId()));
@@ -87,15 +88,22 @@ public abstract class ScheduledJob<I, O> {
                 }
 
             } catch (AuditException e) {
+
                 LOG.info("Audit Exception: [{}]",
                          e.getErrorMessage()
                           .getDefaultMessage());
+
             } catch (DomainException e) {
+
                 LOG.info("JobExecutionLog Exception: [{}]",
                          e.getErrorMessage()
                           .getDefaultMessage());
+
             }
 
+        } finally {
+
+            MDC.clear();
         }
 
     }
