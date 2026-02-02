@@ -137,12 +137,14 @@ public abstract class ScheduledJob<I, O> {
             throw new SystemException(new ErrorMessage(e.getMessage(), e.getMessage()));
         }
 
+        String traceIdStr = MDC.get("TRACE_ID");
+        TraceId traceId = new TraceId(traceIdStr != null ? Long.parseLong(traceIdStr) : Snowflake.get().nextId());
+
         ScheduledJob.auditId.set(
             this.createInputAuditCommand.execute(new CreateInputAuditCommand.Input(action.actionId(),
                                                                                    null,
                                                                                    null,
-                                                                                   new TraceId(Long.valueOf(MDC.get(
-                                                                                       "TRACE_ID"))),
+                                                                                   traceId,
                                                                                    inputInfo))
                                         .auditId());
 
