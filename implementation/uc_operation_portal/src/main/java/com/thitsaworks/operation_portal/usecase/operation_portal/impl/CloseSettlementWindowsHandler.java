@@ -8,6 +8,8 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.PostCloseSettlementWindows;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesErrors;
+import com.thitsaworks.operation_portal.core.hub_services.exception.HubServicesException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CloseSettlementWindows;
@@ -68,14 +70,19 @@ public class CloseSettlementWindowsHandler
                  this.objectMapper.writeValueAsString(response));
 
 
+        if (response.getErrorInformation() != null){
+            throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR
+                                               .code(response.getErrorInformation().getErrorCode())
+                                               .description(response.getErrorInformation().getErrorDescription()));
+        }
 
         return new Output(input.settlementWindowId(),
-                          response.getErrorInformation() != null ? null : request.getState(),
+                          request.getState(),
                           request.getReason(),
                           response.getCreatedDate(),
                           response.getClosedDate(),
                           response.getChangedDate(),
-                          response.getErrorInformation());
+                          null);
     }
 
 }
