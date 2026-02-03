@@ -51,7 +51,7 @@ public abstract class ScheduledJob<I, O> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ScheduledJob.class);
 
-    void run(SchedulerConfigData schedulerConfigData) {
+    public void run(SchedulerConfigData schedulerConfigData) {
 
         try {
 
