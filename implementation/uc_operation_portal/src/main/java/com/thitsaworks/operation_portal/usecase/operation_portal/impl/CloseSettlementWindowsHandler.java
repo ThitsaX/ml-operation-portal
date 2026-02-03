@@ -67,8 +67,10 @@ public class CloseSettlementWindowsHandler
         LOG.info("Close Settlement Windows Response from mojaloop to op : {}",
                  this.objectMapper.writeValueAsString(response));
 
+
+
         return new Output(input.settlementWindowId(),
-                          request.getState(),
+                          response.getErrorInformation() != null ? null : request.getState(),
                           request.getReason(),
                           response.getCreatedDate(),
                           response.getClosedDate(),
