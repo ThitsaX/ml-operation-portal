@@ -92,7 +92,7 @@ public class CloseSettlementWindowsScheduler
                                                                              reason));
 
             output = new PostCloseSettlementWindows.Response(settlementWindow.settlementWindowId(),
-                                                             SettlementWindowState.CLOSED.toString(),
+                                                             output.getErrorInformation() != null ? null : SettlementWindowState.CLOSED.toString(),
                                                              output.getReason(),
                                                              output.getCreatedDate(),
                                                              output.getClosedDate(),
