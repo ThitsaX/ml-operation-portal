@@ -60,11 +60,11 @@ public class GetNetTransferAmountBySettlementIdController {
                                               detail.participantName(),
                                               detail.participantLimit(),
                                               detail.participantBalance(),
-                                              detail.ndcPercent(),
                                               detail.debitAmount()
                                                     .abs(),
                                               detail.creditAmount()
                                                     .abs(),
+                                              detail.ndcPercent(),
                                               detail.currency()
                                           ))
                                           .toList()
