@@ -60,6 +60,7 @@ public class GetNetTransferAmountBySettlementIdController {
                                               detail.participantName(),
                                               detail.participantLimit(),
                                               detail.participantBalance(),
+                                              detail.ndcPercent(),
                                               detail.debitAmount()
                                                     .abs(),
                                               detail.creditAmount()
@@ -89,6 +90,7 @@ public class GetNetTransferAmountBySettlementIdController {
                          @JsonProperty("participantBalance") BigDecimal participantBalance,
                          @JsonProperty("debitAmount") BigDecimal debitAmount,
                          @JsonProperty("creditAmount") BigDecimal creditAmount,
+                         @JsonProperty("ndcPercent") BigDecimal ndcPercent,
                          @JsonProperty("currency") String currency) implements Serializable { }
 
 }

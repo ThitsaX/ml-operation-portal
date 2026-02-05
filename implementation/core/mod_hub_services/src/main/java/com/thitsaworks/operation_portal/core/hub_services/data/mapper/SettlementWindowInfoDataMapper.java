@@ -19,6 +19,7 @@ public class SettlementWindowInfoDataMapper implements RowMapper<SettlementWindo
                 .participantSettlementCurrencyId(rs.getString("participantSettlementCurrencyId"))
                 .participantLimit(rs.getBigDecimal("participantLimit"))
                 .participantBalance(rs.getBigDecimal("participantBalance"))
+                .ndcPercent(rs.getBigDecimal("ndcPercent"))
                 .windowOpenedDate(rs.getString("WindowOpenDate"))
                 .windowClosedDate(rs.getString("WindowSettledDate"));
 

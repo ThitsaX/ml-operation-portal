@@ -31,6 +31,7 @@ public interface GetNetTransferAmountBySettlementId
         String participantName,
         BigDecimal participantLimit,
         BigDecimal participantBalance,
+        BigDecimal ndcPercent,
         BigDecimal debitAmount,
         BigDecimal creditAmount,
         String currency,

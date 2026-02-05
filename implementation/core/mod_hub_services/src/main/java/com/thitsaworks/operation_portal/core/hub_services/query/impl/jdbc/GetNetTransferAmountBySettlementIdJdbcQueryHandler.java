@@ -39,50 +39,58 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
 
 //@@Formatter:off
             results = this.jdbcTemplate.query(
-                "SELECT  \n" +
-                    "                      p.name AS DfspName, \n" +
-                    "                      IF(SUM(tp.amount) < 0, SUM(tp.amount), 0) AS Debit, \n" +
-                    "                      IF(SUM(tp.amount) > 0, SUM(tp.amount), 0) AS Credit, \n" +
-                    "                      pc.currencyId,\n" +
-                    "                      pcc.participantCurrencyId as participantSettlementCurrencyId,\n" +
-                    "                      pl.value as participantLimit,\n" +
-                    "                      pp.value as participantBalance,\n" +
-                    "                      ( \n" +
-                    "                        SELECT GROUP_CONCAT(DISTINCT ssw.settlementWindowId ORDER BY ssw.settlementWindowId) \n" +
-                    "                        FROM central_ledger.settlementSettlementWindow ssw \n" +
-                    "                        WHERE ssw.settlementId = ?\n" +
-                    "                      ) AS WindowIDs, \n" +
-                    "                      ssw.createdDate as WindowOpenDate, \n" +
-                    "                      swsf.createdDate as WindowSettledDate \n" +
-                    "                    FROM  \n" +
-                    "                      central_ledger.transferFulfilment tf \n" +
-                    "                    JOIN  \n" +
-                    "                      transferParticipant tp ON tf.transferId = tp.transferId \n" +
-                    "                    JOIN  \n" +
-                    "                      participant p ON tp.participantId = p.participantId\n" +
-                    "                    JOIN  \n" +
-                    "                      participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId\n" +
-                    "                    \n" +
-                    "                      \n" +
-                    "                      JOIN \n" +
-                    "                      participantCurrency pcc ON pc.participantId = pcc.participantId AND pc.currencyId = pcc.currencyId AND pcc.ledgerAccountTypeId = 2 \n" +
-                    "                      JOIN \n" +
-                    "                      participantLimit pl ON pl.participantCurrencyId=pc.participantCurrencyId AND pl.isActive =1\n" +
-                    "                       LEFT JOIN \n" +
-                    "                       participantCurrency pcr ON pcr.participantId = p.participantId \n" +
-                    "                       AND pcr.currencyId = pc.currencyId AND pcr.ledgerAccountTypeId = 2\n" +
-                    "                       LEFT JOIN\n" +
-                    "                       participantPosition pp ON pp.participantCurrencyId = pcr.participantCurrencyId\n" +
-                    "                       JOIN  \n" +
-                    "                      settlementSettlementWindow ssw ON ssw.settlementWindowId = tf.settlementWindowId \n" +
-                    "                     LEFT JOIN  \n" +
-                    "                     settlementWindowStateChange swsf on swsf.settlementWindowId = tf.settlementWindowId \n" +
-                    "                     AND swsf.settlementWindowStateId ='SETTLED'  \n" +
-                    "\n" +
-                    "                    WHERE  \n" +
-                    "                      ssw.settlementId = ? \n" +
-                    "                    GROUP BY  \n" +
-                    "                      p.name, pc.currencyId, ssw.createdDate, swsf.createdDate, pcc.participantCurrencyId,pl.value, pp.value;",
+                "SELECT\n" +
+                    "    p.name AS DfspName,\n" +
+                    "    IF(SUM(tp.amount) < 0, SUM(tp.amount), 0) AS Debit,\n" +
+                    "    IF(SUM(tp.amount) > 0, SUM(tp.amount), 0) AS Credit,\n" +
+                    "    pc.currencyId,\n" +
+                    "    pcc.participantCurrencyId AS participantSettlementCurrencyId,\n" +
+                    "    pl.value AS participantLimit,\n" +
+                    "    pp.value AS participantBalance,\n" +
+                    "    MAX(ndc.ndc_percent) as ndcPercent,\n" +
+                    "    (\n" +
+                    "        SELECT GROUP_CONCAT(DISTINCT ssw2.settlementWindowId ORDER BY ssw2.settlementWindowId)\n" +
+                    "        FROM central_ledger.settlementSettlementWindow ssw2\n" +
+                    "        WHERE ssw2.settlementId =?\n" +
+                    "    ) AS WindowIDs,\n" +
+                    "    ssw.createdDate AS WindowOpenDate,\n" +
+                    "    swsf.createdDate AS WindowSettledDate\n" +
+                    "FROM central_ledger.transferFulfilment tf\n" +
+                    "JOIN transferParticipant tp\n" +
+                    "    ON tf.transferId = tp.transferId\n" +
+                    "JOIN participant p\n" +
+                    "    ON tp.participantId = p.participantId\n" +
+                    "LEFT JOIN operation_portal.tbl_participant_ndc ndc\n" +
+                    "    ON ndc.participant_name = p.name\n" +
+                    "JOIN participantCurrency pc\n" +
+                    "    ON tp.participantCurrencyId = pc.participantCurrencyId\n" +
+                    "JOIN participantCurrency pcc\n" +
+                    "    ON pc.participantId = pcc.participantId\n" +
+                    "   AND pc.currencyId = pcc.currencyId\n" +
+                    "   AND pcc.ledgerAccountTypeId = 2\n" +
+                    "JOIN participantLimit pl\n" +
+                    "    ON pl.participantCurrencyId = pc.participantCurrencyId\n" +
+                    "   AND pl.isActive = 1\n" +
+                    "LEFT JOIN participantCurrency pcr\n" +
+                    "    ON pcr.participantId = p.participantId\n" +
+                    "   AND pcr.currencyId = pc.currencyId\n" +
+                    "   AND pcr.ledgerAccountTypeId = 2\n" +
+                    "LEFT JOIN participantPosition pp\n" +
+                    "    ON pp.participantCurrencyId = pcr.participantCurrencyId\n" +
+                    "JOIN settlementSettlementWindow ssw\n" +
+                    "    ON ssw.settlementWindowId = tf.settlementWindowId\n" +
+                    "LEFT JOIN settlementWindowStateChange swsf\n" +
+                    "    ON swsf.settlementWindowId = tf.settlementWindowId\n" +
+                    "   AND swsf.settlementWindowStateId = 'SETTLED'\n" +
+                    "WHERE ssw.settlementId = ?\n" +
+                    "GROUP BY\n" +
+                    "    p.name,\n" +
+                    "    pc.currencyId,\n" +
+                    "    ssw.createdDate,\n" +
+                    "    swsf.createdDate,\n" +
+                    "    pcc.participantCurrencyId,\n" +
+                    "    pl.value,\n" +
+                    "    pp.value;\n",
                 new SettlementWindowInfoDataMapper(),
                 input.getSettlementId(), // for subquery
                 input.getSettlementId()  // for main WHERE
