@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.component.misc;
 
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -34,6 +35,14 @@ public class MiscConfiguration {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new Jdk8Module());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        objectMapper.getFactory()
+                    .setStreamReadConstraints(
+                            StreamReadConstraints.builder()
+                                                 .maxStringLength(50_000_000)
+                                                 .maxNestingDepth(500)
+                                                 .build());
+
         return objectMapper;
     }
 

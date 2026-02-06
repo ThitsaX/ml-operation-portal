@@ -83,7 +83,17 @@ SELECT 'TimeZoneOffSet' AS label,
 	<parameter name="dfspId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<queryString language="plsql">
-		<![CDATA[SELECT     t.transferId,
+		<![CDATA[WITH bounds AS (
+  SELECT
+    CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+						    CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+						    CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END AS startUtc,
+    CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
+						    CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
+						    CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END AS endUtc
+)
+
+SELECT     t.transferId,
 			   CONCAT(
 				DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
 				CONVERT_TZ(IFNULL(tss.createdDate,t.createdDate), '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
@@ -113,32 +123,23 @@ LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrency
 LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
 LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
 LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
-LEFT JOIN transferFulfilment tff ON tff.transferId = t.transferId
 LEFT JOIN (
-		SELECT transferStateChangeId, transferId, transferStateId,createdDate FROM 
-		(
-			SELECT transferStateChangeId, transferId, transferStateId,createdDate, ROW_NUMBER() OVER (PARTITION BY transferId ORDER BY transferStateChangeId DESC) AS rn
-		    FROM transferStateChange tsa
-		    WHERE (tsa.createdDate BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-		    CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-		    CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
-		    AND 
-		    (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-		    CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-		    CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
-		  ) x
-		  WHERE x.rn = 1
+			SELECT t.transferStateChangeId, t.transferId, t.transferStateId, t.createdDate
+				FROM transferStateChange t
+				JOIN (
+							SELECT transferId, MAX(transferStateChangeId) AS maxId
+						FROM transferStateChange
+						JOIN bounds b
+						WHERE createdDate BETWEEN b.startUtc AND b.endUtc
+						GROUP BY transferId
+				) m
+  				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
 		) tss ON tss.transferId = t.transferId
 LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId 
 LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
 INNER JOIN currency c ON c.currencyId = payercurrency.currencyId 
-WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-    CONVERT_TZ($P{startDate},CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-    CONVERT_TZ($P{startDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END) 
-    AND 
-    (CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN 
-    CONVERT_TZ($P{endDate} ,CONCAT(SUBSTRING($P{timezoneoffset},1,3),':',SUBSTRING($P{timezoneoffset},4,2)),'+00:00') ELSE
-    CONVERT_TZ($P{endDate},CONCAT('+',SUBSTRING($P{timezoneoffset},1,2),':',SUBSTRING($P{timezoneoffset},3,2)) ,'+00:00') END))
+JOIN bounds b 
+WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
 	 AND ($P{state} ='All' OR tst.enumeration = $P{state})
 	  AND (($P{dfspId} ='All')  OR (payee.name = $P{dfspId}  OR payer.name = $P{dfspId}))]]>
 	</queryString>

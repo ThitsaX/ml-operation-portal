@@ -298,7 +298,23 @@ final AS (
       WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
 
       ELSE 3
-    END AS pair_sort
+    END AS pair_sort,
+    
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        (
+          SELECT madeBy
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription LIKE 'Settlement:%'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        ) 
+
+      ELSE NULL
+    END AS pair_madeBy
   FROM seq s
 )
 
@@ -331,9 +347,7 @@ SELECT
 		  ndc, 
 		  currency,
 		  settlementBankAccount,
-		  COALESCE(SUBSTRING_INDEX(MAX(CASE WHEN madeBy IS NOT NULL AND madeBy <> '' THEN CONCAT(DATE_FORMAT(createdDate,'%Y%m%d%H%i%s'), '|', madeBy)
-        END) OVER (PARTITION BY dfspId, currency  ORDER BY createdDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
-    	  '|', -1),'') AS madeBy,
+		 CASE WHEN processDescription = 'NDC Amount Update Due to Settlement' THEN pair_madeBy ELSE madeBy END AS madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
@@ -677,7 +691,23 @@ final AS (
       WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
 
       ELSE 3
-    END AS pair_sort
+    END AS pair_sort,
+    
+    CASE
+      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
+        (
+          SELECT madeBy
+          FROM seq st
+          WHERE st.dfspId = s.dfspId
+            AND st.currency = s.currency
+            AND st.processDescription LIKE 'Settlement:%'
+            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
+          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
+          LIMIT 1
+        ) 
+
+      ELSE NULL
+    END AS pair_madeBy
   FROM seq s
 )
 
@@ -710,9 +740,7 @@ SELECT
 		  ndc, 
 		  currency,
 		  settlementBankAccount,
-		  COALESCE(SUBSTRING_INDEX(MAX(CASE WHEN madeBy IS NOT NULL AND madeBy <> '' THEN CONCAT(DATE_FORMAT(createdDate,'%Y%m%d%H%i%s'), '|', madeBy)
-        END) OVER (PARTITION BY dfspId, currency  ORDER BY createdDate ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW),
-    	  '|', -1),'') AS madeBy,
+		 CASE WHEN processDescription = 'NDC Amount Update Due to Settlement' THEN pair_madeBy ELSE madeBy END AS madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
