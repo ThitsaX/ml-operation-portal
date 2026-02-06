@@ -89,7 +89,7 @@ public class HandleUpdateNdc {
 
         if (ToCalculateNdc) {
 
-            if (!balanceAlreadyUpdated) {
+            if (balanceAlreadyUpdated) {
                 if (actionType == PositionActionType.DEPOSIT) {
                     updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
                 } else if (actionType == PositionActionType.WITHDRAW) {
@@ -129,18 +129,20 @@ public class HandleUpdateNdc {
             calculatedNdcLimit = approvalRequestData.getAmount();
         }
 
-        if (positionInfo.getParticipantBalanceData()
-                        .value()
-                        .compareTo(BigDecimal.ZERO) > 0) {
+        if (!ToCalculateNdc) {
+            if (positionInfo.getParticipantBalanceData()
+                            .value()
+                            .compareTo(BigDecimal.ZERO) > 0) {
 
-            if (calculatedNdcLimit.compareTo(positionInfo.getParticipantBalanceData()
-                                                         .value()
-                                                         .abs()) < 0) {
+                if (calculatedNdcLimit.compareTo(positionInfo.getParticipantBalanceData()
+                                                             .value()
+                                                             .abs()) < 0) {
 
-                throw actionType == PositionActionType.WITHDRAW
-                          ? new ParticipantException(ParticipantErrors.NDC_BELOW_CURRENT_POSITION)
-                          : new ParticipantException(ParticipantErrors.NDC_LOWER_THAN_CURRENT_POSITION);
+                    throw actionType == PositionActionType.WITHDRAW
+                              ? new ParticipantException(ParticipantErrors.NDC_BELOW_CURRENT_POSITION)
+                              : new ParticipantException(ParticipantErrors.NDC_LOWER_THAN_CURRENT_POSITION);
 
+                }
             }
         }
 
@@ -232,12 +234,13 @@ public class HandleUpdateNdc {
                .equalsIgnoreCase("WITHDRAW") || req.getFundInOutAction()
                                                    .equalsIgnoreCase("DEPOSIT")) {
 
-            LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}", req.getParticipantName(), req.getCurrency());
+            LOG.info("Get ParticipantNDC Query Request : participantName : {}, currency : {}",
+                     req.getParticipantName(),
+                     req.getCurrency());
 
             var ndcData = this.participantNDCQuery.get(req.getParticipantName(), req.getCurrency());
 
             LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
-
 
             ndcPercent = ndcData.map(ParticipantNDC::getNdcPercent)
                                 .orElse(BigDecimal.ZERO)
