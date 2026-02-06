@@ -89,12 +89,10 @@ public class HandleUpdateNdc {
 
         if (ToCalculateNdc) {
 
-            if (balanceAlreadyUpdated) {
-                if (actionType == PositionActionType.DEPOSIT) {
-                    updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
-                } else if (actionType == PositionActionType.WITHDRAW) {
-                    updatedBalance = updatedBalance.subtract(approvalRequestData.getAmount());
-                }
+            if (actionType == PositionActionType.DEPOSIT) {
+                updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
+            } else if (actionType == PositionActionType.WITHDRAW) {
+                updatedBalance = updatedBalance.subtract(approvalRequestData.getAmount());
             }
 
             ParticipantBalanceData balanceData = new ParticipantBalanceData(balanceInfo.getParticipantBalanceData()
