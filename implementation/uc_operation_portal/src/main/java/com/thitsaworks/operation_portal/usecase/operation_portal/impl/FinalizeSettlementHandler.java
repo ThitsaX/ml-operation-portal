@@ -417,7 +417,8 @@ public class FinalizeSettlementHandler
                                                                      account.getNetSettlementAmount()
                                                                             .getCurrency()
                                                                             .toString(),
-                                                                     positionActionType);
+                                                                     positionActionType,
+                                                                     true);
                             }
                         }
                     }

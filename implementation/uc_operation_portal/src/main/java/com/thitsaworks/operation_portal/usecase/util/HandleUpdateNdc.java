@@ -67,7 +67,8 @@ public class HandleUpdateNdc {
                                 ApprovalRequestData approvalRequestData,
                                 String participantName,
                                 String currency,
-                                PositionActionType actionType)
+                                PositionActionType actionType,
+                                boolean balanceAlreadyUpdated)
         throws HubServicesException, ParticipantException, ParticipantNDCException, JsonProcessingException {
 
         BigDecimal calculatedNdcLimit;
@@ -88,10 +89,12 @@ public class HandleUpdateNdc {
 
         if (ToCalculateNdc) {
 
-            if (actionType == PositionActionType.DEPOSIT) {
-                updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
-            } else if (actionType == PositionActionType.WITHDRAW) {
-                updatedBalance = updatedBalance.subtract(approvalRequestData.getAmount());
+            if (!balanceAlreadyUpdated) {
+                if (actionType == PositionActionType.DEPOSIT) {
+                    updatedBalance = updatedBalance.add(approvalRequestData.getAmount());
+                } else if (actionType == PositionActionType.WITHDRAW) {
+                    updatedBalance = updatedBalance.subtract(approvalRequestData.getAmount());
+                }
             }
 
             ParticipantBalanceData balanceData = new ParticipantBalanceData(balanceInfo.getParticipantBalanceData()
