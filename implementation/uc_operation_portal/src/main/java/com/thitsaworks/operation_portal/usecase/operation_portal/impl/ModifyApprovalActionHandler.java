@@ -171,8 +171,8 @@ public class ModifyApprovalActionHandler
                                                  approvalRequestData,
                                                  participantName,
                                                  currency,
-                                                 actionType,
-                                                 false);
+                                                 actionType
+                                                 );
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
@@ -189,8 +189,8 @@ public class ModifyApprovalActionHandler
                                                  approvalRequestData,
                                                  participantName,
                                                  currency,
-                                                 actionType,
-                                                 false);
+                                                 actionType
+                                                 );
 
         } else {
 
@@ -333,8 +333,8 @@ public class ModifyApprovalActionHandler
                                                      approvalRequestData,
                                                      participantName,
                                                      currency,
-                                                     actionType,
-                                                     false);
+                                                     actionType
+                                                     );
             }
 
         }

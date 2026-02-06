@@ -67,8 +67,8 @@ public class HandleUpdateNdc {
                                 ApprovalRequestData approvalRequestData,
                                 String participantName,
                                 String currency,
-                                PositionActionType actionType,
-                                boolean balanceAlreadyUpdated)
+                                PositionActionType actionType
+                               )
         throws HubServicesException, ParticipantException, ParticipantNDCException, JsonProcessingException {
 
         BigDecimal calculatedNdcLimit;
