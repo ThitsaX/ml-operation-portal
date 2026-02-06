@@ -47,11 +47,11 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
                     "    pcc.participantCurrencyId AS participantSettlementCurrencyId,\n" +
                     "    pl.value AS participantLimit,\n" +
                     "    pp.value AS participantBalance,\n" +
-                    "    MAX(ndc.ndc_percent) as ndcPercent,\n" +
+                    "     ndc.ndc_percent AS ndcPercent,\n" +
                     "    (\n" +
                     "        SELECT GROUP_CONCAT(DISTINCT ssw2.settlementWindowId ORDER BY ssw2.settlementWindowId)\n" +
                     "        FROM central_ledger.settlementSettlementWindow ssw2\n" +
-                    "        WHERE ssw2.settlementId =?\n" +
+                    "        WHERE ssw2.settlementId = ?\n" +
                     "    ) AS WindowIDs,\n" +
                     "    ssw.createdDate AS WindowOpenDate,\n" +
                     "    swsf.createdDate AS WindowSettledDate\n" +
@@ -60,8 +60,7 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
                     "    ON tf.transferId = tp.transferId\n" +
                     "JOIN participant p\n" +
                     "    ON tp.participantId = p.participantId\n" +
-                    "LEFT JOIN operation_portal.tbl_participant_ndc ndc\n" +
-                    "    ON ndc.participant_name = p.name\n" +
+                    "\n" +
                     "JOIN participantCurrency pc\n" +
                     "    ON tp.participantCurrencyId = pc.participantCurrencyId\n" +
                     "JOIN participantCurrency pcc\n" +
@@ -82,6 +81,9 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
                     "LEFT JOIN settlementWindowStateChange swsf\n" +
                     "    ON swsf.settlementWindowId = tf.settlementWindowId\n" +
                     "   AND swsf.settlementWindowStateId = 'SETTLED'\n" +
+                    "   LEFT JOIN operation_portal.tbl_participant_ndc ndc\n" +
+                    "    ON ndc.participant_name = p.name\n" +
+                    "   AND ndc.currency = pc.currencyId\n" +
                     "WHERE ssw.settlementId = ?\n" +
                     "GROUP BY\n" +
                     "    p.name,\n" +
@@ -90,7 +92,8 @@ public class GetNetTransferAmountBySettlementIdJdbcQueryHandler implements GetNe
                     "    swsf.createdDate,\n" +
                     "    pcc.participantCurrencyId,\n" +
                     "    pl.value,\n" +
-                    "    pp.value;\n",
+                    "    pp.value,\n" +
+                    "\tndc.ndc_percent;\n",
                 new SettlementWindowInfoDataMapper(),
                 input.getSettlementId(), // for subquery
                 input.getSettlementId()  // for main WHERE
