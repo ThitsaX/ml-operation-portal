@@ -148,9 +148,9 @@ public class OpFinalizeSettlementHandler
                         windowInfo.getDfspName(),
                         windowInfo.getParticipantLimit(),
                         windowInfo.getParticipantBalance(),
-                        windowInfo.getNdcPercent(),
                         windowInfo.getDebit(),
                         windowInfo.getCredit(),
+                        windowInfo.getNdcPercent(),
                         windowInfo.getCurrencyId(),
                         windowInfo.getParticipantSettlementCurrencyId());
 
