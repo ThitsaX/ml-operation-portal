@@ -252,28 +252,27 @@ public class OpFinalizeSettlementHandler
                         PositionActionType positionActionType = null;
                         BigDecimal amount = BigDecimal.ZERO;
 
-                        if (detail.debitAmount() != null && detail.debitAmount()
+                        if (detail.debitAmount() != null && detail.debitAmount().abs()
                                                                   .compareTo(BigDecimal.ZERO) > 0) {
                             settlementAction = SettlementAction.recordFundsIn;
                             positionActionType = PositionActionType.DEPOSIT;
-                            amount = detail.debitAmount();
+                            amount = detail.debitAmount().abs();
 
-                        } else if (detail.creditAmount() != null && detail.creditAmount()
+                        } else if (detail.creditAmount() != null && detail.creditAmount().abs()
                                                                           .compareTo(BigDecimal.ZERO) > 0) {
                             settlementAction = SettlementAction.recordFundsOutPrepareReserve;
                             positionActionType = PositionActionType.WITHDRAW;
-                            amount = detail.creditAmount();
+                            amount = detail.creditAmount().abs();
 
                         } else {
 
                             LOG.info("Both Debit and Credit are zero or empty.");
-                            break;
+                            continue;
                         }
 
                         Money netAmount = new Money();
                         netAmount.setCurrency(Currency.valueOf(detail.currency()));
-                        netAmount.setAmount(amount.abs()
-                                                  .toString());
+                        netAmount.setAmount(amount.toString());
 
                         PostParticipantBalance.Request
                             postParticipantBalanceRequest =
