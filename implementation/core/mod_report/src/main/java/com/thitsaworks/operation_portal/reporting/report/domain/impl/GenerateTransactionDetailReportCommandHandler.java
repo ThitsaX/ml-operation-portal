@@ -36,6 +36,8 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
 
     private final JdbcTemplate jdbcTemplate;
 
+    private static final int MAX_REPORT_ROWS = 20000;
+
     @Autowired
     public GenerateTransactionDetailReportCommandHandler(
             @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -55,6 +57,61 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
         params.put("timezoneoffset", input.timeZoneOffset());
 
         LOG.info("Params : {}", params);
+
+        String reportQuery = """
+                    WITH bounds AS (
+                                      SELECT
+                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                                    						    CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS startUtc,
+                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                                    						    CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS endUtc
+                                    )
+                                    
+                                    SELECT COUNT(*) AS row_count
+                                    FROM transfer t
+                                    LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
+                                    LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId
+                                    LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId
+                                    LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
+                                    LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId
+                                    LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
+                                    LEFT JOIN (
+                                    			SELECT t.transferStateChangeId, t.transferId, t.transferStateId, t.createdDate
+                                    				FROM transferStateChange t
+                                    				JOIN (
+                                    							SELECT transferId, MAX(transferStateChangeId) AS maxId
+                                    						FROM transferStateChange
+                                    						JOIN bounds b
+                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtc
+                                    						GROUP BY transferId
+                                    				) m
+                                      				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
+                                    		) tss ON tss.transferId = t.transferId
+                                    LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId\s                                   
+                                    JOIN bounds b\s
+                                    WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
+                                    	 AND (? ='All' OR tst.enumeration = ?)
+                                    	  AND ((? ='All')  OR (payee.name = ?  OR payer.name = ?))
+                """;
+
+        String countQuery = "SELECT * FROM (" + reportQuery + ") x";
+
+        Integer rowCount = jdbcTemplate.queryForObject(
+                countQuery,
+                new Object[]{
+                        input.timeZoneOffset(), input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.timeZoneOffset(), input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.state(), input.state(), input.dfspId(), input.dfspId(), input.dfspId()},
+                Integer.class);
+
+        if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
+
+            throw new ReportException(ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
+        }
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(

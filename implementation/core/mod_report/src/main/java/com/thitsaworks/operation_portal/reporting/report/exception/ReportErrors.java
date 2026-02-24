@@ -19,6 +19,7 @@ public class ReportErrors {
     public static final ErrorMessage SETTLEMENT_REPORT_FAILURE_EXCEPTION = new ErrorMessage("SETTLEMENT_REPORT_FAILURE_EXCEPTION", "Failed to extract settlement summary report.");
     public static final ErrorMessage MANAGEMENT_SUMMARY_REPORT_FAILURE_EXCEPTION = new ErrorMessage("MANAGEMENT_SUMMARY_REPORT_FAILURE_EXCEPTION", "Failed to extract management summary report.");
     public static final ErrorMessage TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION = new ErrorMessage("TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION", "Failed to extract transaction detail report.");
+    public static final ErrorMessage REPORT_MAXIMUM_LIMIT_EXCEPTION = new ErrorMessage("REPORT_MAXIMUM_LIMIT_EXCEPTION", "Report row count [{0}] exceeds maximum allowed limit [{1}].");
 
     //@@formatter:on
 }
