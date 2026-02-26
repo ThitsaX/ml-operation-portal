@@ -82,7 +82,6 @@
                 "ModifyUser",
                 "ModifyUserStatus",
                 "ModifySettlementScheduler",
-                "OpFinalizeSettlement",
                 "RefreshIAMEngine",
                 "RemoveContact",
                 "RemoveLiquidityProfile",
@@ -234,7 +233,6 @@
                 "GetTransferList",
                 "GetTransferStateList",
                 "GetUserProfile",
-                "OpFinalizeSettlement",
                 "SyncHubParticipantsToPortal"
             ]
         },

@@ -63,8 +63,7 @@
             "menuName": "Finalize Settlement",
             "actionCodeList": [
                 "GetSettlementList",
-                "FinalizeSettlement",
-                "OpFinalizeSettlement"
+                "FinalizeSettlement"
             ]
         },
         {
