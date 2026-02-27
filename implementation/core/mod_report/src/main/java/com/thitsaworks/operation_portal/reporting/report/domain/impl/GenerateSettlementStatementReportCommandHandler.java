@@ -37,7 +37,7 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int MAX_REPORT_ROWS = 160;
+    private static final int MAX_REPORT_ROWS = 20000;
 
     @Autowired
     public GenerateSettlementStatementReportCommandHandler(
