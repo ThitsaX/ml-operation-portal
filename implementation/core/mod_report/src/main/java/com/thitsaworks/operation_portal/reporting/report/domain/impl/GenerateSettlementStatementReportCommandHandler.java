@@ -37,6 +37,8 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
 
     private final JdbcTemplate jdbcTemplate;
 
+    private static final int MAX_REPORT_ROWS = 160;
+
     @Autowired
     public GenerateSettlementStatementReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -55,6 +57,140 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
         params.put("endDate", input.endDate().toString());
         params.put("currencyId", input.currencyId());
         params.put("timezoneoffset", input.timeZoneOffset());
+
+        String reportQuery = """
+                  SELECT Count(createdDate) As rowCount FROM (
+                    SELECT
+                      tp.createdDate AS createdDate,
+                      ROUND(CASE WHEN tp.amount < 0 THEN -tp.amount END, 2) AS fundsIn,
+                      ROUND(CASE WHEN tp.amount > 0 THEN  tp.amount END, 2) AS fundsOut,
+                      ROUND(ppc.value, 2) AS balance,
+                      '-' AS ndcPercent,
+                      NULL AS ndc
+                    FROM participant p
+                    INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
+                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                    INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
+                    LEFT JOIN transferStateChange tscOut
+                      ON tp.transferId = tscOut.transferId
+                     AND tscOut.transferStateChangeId = (
+                        SELECT MAX(transferStateChangeId)
+                        FROM transferStateChange tscOut1
+                        WHERE tscOut1.transferId = tp.transferId
+                          AND tscOut1.transferStateId IN ('RESERVED', 'ABORTED_REJECTED')
+                     )
+                    LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
+                    LEFT JOIN transferStateChange tscIn
+                      ON tp.transferId = tscIn.transferId
+                     AND tscIn.transferStateChangeId = (
+                        SELECT MAX(transferStateChangeId)
+                        FROM transferStateChange tscIn1
+                        WHERE tscIn1.transferId = tp.transferId
+                          AND tscIn1.transferStateId IN ('COMMITTED', 'ABORTED_REJECTED')
+                     )
+                    LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
+                    INNER JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
+                    INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
+                    INNER JOIN currency c ON c.currencyId = pc.currencyId
+                    LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId
+                
+                    WHERE (? ='All' OR p.name = ?) AND p.name != 'Hub'
+                					AND (tscIn.transferStateChangeId = ppc.transferStateChangeId OR tscOut.transferStateChangeId = ppc.transferStateChangeId)
+                					AND tex.transferExtensionId = (SELECT MAX(transferExtensionId) FROM transferExtension tex WHERE tex.transferId = tp.transferId AND tex.key = 'externalReference')
+                					AND (tp.createdDate BETWEEN (CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                					                CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                					                CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END)\s
+                					                AND\s
+                					                (CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                					                CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                					                CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END))
+                								 AND (? = 'All' OR pc.currencyId= ?)
+                
+                    GROUP BY
+                      tp.createdDate, p.participantId, p.name, tscIn.reason, tscOut.reason,
+                      tp.amount, ppc.value, pc.currencyId, pc.participantCurrencyId
+                
+                    UNION ALL
+                
+                    SELECT
+                      pl.createdDate AS createdDate,
+                      NULL AS fundsIn,
+                      NULL AS fundsOut,
+                      NULL AS balance,
+                      CASE
+                        WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0
+                          THEN '-'
+                        ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%')
+                      END AS ndcPercent,
+                      IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc
+                    FROM participant p
+                    INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
+                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                    INNER JOIN currency c ON c.currencyId = pc.currencyId
+                    LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
+                    LEFT JOIN (
+                      SELECT * FROM (
+                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate
+                        FROM operation_portal.tbl_participant_ndc
+                        UNION
+                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate
+                        FROM operation_portal.tbl_participant_ndc_history
+                      ) Q
+                    ) ndc_percent
+                      ON ndc_percent.dfspCode = p.name
+                     AND ndc_percent.currency = pc.currencyId
+                     AND ABS(TIMESTAMPDIFF(SECOND, ndc_percent.updatedDate, pl.createdDate)) <= 2
+                    LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+                    LEFT JOIN operation_portal.tbl_approval_request ar
+                      ON ar.participant_name = p.name
+                     AND ar.participant_currency = pc.currencyId
+                     AND ABS(TIMESTAMPDIFF(SECOND, FROM_UNIXTIME(ar.updated_date), pl.createdDate)) <= 2
+                
+                   WHERE (? ='All' OR p.name = ?)  AND p.name != 'Hub'
+                					AND (pl.createdDate BETWEEN (CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                					          CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                					          CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END)\s
+                					          AND\s
+                					          (CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                					          CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                					          CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END))
+                						 AND (? = 'All' OR pc.currencyId= ?)\s
+                  ) Q
+                
+                WHERE NOT (
+                    COALESCE(NULLIF(fundsIn, ''), 0) = 0
+                AND COALESCE(NULLIF(fundsOut, ''), 0) = 0
+                AND COALESCE(NULLIF(balance, ''), 0) = 0
+                AND (ndcPercent IS NULL OR ndcPercent = '' OR ndcPercent = '-' OR ndcPercent = 0)
+                AND COALESCE(NULLIF(ndc, ''), 0) = 0
+                )
+                
+                """;
+
+        String countQuery = "SELECT * FROM (" + reportQuery + ") x";
+
+        Integer rowCount = jdbcTemplate.queryForObject(
+                countQuery,
+                new Object[]{
+                        input.fspId(),input.fspId(),
+                        input.timeZoneOffset(), input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.timeZoneOffset(), input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.currencyId(), input.currencyId(),
+                        input.fspId(),input.fspId(),
+                        input.timeZoneOffset(), input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.timeZoneOffset(), input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.currencyId(), input.currencyId(),
+                        },
+                Integer.class);
+
+        if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
+
+            throw new ReportException(ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
+        }
 
         InputStream jrxmlStream =
                 this.getClass().getClassLoader()
