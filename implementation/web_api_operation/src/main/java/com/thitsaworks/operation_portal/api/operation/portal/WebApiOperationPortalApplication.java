@@ -18,14 +18,20 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @SpringBootApplication(
     exclude = {
-        HibernateJpaAutoConfiguration.class, UserDetailsServiceAutoConfiguration.class, SecurityAutoConfiguration.class,
-        DataSourceAutoConfiguration.class, FlywayAutoConfiguration.class})
+        HibernateJpaAutoConfiguration.class,
+        UserDetailsServiceAutoConfiguration.class,
+        SecurityAutoConfiguration.class,
+        DataSourceAutoConfiguration.class,
+        FlywayAutoConfiguration.class})
 public class WebApiOperationPortalApplication {
 
     public static void main(String[] args) {
 
         VaultConfiguration.Settings vaultSettings = VaultConfiguration.Settings.withPropertyOrEnv();
         DatabaseMigration.migrate(CoreDataSourceConfiguration.FLYWAY_MIGRATION, vaultSettings);
+
+        System.setProperty("management.endpoints.web.exposure.include", "health");
+        System.setProperty("management.endpoint.health.show-details", "always");
 
         SpringApplication.run(WebApiOperationPortalApplication.class, args);
     }
