@@ -40,7 +40,7 @@ public class WebSecurityConfiguration {
             .authorizeHttpRequests(configure ->
                                            configure
                                                    .requestMatchers("/", "/public/**").permitAll()
-                                                   .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                                                   .requestMatchers("/actuator", "/actuator/**").permitAll()
                                                    .requestMatchers("/secured/**").authenticated())
             .addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterAfter(mdcFilter, ApiAuthenticationTokenFilter.class)
