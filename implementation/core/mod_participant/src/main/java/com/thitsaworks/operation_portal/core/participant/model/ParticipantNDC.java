@@ -37,15 +37,36 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
         scale = 4)
     protected BigDecimal ndcPercent;
 
+    @Column(
+            name = "ndc_amount",
+            precision = 18,
+            scale = 4)
+    protected BigDecimal ndcAmount;
+
+    @Column(
+            name = "balance",
+            precision = 18,
+            scale = 4)
+    protected BigDecimal balance;
+
+    @Column(name = "made_by")
+    protected String madeBy;
+
     public ParticipantNDC(String participantName,
                           String currency,
-                          BigDecimal ndcPercent ) {
+                          BigDecimal ndcPercent,
+                          BigDecimal ndcAmount,
+                          BigDecimal balance,
+                          String madeBy) {
 
         this.participantNDCId = new ParticipantNDCId(Snowflake.get()
                                                               .nextId());
         this.participantName(participantName);
         this.currency(currency);
         this.ndcPercent(ndcPercent);
+        this.ndcAmount(ndcAmount);
+        this.balance(balance);
+        this.madeBy(madeBy);
     }
 
     public ParticipantNDC participantName(String participantName) {
@@ -63,6 +84,24 @@ public class ParticipantNDC extends JpaEntity<ParticipantNDCId> {
     public ParticipantNDC ndcPercent(BigDecimal ndcPercent) {
 
         this.ndcPercent = ndcPercent;
+        return this;
+    }
+
+    public ParticipantNDC ndcAmount(BigDecimal ndcAmount) {
+
+        this.ndcAmount = ndcAmount;
+        return this;
+    }
+
+    public ParticipantNDC balance(BigDecimal balance) {
+
+        this.balance = balance;
+        return this;
+    }
+
+    public ParticipantNDC madeBy(String madeBy) {
+
+        this.madeBy = madeBy;
         return this;
     }
 

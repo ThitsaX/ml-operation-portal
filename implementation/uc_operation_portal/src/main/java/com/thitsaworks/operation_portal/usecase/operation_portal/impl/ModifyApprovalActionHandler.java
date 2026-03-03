@@ -171,7 +171,8 @@ public class ModifyApprovalActionHandler
                                                  approvalRequestData,
                                                  participantName,
                                                  currency,
-                                                 actionType
+                                                 actionType,
+                                                 this.utility.getEmail(new UserId(input.responseUserId().getId()))
                                                  );
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
@@ -189,7 +190,8 @@ public class ModifyApprovalActionHandler
                                                  approvalRequestData,
                                                  participantName,
                                                  currency,
-                                                 actionType
+                                                 actionType,
+                                                 this.utility.getEmail(new UserId(input.responseUserId().getId()))
                                                  );
 
         } else {
@@ -333,7 +335,9 @@ public class ModifyApprovalActionHandler
                                                      approvalRequestData,
                                                      participantName,
                                                      currency,
-                                                     actionType
+                                                     actionType,
+                                                     this.utility.getEmail(new UserId(input.responseUserId()
+                                                                                           .getId()))
                                                      );
             }
 

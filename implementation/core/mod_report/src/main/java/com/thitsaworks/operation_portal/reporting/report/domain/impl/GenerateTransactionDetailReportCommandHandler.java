@@ -69,7 +69,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                     						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS endUtc
                                     )
                                     
-                                    SELECT COUNT(*) AS row_count
+                                    SELECT COUNT(*) AS rowCount
                                     FROM transfer t
                                     LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
                                     LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId

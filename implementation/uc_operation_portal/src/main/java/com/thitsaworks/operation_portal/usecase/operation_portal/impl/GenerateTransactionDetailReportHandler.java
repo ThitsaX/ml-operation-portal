@@ -54,7 +54,7 @@ public class GenerateTransactionDetailReportHandler
                         input.startDate(),
                         input.endDate(),
                         input.state().toUpperCase(),
-                        input.dfspId(),
+                        input.dfspId().equalsIgnoreCase("all") ? input.dfspId().toUpperCase() : input.dfspId(),
                         input.fileType(),
                         input.timezone()));
 

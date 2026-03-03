@@ -10,7 +10,10 @@ public interface ModifyParticipantNDCCommand {
     Output execute(Input input) throws ParticipantNDCException;
 
     record Input(ParticipantNDCId participantNDCId,
-                 BigDecimal ndcPercent) {}
+                 BigDecimal ndcPercent,
+                 BigDecimal ndcAmount,
+                 BigDecimal balance,
+                 String madeBy) {}
 
     record Output(ParticipantNDCId participantNDCId) { }
 
