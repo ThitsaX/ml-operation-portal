@@ -11,7 +11,10 @@ public interface CreateParticipantNDCCommand {
 
     record Input(String participantName,
                  String currency,
-                 BigDecimal ndcPercent) {}
+                 BigDecimal ndcPercent,
+                 BigDecimal ndcAmount,
+                 BigDecimal balance,
+                 String madeBy) {}
 
     record Output(ParticipantNDCId participantNDCId) { }
 

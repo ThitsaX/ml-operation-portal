@@ -66,8 +66,7 @@ public class HandleUpdateNdc {
     public void handleUpdateNdc(Boolean ToCalculateNdc,
                                 ApprovalRequestData approvalRequestData,
                                 String participantName,
-                                String currency,
-                                PositionActionType actionType
+                                String currency, PositionActionType actionType, String madeBy
                                )
         throws HubServicesException, ParticipantException, ParticipantNDCException, JsonProcessingException {
 
@@ -171,7 +170,10 @@ public class HandleUpdateNdc {
 
             this.createParticipantNDCCommand.execute(new CreateParticipantNDCCommand.Input(participantName,
                                                                                            currency,
-                                                                                           ndcAmount));
+                                                                                           ndcAmount,
+                                                                                           calculatedNdcLimit,
+                                                                                           updatedBalance,
+                                                                                           madeBy));
 
         } else {
 
@@ -200,17 +202,15 @@ public class HandleUpdateNdc {
 
             }
 
-            this.createParticipantNDCHistoryCommand.execute(
-                new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get())
-                                                           );
+            this.createParticipantNDCHistoryCommand.execute(new CreateParticipantNDCHistoryCommand.Input(optionalNdc.get()));
 
-            this.modifyParticipantNDCCommand.execute(
-                new ModifyParticipantNDCCommand.Input(
-                    optionalNdc.get()
-                               .getParticipantNDCId(),
-                    ndcAmount.setScale(2, RoundingMode.DOWN)
-                )
-                                                    );
+            this.modifyParticipantNDCCommand.execute(new ModifyParticipantNDCCommand.Input(optionalNdc.get()
+                                                                                                      .getParticipantNDCId(),
+                                                                                           ndcAmount.setScale(2,
+                                                                                                              RoundingMode.DOWN),
+                                                                                           calculatedNdcLimit,
+                                                                                           updatedBalance,
+                                                                                           madeBy));
 
         }
     }
