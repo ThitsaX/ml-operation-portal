@@ -25,15 +25,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class GenerateAuditReportCommandHandler implements GenerateAuditReportCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateAuditReportCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateAuditReportCommandHandler.class);
 
     private final JdbcTemplate jdbcTemplate;
+
+    private static final int MAX_REPORT_ROWS = 20000;
 
     public GenerateAuditReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Core.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -47,18 +53,13 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
         Map<String, Object> params = new HashMap<String, Object>();
 
-        try (Connection conn = this.jdbcTemplate.getDataSource()
-                                                .getConnection()) {
+        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
 
             var timeOffset = input.timezoneOffset();
 
             params.put("timezoneoffset", timeOffset);
-            params.put("fromDate",
-                       input.fromDate()
-                            .getEpochSecond());
-            params.put("toDate",
-                       input.toDate()
-                            .getEpochSecond());
+            params.put("fromDate", input.fromDate().getEpochSecond());
+            params.put("toDate", input.toDate().getEpochSecond());
 
             if (input.realmId() != null) {
                 params.put("realmId", input.realmId());
@@ -74,26 +75,85 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             params.put("grantedActionList", input.grantedActionList());
 
-            InputStream jrxmlStream = getClass().getClassLoader()
-                                                .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/auditReport.jrxml");
+            String inSql = "";
+
+            List<String> grantedActionList = input.grantedActionList();
+
+            if (grantedActionList != null && !grantedActionList.isEmpty()) {
+                String placeholders = grantedActionList
+                                          .stream()
+                                          .map(id -> "?")
+                                          .collect(Collectors.joining(", "));
+                inSql = " AND tac.action_id IN (" + placeholders + ") ";
+            }
+            String reportQuery = """
+                    SELECT COUNT(tac.action_code) AS rowAccount
+                    FROM tbl_audit AS ta
+                    LEFT JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
+                    LEFT JOIN tbl_user AS tu ON tu.user_id = ta.user_id
+                    JOIN tbl_action AS tac ON tac.action_id = ta.action_id
+                    WHERE
+                       (? IS NULL OR ? = '' OR ta.participant_id = ?)
+                       AND (
+                           (? IS NULL OR ? IS NULL)
+                           OR (ta.created_date BETWEEN ? AND ?)
+                       )
+                       AND (? IS NULL OR ? = '' OR ta.user_id = ?)
+                       AND (? IS NULL OR ? = '' OR tac.action_id = ?)
+                """ + inSql;
+
+            List<Object> objectList = new ArrayList<>();
+
+            objectList.add(input.realmId());
+            objectList.add(input.realmId());
+            objectList.add(input.realmId());
+
+            objectList.add(input.fromDate().getEpochSecond());
+            objectList.add(input.toDate().getEpochSecond());
+            objectList.add(input.fromDate().getEpochSecond());
+            objectList.add(input.toDate().getEpochSecond());
+
+            objectList.add(input.userId());
+            objectList.add(input.userId());
+            objectList.add(input.userId());
+
+            objectList.add(input.actionId());
+            objectList.add(input.actionId());
+            objectList.add(input.actionId());
+
+            if (grantedActionList != null && !grantedActionList.isEmpty()) {
+                objectList.addAll(grantedActionList);
+            }
+
+            Integer rowCount = jdbcTemplate.queryForObject(reportQuery, objectList.toArray(),
+                Integer.class);
+
+            LOG.info("Row Count: {}", rowCount);
+
+            if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
+
+                throw new ReportException(
+                    ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
+            }
+
+            InputStream jrxmlStream = getClass()
+                                          .getClassLoader()
+                                          .getResourceAsStream(
+                                              "com/thitsaworks/operation_portal/reporting/report/report/auditReport.jrxml");
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("auditReport");
             JasperReport jasperReport = JasperCompileManager.compileReport(design);
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params,
-                                                                   conn);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, params, conn);
 
-            if (jasperPrint.getPages() == null || jasperPrint.getPages()
-                                                             .isEmpty()) {
+            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
             byte[] rptBytes = new byte[0];
 
-            if (input.fileType()
-                     .equalsIgnoreCase("xlsx")) {
+            if (input.fileType().equalsIgnoreCase("xlsx")) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -102,8 +162,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
-            } else if (input.fileType()
-                            .equalsIgnoreCase("csv")) {
+            } else if (input.fileType().equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
