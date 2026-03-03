@@ -35,6 +35,7 @@ public class GenerateManagementSummaryReportCommandHandler implements GenerateMa
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateManagementSummaryReportCommandHandler.class);
     private final JdbcTemplate jdbcTemplate;
+    private static final int MAX_REPORT_ROWS = 20000;
 
     public GenerateManagementSummaryReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -50,6 +51,46 @@ public class GenerateManagementSummaryReportCommandHandler implements GenerateMa
         params.put("timezoneOffset" , input.timezoneOffset());
         params.put("reportFileType" , input.fileType());
         params.put("userName" , input.userName());
+
+        // ─── ROW COUNT CHECK ──────────────────────────────────────────────────────
+        String countQuery = """
+                SELECT COUNT(*) FROM (
+                    SELECT
+                        COUNT(1) AS NumberOfTransactions
+                    FROM transfer t
+                    JOIN transferStateChange tsc
+                         ON t.transferId = tsc.transferId
+                        AND tsc.transferStateId = 'COMMITTED'
+                    INNER JOIN transferParticipant tpayer
+                         ON t.transferId = tpayer.transferId
+                        AND tpayer.transferParticipantRoleTypeId = 1
+                    INNER JOIN participant payer
+                         ON payer.participantId = tpayer.participantId
+                    INNER JOIN transferParticipant tpayee
+                         ON t.transferId = tpayee.transferId
+                        AND tpayee.transferParticipantRoleTypeId = 2
+                    INNER JOIN participant payee
+                         ON payee.participantId = tpayee.participantId
+                    INNER JOIN currency c
+                         ON c.currencyId = t.currencyId
+                    WHERE t.createdDate BETWEEN
+                          STR_TO_DATE(?, '%Y-%m-%dT%T')
+                      AND STR_TO_DATE(?, '%Y-%m-%dT%T')
+                    GROUP BY
+                        tpayer.participantId,
+                        tpayee.participantId,
+                        t.currencyId
+                ) x
+                """;
+
+        Integer rowCount = jdbcTemplate.queryForObject(
+            countQuery,
+            new Object[]{ input.startDate(), input.endDate() },
+            Integer.class);
+
+        if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
+            throw new ReportException(ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
+        }
 
         InputStream jrxmlStream = this.getClass().getClassLoader()
                                       .getResourceAsStream("com/thitsaworks/operation_portal/reporting/report/report/managementSummaryReport.jrxml");
