@@ -3,6 +3,7 @@ package com.thitsaworks.operation_portal.core.iam.model;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.misc.exception.InputException;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
+import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.listener.RoleListener;
 import jakarta.persistence.Column;
@@ -17,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,12 +53,13 @@ public class Role extends JpaEntity<RoleId> {
         fetch = FetchType.EAGER)
     protected Set<RoleGrant> grants = new HashSet<>();
 
-    public Role(RoleId roleId, String name) {
+    public Role(String name, boolean isDfsp) {
 
         assert name != null : "name is required!";
 
-        this.roleId = roleId;
+        this.roleId = new RoleId(Snowflake.get().nextId());
         this.name(name);
+        this.isDfsp = isDfsp;
     }
 
     @Override
@@ -95,6 +98,16 @@ public class Role extends JpaEntity<RoleId> {
             this.grants.add(new RoleGrant(this, granting));
         }
     }
+
+    public void grantActions(List<Action> grantingActions) {
+        List<RoleGrant> newGrants = grantingActions.stream()
+                                                   .map(action -> new RoleGrant(this, action))
+                                                   .toList();
+
+        this.grants.clear();
+        this.grants.addAll(newGrants);
+    }
+
 
     public Set<Action> getGrantedActions() {
 

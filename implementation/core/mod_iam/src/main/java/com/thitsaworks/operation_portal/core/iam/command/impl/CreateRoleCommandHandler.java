@@ -21,14 +21,15 @@ public class CreateRoleCommandHandler implements CreateRoleCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Role> optRole = this.roleRepository.findOne(RoleRepository.Filters.withName(input.name()));
+        Optional<Role> optRole = this.roleRepository.findOne(
+            RoleRepository.Filters.withName(input.name()));
 
         if (optRole.isPresent()) {
 
-            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME.format(input.roleId().getId().toString()));
+            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME.format(input.name()));
         }
 
-        var role = new Role(input.roleId(), input.name());
+        var role = new Role(input.name(), input.isDfsp());
 
         this.roleRepository.saveAndFlush(role);
 
