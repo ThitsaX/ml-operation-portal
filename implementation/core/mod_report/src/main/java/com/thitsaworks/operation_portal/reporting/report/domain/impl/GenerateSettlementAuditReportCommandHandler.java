@@ -75,14 +75,11 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                     INNER JOIN transferParticipant tp ON tp.participantCurrencyId = pc.participantCurrencyId
                     LEFT JOIN transferParticipantRoleType tpr ON tpr.transferParticipantRoleTypeId = tp.transferParticipantRoleTypeId
                     LEFT JOIN transferStateChange tscOut ON tp.transferId = tscOut.transferId AND tscOut.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscOut1 WHERE tscOut1.transferId = tp.transferId
-                    AND tscOut1.transferStateId in ('RESERVED', 'ABORTED_REJECTED'))
-                    LEFT JOIN transferState tsOut ON tscOut.transferStateId = tsOut.transferStateId
+                    AND tscOut1.transferStateId in ('RESERVED', 'ABORTED_REJECTED')) 
                     LEFT JOIN transferStateChange tscIn ON tp.transferId = tscIn.transferId AND tscIn.transferStateChangeId = (SELECT MAX(transferStateChangeId) FROM transferStateChange tscIn1 WHERE tscIn1.transferId = tp.transferId
-                    AND tscIn1.transferStateId in ('COMMITTED', 'ABORTED_REJECTED'))
-                    LEFT JOIN transferState tsIn ON tscIn.transferStateId = tsIn.transferStateId
+                    AND tscIn1.transferStateId in ('COMMITTED', 'ABORTED_REJECTED')) 
                     LEFT JOIN participantPosition pp ON pp.participantCurrencyId = pc.participantCurrencyId
-                    INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId
-                    INNER JOIN currency c ON c.currencyId = pc.currencyId
+                    INNER JOIN participantPositionChange ppc ON ppc.participantPositionId = pp.participantPositionId 
                     LEFT JOIN transferExtension tex ON tex.transferId = tp.transferId \s
                     
                     WHERE (? ='All' OR p.name = ?) AND p.name != 'Hub'
@@ -110,15 +107,13 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
                     IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc\s
                     FROM participant p
                     INNER JOIN participantCurrency pc ON p.participantId = pc.participantId\s
-                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId\s
-                    INNER JOIN currency c ON c.currencyId = pc.currencyId\s
+                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId\s 
                     LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
                     LEFT JOIN (SELECT * FROM (
                     SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
                     UNION\s
                     SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
-                    )Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2
-                    LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
+                    )Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2 
                     LEFT JOIN operation_portal.tbl_approval_request ar ON ar.participant_name = p.name AND ar.participant_currency = pc.currencyId\s
                     AND ABS(TIMESTAMPDIFF(SECOND,  FROM_UNIXTIME(ar.updated_date), pl.createdDate)) <= 2 \s
                     
