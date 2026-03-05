@@ -14,6 +14,10 @@ public interface GenerateTransactionDetailReport extends
                  String fileType,
                  String timezone) {}
 
-    record Output(byte[] reportData) {}
+    record Output(long requestId,
+                  String status,
+                  String fileUrl,
+                  boolean reused,
+                  String paramsSignature) {}
 
 }

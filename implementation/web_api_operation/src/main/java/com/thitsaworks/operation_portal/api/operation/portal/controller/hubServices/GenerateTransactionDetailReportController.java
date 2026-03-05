@@ -53,7 +53,11 @@ public class GenerateTransactionDetailReportController {
             this.generateTransactionDetailReport.execute(new GenerateTransactionDetailReport.Input(Instant.parse(
                 startDate), Instant.parse(endDate), state, dfspId, fileType, timezone));
 
-        var response = new Response(output.reportData());
+        var response = new Response(output.requestId(),
+                                    output.status(),
+                                    output.fileUrl(),
+                                    output.reused(),
+                                    output.paramsSignature());
 
         LOG.info("Generate Transaction Detail Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -62,6 +66,10 @@ public class GenerateTransactionDetailReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") long requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("reused") boolean reused,
+                           @JsonProperty("paramsSignature") String paramsSignature) implements Serializable { }
 
 }

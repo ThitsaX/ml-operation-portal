@@ -1,0 +1,279 @@
+package com.thitsaworks.operation_portal.core.report_download.generator;
+
+import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
+import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
+import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
+import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestParamRepository;
+import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestRepository;
+import com.thitsaworks.operation_portal.core.report_download.storage.ReportS3Storage;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+@Service
+public class ReportGeneratorHandler implements ReportGenerator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorHandler.class);
+
+    private static final String STATUS_PENDING = "PENDING";
+    private static final String STATUS_RUNNING = "RUNNING";
+    private static final String STATUS_READY = "READY";
+    private static final String STATUS_FAILED = "FAILED";
+
+    private static final String TYPE_SETTLEMENT_DETAIL = "SETTLEMENT_DETAIL";
+    private static final String TYPE_TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
+
+    private final ReportDownloadRequestRepository reportDownloadRequestRepository;
+    private final ReportDownloadRequestParamRepository reportDownloadRequestParamRepository;
+    private final ReportS3Storage reportS3Storage;
+
+    private final GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand;
+    private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
+
+    public ReportGeneratorHandler(ReportDownloadRequestRepository reportDownloadRequestRepository,
+                                  ReportDownloadRequestParamRepository reportDownloadRequestParamRepository,
+                                  ReportS3Storage reportS3Storage,
+                                  GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand,
+                                  GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand) {
+
+        this.reportDownloadRequestRepository = reportDownloadRequestRepository;
+        this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
+        this.reportS3Storage = reportS3Storage;
+        this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
+        this.generateTransactionDetailReportCommand = generateTransactionDetailReportCommand;
+    }
+
+    @Override
+    @Transactional
+    public boolean generateNextPending() {
+
+        Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(STATUS_PENDING);
+
+        if (nextPending.isEmpty()) {
+
+            return false;
+        }
+
+        ReportDownloadRequest request = nextPending.get();
+        request.status(STATUS_RUNNING);
+        request.updatedDate(Instant.now());
+        this.reportDownloadRequestRepository.save(request);
+
+        try {
+
+            GeneratedFile generatedFile = this.generateReportFile(request);
+            String fileUrl = this.uploadReportFile(request, generatedFile);
+
+            request.fileUrl(fileUrl);
+            request.status(STATUS_READY);
+            request.errorMessage(null);
+            request.updatedDate(Instant.now());
+            request.finishedDate(Instant.now());
+            this.reportDownloadRequestRepository.save(request);
+
+            LOG.info("Report request [{}] completed and saved to [{}]", request.getId().getEntityId(), fileUrl);
+
+        } catch (Exception exception) {
+
+            request.status(STATUS_FAILED);
+            request.errorMessage(this.trimError(exception.getMessage()));
+            request.updatedDate(Instant.now());
+            request.finishedDate(Instant.now());
+            this.reportDownloadRequestRepository.save(request);
+
+            LOG.error("Report request [{}] failed", request.getId().getEntityId(), exception);
+        }
+
+        return true;
+    }
+
+    private GeneratedFile generateReportFile(ReportDownloadRequest request) throws ReportException, IOException {
+
+        Map<String, String> params = this.paramsByRequestId(request.getId());
+
+        return switch (request.getReportType().toUpperCase(Locale.ROOT)) {
+            case TYPE_SETTLEMENT_DETAIL -> this.generateSettlementDetail(request, params);
+            case TYPE_TRANSACTION_DETAIL -> this.generateTransactionDetail(request, params);
+            default -> throw new IllegalArgumentException("Unsupported report type: " + request.getReportType());
+        };
+    }
+
+    private GeneratedFile generateSettlementDetail(ReportDownloadRequest request, Map<String, String> params)
+            throws ReportException {
+
+        String settlementId = this.requireParam(params, "settlementId");
+        String fspId = this.requireParam(params, "fspId");
+        String dfspName = params.getOrDefault("dfspName", fspId);
+        String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
+        String fileType = this.fileType(request.getFileType());
+
+        GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(
+                new GenerateSettlementDetailReportCommand.Input(settlementId,
+                                                                fspId,
+                                                                dfspName,
+                                                                fileType,
+                                                                timezoneOffset));
+
+        return new GeneratedFile(output.settlementDetailRptByte(), fileType);
+    }
+
+    private GeneratedFile generateTransactionDetail(ReportDownloadRequest request, Map<String, String> params)
+            throws ReportException, IOException {
+
+        Instant startDate = Instant.parse(this.requireParam(params, "startDate"));
+        Instant endDate = Instant.parse(this.requireParam(params, "endDate"));
+        String state = this.normalizeAllToken(params.getOrDefault("state", "All"));
+        String dfspId = this.normalizeAllToken(params.getOrDefault("dfspId", "All"));
+        String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
+        String fileType = this.fileType(request.getFileType());
+
+        int pageSize = this.generateTransactionDetailReportCommand.transactionPageSize();
+        int totalRowCount = this.generateTransactionDetailReportCommand.countRows(
+                new GenerateTransactionDetailReportCommand.CountInput(startDate, endDate, state, dfspId, timezoneOffset));
+
+        if (totalRowCount <= pageSize) {
+
+            GenerateTransactionDetailReportCommand.Output output = this.generateTransactionDetailReportCommand.execute(
+                    new GenerateTransactionDetailReportCommand.Input(startDate,
+                                                                     endDate,
+                                                                     state,
+                                                                     dfspId,
+                                                                     fileType,
+                                                                     timezoneOffset,
+                                                                     0,
+                                                                     pageSize));
+
+            return new GeneratedFile(output.transactionDetailRptByte(), fileType);
+        }
+
+        return this.generateTransactionDetailPagedZip(startDate,
+                                                      endDate,
+                                                      state,
+                                                      dfspId,
+                                                      timezoneOffset,
+                                                      fileType,
+                                                      totalRowCount,
+                                                      pageSize);
+    }
+
+    private GeneratedFile generateTransactionDetailPagedZip(Instant startDate,
+                                                            Instant endDate,
+                                                            String state,
+                                                            String dfspId,
+                                                            String timezoneOffset,
+                                                            String fileType,
+                                                            int totalRowCount,
+                                                            int pageSize) throws ReportException, IOException {
+
+        ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(zipBytes)) {
+
+            int chunkNo = 1;
+
+            for (int offset = 0; offset < totalRowCount; offset += pageSize) {
+
+                int limit = Math.min(pageSize, totalRowCount - offset);
+
+                GenerateTransactionDetailReportCommand.Output chunkOutput = this.generateTransactionDetailReportCommand.execute(
+                        new GenerateTransactionDetailReportCommand.Input(startDate,
+                                                                         endDate,
+                                                                         state,
+                                                                         dfspId,
+                                                                         fileType,
+                                                                         timezoneOffset,
+                                                                         offset,
+                                                                         limit));
+
+                ZipEntry entry = new ZipEntry("transaction_detail_part_" + chunkNo + "." + fileType);
+                zipOutputStream.putNextEntry(entry);
+                zipOutputStream.write(chunkOutput.transactionDetailRptByte());
+                zipOutputStream.closeEntry();
+                chunkNo++;
+            }
+        }
+
+        return new GeneratedFile(zipBytes.toByteArray(), "zip");
+    }
+
+    private String uploadReportFile(ReportDownloadRequest request, GeneratedFile generatedFile) {
+
+        return this.reportS3Storage.upload(request, generatedFile.bytes(), generatedFile.extension());
+    }
+
+    private Map<String, String> paramsByRequestId(ReportDownloadRequestId requestId) {
+
+        List<ReportDownloadRequestParam> params = this.reportDownloadRequestParamRepository.findByRequestId(requestId);
+        Map<String, String> paramMap = new HashMap<>();
+
+        for (ReportDownloadRequestParam param : params) {
+
+            paramMap.put(param.getParamKey(), param.getParamValue());
+        }
+
+        return paramMap;
+    }
+
+    private String requireParam(Map<String, String> params, String key) {
+
+        String value = params.get(key);
+
+        if (value == null || value.isBlank()) {
+
+            throw new IllegalArgumentException("Missing required parameter: " + key);
+        }
+
+        return value;
+    }
+
+    private String fileType(String fileType) {
+
+        String normalized = fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
+
+        if (!"xlsx".equals(normalized) && !"csv".equals(normalized)) {
+
+            throw new IllegalArgumentException("Unsupported file type: " + fileType);
+        }
+
+        return normalized;
+    }
+
+    private String trimError(String message) {
+
+        if (message == null) {
+
+            return "Unexpected error";
+        }
+
+        return message.length() > 1000 ? message.substring(0, 1000) : message;
+    }
+
+    private String normalizeAllToken(String value) {
+
+        if (value == null) {
+
+            return "All";
+        }
+
+        return "all".equalsIgnoreCase(value.trim()) ? "All" : value.trim();
+    }
+
+    private record GeneratedFile(byte[] bytes, String extension) {
+
+    }
+}
