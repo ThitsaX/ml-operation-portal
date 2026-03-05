@@ -77,6 +77,8 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                     LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
                                     LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId
                                     LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
+                                    LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
+                                    LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
                                     LEFT JOIN (
                                     			SELECT t.transferStateChangeId, t.transferId, t.transferStateId, t.createdDate
                                     				FROM transferStateChange t
@@ -89,7 +91,9 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                     				) m
                                       				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
                                     		) tss ON tss.transferId = t.transferId
-                                    LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId\s                                   
+                                    LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId\s
+                                    LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
+                                    INNER JOIN currency c ON c.currencyId = payercurrency.currencyId\s                                 
                                     JOIN bounds b\s
                                     WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
                                     	 AND (? ='All' OR tst.enumeration = ?)
