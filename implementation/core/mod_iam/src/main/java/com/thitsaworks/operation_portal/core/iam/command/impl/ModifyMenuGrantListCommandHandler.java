@@ -2,12 +2,12 @@ package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.iam.command.ModifyRoleGrantListCommand;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyMenuGrantListCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Action;
 import com.thitsaworks.operation_portal.core.iam.model.repository.ActionRepository;
-import com.thitsaworks.operation_portal.core.iam.model.repository.RoleRepository;
+import com.thitsaworks.operation_portal.core.iam.model.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,12 +19,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ModifyRoleGrantListCommandHandler implements ModifyRoleGrantListCommand {
+public class ModifyMenuGrantListCommandHandler implements ModifyMenuGrantListCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(
-        ModifyRoleGrantListCommandHandler.class);
+        ModifyMenuGrantListCommandHandler.class);
 
-    private final RoleRepository roleRepository;
+    private final MenuRepository menuRepository;
 
     private final ActionRepository actionRepository;
 
@@ -32,10 +32,10 @@ public class ModifyRoleGrantListCommandHandler implements ModifyRoleGrantListCom
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        var role = this.roleRepository.findById(input.roleId()).orElseThrow(() -> {
-            LOG.info("Role Not Found : [{}]", input.roleId());
+        var menu = this.menuRepository.findById(input.menuId()).orElseThrow(() -> {
+            LOG.info("Menu Not Found : [{}]", input.menuId());
             return new IAMException(
-                IAMErrors.ROLE_NOT_FOUND.format(input.roleId().getId().toString()));
+                IAMErrors.MENU_NOT_FOUND.format(input.menuId().getId().toString()));
         });
 
         List<Action> actionList = new ArrayList<>();
@@ -52,12 +52,11 @@ public class ModifyRoleGrantListCommandHandler implements ModifyRoleGrantListCom
             });
 
             actionList.add(action);
-
         }
 
-        role.grantActions(actionList);
+        menu.grantActions(actionList);
 
-        this.roleRepository.saveAndFlush(role);
+        this.menuRepository.saveAndFlush(menu);
 
         return new Output(true);
     }

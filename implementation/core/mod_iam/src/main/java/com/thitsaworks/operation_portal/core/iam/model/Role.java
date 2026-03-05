@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -100,12 +101,14 @@ public class Role extends JpaEntity<RoleId> {
     }
 
     public void grantActions(List<Action> grantingActions) {
-        List<RoleGrant> newGrants = grantingActions.stream()
-                                                   .map(action -> new RoleGrant(this, action))
-                                                   .toList();
 
-        this.grants.clear();
-        this.grants.addAll(newGrants);
+        Set<Action> requestedActions = grantingActions == null
+            ? Set.of()
+            : new LinkedHashSet<>(grantingActions);
+
+        this.grants.removeIf(existingGrant -> !requestedActions.contains(existingGrant.Action));
+
+        requestedActions.forEach(this::grantAction);
     }
 
 
@@ -138,4 +141,3 @@ public class Role extends JpaEntity<RoleId> {
     }
 
 }
-
