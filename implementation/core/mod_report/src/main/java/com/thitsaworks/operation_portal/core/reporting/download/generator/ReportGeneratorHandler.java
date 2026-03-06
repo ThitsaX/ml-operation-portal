@@ -11,6 +11,7 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.repository
 import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestRepository;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -240,15 +241,9 @@ public class ReportGeneratorHandler implements ReportGenerator {
         return value;
     }
 
-    private String fileType(String fileType) {
+    private String fileType(String fileType) throws ReportException {
 
         String normalized = fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
-
-        if (!"xlsx".equals(normalized) && !"csv".equals(normalized)) {
-
-            throw new IllegalArgumentException("Unsupported file type: " + fileType);
-        }
-
         return normalized;
     }
 

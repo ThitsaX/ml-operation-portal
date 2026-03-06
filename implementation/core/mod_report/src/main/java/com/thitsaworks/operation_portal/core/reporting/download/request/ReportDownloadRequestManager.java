@@ -8,6 +8,7 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequestParam;
 import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestParamRepository;
 import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestRepository;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +68,17 @@ public class ReportDownloadRequestManager {
             return new CreateOrReuseResult(new ReportDownloadRequestData(existing.get()), true, signature);
         }
 
+        if (existing.isPresent()) {
+
+            if (!this.canRetryFailedRequest(existing.get())) {
+
+                return new CreateOrReuseResult(new ReportDownloadRequestData(existing.get()), true, signature);
+            }
+
+            ReportDownloadRequest retried = this.resetFailedToPending(existing.get());
+            return new CreateOrReuseResult(new ReportDownloadRequestData(retried), false, signature);
+        }
+
 
         Instant now = Instant.now();
         ReportDownloadRequest request = new ReportDownloadRequest(
@@ -95,6 +107,17 @@ public class ReportDownloadRequestManager {
                     normalizedDataVersion)
                                                                                .orElseThrow(() -> e);
 
+            if (FileDownloadStatus.FAILED.equals(reused.getStatus())) {
+
+                if (!this.canRetryFailedRequest(reused)) {
+
+                    return new CreateOrReuseResult(new ReportDownloadRequestData(reused), true, signature);
+                }
+
+                ReportDownloadRequest retried = this.resetFailedToPending(reused);
+                return new CreateOrReuseResult(new ReportDownloadRequestData(retried), false, signature);
+            }
+
             return new CreateOrReuseResult(new ReportDownloadRequestData(reused), true, signature);
         }
     }
@@ -103,6 +126,29 @@ public class ReportDownloadRequestManager {
     private String normalizeFileType(String fileType) {
 
         return fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private ReportDownloadRequest resetFailedToPending(ReportDownloadRequest failedRequest) {
+
+        Instant now = Instant.now();
+        failedRequest.status(FileDownloadStatus.PENDING);
+        failedRequest.fileUrl(null);
+        failedRequest.errorMessage(null);
+        failedRequest.finishedDate(null);
+        failedRequest.updatedDate(now);
+        return this.reportDownloadRequestRepository.save(failedRequest);
+    }
+
+    private boolean canRetryFailedRequest(ReportDownloadRequest request) {
+
+        String error = request.getErrorMessage();
+
+        if (error == null || error.isBlank()) {
+
+            return true;
+        }
+
+        return !error.contains(ReportErrors.RESULT_NOT_FOUND_EXCEPTION.getCode()) && !error.contains(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION.getCode());
     }
 
     public record CreateOrReuseResult(ReportDownloadRequestData request,

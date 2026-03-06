@@ -3,7 +3,6 @@ package com.thitsaworks.operation_portal.component.misc.http;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
-import lombok.Getter;
 import org.springframework.util.StreamUtils;
 
 import java.io.BufferedReader;
@@ -14,7 +13,6 @@ import java.io.InputStreamReader;
 
 public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
 
-    @Getter
     private byte[] cachedBody;
 
     public CachedBodyHttpServletRequest(HttpServletRequest request) throws IOException {
@@ -47,6 +45,11 @@ public class CachedBodyHttpServletRequest extends HttpServletRequestWrapper {
 
         return new BufferedReader(new InputStreamReader(byteArrayInputStream));
 
+    }
+
+    public byte[] getCachedBody() {
+
+        return this.cachedBody;
     }
 
 }

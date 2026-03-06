@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.exception.ErrorMessage;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
@@ -76,7 +77,7 @@ public class GenerateTransactionDetailReportHandler
 
             try {
 
-                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileUrl);
+                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
 
             } catch (Exception e) {
 
@@ -87,8 +88,8 @@ public class GenerateTransactionDetailReportHandler
         }
 
         if (FileDownloadStatus.FAILED.equals(result.request().status())) {
-
-            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+            
+            throw new ReportException(this.resolveFailedError(result.request().errorMessage()));
         }
 
         return new Output(
@@ -109,6 +110,41 @@ public class GenerateTransactionDetailReportHandler
     private String normalizeFileType(String fileType) {
 
         return fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private ErrorMessage resolveFailedError(String storedError) {
+
+        if (storedError == null || storedError.isBlank()) {
+
+            return ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION;
+        }
+
+        int delimiterIndex = storedError.indexOf("-");
+        String errorCode = delimiterIndex > 0 ? storedError.substring(0, delimiterIndex) : storedError;
+        String errorDefaultMessage = delimiterIndex > 0 &&
+            storedError.length() > delimiterIndex + 1 ? storedError.substring(delimiterIndex + 1) : "";
+
+        return switch (errorCode) {
+            case "RESULT_NOT_FOUND_EXCEPTION" -> this.withDefaultMessage(
+                ReportErrors.RESULT_NOT_FOUND_EXCEPTION, errorDefaultMessage);
+            case "FILE_FORMAT_NOT_ALLOWED_EXCEPTION" -> this.withDefaultMessage(
+                ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION, errorDefaultMessage);
+            case "REPORT_MAXIMUM_LIMIT_EXCEPTION" -> this.withDefaultMessage(
+                ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION, errorDefaultMessage);
+            case "TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION" -> this.withDefaultMessage(
+                ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
+            default -> ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION.defaultMessage(storedError);
+        };
+    }
+
+    private ErrorMessage withDefaultMessage(ErrorMessage errorMessage, String defaultMessage) {
+
+        if (defaultMessage == null || defaultMessage.isBlank()) {
+
+            return errorMessage;
+        }
+
+        return errorMessage.defaultMessage(defaultMessage);
     }
 
 }

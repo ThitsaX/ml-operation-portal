@@ -1,22 +1,24 @@
 package com.thitsaworks.operation_portal.component.misc.storage;
 
-import com.amazonaws.HttpMethod;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3Configuration;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
+import java.net.URI;
 import java.time.Duration;
-import java.util.Date;
 import java.util.Locale;
 
 @Service
@@ -44,7 +46,9 @@ public class S3FileStorage  implements FileStorage{
 
     private final Duration presignedUrlLifetime;
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
+
+    private final S3Presigner s3Presigner;
 
     public S3FileStorage(Settings settings) {
 
@@ -58,7 +62,8 @@ public class S3FileStorage  implements FileStorage{
         this.pathStyleAccess = settings.pathStyleAccess;
         this.presignedUrlLifetime = settings.presignedUrlLifetime;
 
-        this.amazonS3 = this.enabled ? this.buildClient() : null;
+        this.s3Client = this.enabled ? this.buildClient() : null;
+        this.s3Presigner = this.enabled ? this.buildPresigner() : null;
     }
 
     public String upload(String fileLocation, byte[] fileBytes, String extension) {
@@ -75,57 +80,83 @@ public class S3FileStorage  implements FileStorage{
 
         var key = this.prefix + fileLocation;
 
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentLength(fileBytes.length);
-        metadata.setContentType(this.contentType(extension));
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                                                            .bucket(this.bucket)
+                                                            .key(key)
+                                                            .contentType(this.contentType(extension))
+                                                            .contentLength((long) fileBytes.length)
+                                                            .build();
 
-        PutObjectRequest putObjectRequest = new PutObjectRequest(
-            this.bucket, key, new ByteArrayInputStream(fileBytes), metadata);
-
-        this.amazonS3.putObject(putObjectRequest);
+        this.s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
 
         LOG.info("Uploaded to S3 [{}]", key);
 
         return key;
     }
 
-    private AmazonS3 buildClient() {
+    private S3Client buildClient() {
 
-        AmazonS3ClientBuilder builder = AmazonS3ClientBuilder
-                                            .standard()
-                                            .withPathStyleAccessEnabled(this.pathStyleAccess);
-
-        if (!this.accessKey.isBlank() && !this.secretKey.isBlank()) {
-
-            builder.withCredentials(new AWSStaticCredentialsProvider(
-                new BasicAWSCredentials(this.accessKey, this.secretKey)));
-
-        } else {
-
-            builder.withCredentials(DefaultAWSCredentialsProviderChain.getInstance());
-        }
+        var builder = S3Client.builder()
+                              .credentialsProvider(this.credentialsProvider())
+                              .region(Region.of(this.region))
+                              .serviceConfiguration(
+                                  S3Configuration.builder()
+                                                 .pathStyleAccessEnabled(this.pathStyleAccess)
+                                                 .build());
 
         if (!this.endpoint.isBlank()) {
 
-            builder.withEndpointConfiguration(
-                new AwsClientBuilder.EndpointConfiguration(this.endpoint, this.region));
-        } else {
-
-            builder.withRegion(this.region);
+            builder.endpointOverride(URI.create(this.endpoint));
         }
 
         return builder.build();
     }
 
+    private S3Presigner buildPresigner() {
+
+        S3Presigner.Builder builder = S3Presigner.builder()
+                                                 .credentialsProvider(this.credentialsProvider())
+                                                 .region(Region.of(this.region))
+                                                 .serviceConfiguration(
+                                                     S3Configuration.builder()
+                                                                    .pathStyleAccessEnabled(this.pathStyleAccess)
+                                                                    .build());
+
+        if (!this.endpoint.isBlank()) {
+
+            builder.endpointOverride(URI.create(this.endpoint));
+        }
+
+        return builder.build();
+    }
+
+    private AwsCredentialsProvider credentialsProvider() {
+
+        if (!this.accessKey.isBlank() && !this.secretKey.isBlank()) {
+
+            return StaticCredentialsProvider.create(
+                AwsBasicCredentials.create(this.accessKey, this.secretKey));
+        }
+
+        return DefaultCredentialsProvider.create();
+    }
+
     public String generatePreSignedDownloadUrl(String key) {
 
-        Date expiration = new Date(
-            System.currentTimeMillis() + this.presignedUrlLifetime.toMillis());
-        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(this.bucket, key)
-                                                  .withMethod(HttpMethod.GET)
-                                                  .withExpiration(expiration);
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                                                            .bucket(this.bucket)
+                                                            .key(key)
+                                                            .build();
 
-        return this.amazonS3.generatePresignedUrl(request).toString();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                                                                        .signatureDuration(this.presignedUrlLifetime)
+                                                                        .getObjectRequest(getObjectRequest)
+                                                                        .build();
+
+        PresignedGetObjectRequest presignedRequest = this.s3Presigner.presignGetObject(
+            presignRequest);
+
+        return presignedRequest.url().toString();
     }
 
     private String contentType(String extension) {
