@@ -7,11 +7,5 @@ public interface GetReportDownloadStatus
 
     record Input(Long requestId) { }
 
-    record Output(Long requestId,
-                  String reportType,
-                  String status,
-                  String fileUrl,
-                  String errorMessage,
-                  String finishedDate,
-                  boolean found) { }
+    record Output(String status, boolean found) { }
 }

@@ -11,10 +11,14 @@ import com.thitsaworks.operation_portal.core.scheduler.command.ModifyJobExecutio
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
 import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.ScheduledJob;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component("ReportGeneratorScheduler")
 public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, ReportGeneratorScheduler.Output> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorScheduler.class);
 
     private static final int MAX_BATCH_SIZE_PER_RUN = 100;
 
@@ -38,6 +42,19 @@ public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, 
               objectMapper);
 
         this.reportGenerator = reportGenerator;
+    }
+
+    @Override
+    public void run(SchedulerConfigData schedulerConfigData) {
+
+        try {
+
+            this.onExecute(schedulerConfigData);
+
+        } catch (Exception exception) {
+
+            LOG.error("ReportGeneratorScheduler failed: [{}]", exception.getMessage(), exception);
+        }
     }
 
     @Override

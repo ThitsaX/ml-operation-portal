@@ -33,12 +33,7 @@ public class GetReportDownloadStatusController {
         GetReportDownloadStatus.Output output =
                 this.getReportDownloadStatus.execute(new GetReportDownloadStatus.Input(requestId));
 
-        Response response = new Response(output.requestId(),
-                                         output.reportType(),
-                                         output.status(),
-                                         output.fileUrl(),
-                                         output.errorMessage(),
-                                         output.finishedDate());
+        Response response = new Response(output.status());
 
         LOG.info("Get Report Download Status Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -46,10 +41,5 @@ public class GetReportDownloadStatusController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("requestId") Long requestId,
-                           @JsonProperty("reportType") String reportType,
-                           @JsonProperty("status") String status,
-                           @JsonProperty("fileUrl") String fileUrl,
-                           @JsonProperty("errorMessage") String errorMessage,
-                           @JsonProperty("finishedDate") String finishedDate) implements Serializable { }
+    public record Response(@JsonProperty("status") String status) implements Serializable { }
 }

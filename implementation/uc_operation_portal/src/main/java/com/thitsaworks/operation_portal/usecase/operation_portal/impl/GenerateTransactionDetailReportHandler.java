@@ -6,7 +6,9 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestRepository;
 import com.thitsaworks.operation_portal.core.report_download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.core.report_download.storage.ReportS3Storage;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -26,7 +28,10 @@ public class GenerateTransactionDetailReportHandler
     private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionDetailReportHandler.class);
 
     private static final String REPORT_TYPE_TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
+    private static final String STATUS_READY = "READY";
     private final ReportDownloadRequestManager reportDownloadRequestManager;
+    private final ReportDownloadRequestRepository reportDownloadRequestRepository;
+    private final ReportS3Storage reportS3Storage;
 
     public GenerateTransactionDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
@@ -34,7 +39,9 @@ public class GenerateTransactionDetailReportHandler
                                                   ObjectMapper objectMapper,
                                                   PrincipalCache principalCache,
                                                   ActionAuthorizationManager actionAuthorizationManager,
-                                                  ReportDownloadRequestManager reportDownloadRequestManager) {
+                                                  ReportDownloadRequestManager reportDownloadRequestManager,
+                                                  ReportDownloadRequestRepository reportDownloadRequestRepository,
+                                                  ReportS3Storage reportS3Storage) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -44,6 +51,8 @@ public class GenerateTransactionDetailReportHandler
               actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
+        this.reportDownloadRequestRepository = reportDownloadRequestRepository;
+        this.reportS3Storage = reportS3Storage;
     }
 
     @Override
@@ -63,9 +72,31 @@ public class GenerateTransactionDetailReportHandler
                         null,
                         params);
 
+        String fileUrl = result.request().getFileUrl();
+
+        if (result.reused()
+            && STATUS_READY.equalsIgnoreCase(result.request().getStatus())
+            && fileUrl != null
+            && !fileUrl.isBlank()) {
+
+            try {
+
+                fileUrl = this.reportS3Storage.regeneratePreSignedDownloadUrl(fileUrl);
+                result.request().fileUrl(fileUrl);
+                result.request().updatedDate(java.time.Instant.now());
+                this.reportDownloadRequestRepository.save(result.request());
+
+            } catch (Exception e) {
+
+                LOG.warn("Failed to regenerate pre-signed URL for requestId [{}]: [{}]",
+                         result.request().getId().getEntityId(),
+                         e.getMessage());
+            }
+        }
+
         return new Output(result.request().getId().getEntityId(),
                           result.request().getStatus(),
-                          result.request().getFileUrl(),
+                          fileUrl,
                           result.reused(),
                           result.paramsSignature());
     }

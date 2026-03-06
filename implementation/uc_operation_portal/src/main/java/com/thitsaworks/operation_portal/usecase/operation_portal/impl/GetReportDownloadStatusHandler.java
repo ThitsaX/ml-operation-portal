@@ -36,18 +36,10 @@ public class GetReportDownloadStatusHandler
 
         if (requestOptional.isEmpty()) {
 
-            return new Output(input.requestId(), null, "NOT_FOUND", null, null, null, false);
+            return new Output("NOT_FOUND", false);
         }
 
         ReportDownloadRequest request = requestOptional.get();
-        String finishedDate = request.getFinishedDate() == null ? null : request.getFinishedDate().toString();
-
-        return new Output(request.getId().getEntityId(),
-                          request.getReportType(),
-                          request.getStatus(),
-                          request.getFileUrl(),
-                          request.getErrorMessage(),
-                          finishedDate,
-                          true);
+        return new Output(request.getStatus(), true);
     }
 }

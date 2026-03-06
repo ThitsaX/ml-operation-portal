@@ -16,12 +16,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.net.URI;
+import java.net.URLDecoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class ReportS3Storage {
@@ -83,6 +86,12 @@ public class ReportS3Storage {
         return uploadedUrl;
     }
 
+    public String regeneratePreSignedDownloadUrl(String storedFileLocationOrUrl) {
+
+        String key = this.extractObjectKey(storedFileLocationOrUrl);
+        return this.generatePreSignedDownloadUrl(key);
+    }
+
     private AmazonS3 buildClient() {
 
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
@@ -142,6 +151,53 @@ public class ReportS3Storage {
                 .withExpiration(expiration);
 
         return this.amazonS3.generatePresignedUrl(request).toString();
+    }
+
+    private String extractObjectKey(String storedFileLocationOrUrl) {
+
+        if (storedFileLocationOrUrl == null || storedFileLocationOrUrl.isBlank()) {
+
+            throw new IllegalArgumentException("Stored file location/url is empty");
+        }
+
+        String value = storedFileLocationOrUrl.trim();
+
+        if (value.startsWith("s3://")) {
+
+            String withoutScheme = value.substring("s3://".length());
+            int slashIndex = withoutScheme.indexOf('/');
+
+            if (slashIndex < 0) {
+
+                throw new IllegalArgumentException("Invalid s3 location: " + value);
+            }
+
+            String bucketFromLocation = withoutScheme.substring(0, slashIndex);
+            if (!this.bucket.equals(bucketFromLocation)) {
+
+                throw new IllegalArgumentException("Bucket mismatch in s3 location: " + value);
+            }
+
+            return withoutScheme.substring(slashIndex + 1);
+        }
+
+        URI uri = URI.create(value);
+        String rawPath = uri.getPath();
+
+        if (rawPath == null || rawPath.isBlank() || "/".equals(rawPath)) {
+
+            throw new IllegalArgumentException("URL does not contain object key path: " + value);
+        }
+
+        String decodedPath = URLDecoder.decode(rawPath, StandardCharsets.UTF_8);
+        String normalizedPath = decodedPath.startsWith("/") ? decodedPath.substring(1) : decodedPath;
+
+        if (normalizedPath.startsWith(this.bucket + "/")) {
+
+            return normalizedPath.substring(this.bucket.length() + 1);
+        }
+
+        return normalizedPath;
     }
 
     private String contentType(String extension) {
