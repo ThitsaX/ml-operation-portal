@@ -36,7 +36,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int TRANSACTION_PAGE_SIZE = 500;
+    private static final int MAX_REPORT_ROWS = 20000;
 
     @Autowired
     public GenerateTransactionDetailReportCommandHandler(
@@ -55,18 +55,74 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
         params.put("state", input.state());
         params.put("dfspId", input.dfspId());
         params.put("timezoneoffset", input.timeZoneOffset());
-        params.put("offset", input.offset() == null ? 0 : input.offset());
-        params.put("limit", input.limit() == null ? TRANSACTION_PAGE_SIZE : input.limit());
 
         LOG.info("Params : {}", params);
 
-        Integer rowCount = this.countTransactionDetailRows(input.startDate(),
-                                                           input.endDate(),
-                                                           input.state(),
-                                                           input.dfspId(),
-                                                           input.timeZoneOffset());
+        String reportQuery = """
+                    WITH bounds_base AS (
+                                      SELECT
+                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                                    						    CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS startUtc,
+                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
+                                    						    CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
+                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS endUtc
+                                    ),
+                                     bounds AS (
+                                       SELECT
+                                         startUtc,
+                                         endUtc,
+                                         DATE_ADD(endUtc, INTERVAL 1 MINUTE) AS endUtcPlus1Min
+                                       FROM bounds_base
+                                     )
+                                    
+                                    SELECT COUNT(*) AS rowCount
+                                    FROM transfer t
+                                    LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
+                                    LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId
+                                    LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId
+                                    LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
+                                    LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId
+                                    LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
+                                    LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
+                                    LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
+                                    LEFT JOIN (
+                                    			SELECT t.transferId, t.transferStateId, t.createdDate
+                                    				FROM transferStateChange t
+                                    				JOIN (
+                                    							SELECT transferId, MAX(transferStateChangeId) AS maxId
+                                    						FROM transferStateChange
+                                    						JOIN bounds b 
+                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtcPlus1Min
+                                    						GROUP BY transferId
+                                    				) m
+                                      				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
+                                    		) tss ON tss.transferId = t.transferId
+                                    LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId\s
+                                    LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
+                                    INNER JOIN currency c ON c.currencyId = payercurrency.currencyId\s                                 
+                                    JOIN bounds b\s
+                                    WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
+                                    	 AND (? ='All' OR tst.enumeration = ?)
+                                    	  AND ((? ='All')  OR (payee.name = ?  OR payer.name = ?))
+                """;
 
+        String countQuery = "SELECT * FROM (" + reportQuery + ") x";
 
+        Integer rowCount = jdbcTemplate.queryForObject(
+                countQuery,
+                new Object[]{
+                        input.timeZoneOffset(), input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.startDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.timeZoneOffset(), input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.endDate(), input.timeZoneOffset(), input.timeZoneOffset(),
+                        input.state(), input.state(), input.dfspId(), input.dfspId(), input.dfspId()},
+                Integer.class);
+
+        if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
+
+            throw new ReportException(ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
+        }
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(
@@ -137,85 +193,6 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION);
         }
-    }
-
-    @Override
-    public int countRows(CountInput input) {
-
-        Integer rowCount = this.countTransactionDetailRows(input.startDate(),
-                                                           input.endDate(),
-                                                           input.state(),
-                                                           input.dfspId(),
-                                                           input.timeZoneOffset());
-        return rowCount == null ? 0 : rowCount;
-    }
-
-    @Override
-    public int transactionPageSize() {
-
-        return TRANSACTION_PAGE_SIZE;
-    }
-
-    private Integer countTransactionDetailRows(
-            java.time.Instant startDate,
-            java.time.Instant endDate,
-            String state,
-            String dfspId,
-            String timeZoneOffset) {
-
-        String reportQuery = """
-                    WITH bounds AS (
-                                      SELECT
-                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
-                                    						    CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
-                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS startUtc,
-                                        CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
-                                    						    CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
-                                    						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS endUtc
-                                    )
-                                    
-                                    SELECT COUNT(*) AS rowCount
-                                    FROM transfer t
-                                    LEFT JOIN transferParticipant tppayer ON t.transferId = tppayer.transferId AND tppayer.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYER_DFSP')
-                                    LEFT JOIN participantCurrency payercurrency ON payercurrency.participantCurrencyId = tppayer.participantCurrencyId
-                                    LEFT JOIN participant payer ON payer.participantId = payercurrency.participantId
-                                    LEFT JOIN transferParticipant tppayee ON t.transferId = tppayee.transferId AND tppayee.transferParticipantRoleTypeId = (SELECT transferParticipantRoleTypeId from transferParticipantRoleType WHERE name = 'PAYEE_DFSP')
-                                    LEFT JOIN participantCurrency payeecurrency ON payeecurrency.participantCurrencyId = tppayee.participantCurrencyId
-                                    LEFT JOIN participant payee ON payee.participantId = payeecurrency.participantId
-                                    LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
-                                    LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
-                                    LEFT JOIN (
-                                    			SELECT t.transferStateChangeId, t.transferId, t.transferStateId, t.createdDate
-                                    				FROM transferStateChange t
-                                    				JOIN (
-                                    							SELECT transferId, MAX(transferStateChangeId) AS maxId
-                                    						FROM transferStateChange
-                                    						JOIN bounds b
-                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtc
-                                    						GROUP BY transferId
-                                    				) m
-                                      				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
-                                    		) tss ON tss.transferId = t.transferId
-                                    LEFT JOIN transferState tst ON tst.transferStateId= tss.transferStateId\s
-                                    LEFT JOIN amountType a ON a.amountTypeId = q.amountTypeId
-                                    INNER JOIN currency c ON c.currencyId = payercurrency.currencyId\s                                 
-                                    JOIN bounds b\s
-                                    WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
-                                    	 AND (? ='All' OR tst.enumeration = ?)
-                                    	  AND ((? ='All')  OR (payee.name = ?  OR payer.name = ?))
-                """;
-
-        String countQuery = "SELECT * FROM (" + reportQuery + ") x";
-
-        return jdbcTemplate.queryForObject(
-                countQuery,
-                new Object[]{
-                        timeZoneOffset, startDate, timeZoneOffset, timeZoneOffset,
-                        startDate, timeZoneOffset, timeZoneOffset,
-                        timeZoneOffset, endDate, timeZoneOffset, timeZoneOffset,
-                        endDate, timeZoneOffset, timeZoneOffset,
-                        state, state, dfspId, dfspId, dfspId},
-                Integer.class);
     }
 
 }
