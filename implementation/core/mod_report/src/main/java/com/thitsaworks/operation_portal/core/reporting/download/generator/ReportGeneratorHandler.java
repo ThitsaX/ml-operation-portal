@@ -1,12 +1,14 @@
-package com.thitsaworks.operation_portal.core.report_download.generator;
+package com.thitsaworks.operation_portal.core.reporting.download.generator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
-import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
-import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestParamRepository;
-import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestRepository;
-import com.thitsaworks.operation_portal.core.report_download.storage.ReportS3Storage;
+import com.thitsaworks.operation_portal.component.misc.storage.FileStorage;
+import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
+import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequestParam;
+import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestParamRepository;
+import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestRepository;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
@@ -18,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,30 +36,25 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorHandler.class);
 
-    private static final String STATUS_PENDING = "PENDING";
-    private static final String STATUS_RUNNING = "RUNNING";
-    private static final String STATUS_READY = "READY";
-    private static final String STATUS_FAILED = "FAILED";
-
-    private static final String TYPE_SETTLEMENT_DETAIL = "SETTLEMENT_DETAIL";
-    private static final String TYPE_TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
-
     private final ReportDownloadRequestRepository reportDownloadRequestRepository;
+
     private final ReportDownloadRequestParamRepository reportDownloadRequestParamRepository;
-    private final ReportS3Storage reportS3Storage;
+
+    private final FileStorage fileStorage;
 
     private final GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand;
+
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
 
     public ReportGeneratorHandler(ReportDownloadRequestRepository reportDownloadRequestRepository,
                                   ReportDownloadRequestParamRepository reportDownloadRequestParamRepository,
-                                  ReportS3Storage reportS3Storage,
+                                  FileStorage fileStorage,
                                   GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand,
                                   GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand) {
 
         this.reportDownloadRequestRepository = reportDownloadRequestRepository;
         this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
-        this.reportS3Storage = reportS3Storage;
+        this.fileStorage = fileStorage;
         this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
         this.generateTransactionDetailReportCommand = generateTransactionDetailReportCommand;
     }
@@ -63,7 +63,8 @@ public class ReportGeneratorHandler implements ReportGenerator {
     @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public boolean generateNextPending() {
 
-        Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(STATUS_PENDING);
+        Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
+            FileDownloadStatus.PENDING);
 
         if (nextPending.isEmpty()) {
 
@@ -71,7 +72,7 @@ public class ReportGeneratorHandler implements ReportGenerator {
         }
 
         ReportDownloadRequest request = nextPending.get();
-        request.status(STATUS_RUNNING);
+        request.status(FileDownloadStatus.RUNNING);
         request.updatedDate(Instant.now());
         this.reportDownloadRequestRepository.save(request);
 
@@ -81,17 +82,19 @@ public class ReportGeneratorHandler implements ReportGenerator {
             String fileUrl = this.uploadReportFile(request, generatedFile);
 
             request.fileUrl(fileUrl);
-            request.status(STATUS_READY);
+            request.status(FileDownloadStatus.READY);
             request.errorMessage(null);
             request.updatedDate(Instant.now());
             request.finishedDate(Instant.now());
             this.reportDownloadRequestRepository.save(request);
 
-            LOG.info("Report request [{}] completed and saved to [{}]", request.getId().getEntityId(), fileUrl);
+            LOG.info(
+                "Report request [{}] completed and saved to [{}]", request.getId().getEntityId(),
+                fileUrl);
 
         } catch (Exception exception) {
 
-            request.status(STATUS_FAILED);
+            request.status(FileDownloadStatus.FAILED);
             request.errorMessage(this.trimError(exception.getMessage()));
             request.updatedDate(Instant.now());
             request.finishedDate(Instant.now());
@@ -103,19 +106,22 @@ public class ReportGeneratorHandler implements ReportGenerator {
         return true;
     }
 
-    private GeneratedFile generateReportFile(ReportDownloadRequest request) throws ReportException, IOException {
+    private GeneratedFile generateReportFile(ReportDownloadRequest request)
+        throws ReportException, IOException {
 
         Map<String, String> params = this.paramsByRequestId(request.getId());
 
-        return switch (request.getReportType().toUpperCase(Locale.ROOT)) {
-            case TYPE_SETTLEMENT_DETAIL -> this.generateSettlementDetail(request, params);
-            case TYPE_TRANSACTION_DETAIL -> this.generateTransactionDetail(request, params);
-            default -> throw new IllegalArgumentException("Unsupported report type: " + request.getReportType());
+        return switch (request.getReportType()) {
+            case ReportType.SETTLEMENT_DETAIL -> this.generateSettlementDetail(request, params);
+            case ReportType.TRANSACTION_DETAIL -> this.generateTransactionDetail(request, params);
+            default -> throw new IllegalArgumentException(
+                "Unsupported report type: " + request.getReportType());
         };
     }
 
-    private GeneratedFile generateSettlementDetail(ReportDownloadRequest request, Map<String, String> params)
-            throws ReportException {
+    private GeneratedFile generateSettlementDetail(ReportDownloadRequest request,
+                                                   Map<String, String> params)
+        throws ReportException {
 
         String settlementId = this.requireParam(params, "settlementId");
         String fspId = this.requireParam(params, "fspId");
@@ -124,17 +130,16 @@ public class ReportGeneratorHandler implements ReportGenerator {
         String fileType = this.fileType(request.getFileType());
 
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(
-                new GenerateSettlementDetailReportCommand.Input(settlementId,
-                                                                fspId,
-                                                                dfspName,
-                                                                fileType,
-                                                                timezoneOffset));
+            new GenerateSettlementDetailReportCommand.Input(
+                settlementId, fspId, dfspName, fileType,
+                timezoneOffset));
 
         return new GeneratedFile(output.settlementDetailRptByte(), fileType);
     }
 
-    private GeneratedFile generateTransactionDetail(ReportDownloadRequest request, Map<String, String> params)
-            throws ReportException, IOException {
+    private GeneratedFile generateTransactionDetail(ReportDownloadRequest request,
+                                                    Map<String, String> params)
+        throws ReportException, IOException {
 
         Instant startDate = Instant.parse(this.requireParam(params, "startDate"));
         Instant endDate = Instant.parse(this.requireParam(params, "endDate"));
@@ -145,31 +150,23 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
         int pageSize = this.generateTransactionDetailReportCommand.transactionPageSize();
         int totalRowCount = this.generateTransactionDetailReportCommand.countRows(
-                new GenerateTransactionDetailReportCommand.CountInput(startDate, endDate, state, dfspId, timezoneOffset));
+            new GenerateTransactionDetailReportCommand.CountInput(
+                startDate, endDate, state, dfspId,
+                timezoneOffset));
 
         if (totalRowCount <= pageSize) {
 
             GenerateTransactionDetailReportCommand.Output output = this.generateTransactionDetailReportCommand.execute(
-                    new GenerateTransactionDetailReportCommand.Input(startDate,
-                                                                     endDate,
-                                                                     state,
-                                                                     dfspId,
-                                                                     fileType,
-                                                                     timezoneOffset,
-                                                                     0,
-                                                                     pageSize));
+                new GenerateTransactionDetailReportCommand.Input(
+                    startDate, endDate, state, dfspId,
+                    fileType, timezoneOffset, 0, pageSize));
 
             return new GeneratedFile(output.transactionDetailRptByte(), fileType);
         }
 
-        return this.generateTransactionDetailPagedZip(startDate,
-                                                      endDate,
-                                                      state,
-                                                      dfspId,
-                                                      timezoneOffset,
-                                                      fileType,
-                                                      totalRowCount,
-                                                      pageSize);
+        return this.generateTransactionDetailPagedZip(
+            startDate, endDate, state, dfspId,
+            timezoneOffset, fileType, totalRowCount, pageSize);
     }
 
     private GeneratedFile generateTransactionDetailPagedZip(Instant startDate,
@@ -179,7 +176,8 @@ public class ReportGeneratorHandler implements ReportGenerator {
                                                             String timezoneOffset,
                                                             String fileType,
                                                             int totalRowCount,
-                                                            int pageSize) throws ReportException, IOException {
+                                                            int pageSize)
+        throws ReportException, IOException {
 
         ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
 
@@ -192,16 +190,12 @@ public class ReportGeneratorHandler implements ReportGenerator {
                 int limit = Math.min(pageSize, totalRowCount - offset);
 
                 GenerateTransactionDetailReportCommand.Output chunkOutput = this.generateTransactionDetailReportCommand.execute(
-                        new GenerateTransactionDetailReportCommand.Input(startDate,
-                                                                         endDate,
-                                                                         state,
-                                                                         dfspId,
-                                                                         fileType,
-                                                                         timezoneOffset,
-                                                                         offset,
-                                                                         limit));
+                    new GenerateTransactionDetailReportCommand.Input(
+                        startDate, endDate, state, dfspId, fileType, timezoneOffset, offset,
+                        limit));
 
-                ZipEntry entry = new ZipEntry("transaction_detail_part_" + chunkNo + "." + fileType);
+                ZipEntry entry = new ZipEntry(
+                    "transaction_detail_part_" + chunkNo + "." + fileType);
                 zipOutputStream.putNextEntry(entry);
                 zipOutputStream.write(chunkOutput.transactionDetailRptByte());
                 zipOutputStream.closeEntry();
@@ -214,12 +208,16 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
     private String uploadReportFile(ReportDownloadRequest request, GeneratedFile generatedFile) {
 
-        return this.reportS3Storage.upload(request, generatedFile.bytes(), generatedFile.extension());
+        var fileLocation = this.createFilePath(request, generatedFile.extension);
+
+        return this.fileStorage.upload(
+            fileLocation, generatedFile.bytes(), generatedFile.extension());
     }
 
     private Map<String, String> paramsByRequestId(ReportDownloadRequestId requestId) {
 
-        List<ReportDownloadRequestParam> params = this.reportDownloadRequestParamRepository.findByRequestId(requestId);
+        List<ReportDownloadRequestParam> params = this.reportDownloadRequestParamRepository.findByRequestId(
+            requestId);
         Map<String, String> paramMap = new HashMap<>();
 
         for (ReportDownloadRequestParam param : params) {
@@ -277,4 +275,17 @@ public class ReportGeneratorHandler implements ReportGenerator {
     private record GeneratedFile(byte[] bytes, String extension) {
 
     }
+
+    public String createFilePath(ReportDownloadRequest request, String extension) {
+
+        String normalizedType = request.getReportType().name().toLowerCase(Locale.ROOT);
+        String timestamp = DateTimeFormatter
+                               .ofPattern("yyyyMMddHHmmss")
+                               .format(LocalDateTime.now(ZoneOffset.UTC));
+        String normalizedExt = extension.toLowerCase(Locale.ROOT);
+
+        return normalizedType + "/" + request.getId().getEntityId() + "_" + timestamp + "." +
+                   normalizedExt;
+    }
+
 }

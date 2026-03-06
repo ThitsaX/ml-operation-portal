@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.report_download.request;
+package com.thitsaworks.operation_portal.core.reporting.download.request;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

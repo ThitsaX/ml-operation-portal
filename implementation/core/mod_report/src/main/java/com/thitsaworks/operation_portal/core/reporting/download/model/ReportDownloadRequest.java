@@ -1,6 +1,8 @@
-package com.thitsaworks.operation_portal.core.report_download.model;
+package com.thitsaworks.operation_portal.core.reporting.download.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaEntity;
 import com.thitsaworks.operation_portal.component.misc.persistence.jpa.JpaInstantConverter;
 import com.thitsaworks.operation_portal.component.misc.util.Snowflake;
@@ -8,6 +10,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +29,8 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     private ReportDownloadRequestId requestId;
 
     @Column(name = "report_type")
-    private String reportType;
+    @Enumerated(EnumType.STRING)
+    private ReportType reportType;
 
     @Column(name = "params_signature")
     private String paramsSignature;
@@ -34,7 +39,8 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     private LocalDate dataVersion;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private FileDownloadStatus status;
 
     @Column(name = "file_type")
     private String fileType;
@@ -49,10 +55,10 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     @Convert(converter = JpaInstantConverter.class)
     private Instant finishedDate;
 
-    public ReportDownloadRequest(String reportType,
+    public ReportDownloadRequest(ReportType reportType,
                                  String paramsSignature,
                                  LocalDate dataVersion,
-                                 String status,
+                                 FileDownloadStatus status,
                                  String fileType,
                                  Instant createdDate,
                                  Instant updatedDate) {
@@ -73,7 +79,7 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
         return this.requestId;
     }
 
-    public void status(String status) {
+    public void status(FileDownloadStatus status) {
 
         this.status = status;
     }

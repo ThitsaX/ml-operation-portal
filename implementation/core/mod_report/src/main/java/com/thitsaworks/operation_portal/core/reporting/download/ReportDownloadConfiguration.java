@@ -1,11 +1,11 @@
-package com.thitsaworks.operation_portal.core.report_download;
+package com.thitsaworks.operation_portal.core.reporting.download;
 
 import com.thitsaworks.operation_portal.component.infra.mysql.core.CorePersistenceConfiguration;
 import com.thitsaworks.operation_portal.component.misc.MiscConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
-@ComponentScan("com.thitsaworks.operation_portal.core.report_download")
+@ComponentScan("com.thitsaworks.operation_portal.core.reporting.download")
 @Import(value = {
         MiscConfiguration.class,
         CorePersistenceConfiguration.class

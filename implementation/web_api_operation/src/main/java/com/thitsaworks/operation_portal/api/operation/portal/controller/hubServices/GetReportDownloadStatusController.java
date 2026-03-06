@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetReportDownloadStatus;
 import lombok.RequiredArgsConstructor;
@@ -21,25 +22,32 @@ import java.io.Serializable;
 @RequiredArgsConstructor
 public class GetReportDownloadStatusController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetReportDownloadStatusController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetReportDownloadStatusController.class);
 
     private final GetReportDownloadStatus getReportDownloadStatus;
+
     private final ObjectMapper objectMapper;
 
     @GetMapping("/secured/getReportDownloadStatus")
-    public ResponseEntity<Response> execute(@RequestParam("requestId") Long requestId)
-            throws DomainException, JsonProcessingException {
+    public ResponseEntity<Response> execute(@RequestParam("requestId") String requestId)
+        throws DomainException, JsonProcessingException {
 
-        GetReportDownloadStatus.Output output =
-                this.getReportDownloadStatus.execute(new GetReportDownloadStatus.Input(requestId));
+        GetReportDownloadStatus.Output output = this.getReportDownloadStatus.execute(
+            new GetReportDownloadStatus.Input(
+                new ReportDownloadRequestId(Long.parseLong(requestId))));
 
-        Response response = new Response(output.status());
+        Response response = new Response(output.status().name());
 
-        LOG.info("Get Report Download Status Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info(
+            "Get Report Download Status Response : [{}]",
+            this.objectMapper.writeValueAsString(response));
 
-        return new ResponseEntity<>(response, output.found() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(
+            response, output.found() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Response(@JsonProperty("status") String status) implements Serializable { }
+
 }

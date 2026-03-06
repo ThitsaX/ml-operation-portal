@@ -1,8 +1,8 @@
-package com.thitsaworks.operation_portal.core.report_download.model.repository;
+package com.thitsaworks.operation_portal.core.reporting.download.model.repository;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestParamId;
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
-import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
+import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequestParam;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;

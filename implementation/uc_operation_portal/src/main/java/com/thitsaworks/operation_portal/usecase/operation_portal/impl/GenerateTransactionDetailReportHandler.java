@@ -1,14 +1,17 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestRepository;
-import com.thitsaworks.operation_portal.core.report_download.request.ReportDownloadRequestManager;
-import com.thitsaworks.operation_portal.core.report_download.storage.ReportS3Storage;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -22,16 +25,17 @@ import java.util.Map;
 
 @Service
 public class GenerateTransactionDetailReportHandler
-        extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
-        implements GenerateTransactionDetailReport {
+    extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
+    implements GenerateTransactionDetailReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionDetailReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateTransactionDetailReportHandler.class);
 
     private static final String REPORT_TYPE_TRANSACTION_DETAIL = "TRANSACTION_DETAIL";
-    private static final String STATUS_READY = "READY";
+
     private final ReportDownloadRequestManager reportDownloadRequestManager;
-    private final ReportDownloadRequestRepository reportDownloadRequestRepository;
-    private final ReportS3Storage reportS3Storage;
+
+    private final S3FileStorage s3FileStorage;
 
     public GenerateTransactionDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
@@ -40,19 +44,14 @@ public class GenerateTransactionDetailReportHandler
                                                   PrincipalCache principalCache,
                                                   ActionAuthorizationManager actionAuthorizationManager,
                                                   ReportDownloadRequestManager reportDownloadRequestManager,
-                                                  ReportDownloadRequestRepository reportDownloadRequestRepository,
-                                                  ReportS3Storage reportS3Storage) {
+                                                  S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
-        this.reportDownloadRequestRepository = reportDownloadRequestRepository;
-        this.reportS3Storage = reportS3Storage;
+        this.s3FileStorage = s3FileStorage;
     }
 
     @Override
@@ -65,40 +64,36 @@ public class GenerateTransactionDetailReportHandler
         params.put("dfspId", normalizeAllToken(input.dfspId()));
         params.put("timezoneOffset", input.timezone());
 
-        ReportDownloadRequestManager.CreateOrReuseResult result =
-                this.reportDownloadRequestManager.createPendingOrReuse(
-                        REPORT_TYPE_TRANSACTION_DETAIL,
-                        normalizeFileType(input.fileType()),
-                        null,
-                        params);
+        ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
+            ReportType.valueOf(REPORT_TYPE_TRANSACTION_DETAIL), normalizeFileType(input.fileType()),
+            null, params);
 
-        String fileUrl = result.request().getFileUrl();
+        String fileKey = result.request().fileUrl();
+        String fileUrl = null;
 
-        if (result.reused()
-            && STATUS_READY.equalsIgnoreCase(result.request().getStatus())
-            && fileUrl != null
-            && !fileUrl.isBlank()) {
+        if (FileDownloadStatus.READY.equals(result.request().status()) && fileKey != null &&
+                !fileKey.isBlank()) {
 
             try {
 
-                fileUrl = this.reportS3Storage.regeneratePreSignedDownloadUrl(fileUrl);
-                result.request().fileUrl(fileUrl);
-                result.request().updatedDate(java.time.Instant.now());
-                this.reportDownloadRequestRepository.save(result.request());
+                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileUrl);
 
             } catch (Exception e) {
 
-                LOG.warn("Failed to regenerate pre-signed URL for requestId [{}]: [{}]",
-                         result.request().getId().getEntityId(),
-                         e.getMessage());
+                LOG.warn(
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    result.request().requestId().getEntityId(), e.getMessage());
             }
         }
 
-        return new Output(result.request().getId().getEntityId(),
-                          result.request().getStatus(),
-                          fileUrl,
-                          result.reused(),
-                          result.paramsSignature());
+        if (FileDownloadStatus.FAILED.equals(result.request().status())) {
+
+            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+        }
+
+        return new Output(
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.reused(), result.paramsSignature());
     }
 
     private String normalizeAllToken(String value) {

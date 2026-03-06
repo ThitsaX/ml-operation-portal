@@ -1,10 +1,13 @@
-package com.thitsaworks.operation_portal.core.report_download.request;
+package com.thitsaworks.operation_portal.core.reporting.download.request;
 
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
-import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
-import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestParamRepository;
-import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestRepository;
+import com.thitsaworks.operation_portal.core.reporting.download.data.ReportDownloadRequestData;
+import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
+import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequestParam;
+import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestParamRepository;
+import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,9 +22,6 @@ import java.util.Optional;
 @Service
 public class ReportDownloadRequestManager {
 
-    private static final String STATUS_PENDING = "PENDING";
-    private static final String STATUS_FAILED = "FAILED";
-
     private final ReportDownloadRequestRepository reportDownloadRequestRepository;
     private final ReportDownloadRequestParamRepository reportDownloadRequestParamRepository;
 
@@ -32,49 +32,48 @@ public class ReportDownloadRequestManager {
         this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
     }
 
-    public Optional<ReportDownloadRequest> findExistingRequest(String reportType,
+    public Optional<ReportDownloadRequest> findExistingRequest(ReportType reportType,
                                                                String fileType,
                                                                LocalDate dataVersion,
                                                                Map<String, String> params) {
 
-        String normalizedReportType = normalizeReportType(reportType);
         String normalizedFileType = normalizeFileType(fileType);
         LocalDate normalizedDataVersion = dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
-        String signature = ReportRequestSignature.from(normalizedReportType, normalizedFileType, params);
+        String signature = ReportRequestSignature.from(reportType.name(), normalizedFileType, params);
 
         return this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-                normalizedReportType,
+                reportType,
                 signature,
                 normalizedDataVersion);
     }
 
     @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
-    public CreateOrReuseResult createPendingOrReuse(String reportType,
-                                                     String fileType,
-                                                     LocalDate dataVersion,
-                                                     Map<String, String> params) {
+    public CreateOrReuseResult createPendingOrReuse(ReportType reportType,
+                                                    String fileType,
+                                                    LocalDate dataVersion,
+                                                    Map<String, String> params) {
 
         LocalDate normalizedDataVersion = dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
-        String normalizedReportType = normalizeReportType(reportType);
         String normalizedFileType = normalizeFileType(fileType);
-        String signature = ReportRequestSignature.from(normalizedReportType, normalizedFileType, params);
+        String signature = ReportRequestSignature.from(reportType.name(), normalizedFileType, params);
 
         Optional<ReportDownloadRequest> existing = this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-                normalizedReportType,
+                reportType,
                 signature,
                 normalizedDataVersion);
 
-        if (existing.isPresent() && !STATUS_FAILED.equalsIgnoreCase(existing.get().getStatus())) {
+        if (existing.isPresent() && !FileDownloadStatus.FAILED.equals(existing.get().getStatus())) {
 
-            return new CreateOrReuseResult(existing.get(), true, signature);
+            return new CreateOrReuseResult(new ReportDownloadRequestData(existing.get()), true, signature);
         }
+
 
         Instant now = Instant.now();
         ReportDownloadRequest request = new ReportDownloadRequest(
-                normalizedReportType,
+                reportType,
                 signature,
                 normalizedDataVersion,
-                STATUS_PENDING,
+                FileDownloadStatus.PENDING,
                 normalizedFileType,
                 now,
                 now);
@@ -86,31 +85,27 @@ public class ReportDownloadRequestManager {
             params.forEach((key, value) -> this.reportDownloadRequestParamRepository.save(
                     new ReportDownloadRequestParam(request.getId(), key, value, now)));
 
-            return new CreateOrReuseResult(request, false, signature);
+            return new CreateOrReuseResult(new ReportDownloadRequestData(request), false, signature);
 
         } catch (DataIntegrityViolationException e) {
 
             ReportDownloadRequest reused = this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-                    normalizedReportType,
+                    reportType,
                     signature,
                     normalizedDataVersion)
                                                                                .orElseThrow(() -> e);
 
-            return new CreateOrReuseResult(reused, true, signature);
+            return new CreateOrReuseResult(new ReportDownloadRequestData(reused), true, signature);
         }
     }
 
-    private String normalizeReportType(String reportType) {
-
-        return reportType == null ? "" : reportType.trim().toUpperCase(Locale.ROOT);
-    }
 
     private String normalizeFileType(String fileType) {
 
         return fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
     }
 
-    public record CreateOrReuseResult(ReportDownloadRequest request,
+    public record CreateOrReuseResult(ReportDownloadRequestData request,
                                       boolean reused,
                                       String paramsSignature) {
 

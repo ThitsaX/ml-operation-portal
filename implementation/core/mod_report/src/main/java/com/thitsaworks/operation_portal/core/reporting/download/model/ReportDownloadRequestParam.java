@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.core.report_download.model;
+package com.thitsaworks.operation_portal.core.reporting.download.model;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestParamId;
