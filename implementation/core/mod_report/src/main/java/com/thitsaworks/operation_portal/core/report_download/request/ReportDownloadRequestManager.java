@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.report_download.request;
 
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
 import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
 import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestParamRepository;
@@ -47,7 +48,7 @@ public class ReportDownloadRequestManager {
                 normalizedDataVersion);
     }
 
-    @Transactional
+    @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public CreateOrReuseResult createPendingOrReuse(String reportType,
                                                      String fileType,
                                                      LocalDate dataVersion,

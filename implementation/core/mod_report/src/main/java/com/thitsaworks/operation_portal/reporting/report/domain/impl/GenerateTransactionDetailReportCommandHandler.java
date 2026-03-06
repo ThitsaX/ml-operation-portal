@@ -36,8 +36,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int MAX_REPORT_ROWS = 20000;
-    private static final int TRANSACTION_PAGE_SIZE = 200000;
+    private static final int TRANSACTION_PAGE_SIZE = 500;
 
     @Autowired
     public GenerateTransactionDetailReportCommandHandler(
@@ -67,10 +66,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                                            input.dfspId(),
                                                            input.timeZoneOffset());
 
-        if (input.limit() == null && rowCount != null && rowCount > MAX_REPORT_ROWS) {
 
-            throw new ReportException(ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
-        }
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(

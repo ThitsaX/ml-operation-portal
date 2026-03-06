@@ -1,9 +1,13 @@
 package com.thitsaworks.operation_portal.core.report_download.storage;
 
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
@@ -12,9 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 
 @Service
@@ -25,21 +31,28 @@ public class ReportS3Storage {
     private final boolean enabled;
     private final String bucket;
     private final String region;
+    private final String accessKey;
+    private final String secretKey;
     private final String prefix;
     private final String endpoint;
     private final boolean pathStyleAccess;
     private final String publicBaseUrl;
+    private final Duration presignedUrlLifetime;
     private final AmazonS3 amazonS3;
 
     public ReportS3Storage() {
 
-        this.enabled = Boolean.parseBoolean(this.readConfig("REPORT_S3_ENABLED", "false"));
-        this.bucket = this.readConfig("REPORT_S3_BUCKET", "");
+        this.enabled = Boolean.parseBoolean(this.readConfig("REPORT_S3_ENABLED", "true"));
+        this.bucket = this.readConfig("REPORT_S3_BUCKET", "tw-mcix-test");
         this.region = this.readConfig("REPORT_S3_REGION", "ap-southeast-1");
+        this.accessKey = this.readConfig("REPORT_S3_ACCESS_KEY", "AKIAVJP4O2TSYIKUNH6Z");
+        this.secretKey = this.readConfig("REPORT_S3_SECRET_KEY", "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");
         this.prefix = this.readConfig("REPORT_S3_PREFIX", "report-downloads");
         this.endpoint = this.readConfig("REPORT_S3_ENDPOINT", "");
         this.pathStyleAccess = Boolean.parseBoolean(this.readConfig("REPORT_S3_PATH_STYLE_ACCESS", "true"));
         this.publicBaseUrl = this.readConfig("REPORT_S3_PUBLIC_BASE_URL", "");
+        this.presignedUrlLifetime =
+                Duration.ofSeconds(Long.parseLong(this.readConfig("REPORT_S3_PRESIGNED_TTL_SECONDS", "3600")));
 
         this.amazonS3 = this.enabled ? this.buildClient() : null;
     }
@@ -65,7 +78,7 @@ public class ReportS3Storage {
                 new PutObjectRequest(this.bucket, key, new ByteArrayInputStream(fileBytes), metadata);
 
         this.amazonS3.putObject(putObjectRequest);
-        String uploadedUrl = this.objectUrl(key);
+        String uploadedUrl = this.generatePreSignedDownloadUrl(key);
         LOG.info("Uploaded report request [{}] to S3 [{}]", request.getId().getEntityId(), uploadedUrl);
         return uploadedUrl;
     }
@@ -73,8 +86,16 @@ public class ReportS3Storage {
     private AmazonS3 buildClient() {
 
         AmazonS3ClientBuilder builder = AmazonS3ClientBuilder.standard()
-                                                             .withCredentials(DefaultAWSCredentialsProviderChain.getInstance())
                                                              .withPathStyleAccessEnabled(this.pathStyleAccess);
+
+        if (!this.accessKey.isBlank() && !this.secretKey.isBlank()) {
+
+            builder.withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(this.accessKey, this.secretKey)));
+
+        } else {
+
+            builder.withCredentials(DefaultAWSCredentialsProviderChain.getInstance());
+        }
 
         if (!this.endpoint.isBlank()) {
 
@@ -111,6 +132,16 @@ public class ReportS3Storage {
         }
 
         return "s3://" + this.bucket + "/" + key;
+    }
+
+    private String generatePreSignedDownloadUrl(String key) {
+
+        Date expiration = new Date(System.currentTimeMillis() + this.presignedUrlLifetime.toMillis());
+        GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(this.bucket, key)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+
+        return this.amazonS3.generatePresignedUrl(request).toString();
     }
 
     private String contentType(String extension) {

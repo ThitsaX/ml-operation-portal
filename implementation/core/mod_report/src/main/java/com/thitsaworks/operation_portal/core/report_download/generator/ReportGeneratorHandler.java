@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.report_download.generator;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
+import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequest;
 import com.thitsaworks.operation_portal.core.report_download.model.ReportDownloadRequestParam;
 import com.thitsaworks.operation_portal.core.report_download.model.repository.ReportDownloadRequestParamRepository;
@@ -59,7 +60,7 @@ public class ReportGeneratorHandler implements ReportGenerator {
     }
 
     @Override
-    @Transactional
+    @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public boolean generateNextPending() {
 
         Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(STATUS_PENDING);
