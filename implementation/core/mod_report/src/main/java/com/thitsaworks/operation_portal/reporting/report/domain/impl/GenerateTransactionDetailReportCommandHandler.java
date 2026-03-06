@@ -72,7 +72,8 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                        SELECT
                                          startUtc,
                                          endUtc,
-                                         DATE_ADD(endUtc, INTERVAL 1 MINUTE) AS endUtcPlus1Min
+                                         DATE_ADD(endUtc, INTERVAL 1 MINUTE) AS endUtcPlus1Min,
+                                         DATE_ADD(startUtc, INTERVAL -1 MINUTE) AS startUtcMinus1Min
                                        FROM bounds_base
                                      )
                                     
@@ -90,10 +91,10 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                     			SELECT t.transferId, t.transferStateId, t.createdDate
                                     				FROM transferStateChange t
                                     				JOIN (
-                                    							SELECT transferId, MAX(transferStateChangeId) AS maxId
+                                    						SELECT transferId, MAX(transferStateChangeId) AS maxId
                                     						FROM transferStateChange
                                     						JOIN bounds b 
-                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtcPlus1Min
+                                    						WHERE createdDate BETWEEN b.startUtcMinus1Min AND b.endUtcPlus1Min
                                     						GROUP BY transferId
                                     				) m
                                       				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
