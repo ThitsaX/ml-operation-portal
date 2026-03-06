@@ -59,7 +59,7 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
         LOG.info("Params : {}", params);
 
         String reportQuery = """
-                    WITH bounds AS (
+                    WITH bounds_base AS (
                                       SELECT
                                         CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
                                     						    CONVERT_TZ(?,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
@@ -67,7 +67,14 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                         CASE WHEN SUBSTRING(?,1,1) = '-' THEN\s
                                     						    CONVERT_TZ(? ,CONCAT(SUBSTRING(?,1,3),':',SUBSTRING(?,4,2)),'+00:00') ELSE
                                     						    CONVERT_TZ(?,CONCAT('+',SUBSTRING(?,1,2),':',SUBSTRING(?,3,2)) ,'+00:00') END AS endUtc
-                                    )
+                                    ),
+                                     bounds AS (
+                                       SELECT
+                                         startUtc,
+                                         endUtc,
+                                         DATE_ADD(endUtc, INTERVAL 1 MINUTE) AS endUtcPlus1Min
+                                       FROM bounds_base
+                                     )
                                     
                                     SELECT COUNT(*) AS rowCount
                                     FROM transfer t
@@ -80,13 +87,13 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
                                     LEFT JOIN quote q ON q.transactionReferenceId = t.transferId
                                     LEFT JOIN quoteResponse qR ON qR.quoteId = q.quoteId
                                     LEFT JOIN (
-                                    			SELECT t.transferStateChangeId, t.transferId, t.transferStateId, t.createdDate
+                                    			SELECT t.transferId, t.transferStateId, t.createdDate
                                     				FROM transferStateChange t
                                     				JOIN (
                                     							SELECT transferId, MAX(transferStateChangeId) AS maxId
                                     						FROM transferStateChange
-                                    						JOIN bounds b
-                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtc
+                                    						JOIN bounds b 
+                                    						WHERE createdDate BETWEEN b.startUtc AND b.endUtcPlus1Min
                                     						GROUP BY transferId
                                     				) m
                                       				ON m.transferId = t.transferId AND m.maxId = t.transferStateChangeId
