@@ -165,10 +165,13 @@ public class ReportGeneratorHandler implements ReportGenerator {
         String fileType = this.fileType(request.getFileType());
 
         int pageSize = this.generateTransactionDetailReportCommand.transactionPageSize();
+
         int totalRowCount = this.generateTransactionDetailReportCommand.countRows(
             new GenerateTransactionDetailReportCommand.CountInput(
                 startDate, endDate, state, dfspId,
                 timezoneOffset));
+
+        LOG.info("Transaction Detail Report Total Row Count : [{}]", totalRowCount);
 
         if (totalRowCount <= pageSize) {
 

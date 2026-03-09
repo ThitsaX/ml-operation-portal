@@ -87,7 +87,7 @@ SELECT 'TimeZoneOffSet' AS label,
 	<parameter name="offsetResult" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[($P{offset} == null || $P{offset} < 1 || $P{limit} == null || $P{limit} < 1)
         ? 0
-        : ($P{offset} - 1) * $P{limit}]]></defaultValueExpression>
+        : $P{offset}]]></defaultValueExpression>
 	</parameter>
 	<queryString language="plsql">
 		<![CDATA[WITH bounds_base AS (

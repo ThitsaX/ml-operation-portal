@@ -40,7 +40,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int AUDIT_PAGE_SIZE = 5;
+    private static final int AUDIT_PAGE_SIZE = 50;
 
     public GenerateAuditReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Core.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
