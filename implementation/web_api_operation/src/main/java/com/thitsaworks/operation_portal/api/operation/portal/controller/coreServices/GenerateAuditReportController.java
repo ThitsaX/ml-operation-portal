@@ -59,7 +59,9 @@ public class GenerateAuditReportController {
             actionId == null || actionId.isBlank() ? null : new ActionId(Long.parseLong(actionId)),
             fileType));
 
-        var response = new Response(output.rptBytes());
+        var response = new Response(
+            output.requestId().getEntityId().toString(), output.status().name(), output.fileUrl(),
+            output.reused(), output.paramsSignature());
 
         LOG.info("Generate Audit Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -68,6 +70,11 @@ public class GenerateAuditReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] rptBytes) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("reused") boolean reused,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

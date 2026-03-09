@@ -8,6 +8,7 @@ import java.util.Locale;
 public enum ReportType {
 
     SETTLEMENT_DETAIL,
-    TRANSACTION_DETAIL;
+    TRANSACTION_DETAIL,
+    AUDIT;
 
 }

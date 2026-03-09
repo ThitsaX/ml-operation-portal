@@ -9,6 +9,7 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequestParam;
 import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestParamRepository;
 import com.thitsaworks.operation_portal.core.reporting.download.model.repository.ReportDownloadRequestRepository;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
@@ -24,6 +25,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,17 +49,21 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
 
+    private final GenerateAuditReportCommand generateAuditReportCommand;
+
     public ReportGeneratorHandler(ReportDownloadRequestRepository reportDownloadRequestRepository,
                                   ReportDownloadRequestParamRepository reportDownloadRequestParamRepository,
                                   FileStorage fileStorage,
                                   GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand,
-                                  GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand) {
+                                  GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand,
+                                  GenerateAuditReportCommand generateAuditReportCommand) {
 
         this.reportDownloadRequestRepository = reportDownloadRequestRepository;
         this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
         this.fileStorage = fileStorage;
         this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
         this.generateTransactionDetailReportCommand = generateTransactionDetailReportCommand;
+        this.generateAuditReportCommand = generateAuditReportCommand;
     }
 
     @Override
@@ -112,12 +118,21 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
         Map<String, String> params = this.paramsByRequestId(request.getId());
 
-        return switch (request.getReportType()) {
-            case ReportType.SETTLEMENT_DETAIL -> this.generateSettlementDetail(request, params);
-            case ReportType.TRANSACTION_DETAIL -> this.generateTransactionDetail(request, params);
-            default -> throw new IllegalArgumentException(
-                "Unsupported report type: " + request.getReportType());
-        };
+        ReportType reportType = request.getReportType();
+
+        if (reportType == ReportType.SETTLEMENT_DETAIL) {
+            return this.generateSettlementDetail(request, params);
+        }
+
+        if (reportType == ReportType.TRANSACTION_DETAIL) {
+            return this.generateTransactionDetail(request, params);
+        }
+
+        if (reportType == ReportType.AUDIT) {
+            return this.generateAuditReport(request, params);
+        }
+
+        throw new IllegalArgumentException("Unsupported report type: " + reportType);
     }
 
     private GeneratedFile generateSettlementDetail(ReportDownloadRequest request,
@@ -207,6 +222,77 @@ public class ReportGeneratorHandler implements ReportGenerator {
         return new GeneratedFile(zipBytes.toByteArray(), "zip");
     }
 
+    private GeneratedFile generateAuditReport(ReportDownloadRequest request,
+                                              Map<String, String> params)
+        throws ReportException, IOException {
+
+        Instant fromDate = Instant.parse(this.requireParam(params, "fromDate"));
+        Instant toDate = Instant.parse(this.requireParam(params, "toDate"));
+        String realmId = this.normalizeOptionalFilter(params.get("realmId"));
+        String userId = this.normalizeOptionalFilter(params.get("userId"));
+        String actionId = this.normalizeOptionalFilter(params.get("actionId"));
+        String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
+        String fileType = this.fileType(request.getFileType());
+        List<String> grantedActionList = this.parseListParam(params.get("grantedActionList"));
+
+        int pageSize = this.generateAuditReportCommand.auditPageSize();
+        int totalRowCount = this.generateAuditReportCommand.countRows(
+            new GenerateAuditReportCommand.CountInput(
+                realmId, fromDate, toDate, userId, actionId, grantedActionList));
+
+        if (totalRowCount <= pageSize) {
+
+            GenerateAuditReportCommand.Output output = this.generateAuditReportCommand.execute(
+                new GenerateAuditReportCommand.Input(
+                    realmId, fromDate, toDate, timezoneOffset, userId, actionId, fileType,
+                    grantedActionList, 0, pageSize));
+
+            return new GeneratedFile(output.auditRptByte(), fileType);
+        }
+
+        return this.generateAuditPagedZip(
+            realmId, fromDate, toDate, timezoneOffset, userId, actionId, fileType,
+            grantedActionList, totalRowCount, pageSize);
+    }
+
+    private GeneratedFile generateAuditPagedZip(String realmId,
+                                                Instant fromDate,
+                                                Instant toDate,
+                                                String timezoneOffset,
+                                                String userId,
+                                                String actionId,
+                                                String fileType,
+                                                List<String> grantedActionList,
+                                                int totalRowCount,
+                                                int pageSize)
+        throws ReportException, IOException {
+
+        ByteArrayOutputStream zipBytes = new ByteArrayOutputStream();
+
+        try (ZipOutputStream zipOutputStream = new ZipOutputStream(zipBytes)) {
+
+            int chunkNo = 1;
+
+            for (int offset = 0; offset < totalRowCount; offset += pageSize) {
+
+                int limit = Math.min(pageSize, totalRowCount - offset);
+
+                GenerateAuditReportCommand.Output chunkOutput = this.generateAuditReportCommand.execute(
+                    new GenerateAuditReportCommand.Input(
+                        realmId, fromDate, toDate, timezoneOffset, userId, actionId, fileType,
+                        grantedActionList, offset, limit));
+
+                ZipEntry entry = new ZipEntry("audit_part_" + chunkNo + "." + fileType);
+                zipOutputStream.putNextEntry(entry);
+                zipOutputStream.write(chunkOutput.auditRptByte());
+                zipOutputStream.closeEntry();
+                chunkNo++;
+            }
+        }
+
+        return new GeneratedFile(zipBytes.toByteArray(), "zip");
+    }
+
     private String uploadReportFile(ReportDownloadRequest request, GeneratedFile generatedFile) {
 
         var fileLocation = this.createFilePath(request, generatedFile.extension);
@@ -241,6 +327,7 @@ public class ReportGeneratorHandler implements ReportGenerator {
         return value;
     }
 
+
     private String fileType(String fileType) throws ReportException {
 
         String normalized = fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
@@ -265,6 +352,33 @@ public class ReportGeneratorHandler implements ReportGenerator {
         }
 
         return "all".equalsIgnoreCase(value.trim()) ? "All" : value.trim();
+    }
+
+    private String normalizeOptionalFilter(String value) {
+
+        if (value == null) {
+            return null;
+        }
+
+        String trimmed = value.trim();
+
+        if (trimmed.isEmpty() || "all".equalsIgnoreCase(trimmed)) {
+            return null;
+        }
+
+        return trimmed;
+    }
+
+    private List<String> parseListParam(String value) {
+
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+
+        return Arrays.stream(value.split(","))
+                     .map(String::trim)
+                     .filter(item -> !item.isEmpty())
+                     .toList();
     }
 
     private record GeneratedFile(byte[] bytes, String extension) {

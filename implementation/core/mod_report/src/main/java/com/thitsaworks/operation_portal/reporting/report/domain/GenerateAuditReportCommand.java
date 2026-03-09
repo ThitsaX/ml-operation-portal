@@ -7,6 +7,13 @@ import java.util.List;
 
 public interface GenerateAuditReportCommand {
 
+    record CountInput(String realmId,
+                      Instant fromDate,
+                      Instant toDate,
+                      String userId,
+                      String actionId,
+                      List<String> grantedActionList) { }
+
     Output execute(Input input) throws ReportException;
 
     record Input(String realmId,
@@ -16,8 +23,14 @@ public interface GenerateAuditReportCommand {
                  String userId,
                  String actionId,
                  String fileType,
-                 List<String> grantedActionList) { }
+                 List<String> grantedActionList,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] auditRptByte) { }
+
+    int countRows(CountInput input);
+
+    int auditPageSize();
 
 }

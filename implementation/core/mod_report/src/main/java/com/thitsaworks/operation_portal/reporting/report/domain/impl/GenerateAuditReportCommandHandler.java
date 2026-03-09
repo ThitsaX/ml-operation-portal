@@ -25,6 +25,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +40,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int MAX_REPORT_ROWS = 20000;
+    private static final int AUDIT_PAGE_SIZE = 5;
 
     public GenerateAuditReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Core.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -74,67 +75,8 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             }
 
             params.put("grantedActionList", input.grantedActionList());
-
-            String inSql = "";
-
-            List<String> grantedActionList = input.grantedActionList();
-
-            if (grantedActionList != null && !grantedActionList.isEmpty()) {
-                String placeholders = grantedActionList
-                                          .stream()
-                                          .map(id -> "?")
-                                          .collect(Collectors.joining(", "));
-                inSql = " AND tac.action_id IN (" + placeholders + ") ";
-            }
-            String reportQuery = """
-                    SELECT COUNT(tac.action_code) AS rowAccount
-                    FROM tbl_audit AS ta
-                    LEFT JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
-                    LEFT JOIN tbl_user AS tu ON tu.user_id = ta.user_id
-                    JOIN tbl_action AS tac ON tac.action_id = ta.action_id
-                    WHERE
-                       (? IS NULL OR ? = '' OR ta.participant_id = ?)
-                       AND (
-                           (? IS NULL OR ? IS NULL)
-                           OR (ta.created_date BETWEEN ? AND ?)
-                       )
-                       AND (? IS NULL OR ? = '' OR ta.user_id = ?)
-                       AND (? IS NULL OR ? = '' OR tac.action_id = ?)
-                """ + inSql;
-
-            List<Object> objectList = new ArrayList<>();
-
-            objectList.add(input.realmId());
-            objectList.add(input.realmId());
-            objectList.add(input.realmId());
-
-            objectList.add(input.fromDate().getEpochSecond());
-            objectList.add(input.toDate().getEpochSecond());
-            objectList.add(input.fromDate().getEpochSecond());
-            objectList.add(input.toDate().getEpochSecond());
-
-            objectList.add(input.userId());
-            objectList.add(input.userId());
-            objectList.add(input.userId());
-
-            objectList.add(input.actionId());
-            objectList.add(input.actionId());
-            objectList.add(input.actionId());
-
-            if (grantedActionList != null && !grantedActionList.isEmpty()) {
-                objectList.addAll(grantedActionList);
-            }
-
-            Integer rowCount = jdbcTemplate.queryForObject(reportQuery, objectList.toArray(),
-                Integer.class);
-
-            LOG.info("Row Count: {}", rowCount);
-
-            if (rowCount != null && rowCount > MAX_REPORT_ROWS) {
-
-                throw new ReportException(
-                    ReportErrors.REPORT_MAXIMUM_LIMIT_EXCEPTION.format(rowCount, MAX_REPORT_ROWS));
-            }
+            params.put("offset", input.offset() == null ? 0 : input.offset());
+            params.put("limit", input.limit() == null ? Integer.MAX_VALUE : input.limit());
 
             InputStream jrxmlStream = getClass()
                                           .getClassLoader()
@@ -190,6 +132,84 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION);
         }
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        Integer rowCount = this.countAuditRows(input.realmId(),
+                                               input.fromDate(),
+                                               input.toDate(),
+                                               input.userId(),
+                                               input.actionId(),
+                                               input.grantedActionList());
+
+        return rowCount == null ? 0 : rowCount;
+    }
+
+    @Override
+    public int auditPageSize() {
+
+        return AUDIT_PAGE_SIZE;
+    }
+
+    private Integer countAuditRows(String realmId,
+                                   Instant fromDate,
+                                   Instant toDate,
+                                   String userId,
+                                   String actionId,
+                                   List<String> grantedActionList) {
+
+        String inSql = "";
+
+        if (grantedActionList != null && !grantedActionList.isEmpty()) {
+            String placeholders = grantedActionList
+                                      .stream()
+                                      .map(id -> "?")
+                                      .collect(Collectors.joining(", "));
+            inSql = " AND tac.action_id IN (" + placeholders + ") ";
+        }
+
+        String reportQuery = """
+                SELECT COUNT(tac.action_code) AS rowAccount
+                FROM tbl_audit AS ta
+                LEFT JOIN tbl_participant AS tp ON tp.participant_id = ta.participant_id
+                LEFT JOIN tbl_user AS tu ON tu.user_id = ta.user_id
+                JOIN tbl_action AS tac ON tac.action_id = ta.action_id
+                WHERE
+                   (? IS NULL OR ? = '' OR ta.participant_id = ?)
+                   AND (
+                       (? IS NULL OR ? IS NULL)
+                       OR (ta.created_date BETWEEN ? AND ?)
+                   )
+                   AND (? IS NULL OR ? = '' OR ta.user_id = ?)
+                   AND (? IS NULL OR ? = '' OR tac.action_id = ?)
+            """ + inSql;
+
+        List<Object> objectList = new ArrayList<>();
+
+        objectList.add(realmId);
+        objectList.add(realmId);
+        objectList.add(realmId);
+
+        objectList.add(fromDate == null ? null : fromDate.getEpochSecond());
+        objectList.add(toDate == null ? null : toDate.getEpochSecond());
+        objectList.add(fromDate == null ? null : fromDate.getEpochSecond());
+        objectList.add(toDate == null ? null : toDate.getEpochSecond());
+
+        objectList.add(userId);
+        objectList.add(userId);
+        objectList.add(userId);
+
+        objectList.add(actionId);
+        objectList.add(actionId);
+        objectList.add(actionId);
+
+        if (grantedActionList != null && !grantedActionList.isEmpty()) {
+            objectList.addAll(grantedActionList);
+        }
+
+        return this.jdbcTemplate.queryForObject(reportQuery, objectList.toArray(), Integer.class);
     }
 
 }
