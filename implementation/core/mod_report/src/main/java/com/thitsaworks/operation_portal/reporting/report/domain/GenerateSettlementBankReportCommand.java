@@ -8,10 +8,16 @@ public interface GenerateSettlementBankReportCommand {
                  String currencyId,
                  String fileType,
                  String timezoneOffset,
-                 String userName) { }
+                 String userName,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] settlementBankRptByte) { }
 
     Output execute(Input input) throws ReportException;
+
+    record CountInput(String settlementId, String currencyId) { }
+
+    int countRows(CountInput input);
 
 }

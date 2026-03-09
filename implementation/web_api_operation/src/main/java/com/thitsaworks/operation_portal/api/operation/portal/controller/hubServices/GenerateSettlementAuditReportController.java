@@ -48,7 +48,12 @@ public class GenerateSettlementAuditReportController {
             this.generateSettlementAuditReport.execute(new GenerateSettlementAuditReport.Input(Instant.parse(
                 startDate), Instant.parse(endDate), dfspId, currencyId, fileType, timezone));
 
-        var response = new Response(output.reportData());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.reused(),
+            output.paramsSignature());
 
         LOG.info("Generate Settlement Audit Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -57,6 +62,11 @@ public class GenerateSettlementAuditReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("reused") boolean reused,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

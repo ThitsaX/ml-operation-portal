@@ -167,7 +167,7 @@ LIMIT $P{limit} OFFSET $P{offset}]]>
         <defaultValueExpression><![CDATA[0]]></defaultValueExpression>
     </parameter>
     <parameter name="limit" class="java.lang.Integer">
-        <defaultValueExpression><![CDATA[2147483647]]></defaultValueExpression>
+        <defaultValueExpression><![CDATA[10000]]></defaultValueExpression>
     </parameter>
     <queryString language="plsql">
         <![CDATA[SELECT

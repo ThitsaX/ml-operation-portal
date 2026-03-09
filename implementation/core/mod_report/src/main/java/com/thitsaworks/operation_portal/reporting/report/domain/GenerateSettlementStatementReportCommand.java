@@ -12,10 +12,20 @@ public interface GenerateSettlementStatementReportCommand {
                  Instant endDate,
                  String filetype,
                  String currencyId,
-                 String timeZoneOffset) { }
+                 String timeZoneOffset,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] settlementStatementRptByte) { }
 
     Output execute(Input input) throws ReportException;
+
+    record CountInput(String fspId,
+                      Instant startDate,
+                      Instant endDate,
+                      String currencyId,
+                      String timeZoneOffset) { }
+
+    int countRows(CountInput input);
 
 }

@@ -23,17 +23,19 @@ import java.util.Optional;
 @Service
 public class ReportDownloadRequestManager {
 
-    private static final int MAX_RETRY_COUNT = 3;
-
     private final ReportDownloadRequestRepository reportDownloadRequestRepository;
 
     private final ReportDownloadRequestParamRepository reportDownloadRequestParamRepository;
 
+    private final Settings settings;
+
     public ReportDownloadRequestManager(ReportDownloadRequestRepository reportDownloadRequestRepository,
-                                        ReportDownloadRequestParamRepository reportDownloadRequestParamRepository) {
+                                        ReportDownloadRequestParamRepository reportDownloadRequestParamRepository,
+                                        Settings settings) {
 
         this.reportDownloadRequestRepository = reportDownloadRequestRepository;
         this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
+        this.settings = settings;
     }
 
     public Optional<ReportDownloadRequest> findExistingRequest(ReportType reportType,
@@ -42,13 +44,13 @@ public class ReportDownloadRequestManager {
                                                                Map<String, String> params) {
 
         String normalizedFileType = normalizeFileType(fileType);
-        LocalDate normalizedDataVersion = dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
-        String signature = ReportRequestSignature.from(reportType.name(), normalizedFileType, params);
+        LocalDate normalizedDataVersion =
+            dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
+        String signature = ReportRequestSignature.from(
+            reportType.name(), normalizedFileType, params);
 
         return this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-            reportType,
-            signature,
-            normalizedDataVersion);
+            reportType, signature, normalizedDataVersion);
     }
 
     @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
@@ -57,43 +59,38 @@ public class ReportDownloadRequestManager {
                                                     LocalDate dataVersion,
                                                     Map<String, String> params) {
 
-        LocalDate normalizedDataVersion = dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
+        LocalDate normalizedDataVersion =
+            dataVersion == null ? LocalDate.now(ZoneOffset.UTC) : dataVersion;
         String normalizedFileType = normalizeFileType(fileType);
-        String signature = ReportRequestSignature.from(reportType.name(), normalizedFileType, params);
+        String signature = ReportRequestSignature.from(
+            reportType.name(), normalizedFileType, params);
 
-        Optional<ReportDownloadRequest>
-            existing =
-            this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-                reportType,
-                signature,
-                normalizedDataVersion);
+        Optional<ReportDownloadRequest> existing = this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
+            reportType, signature, normalizedDataVersion);
 
-        if (existing.isPresent() && !FileDownloadStatus.FAILED.equals(existing.get()
-                                                                              .getStatus())) {
+        if (existing.isPresent() && !FileDownloadStatus.FAILED.equals(existing.get().getStatus())) {
 
-            return new CreateOrReuseResult(new ReportDownloadRequestData(existing.get()), true, signature);
+            return new CreateOrReuseResult(
+                new ReportDownloadRequestData(existing.get()), true, signature);
         }
 
         if (existing.isPresent()) {
 
             if (!this.canRetryFailedRequest(existing.get())) {
 
-                return new CreateOrReuseResult(new ReportDownloadRequestData(existing.get()), true, signature);
+                return new CreateOrReuseResult(
+                    new ReportDownloadRequestData(existing.get()), true, signature);
             }
 
             ReportDownloadRequest retried = this.resetFailedToPending(existing.get());
-            return new CreateOrReuseResult(new ReportDownloadRequestData(retried), false, signature);
+            return new CreateOrReuseResult(
+                new ReportDownloadRequestData(retried), false, signature);
         }
 
         Instant now = Instant.now();
         ReportDownloadRequest request = new ReportDownloadRequest(
-            reportType,
-            signature,
-            normalizedDataVersion,
-            FileDownloadStatus.PENDING,
-            normalizedFileType,
-            now,
-            now);
+            reportType, signature, normalizedDataVersion, FileDownloadStatus.PENDING,
+            normalizedFileType, now, now);
 
         try {
 
@@ -102,27 +99,27 @@ public class ReportDownloadRequestManager {
             params.forEach((key, value) -> this.reportDownloadRequestParamRepository.save(
                 new ReportDownloadRequestParam(request.getId(), key, value, now)));
 
-            return new CreateOrReuseResult(new ReportDownloadRequestData(request), false, signature);
+            return new CreateOrReuseResult(
+                new ReportDownloadRequestData(request), false, signature);
 
         } catch (DataIntegrityViolationException e) {
 
-            ReportDownloadRequest
-                reused =
-                this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-                        reportType,
-                        signature,
-                        normalizedDataVersion)
-                                                    .orElseThrow(() -> e);
+            ReportDownloadRequest reused = this.reportDownloadRequestRepository
+                                               .findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
+                                                   reportType, signature, normalizedDataVersion)
+                                               .orElseThrow(() -> e);
 
             if (FileDownloadStatus.FAILED.equals(reused.getStatus())) {
 
                 if (!this.canRetryFailedRequest(reused)) {
 
-                    return new CreateOrReuseResult(new ReportDownloadRequestData(reused), true, signature);
+                    return new CreateOrReuseResult(
+                        new ReportDownloadRequestData(reused), true, signature);
                 }
 
                 ReportDownloadRequest retried = this.resetFailedToPending(reused);
-                return new CreateOrReuseResult(new ReportDownloadRequestData(retried), false, signature);
+                return new CreateOrReuseResult(
+                    new ReportDownloadRequestData(retried), false, signature);
             }
 
             return new CreateOrReuseResult(new ReportDownloadRequestData(reused), true, signature);
@@ -131,8 +128,7 @@ public class ReportDownloadRequestManager {
 
     private String normalizeFileType(String fileType) {
 
-        return fileType == null ? "" : fileType.trim()
-                                               .toLowerCase(Locale.ROOT);
+        return fileType == null ? "" : fileType.trim().toLowerCase(Locale.ROOT);
     }
 
     private ReportDownloadRequest resetFailedToPending(ReportDownloadRequest failedRequest) {
@@ -153,7 +149,7 @@ public class ReportDownloadRequestManager {
 
         if (error == null || error.isBlank()) {
 
-            return this.retryCount(request) < MAX_RETRY_COUNT;
+            return this.retryCount(request) < this.settings.maxRetryCount;
         }
 
         String errorCode = this.extractErrorCode(error);
@@ -163,7 +159,7 @@ public class ReportDownloadRequestManager {
             return false;
         }
 
-        return this.retryCount(request) < MAX_RETRY_COUNT;
+        return this.retryCount(request) < this.settings.maxRetryCount;
     }
 
     private String extractErrorCode(String error) {
@@ -174,10 +170,8 @@ public class ReportDownloadRequestManager {
 
     private boolean isKnownReportError(String errorCode) {
 
-        return ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION.getCode()
-                                                             .equals(errorCode) ||
-                   ReportErrors.RESULT_NOT_FOUND_EXCEPTION.getCode()
-                                                          .equals(errorCode);
+        return ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION.getCode().equals(errorCode) ||
+                   ReportErrors.RESULT_NOT_FOUND_EXCEPTION.getCode().equals(errorCode);
     }
 
     private int retryCount(ReportDownloadRequest request) {
@@ -191,5 +185,7 @@ public class ReportDownloadRequestManager {
                                       String paramsSignature) {
 
     }
+
+    public record Settings(int maxRetryCount) { }
 
 }

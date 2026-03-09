@@ -36,7 +36,8 @@ import java.util.Map;
 @Service
 public class GenerateSettlementReportCommandHandler implements GenerateSettlementReportCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementReportCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateSettlementReportCommandHandler.class);
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,38 +59,35 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
         params.put("timezoneoffset", input.timezoneOffset());
         params.put("report", input.filetype());
         params.put("user", input.userName());
+        params.put("offset", input.offset() == null ? 0 : input.offset());
+        params.put("limit", input.limit());
 
-        InputStream jrxmlStream =
-                this.getClass().getClassLoader()
-                    .getResourceAsStream(
-                            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
+        InputStream jrxmlStream = this
+                                      .getClass()
+                                      .getClassLoader()
+                                      .getResourceAsStream(
+                                          "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
 
-        try (Connection conn = this.jdbcTemplate.getDataSource()
-                                                .getConnection()) {
+        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
 
             DatabaseMetaData md = conn.getMetaData();
-            LOG.info("URL={} | user={} | driver={} {}",
-                     md.getURL(),
-                     md.getUserName(),
-                     md.getDriverName(),
-                     md.getDriverVersion());
+            LOG.info(
+                "URL={} | user={} | driver={} {}", md.getURL(), md.getUserName(),
+                md.getDriverName(), md.getDriverVersion());
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("settlementReport");
             JasperReport settlementReport = JasperCompileManager.compileReport(design);
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params,
-                                                                   conn);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementReport, params, conn);
 
-            if (jasperPrint.getPages() == null || jasperPrint.getPages()
-                                                             .isEmpty()) {
+            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
             byte[] rptBytes = new byte[0];
 
-            if (input.filetype()
-                     .equalsIgnoreCase("xlsx")) {
+            if (input.filetype().equalsIgnoreCase("xlsx")) {
 
                 JRXlsxExporter xlsxExporter = new JRXlsxExporter();
                 ByteArrayOutputStream xlsReport = new ByteArrayOutputStream();
@@ -108,8 +106,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
-            } else if (input.filetype()
-                            .equalsIgnoreCase("pdf")) {
+            } else if (input.filetype().equalsIgnoreCase("pdf")) {
 
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
@@ -130,8 +127,7 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
                 pdfExporter.exportReport();
                 rptBytes = pdfReport.toByteArray();
 
-            } else if (input.filetype()
-                            .equalsIgnoreCase("csv")) {
+            } else if (input.filetype().equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
@@ -151,11 +147,54 @@ public class GenerateSettlementReportCommandHandler implements GenerateSettlemen
 
             throw e;
 
-        }  catch (Exception e) {
+        } catch (Exception e) {
 
             LOG.info("Error : [{}]", e.getMessage());
             throw new ReportException(ReportErrors.SETTLEMENT_REPORT_FAILURE_EXCEPTION);
         }
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        Integer rowCount = this.jdbcTemplate.queryForObject(
+            """
+                SELECT COUNT(*) FROM (
+                    SELECT s3.participantId, s3.currencyId
+                    FROM (
+                        SELECT
+                            IF(senderName != ?, senderId, receiverId) as participantId,
+                            s.currencyId
+                        FROM (
+                            SELECT MAX(CASE WHEN tP.amount > 0 THEN p.participantId END) as senderId,
+                                   MAX(CASE WHEN tP.amount < 0 THEN p.participantId END) as receiverId,
+                                   MAX(CASE WHEN tP.amount > 0 THEN p.name END)          as senderName,
+                                   MAX(CASE WHEN tP.amount < 0 THEN p.name END)          as receiverName,
+                                   pC.currencyId
+                            FROM transferParticipant tP
+                            INNER JOIN transferFulfilment tF on tP.transferId = tF.transferId
+                            INNER JOIN settlementSettlementWindow sSW on tF.settlementWindowId = sSW.settlementWindowId
+                            INNER JOIN settlementWindowStateChange sWSC on sSW.settlementWindowId = sWSC.settlementWindowId
+                            INNER JOIN settlement s on sSW.settlementId = s.settlementId
+                            INNER JOIN participantCurrency pC on tP.participantCurrencyId = pC.participantCurrencyId
+                            INNER JOIN participant p on pC.participantId = p.participantId
+                            WHERE tF.isValid
+                              AND sWSC.settlementWindowStateId = 'CLOSED'
+                              AND s.settlementId = ?
+                            GROUP BY tF.transferId, s.settlementId, pC.currencyId
+                        ) s
+                        WHERE s.senderName = ? OR s.receiverName = ?
+                        GROUP BY IF(senderName != ?, senderId, receiverId), s.currencyId
+                    ) s3
+                ) x
+                """, new Object[]{
+                input.fspId(),
+                input.settlementId(),
+                input.fspId(),
+                input.fspId(),
+                input.fspId()}, Integer.class);
+
+        return rowCount == null ? 0 : rowCount;
     }
 
 }
