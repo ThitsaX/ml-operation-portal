@@ -19,6 +19,12 @@
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<parameter name="reportFileType" class="java.lang.String"/>
 	<parameter name="userName" class="java.lang.String"/>
+	<parameter name="offset" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="limit" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[2147483647]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT CONCAT(DATE_FORMAT(CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2)))
        ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)))
@@ -42,7 +48,8 @@
 			WHERE s.settlementId = $P{settlementId} AND lat.name = 'POSITION'
 			AND ($P{currencyId} = 'All' COLLATE UTF8MB4_UNICODE_CI  OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = $P{currencyId} COLLATE UTF8MB4_UNICODE_CI )
 			GROUP BY p.name, pc.participantCurrencyId
-			 , lp.bank_name, lp.account_name, lp.account_number, op.description;]]>
+			 , lp.bank_name, lp.account_name, lp.account_number, op.description
+            LIMIT $P{limit} OFFSET $P{offset}]]>
 	</queryString>
 	<field name="participant" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="participant"/>
