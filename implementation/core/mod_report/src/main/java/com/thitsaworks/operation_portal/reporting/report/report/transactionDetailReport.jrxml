@@ -84,11 +84,6 @@ SELECT 'TimeZoneOffSet' AS label,
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<parameter name="limit" class="java.lang.Integer"/>
 	<parameter name="offset" class="java.lang.Integer"/>
-	<parameter name="offsetResult" class="java.lang.Integer" isForPrompting="false">
-		<defaultValueExpression><![CDATA[($P{offset} == null || $P{offset} < 1 || $P{limit} == null || $P{limit} < 1)
-        ? 0
-        : $P{offset}]]></defaultValueExpression>
-	</parameter>
 	<queryString language="plsql">
 		<![CDATA[WITH bounds_base AS (
   SELECT
@@ -157,7 +152,7 @@ JOIN bounds b
 WHERE (IFNULL(tss.createdDate,t.createdDate) BETWEEN  b.startUtc AND b.endUtc)
 	 AND ($P{state} ='All' OR tst.enumeration = $P{state})
 	  AND (($P{dfspId} ='All')  OR (payee.name = $P{dfspId}  OR payer.name = $P{dfspId}))
-LIMIT $P!{offsetResult}, $P!{limit}]]>
+LIMIT $P!{offset}, $P!{limit}]]>
 	</queryString>
 	<field name="transferId" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="transferId"/>
