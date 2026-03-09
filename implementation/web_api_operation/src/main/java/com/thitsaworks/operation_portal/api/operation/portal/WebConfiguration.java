@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.api.operation.portal;
 
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGenerator;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,13 @@ public class WebConfiguration implements WebMvcConfigurer {
 
         return new ReportGenerator.Settings(
             Integer.parseInt(System.getProperty("REPORT_PAGE_SIZE", "5000")));
+    }
+
+    @Bean
+    public ReportDownloadRequestManager.Settings reportDownloadRequestSettings() {
+
+        return new ReportDownloadRequestManager.Settings(
+            Integer.parseInt(System.getProperty("REPORT_MAX_RETRY", "3")));
     }
 
     @Getter
