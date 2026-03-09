@@ -38,8 +38,6 @@ public class GenerateTransactionDetailReportCommandHandler
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int TRANSACTION_PAGE_SIZE = 5000;
-
     @Autowired
     public GenerateTransactionDetailReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
@@ -58,7 +56,7 @@ public class GenerateTransactionDetailReportCommandHandler
         params.put("dfspId", input.dfspId());
         params.put("timezoneoffset", input.timeZoneOffset());
         params.put("offset", input.offset() == null ? 0 : input.offset());
-        params.put("limit", input.limit() == null ? TRANSACTION_PAGE_SIZE : input.limit());
+        params.put("limit", input.limit());
 
         LOG.info("Params : {}", params);
 
@@ -77,7 +75,7 @@ public class GenerateTransactionDetailReportCommandHandler
                 transactionDetailReport, params, conn);
 
             if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
-                
+
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
@@ -138,12 +136,6 @@ public class GenerateTransactionDetailReportCommandHandler
             input.startDate(), input.endDate(),
             input.state(), input.dfspId(), input.timeZoneOffset());
         return rowCount == null ? 0 : rowCount;
-    }
-
-    @Override
-    public int transactionPageSize() {
-
-        return TRANSACTION_PAGE_SIZE;
     }
 
     private Integer countTransactionDetailRows(java.time.Instant startDate,

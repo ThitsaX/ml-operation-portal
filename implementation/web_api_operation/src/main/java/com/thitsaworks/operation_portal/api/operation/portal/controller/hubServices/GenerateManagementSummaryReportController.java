@@ -61,7 +61,12 @@ public class GenerateManagementSummaryReportController {
                 userContext.userId()
                            .getId()));
 
-        var response = new Response(output.detailReportByte());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.reused(),
+            output.paramsSignature());
 
         LOG.info("Generate Management Summary Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -69,6 +74,11 @@ public class GenerateManagementSummaryReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("reused") boolean reused,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

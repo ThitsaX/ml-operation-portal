@@ -42,7 +42,12 @@ public class GenerateSettlementDetailReportController {
         GenerateSettlementDetailReport.Output output = this.generateSettlementDetailReport.execute(
             new GenerateSettlementDetailReport.Input(fspId, settlementId, fileType, timezone));
 
-        var response = new Response(output.detailReportData());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.reused(),
+            output.paramsSignature());
 
         LOG.info("Generate Detail Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -50,6 +55,11 @@ public class GenerateSettlementDetailReportController {
 
     }
 
-    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("reused") boolean reused,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

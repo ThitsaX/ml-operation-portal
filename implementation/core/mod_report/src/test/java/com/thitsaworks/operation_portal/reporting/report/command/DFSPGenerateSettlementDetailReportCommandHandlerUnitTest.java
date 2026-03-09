@@ -25,7 +25,9 @@ public class DFSPGenerateSettlementDetailReportCommandHandlerUnitTest {
                                                                                                            "all",
                                                                                                            "All",
                                                                                                            ".xlsx",
-                                                                                                           "0630"));
+                                                                                                           "0630",
+                                                                                                           null,
+                                                                                                           null));
 
         System.out.println(Arrays.toString(output.settlementDetailRptByte()));
     }

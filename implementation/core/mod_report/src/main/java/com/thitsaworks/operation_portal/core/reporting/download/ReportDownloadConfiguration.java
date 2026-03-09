@@ -11,5 +11,4 @@ import org.springframework.context.annotation.Import;
         CorePersistenceConfiguration.class
 })
 public class ReportDownloadConfiguration {
-
 }

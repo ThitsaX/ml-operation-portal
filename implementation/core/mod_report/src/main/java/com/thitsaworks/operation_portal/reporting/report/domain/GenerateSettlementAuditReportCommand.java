@@ -12,10 +12,20 @@ public interface GenerateSettlementAuditReportCommand {
                  String dfspName,
                  String currencyId,
                  String filetype,
-                 String timeZoneOffset) { }
+                 String timeZoneOffset,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] settlementAuditRptByte) { }
 
     Output execute(Input input) throws ReportException;
+
+    record CountInput(Instant startDate,
+                      Instant endDate,
+                      String dfspId,
+                      String currencyId,
+                      String timeZoneOffset) { }
+
+    int countRows(CountInput input);
 
 }

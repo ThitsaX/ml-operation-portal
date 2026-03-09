@@ -40,8 +40,6 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
     private final JdbcTemplate jdbcTemplate;
 
-    private static final int AUDIT_PAGE_SIZE = 50;
-
     public GenerateAuditReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Core.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
@@ -76,7 +74,7 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
 
             params.put("grantedActionList", input.grantedActionList());
             params.put("offset", input.offset() == null ? 0 : input.offset());
-            params.put("limit", input.limit() == null ? Integer.MAX_VALUE : input.limit());
+            params.put("limit", input.limit());
 
             InputStream jrxmlStream = getClass()
                                           .getClassLoader()
@@ -137,20 +135,11 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
     @Override
     public int countRows(CountInput input) {
 
-        Integer rowCount = this.countAuditRows(input.realmId(),
-                                               input.fromDate(),
-                                               input.toDate(),
-                                               input.userId(),
-                                               input.actionId(),
-                                               input.grantedActionList());
+        Integer rowCount = this.countAuditRows(
+            input.realmId(), input.fromDate(), input.toDate(), input.userId(), input.actionId(),
+            input.grantedActionList());
 
         return rowCount == null ? 0 : rowCount;
-    }
-
-    @Override
-    public int auditPageSize() {
-
-        return AUDIT_PAGE_SIZE;
     }
 
     private Integer countAuditRows(String realmId,

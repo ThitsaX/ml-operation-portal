@@ -2,35 +2,42 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateFeeSettlementReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateManagementSummaryReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateManagementSummaryReport;
+import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class GenerateManagementSummaryReportHandler
     extends OperationPortalAuditableUseCase<GenerateManagementSummaryReport.Input, GenerateManagementSummaryReport.Output>
     implements GenerateManagementSummaryReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateManagementSummaryReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateManagementSummaryReportHandler.class);
 
-    private final GenerateManagementSummaryReportCommand generateManagementSummaryReportCommand;
-
-    private final ParticipantQuery participantQuery;
+    private final ReportDownloadRequestManager reportDownloadRequestManager;
 
     private final UserQuery userQuery;
+
+    private final S3FileStorage s3FileStorage;
 
     public GenerateManagementSummaryReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
@@ -38,29 +45,58 @@ public class GenerateManagementSummaryReportHandler
                                                   ObjectMapper objectMapper,
                                                   PrincipalCache principalCache,
                                                   ActionAuthorizationManager actionAuthorizationManager,
-                                                  GenerateManagementSummaryReportCommand generateManagementSummaryReportCommand,
-                                                  ParticipantQuery participantQuery,
-                                                  UserQuery userQuery){
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+                                                  ReportDownloadRequestManager reportDownloadRequestManager,
+                                                  UserQuery userQuery,
+                                                  S3FileStorage s3FileStorage) {
 
-        this.generateManagementSummaryReportCommand = generateManagementSummaryReportCommand;
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
+
+        this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.userQuery = userQuery;
-        this.participantQuery = participantQuery;
+        this.s3FileStorage = s3FileStorage;
     }
+
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
         var getUser = this.userQuery.get(new UserId(input.userId()));
+        Map<String, String> params = new HashMap<>();
+        params.put("startDate", input.startDate());
+        params.put("endDate", input.endDate());
+        params.put("timezoneOffset", input.timezoneOffset());
+        params.put("userName", getUser.name());
 
-        GenerateManagementSummaryReportCommand.Output output = this.generateManagementSummaryReportCommand.execute(new GenerateManagementSummaryReportCommand.Input(input.startDate(),
-                                                                                                      input.endDate(),
-                                                                                                      input.timezoneOffset(),
-                                                                                                      input.fileType(),getUser.name()));
-        return new Output(output.managementSummaryRptByte());
+        ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
+            ReportType.MANAGEMENT_SUMMARY, ReportDownloadUtil.normalizeFileType(input.fileType()),
+            null, params);
+
+        String fileKey = result.request().fileUrl();
+        String fileUrl = null;
+
+        if (FileDownloadStatus.READY.equals(result.request().status()) && fileKey != null &&
+                !fileKey.isBlank()) {
+
+            try {
+                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
+            } catch (Exception e) {
+                LOG.warn(
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    result.request().requestId().getEntityId(), e.getMessage());
+            }
+        }
+
+        if (FileDownloadStatus.FAILED.equals(result.request().status())) {
+
+            throw new ReportException(ReportDownloadUtil.resolveFailedError(
+                result.request().errorMessage(),
+                ReportErrors.MANAGEMENT_SUMMARY_REPORT_FAILURE_EXCEPTION));
+        }
+
+        return new Output(
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.reused(), result.paramsSignature());
     }
+
 }

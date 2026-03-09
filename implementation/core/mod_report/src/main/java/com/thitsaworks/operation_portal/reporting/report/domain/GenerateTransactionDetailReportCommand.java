@@ -6,12 +6,6 @@ import java.time.Instant;
 
 public interface GenerateTransactionDetailReportCommand {
 
-    record CountInput(Instant startDate,
-                      Instant endDate,
-                      String state,
-                      String dfspId,
-                      String timeZoneOffset) { }
-
     record Input(Instant startDate,
                  Instant endDate,
                  String state,
@@ -26,8 +20,12 @@ public interface GenerateTransactionDetailReportCommand {
 
     Output execute(Input input) throws ReportException;
 
-    int countRows(CountInput input);
+    record CountInput(Instant startDate,
+                      Instant endDate,
+                      String state,
+                      String dfspId,
+                      String timeZoneOffset) { }
 
-    int transactionPageSize();
+    int countRows(CountInput input);
 
 }
