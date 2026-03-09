@@ -51,6 +51,9 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     @Column(name = "error_message")
     private String errorMessage;
 
+    @Column(name = "retry_count")
+    private Integer retryCount;
+
     @Column(name = "finished_date")
     @Convert(converter = JpaInstantConverter.class)
     private Instant finishedDate;
@@ -69,6 +72,7 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
         this.dataVersion = dataVersion;
         this.status = status;
         this.fileType = fileType;
+        this.retryCount = 0;
         this.setCreatedAt(createdDate);
         this.setUpdatedAt(updatedDate);
     }
@@ -92,6 +96,11 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     public void errorMessage(String errorMessage) {
 
         this.errorMessage = errorMessage;
+    }
+
+    public void retryCount(Integer retryCount) {
+
+        this.retryCount = retryCount;
     }
 
     public void updatedDate(Instant updatedDate) {
