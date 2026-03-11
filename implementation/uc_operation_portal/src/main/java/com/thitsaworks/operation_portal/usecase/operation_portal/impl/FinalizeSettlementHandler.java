@@ -255,7 +255,7 @@ public class FinalizeSettlementHandler
                             BigDecimal amount = new BigDecimal(account.getNetSettlementAmount()
                                                                       .getAmount());
                             if (amount.signum() == 0) {
-                                break;
+                                continue;
                             }
                             SettlementAction
                                 settlementAction =
