@@ -2,13 +2,14 @@ package com.thitsaworks.operation_portal.reporting.report.domain;
 
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
-public interface GenerateSettlementBankReportV2Command {
+public interface GenerateGuineaSettlementBankReportCommand {
 
     record Input(String settlementId,
                  String currencyId,
                  String fileType,
                  String timezoneOffset,
-                 String userName) { }
+                 String userName,
+                 String dfspId) {}
 
     record Output(byte[] settlementBankRptByte) { }
 

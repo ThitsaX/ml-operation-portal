@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReportV2;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateGuineaSettlementBankReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class GenerateSettlementBankReportV2Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportV2Controller.class);
 
-    private final GenerateSettlementBankReportV2 generateSettlementBankReportV2;
+    private final GenerateGuineaSettlementBankReport generateGuineaSettlementBankReport;
 
     private final ObjectMapper objectMapper;
 
@@ -50,9 +50,9 @@ public class GenerateSettlementBankReportV2Controller {
                                                .getAuthentication()
                                                .getDetails();
 
-        GenerateSettlementBankReportV2.Output output = this.generateSettlementBankReportV2.execute(
-            new GenerateSettlementBankReportV2.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
-                                                                                                            .getId()));
+        GenerateGuineaSettlementBankReport.Output output = this.generateGuineaSettlementBankReport.execute(
+            new GenerateGuineaSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
+                                                                                                                  .getId()));
 
         var response = new Response(output.reportData());
 
