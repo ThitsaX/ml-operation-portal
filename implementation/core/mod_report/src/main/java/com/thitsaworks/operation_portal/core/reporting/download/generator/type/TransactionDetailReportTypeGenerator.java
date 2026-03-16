@@ -4,12 +4,13 @@ import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGeneratedFile;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGenerator;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportTypeGenerator;
-import com.thitsaworks.operation_portal.core.reporting.download.generator.support.PagedZipSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.support.ReportGeneratorSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,11 +21,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDetailReportTypeGenerator.class);
+
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
 
     private final ReportGeneratorSupport reportGeneratorSupport;
-
-    private final PagedZipSupport pagedZipSupport;
 
     private final ReportGenerator.Settings settings;
 
@@ -55,6 +56,8 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
                 startDate, endDate, state, dfspId,
                 timezoneOffset));
 
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
+
         if (totalRowCount <= pageSize) {
             GenerateTransactionDetailReportCommand.Output output = this.generateTransactionDetailReportCommand.execute(
                 new GenerateTransactionDetailReportCommand.Input(
@@ -64,14 +67,14 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
             return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
         }
 
-        return this.pagedZipSupport.generatePagedZip(
-            "transaction_detail_part_", fileType, totalRowCount, pageSize,
-            (offset, limit) -> this.generateTransactionDetailReportCommand
-                                   .execute(new GenerateTransactionDetailReportCommand.Input(
-                                       startDate, endDate, state, dfspId, fileType, timezoneOffset,
-                                       offset, limit))
-                                   .transactionDetailRptByte());
+        GenerateTransactionDetailReportCommand.Output output =
+            this.generateTransactionDetailReportCommand.exportAll(
+                new GenerateTransactionDetailReportCommand.Input(
+                    startDate, endDate, state, dfspId, fileType, timezoneOffset, 0, pageSize),
+                totalRowCount,
+                pageSize);
+
+        return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
     }
 
 }
-

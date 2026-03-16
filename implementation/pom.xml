@@ -30,6 +30,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <mysql.connector.version>9.1.0</mysql.connector.version>
+        <apache.poi.version>5.4.1</apache.poi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <querydsl.version>5.1.0</querydsl.version>
         <retrofit.version>2.9.0</retrofit.version>
@@ -185,6 +186,11 @@
                 <groupId>com.aerospike</groupId>
                 <artifactId>aerospike-client</artifactId>
                 <version>6.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${apache.poi.version}</version>
             </dependency>
             <!-- from project's internal modules -->
             <dependency>

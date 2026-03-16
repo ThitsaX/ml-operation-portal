@@ -66,6 +66,10 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.thitsaworks.operation_portal.component</groupId>
             <artifactId>mod_infra</artifactId>
         </dependency>
