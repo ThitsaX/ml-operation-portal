@@ -13,37 +13,37 @@ import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateGuineaSettlementBankReportCommand;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankOverviewReportCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateGuineaSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankOverviewReport;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GenerateGuineaSettlementBankReportHandler
-        extends OperationPortalAuditableUseCase<GenerateGuineaSettlementBankReport.Input, GenerateGuineaSettlementBankReport.Output>
-        implements GenerateGuineaSettlementBankReport {
+public class GenerateSettlementBankOverviewReportHandler
+        extends OperationPortalAuditableUseCase<GenerateSettlementBankOverviewReport.Input, GenerateSettlementBankOverviewReport.Output>
+        implements GenerateSettlementBankOverviewReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateGuineaSettlementBankReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankOverviewReportHandler.class);
 
-    private final GenerateGuineaSettlementBankReportCommand generateGuineaSettlementBankReportCommand;
+    private final GenerateSettlementBankOverviewReportCommand generateSettlementBankOverviewReportCommand;
 
     private final ParticipantCache participantCache;
 
     private final UserCache userCache;
 
-    public GenerateGuineaSettlementBankReportHandler(CreateInputAuditCommand createInputAuditCommand,
-                                                     CreateOutputAuditCommand createOutputAuditCommand,
-                                                     CreateExceptionAuditCommand createExceptionAuditCommand,
-                                                     ObjectMapper objectMapper,
-                                                     PrincipalCache principalCache,
-                                                     ActionAuthorizationManager actionAuthorizationManager,
-                                                     GenerateGuineaSettlementBankReportCommand generateGuineaSettlementBankReportCommand,
-                                                     ParticipantCache participantCache,
-                                                     UserCache userCache
-                                                    ) {
+    public GenerateSettlementBankOverviewReportHandler(CreateInputAuditCommand createInputAuditCommand,
+                                                       CreateOutputAuditCommand createOutputAuditCommand,
+                                                       CreateExceptionAuditCommand createExceptionAuditCommand,
+                                                       ObjectMapper objectMapper,
+                                                       PrincipalCache principalCache,
+                                                       ActionAuthorizationManager actionAuthorizationManager,
+                                                       GenerateSettlementBankOverviewReportCommand generateSettlementBankOverviewReportCommand,
+                                                       ParticipantCache participantCache,
+                                                       UserCache userCache
+                                                      ) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -52,7 +52,7 @@ public class GenerateGuineaSettlementBankReportHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.generateGuineaSettlementBankReportCommand = generateGuineaSettlementBankReportCommand;
+        this.generateSettlementBankOverviewReportCommand = generateSettlementBankOverviewReportCommand;
         this.participantCache = participantCache;
         this.userCache = userCache;
     }
@@ -77,15 +77,19 @@ public class GenerateGuineaSettlementBankReportHandler
                                                                                                   .toString()));
         }
 
-        GenerateGuineaSettlementBankReportCommand.Output output =
-                this.generateGuineaSettlementBankReportCommand.execute(new GenerateGuineaSettlementBankReportCommand.Input(
+        boolean isParent = userParticipant.parentParticipantName() == null
+                           || userParticipant.parentParticipantName().isBlank();
+
+        GenerateSettlementBankOverviewReportCommand.Output output =
+                this.generateSettlementBankOverviewReportCommand.execute(new GenerateSettlementBankOverviewReportCommand.Input(
                         input.settlementId(),
                         input.currencyId().toUpperCase(),
                         input.fileType(),
                         input.timezone(),
                         userData.name(),
                         userParticipant.participantName()
-                                       .getValue()));
+                                       .getValue(),
+                        isParent));
 
         return new Output(output.settlementBankRptByte());
     }

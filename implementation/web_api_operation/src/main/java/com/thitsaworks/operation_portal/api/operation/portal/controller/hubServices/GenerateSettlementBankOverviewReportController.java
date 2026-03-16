@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateGuineaSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankOverviewReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,15 +21,15 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class GenerateSettlementBankReportV2Controller {
+public class GenerateSettlementBankOverviewReportController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportV2Controller.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankOverviewReportController.class);
 
-    private final GenerateGuineaSettlementBankReport generateGuineaSettlementBankReport;
+    private final GenerateSettlementBankOverviewReport generateSettlementBankOverviewReport;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generateSettlementBankReportV2")
+    @PostMapping("/secured/generateSettlementBankOverviewReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("currencyId") String currencyId,
                                             @RequestParam("fileType") String fileType,
@@ -37,7 +37,7 @@ public class GenerateSettlementBankReportV2Controller {
         throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Generate Settlement Bank Report V2 : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
+                "Generate Settlement Bank Overview Report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
             settlementId,
             currencyId,
             fileType,
@@ -50,13 +50,18 @@ public class GenerateSettlementBankReportV2Controller {
                                                .getAuthentication()
                                                .getDetails();
 
-        GenerateGuineaSettlementBankReport.Output output = this.generateGuineaSettlementBankReport.execute(
-            new GenerateGuineaSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
-                                                                                                                  .getId()));
+        GenerateSettlementBankOverviewReport.Output output = this.generateSettlementBankOverviewReport.execute(
+                new GenerateSettlementBankOverviewReport.Input(settlementId,
+                                                               currencyId,
+                                                               fileType,
+                                                               timezone,
+                                                               userContext.userId()
+                                                                          .getId()));
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Settlement Bank Report V2 Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info("Generate Settlement Bank Overview Report Response : [{}]",
+                 this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

@@ -57,6 +57,8 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
         params.put("timezoneoffset", input.timezoneOffset());
         params.put("reportFileType", input.fileType());
         params.put("userName", input.userName());
+        params.put("dfspId", input.dfspId());
+        params.put("isParent", input.isParent());
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(
