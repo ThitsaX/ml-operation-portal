@@ -2,7 +2,7 @@ package com.thitsaworks.operation_portal.reporting.report.domain;
 
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
-public interface GenerateSettlementBankReportCommand {
+public interface GenerateSettlementBankOverviewReportCommand {
 
     record Input(String settlementId,
                  String currencyId,

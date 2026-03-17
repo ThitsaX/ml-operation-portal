@@ -115,6 +115,12 @@
             ]
         },
         {
+           "menuName": "DFSP Settlement Overview Report",
+           "actionCodeList": [
+                "GenerateSettlementBankOverviewReport"
+            ]
+        },
+        {
             "menuName": "Pending Approvals",
             "actionCodeList": [
                 "GetPendingApprovalList",
