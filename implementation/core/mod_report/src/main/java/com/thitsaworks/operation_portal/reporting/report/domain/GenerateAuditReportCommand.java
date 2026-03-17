@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain;
 
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 
 import java.time.Instant;
@@ -28,6 +29,12 @@ public interface GenerateAuditReportCommand {
                       String userId,
                       String actionId,
                       List<String> grantedActionList) { }
+
+    default Output exportAll(Input input, int totalRowCount, int pageSize)
+        throws ReportException {
+
+        throw new ReportException(ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION);
+    }
 
     int countRows(CountInput input);
 

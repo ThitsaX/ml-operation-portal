@@ -4,12 +4,13 @@ import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGeneratedFile;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGenerator;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportTypeGenerator;
-import com.thitsaworks.operation_portal.core.reporting.download.generator.support.PagedZipSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.support.ReportGeneratorSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -21,11 +22,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 class AuditReportTypeGenerator implements ReportTypeGenerator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditReportTypeGenerator.class);
+
     private final GenerateAuditReportCommand generateAuditReportCommand;
 
     private final ReportGeneratorSupport reportGeneratorSupport;
-
-    private final PagedZipSupport pagedZipSupport;
 
     private final ReportGenerator.Settings settings;
 
@@ -57,6 +58,8 @@ class AuditReportTypeGenerator implements ReportTypeGenerator {
                 realmId, fromDate, toDate, userId, actionId,
                 grantedActionList));
 
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
+
         if (totalRowCount <= pageSize) {
             GenerateAuditReportCommand.Output output = this.generateAuditReportCommand.execute(
                 new GenerateAuditReportCommand.Input(
@@ -66,14 +69,14 @@ class AuditReportTypeGenerator implements ReportTypeGenerator {
             return new ReportGeneratedFile(output.auditRptByte(), fileType);
         }
 
-        return this.pagedZipSupport.generatePagedZip(
-            "audit_part_", fileType, totalRowCount, pageSize,
-            (offset, limit) -> this.generateAuditReportCommand
-                                   .execute(new GenerateAuditReportCommand.Input(
-                                       realmId, fromDate, toDate, timezoneOffset, userId, actionId,
-                                       fileType, grantedActionList, offset, limit))
-                                   .auditRptByte());
+        GenerateAuditReportCommand.Output output = this.generateAuditReportCommand.exportAll(
+            new GenerateAuditReportCommand.Input(
+                realmId, fromDate, toDate, timezoneOffset, userId, actionId, fileType,
+                grantedActionList, 0, pageSize),
+            totalRowCount,
+            pageSize);
+
+        return new ReportGeneratedFile(output.auditRptByte(), fileType);
     }
 
 }
-

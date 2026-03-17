@@ -4,12 +4,13 @@ import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGeneratedFile;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportGenerator;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportTypeGenerator;
-import com.thitsaworks.operation_portal.core.reporting.download.generator.support.PagedZipSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.support.ReportGeneratorSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateManagementSummaryReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,11 +20,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 class ManagementSummaryReportTypeGenerator implements ReportTypeGenerator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManagementSummaryReportTypeGenerator.class);
+
     private final GenerateManagementSummaryReportCommand generateManagementSummaryReportCommand;
 
     private final ReportGeneratorSupport reportGeneratorSupport;
-
-    private final PagedZipSupport pagedZipSupport;
 
     private final ReportGenerator.Settings settings;
 
@@ -47,6 +48,8 @@ class ManagementSummaryReportTypeGenerator implements ReportTypeGenerator {
         int totalRowCount = this.generateManagementSummaryReportCommand.countRows(
             new GenerateManagementSummaryReportCommand.CountInput(startDate, endDate));
 
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
+
         if (totalRowCount <= pageSize) {
             GenerateManagementSummaryReportCommand.Output output = this.generateManagementSummaryReportCommand.execute(
                 new GenerateManagementSummaryReportCommand.Input(
@@ -56,16 +59,14 @@ class ManagementSummaryReportTypeGenerator implements ReportTypeGenerator {
             return new ReportGeneratedFile(output.managementSummaryRptByte(), fileType);
         }
 
-        return this.pagedZipSupport.generatePagedZip(
-            "management_summary_part_", fileType, totalRowCount, pageSize,
-            (offset, limit) -> this.generateManagementSummaryReportCommand
-                                   .execute(
-                                       new GenerateManagementSummaryReportCommand.Input(
-                                           startDate,
-                                           endDate, timezoneOffset, fileType, userName, offset,
-                                           limit))
-                                   .managementSummaryRptByte());
+        GenerateManagementSummaryReportCommand.Output output =
+            this.generateManagementSummaryReportCommand.exportAll(
+                new GenerateManagementSummaryReportCommand.Input(
+                    startDate, endDate, timezoneOffset, fileType, userName, 0, pageSize),
+                totalRowCount,
+                pageSize);
+
+        return new ReportGeneratedFile(output.managementSummaryRptByte(), fileType);
     }
 
 }
-
