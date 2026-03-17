@@ -19,8 +19,8 @@
                 "CreateSettlementModel",
                 "CreateSettlementScheduler",
                 "CreateUser",
-                "CloseSettlementWindowsScheduler",
                 "CreateRole",
+                "CloseSettlementWindowsScheduler",
                 "DumpIAMEngineState",
                 "FinalizeSettlement",
                 "GenerateAuditReport",
@@ -328,6 +328,46 @@
                 "ResetCurrentPassword",
                 "SyncHubParticipantsToPortal"
             ]
+        },
+        {
+             "roleName": "Guinea DFSP Operator",
+             "actionCodeList": [
+                "ChangeCurrentPassword",
+                "CreateContact",
+                "GenerateAuditReport",
+                "GenerateSettlementDetailReport",
+                "GenerateSettlementSummaryReport",
+                "GenerateSettlementStatementReport",
+                "GenerateTransactionDetailReport",
+                "GenerateSettlementBankOverviewReport",
+                "GetActionListByUser",
+                "GetAnnouncementById",
+                "GetAnnouncementInfoList",
+                "GetAuditListByParticipant",
+                "GetAuditDetailById",
+                "GetContactList",
+                "GetGreeting",
+                "GetHubCurrencyList",
+                "GetIDTypeList",
+                "GetLiquidityProfileList",
+                "GetOtherParticipantList",
+                "GetParticipantCurrencies",
+                "GetParticipantList",
+                "GetParticipantListIncludingHub",
+                "GetParticipantListByParticipant",
+                "GetParticipantPositionList",
+                "GetParticipantProfile",
+                "GetParticipantUserListByParticipant",
+                "GetSettlementId",
+                "GetTransferDetail",
+                "GetTransferList",
+                "GetTransferStateList",
+                "GetUserProfile",
+                "ModifyContact",
+                "ModifyParticipantProfile",
+                "RemoveContact",
+                "SyncHubParticipantsToPortal"
+             ]
         }
     ]
 }

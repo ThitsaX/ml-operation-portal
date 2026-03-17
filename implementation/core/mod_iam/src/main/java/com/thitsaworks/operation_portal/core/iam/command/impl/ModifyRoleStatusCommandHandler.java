@@ -1,19 +1,16 @@
 package com.thitsaworks.operation_portal.core.iam.command.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreWriteTransactional;
-import com.thitsaworks.operation_portal.core.iam.command.CreateRoleCommand;
+import com.thitsaworks.operation_portal.core.iam.command.ModifyRoleStatusCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
-import com.thitsaworks.operation_portal.core.iam.model.Role;
 import com.thitsaworks.operation_portal.core.iam.model.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-public class CreateRoleCommandHandler implements CreateRoleCommand {
+public class ModifyRoleStatusCommandHandler implements ModifyRoleStatusCommand {
 
     private final RoleRepository roleRepository;
 
@@ -21,19 +18,17 @@ public class CreateRoleCommandHandler implements CreateRoleCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        Optional<Role> optRole = this.roleRepository.findOne(
-            RoleRepository.Filters.withName(input.name()));
+        var role = this.roleRepository.findById(input.roleId())
+                                      .orElseThrow(() -> new IAMException(IAMErrors.ROLE_NOT_FOUND.format(input.roleId()
+                                                                                                               .getId().toString())));
 
-        if (optRole.isPresent()) {
-
-            throw new IAMException(IAMErrors.DUPLICATE_ROLE_NAME.format(input.name()));
+        if (role.getActive() != input.active()) {
+            role.toggle();
         }
-
-        var role = new Role(input.name(), input.isDfsp());
 
         this.roleRepository.saveAndFlush(role);
 
-        return new Output(role.getRoleId());
+        return new Output(role.getRoleId(), true);
     }
 
 }
