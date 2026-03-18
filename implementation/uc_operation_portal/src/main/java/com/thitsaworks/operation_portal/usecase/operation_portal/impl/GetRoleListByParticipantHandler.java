@@ -50,14 +50,12 @@ public class GetRoleListByParticipantHandler
                                 .equalsIgnoreCase("hub")) {
 
             roleList = roleList.stream()
-                               .filter(role -> role.name() != null && role.name()
-                                                                          .startsWith("DFSP"))
+                               .filter(RoleData::isDfsp)
                                .toList();
         } else {
 
             roleList = roleList.stream()
-                               .filter(role -> role.name() != null && role.name()
-                                                                          .startsWith("HUB"))
+                               .filter(role -> !role.isDfsp())
                                .toList();
         }
 
