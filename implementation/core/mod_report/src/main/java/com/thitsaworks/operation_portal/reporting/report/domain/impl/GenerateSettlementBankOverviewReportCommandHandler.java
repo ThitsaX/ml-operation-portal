@@ -1,7 +1,7 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportV2Command;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankOverviewReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -34,13 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GenerateSettlementBankReportV2CommandHandler implements GenerateSettlementBankReportV2Command {
+public class GenerateSettlementBankOverviewReportCommandHandler
+        implements GenerateSettlementBankOverviewReportCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportV2CommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankOverviewReportCommandHandler.class);
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public GenerateSettlementBankReportV2CommandHandler(
+    public GenerateSettlementBankOverviewReportCommandHandler(
             @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
@@ -56,10 +57,12 @@ public class GenerateSettlementBankReportV2CommandHandler implements GenerateSet
         params.put("timezoneoffset", input.timezoneOffset());
         params.put("reportFileType", input.fileType());
         params.put("userName", input.userName());
+        params.put("dfspId", input.dfspId());
+        params.put("isParent", input.isParent());
 
         InputStream jrxmlStream = getClass().getClassLoader()
                                             .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReportV2.jrxml");
+                                                    "com/thitsaworks/operation_portal/reporting/report/report/settlementBankOverviewReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource()
                                                 .getConnection()) {
@@ -72,7 +75,7 @@ public class GenerateSettlementBankReportV2CommandHandler implements GenerateSet
                      md.getDriverVersion());
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("settlementBankReportV2");
+            design.setName("settlementBankReport");
 
             // Remove pageFooter for Excel, keep for PDF
             if (input.fileType().equalsIgnoreCase("xlsx")) {

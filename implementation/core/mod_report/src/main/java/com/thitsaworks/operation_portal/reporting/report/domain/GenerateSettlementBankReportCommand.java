@@ -8,7 +8,9 @@ public interface GenerateSettlementBankReportCommand {
                  String currencyId,
                  String fileType,
                  String timezoneOffset,
-                 String userName) { }
+                 String userName,
+                 String dfspId,
+                 boolean isParent) {}
 
     record Output(byte[] settlementBankRptByte) { }
 

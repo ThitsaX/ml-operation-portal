@@ -2,8 +2,8 @@ package com.thitsaworks.operation_portal.usecase.operation_portal;
 
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface GenerateSettlementBankReportV2 extends
-                                              UseCase<GenerateSettlementBankReportV2.Input, GenerateSettlementBankReportV2.Output> {
+public interface GenerateSettlementBankOverviewReport extends
+                                              UseCase<GenerateSettlementBankOverviewReport.Input, GenerateSettlementBankOverviewReport.Output> {
 
     record Input(String settlementId,
                  String currencyId,

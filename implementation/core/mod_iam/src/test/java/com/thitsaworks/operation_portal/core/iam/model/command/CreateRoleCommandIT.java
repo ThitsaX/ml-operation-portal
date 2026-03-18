@@ -28,7 +28,7 @@ public class CreateRoleCommandIT extends BaseVaultSetUpTest {
     @Test
     public void success() throws IAMException {
 
-        LOG.info("Role : [{}]", this.createRoleCommand.execute(new CreateRoleCommand.Input(new RoleId(1L), "ADMIN")).roleId());
+        LOG.info("Role : [{}]", this.createRoleCommand.execute(new CreateRoleCommand.Input("ADMIN", false)).roleId());
     }
 
 }

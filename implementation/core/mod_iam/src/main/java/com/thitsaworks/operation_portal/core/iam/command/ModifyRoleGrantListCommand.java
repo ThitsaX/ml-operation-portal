@@ -1,15 +1,17 @@
 package com.thitsaworks.operation_portal.core.iam.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 
-public interface CreateRoleCommand {
+import java.util.List;
+
+public interface ModifyRoleGrantListCommand {
 
     Output execute(Input input) throws IAMException;
 
-    record Input(String name, boolean isDfsp) { }
+    record Input(RoleId roleId, List<ActionId> actionIdList) { }
 
-    record Output(RoleId roleId) { }
+    record Output(boolean modified) { }
 
 }
-
