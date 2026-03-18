@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,6 +21,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        SettlementSummaryReportTypeGenerator.class);
+
     private final GenerateSettlementReportCommand generateSettlementReportCommand;
 
     private final ReportGeneratorSupport reportGeneratorSupport;
@@ -26,7 +31,6 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
     private final PagedZipSupport pagedZipSupport;
 
     private final ReportGenerator.Settings settings;
-
 
     @Override
     public ReportType reportType() {
@@ -50,6 +54,8 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
         int totalRowCount = this.generateSettlementReportCommand.countRows(
             new GenerateSettlementReportCommand.CountInput(fspId, settlementId));
 
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
+
         if (totalRowCount <= pageSize) {
             GenerateSettlementReportCommand.Output output = this.generateSettlementReportCommand.execute(
                 new GenerateSettlementReportCommand.Input(
@@ -62,10 +68,9 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
         return this.pagedZipSupport.generatePagedZip(
             "settlement_summary_part_", fileType, totalRowCount, pageSize,
             (offset, limit) -> this.generateSettlementReportCommand
-                                   .execute(
-                                       new GenerateSettlementReportCommand.Input(
-                                           fspId, fspName, settlementId, fileType, timezoneOffset,
-                                           userName, offset, limit))
+                                   .execute(new GenerateSettlementReportCommand.Input(
+                                       fspId, fspName, settlementId, fileType, timezoneOffset,
+                                       userName, offset, limit))
                                    .settlementRptByte());
     }
 

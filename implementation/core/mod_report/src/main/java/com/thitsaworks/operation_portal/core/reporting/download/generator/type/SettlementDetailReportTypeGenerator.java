@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,6 +20,8 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 class SettlementDetailReportTypeGenerator implements ReportTypeGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettlementDetailReportTypeGenerator.class);
 
     private final GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand;
 
@@ -47,6 +51,8 @@ class SettlementDetailReportTypeGenerator implements ReportTypeGenerator {
         int pageSize = this.settings.reportPageSize();
         int totalRowCount = this.generateSettlementDetailReportCommand.countRows(
             new GenerateSettlementDetailReportCommand.CountInput(settlementId, fspId));
+
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
 
         if (totalRowCount <= pageSize) {
             GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(

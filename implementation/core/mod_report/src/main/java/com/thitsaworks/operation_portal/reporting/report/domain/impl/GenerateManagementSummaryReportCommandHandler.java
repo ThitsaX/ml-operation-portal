@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
+import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateManagementSummaryReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@NoLogging
 public class GenerateManagementSummaryReportCommandHandler implements GenerateManagementSummaryReportCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateManagementSummaryReportCommandHandler.class);

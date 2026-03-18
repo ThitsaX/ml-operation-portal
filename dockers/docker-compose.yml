@@ -112,6 +112,8 @@ services:
       CENTRAL_LEDGER_ENDPOINT: https://google.com
       SETTLEMENT_ENDPOINT: https://google.com
       OPERATION_PORTAL_FRONTEND_ENDPOINT: https://google.com
+      REPORT_PAGE_SIZE: 100000
+
 
 volumes:
   vault-data:

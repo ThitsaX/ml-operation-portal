@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -19,6 +21,8 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 class SettlementBankReportTypeGenerator implements ReportTypeGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettlementBankReportTypeGenerator.class);
 
     private final GenerateSettlementBankReportCommand generateSettlementBankReportCommand;
 
@@ -50,6 +54,9 @@ class SettlementBankReportTypeGenerator implements ReportTypeGenerator {
         int pageSize = this.settings.reportPageSize();
         int totalRowCount = this.generateSettlementBankReportCommand.countRows(
             new GenerateSettlementBankReportCommand.CountInput(settlementId, currencyId));
+
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
+
 
         if (totalRowCount <= pageSize) {
             GenerateSettlementBankReportCommand.Output output = this.generateSettlementBankReportCommand.execute(

@@ -10,6 +10,8 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDown
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.Map;
 @Component
 @RequiredArgsConstructor
 class AuditReportTypeGenerator implements ReportTypeGenerator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuditReportTypeGenerator.class);
 
     private final GenerateAuditReportCommand generateAuditReportCommand;
 
@@ -56,6 +60,8 @@ class AuditReportTypeGenerator implements ReportTypeGenerator {
             new GenerateAuditReportCommand.CountInput(
                 realmId, fromDate, toDate, userId, actionId,
                 grantedActionList));
+
+        LOGGER.info("Total Row Count : [{}]", totalRowCount);
 
         if (totalRowCount <= pageSize) {
             GenerateAuditReportCommand.Output output = this.generateAuditReportCommand.execute(
