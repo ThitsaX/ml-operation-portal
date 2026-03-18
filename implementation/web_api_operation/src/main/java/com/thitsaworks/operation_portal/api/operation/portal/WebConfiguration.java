@@ -46,7 +46,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     public ReportGenerator.Settings reportSettings() {
 
         return new ReportGenerator.Settings(
-            Integer.parseInt(System.getProperty("REPORT_PAGE_SIZE", "5000")));
+            Integer.parseInt(System.getProperty("REPORT_PAGE_SIZE")));
     }
 
     @Bean
