@@ -113,23 +113,23 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
                       pl.createdDate AS createdDate,
                       NULL AS fundsIn,
                       NULL AS fundsOut,
-                      NULL AS balance,
+                      ndc_percent.balance AS balance,
                       CASE
                         WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0
                           THEN '-'
                         ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%')
                       END AS ndcPercent,
-                      IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc
+                      IFNULL(ndc_percent.ndcAmount, IFNULL(ROUND(IFNULL(pl.value,0),2),0)) AS ndc
                     FROM participant p
                     INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
                     INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId 
                     LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
                     LEFT JOIN (
                       SELECT * FROM (
-                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate
+                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS balance, FROM_UNIXTIME(updated_date) AS updatedDate
                         FROM operation_portal.tbl_participant_ndc
                         UNION
-                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate
+                        SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS balance, FROM_UNIXTIME(updated_date) AS updatedDate
                         FROM operation_portal.tbl_participant_ndc_history
                       ) Q
                     ) ndc_percent

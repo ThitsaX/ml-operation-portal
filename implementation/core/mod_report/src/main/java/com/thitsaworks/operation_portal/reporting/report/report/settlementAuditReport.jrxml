@@ -149,21 +149,21 @@ SELECT * FROM (
 	      	  END AS processDescription, 
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
-				  0 AS balance, 
+				  ndc_percent.dbBalance AS balance, 
 				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
-				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
+				  IFNULL(ndc_percent.ndcAmount, IFNULL(ROUND(IFNULL(pl.value,0),2),0)) AS ndc,
 				  pc.currencyId AS currency,
 				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
-				  IFNULL(u.email,'') AS madeBy
+				  IFNULL(ndc_percent.madeBy, IFNULL(u.email,'')) AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
 		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId 
 		INNER JOIN currency c ON c.currencyId = pc.currencyId 
 		LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
 		LEFT JOIN (SELECT * FROM (
-		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS dbBalance, made_by AS madeBy, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
 		UNION 
-		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS dbBalance, made_by AS madeBy, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
 		)Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2
 		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 		LEFT JOIN operation_portal.tbl_approval_request ar ON ar.participant_name = p.name AND ar.participant_currency = pc.currencyId 
@@ -246,46 +246,6 @@ final AS (
 
       ELSE s.createdDate
     END AS pair_createdDate,
- 
-    CASE
-      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription LIKE 'Settlement:%'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription = 'Deposit'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription = 'Withdrawal'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      ELSE NULL
-    END AS pair_balance,
 
     CASE
       WHEN s.processDescription LIKE 'Settlement:%' THEN 1
@@ -329,20 +289,7 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  
-		  CASE WHEN processDescription IN (
-	      'NDC Amount Update Due to Settlement',
-	      'NDC Amount Updated Due to Deposit',
-	      'NDC Amount Updated Due to Withdrawal')
-	      THEN COALESCE(pair_balance, 0)
-   	   WHEN processDescription LIKE 'NDC%' THEN
-	      COALESCE(
-	        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
-	          OVER (PARTITION BY dfspId, currency, grp),
-	        0
-	      )
-     ELSE ABS(balance) END AS balance,
-  
+		  balance,
 		  ndcPercent, 
 		  ndc, 
 		  currency,
@@ -542,21 +489,21 @@ SELECT * FROM (
 	      	  END AS processDescription, 
 				  0 AS fundsIn, 
 				  0 AS fundsOut, 
-				  0 AS balance, 
+				  ndc_percent.dbBalance AS balance, 
 				  CASE WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0 THEN '-' ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%') END AS ndcPercent,
-				  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
+				  IFNULL(ndc_percent.ndcAmount, IFNULL(ROUND(IFNULL(pl.value,0),2),0)) AS ndc,
 				  pc.currencyId AS currency,
 				  IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')),'') AS settlementBankAccount,
-				  IFNULL(u.email,'') AS madeBy
+				  IFNULL(ndc_percent.madeBy, IFNULL(u.email,'')) AS madeBy
 		FROM participant p
 		INNER JOIN participantCurrency pc ON p.participantId = pc.participantId 
 		INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId 
 		INNER JOIN currency c ON c.currencyId = pc.currencyId 
 		LEFT JOIN participantLimit pl ON pl.participantCurrencyId = pc.participantCurrencyId
 		LEFT JOIN (SELECT * FROM (
-		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS dbBalance, made_by AS madeBy, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc
 		UNION 
-		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
+		SELECT participant_name AS dfspCode,currency,ndc_percent AS ndcPercent, ndc_amount AS ndcAmount, balance AS dbBalance, made_by AS madeBy, FROM_UNIXTIME(updated_date) AS updatedDate FROM operation_portal.tbl_participant_ndc_history
 		)Q)ndc_percent ON ndc_percent.dfspCode = p.name AND ndc_percent.currency = pc.currencyId AND ABS(TIMESTAMPDIFF(SECOND,  ndc_percent.updatedDate , pl.createdDate)) <= 2
 		LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 		LEFT JOIN operation_portal.tbl_approval_request ar ON ar.participant_name = p.name AND ar.participant_currency = pc.currencyId 
@@ -639,46 +586,6 @@ final AS (
 
       ELSE s.createdDate
     END AS pair_createdDate,
- 
-    CASE
-      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription LIKE 'Settlement:%'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription = 'Deposit'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
-        (
-          SELECT ABS(st.balance)
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription = 'Withdrawal'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        )
-
-      ELSE NULL
-    END AS pair_balance,
 
     CASE
       WHEN s.processDescription LIKE 'Settlement:%' THEN 1
@@ -722,20 +629,7 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  
-		  CASE WHEN processDescription IN (
-	      'NDC Amount Update Due to Settlement',
-	      'NDC Amount Updated Due to Deposit',
-	      'NDC Amount Updated Due to Withdrawal')
-	      THEN COALESCE(pair_balance, 0)
-   	   WHEN processDescription LIKE 'NDC%' THEN
-	      COALESCE(
-	        MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
-	          OVER (PARTITION BY dfspId, currency, grp),
-	        0
-	      )
-     ELSE ABS(balance) END AS balance,
-  
+		  balance,
 		  ndcPercent, 
 		  ndc, 
 		  currency,
