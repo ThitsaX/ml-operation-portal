@@ -13,7 +13,7 @@
 	<property name="net.sf.jasperreports.export.xlsx.sheet.names.0" value="SettlementBankReport"/>
 	<property name="net.sf.jasperreports.export.pdf.create.batch.mode.bookmarks" value="true"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Guinea Dev Data Adapter"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="204"/>
 	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="785"/>
 	<subDataset name="NetPositionSummaryDS" uuid="d44912b1-e131-4631-999f-7ae1ee4d6872">
@@ -498,7 +498,7 @@ GROUP BY settlementBankAccount, currency;]]>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="111">
+		<band height="167">
 			<textField>
 				<reportElement x="250" y="23" width="250" height="20" uuid="d2d4ebd7-5976-4664-aadc-f94be73b90a3">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -521,27 +521,7 @@ GROUP BY settlementBankAccount, currency;]]>
 				<reportElement x="0" y="23" width="250" height="20" uuid="69214943-c654-4685-96f3-9fb4b9439f1d">
 					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-					<printWhenExpression><![CDATA["PDF".equalsIgnoreCase($P{reportFileType}) && Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
-				</reportElement>
-				<box leftPadding="1">
-					<pen lineWidth="0.25"/>
-					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement>
-					<font fontName="Calibri" size="11" isBold="true"/>
-					<paragraph lineSpacing="Single"/>
-				</textElement>
-				<textFieldExpression><![CDATA["Net Summary"]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="0" y="23" width="250" height="20" uuid="ef474fa4-0a6c-412c-ac9b-5c2986f046f3">
-					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
-					<property name="net.sf.jasperreports.export.xls.auto.fit.row" value="true"/>
-					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
-					<printWhenExpression><![CDATA[!"PDF".equalsIgnoreCase($P{reportFileType}) && Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
 				</reportElement>
 				<box leftPadding="1">
 					<pen lineWidth="0.25"/>
@@ -557,7 +537,7 @@ GROUP BY settlementBankAccount, currency;]]>
 				<textFieldExpression><![CDATA["Net Summary"]]></textFieldExpression>
 			</textField>
 			<componentElement>
-				<reportElement x="0" y="43" width="750" height="60" uuid="a0983ec9-a954-4f9f-b0f2-dcaa6f7b6466">
+				<reportElement x="0" y="63" width="750" height="60" uuid="a0983ec9-a954-4f9f-b0f2-dcaa6f7b6466">
 					<printWhenExpression><![CDATA[Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
 				</reportElement>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
@@ -693,6 +673,60 @@ GROUP BY settlementBankAccount, currency;]]>
 					<font fontName="Calibri" size="11" isBold="false"/>
 				</textElement>
 				<textFieldExpression><![CDATA[""]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="250" y="43" width="250" height="20" uuid="c03a635b-0b8d-462c-a36f-127922ea88c7">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<printWhenExpression><![CDATA[Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Settlement Transfer"]]></textFieldExpression>
+			</textField>
+			<textField textAdjust="StretchHeight">
+				<reportElement x="0" y="43" width="250" height="20" uuid="2c8bd5f0-0b0f-44cd-a023-168d6b4d4ba6">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="net.sf.jasperreports.export.xls.auto.fit.column" value="true"/>
+					<printWhenExpression><![CDATA[Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
+				</reportElement>
+				<box leftPadding="1">
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Settlement Bank Account"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="43" width="250" height="20" uuid="a6893689-4f92-4051-8da4-e13e0d241aec">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<printWhenExpression><![CDATA[Boolean.TRUE.equals($P{isParent})]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<pen lineWidth="0.25"/>
+					<topPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="Calibri" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Currency"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
