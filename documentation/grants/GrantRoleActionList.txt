@@ -113,6 +113,7 @@
                 "GenerateSettlementSummaryReport",
                 "GenerateSettlementStatementReport",
                 "GenerateTransactionDetailReport",
+                "GenerateSettlementBankOverviewReport",
                 "GetActionListByUser",
                 "GetAnnouncementById",
                 "GetAnnouncementInfoList",
