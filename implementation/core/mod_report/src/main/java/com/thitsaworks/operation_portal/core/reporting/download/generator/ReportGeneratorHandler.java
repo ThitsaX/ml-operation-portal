@@ -30,6 +30,7 @@ import java.util.Optional;
 public class ReportGeneratorHandler implements ReportGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorHandler.class);
+    private static final int MAX_PENDING_CLAIM_RETRIES = 10;
 
     private final ReportDownloadRequestRepository reportDownloadRequestRepository;
 
@@ -62,18 +63,13 @@ public class ReportGeneratorHandler implements ReportGenerator {
     @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public boolean generateNextPending() {
 
-        Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
-            FileDownloadStatus.PENDING);
-
-        if (nextPending.isEmpty()) {
+        Optional<ReportDownloadRequest> claimedPending = this.claimNextPendingRequest();
+        if (claimedPending.isEmpty()) {
 
             return false;
         }
 
-        ReportDownloadRequest request = nextPending.get();
-        request.status(FileDownloadStatus.RUNNING);
-        request.updatedDate(Instant.now());
-        this.reportDownloadRequestRepository.save(request);
+        ReportDownloadRequest request = claimedPending.get();
 
         try {
 
@@ -103,6 +99,13 @@ public class ReportGeneratorHandler implements ReportGenerator {
         }
 
         return true;
+    }
+
+    @Override
+    @Transactional(readOnly = true, transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
+    public long countRunning() {
+
+        return this.reportDownloadRequestRepository.countByStatus(FileDownloadStatus.RUNNING);
     }
 
     private ReportGeneratedFile generateReportFile(ReportDownloadRequest request)
@@ -149,6 +152,38 @@ public class ReportGeneratorHandler implements ReportGenerator {
         }
 
         return message.length() > 1000 ? message.substring(0, 1000) : message;
+    }
+
+    private Optional<ReportDownloadRequest> claimNextPendingRequest() {
+
+        int attempts = 0;
+
+        while (attempts < MAX_PENDING_CLAIM_RETRIES) {
+
+            Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
+                FileDownloadStatus.PENDING);
+            if (nextPending.isEmpty()) {
+                return Optional.empty();
+            }
+
+            ReportDownloadRequest request = nextPending.get();
+            int claimed = this.reportDownloadRequestRepository.updateStatusIfCurrent(
+                request.getId(),
+                FileDownloadStatus.PENDING,
+                FileDownloadStatus.RUNNING,
+                Instant.now());
+
+            if (claimed == 1) {
+                request.status(FileDownloadStatus.RUNNING);
+                request.updatedDate(Instant.now());
+                return Optional.of(request);
+            }
+
+            attempts++;
+        }
+
+        LOG.warn("Could not claim pending report request after [{}] retries", MAX_PENDING_CLAIM_RETRIES);
+        return Optional.empty();
     }
 
     public String createFilePath(ReportDownloadRequest request, String extension) {

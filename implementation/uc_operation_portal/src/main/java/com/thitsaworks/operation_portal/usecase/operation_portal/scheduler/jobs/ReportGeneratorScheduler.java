@@ -13,16 +13,21 @@ import com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.Sched
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskRejectedException;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.Executor;
 
 @Component("ReportGeneratorScheduler")
 public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, ReportGeneratorScheduler.Output> {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorScheduler.class);
 
-    private static final int MAX_BATCH_SIZE_PER_RUN = 100;
+    private static final int MAX_CONCURRENT_REPORT_GENERATIONS = 3;
 
     private final ReportGenerator reportGenerator;
+    private final Executor reportGenerationTaskExecutor;
 
     public ReportGeneratorScheduler(CreateJobExecutionLogCommand createJobExecutionLogCommand,
                                     ModifyJobExecutionLogCommand modifyJobExecutionLogCommand,
@@ -31,7 +36,9 @@ public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, 
                                     CreateExceptionAuditCommand createExceptionAuditCommand,
                                     ActionAuthorizationManager actionAuthorizationManager,
                                     ObjectMapper objectMapper,
-                                    ReportGenerator reportGenerator) {
+                                    ReportGenerator reportGenerator,
+                                    @Qualifier("reportGenerationTaskExecutor")
+                                    Executor reportGenerationTaskExecutor) {
 
         super(createJobExecutionLogCommand,
               modifyJobExecutionLogCommand,
@@ -42,6 +49,7 @@ public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, 
               objectMapper);
 
         this.reportGenerator = reportGenerator;
+        this.reportGenerationTaskExecutor = reportGenerationTaskExecutor;
     }
 
     @Override
@@ -60,17 +68,25 @@ public class ReportGeneratorScheduler extends ScheduledJob<SchedulerConfigData, 
     @Override
     protected Output onExecute(SchedulerConfigData schedulerConfigData) throws DomainException {
 
-        int processedCount = 0;
+        long runningCount = this.reportGenerator.countRunning();
+        int availableSlots = (int) Math.max(0, MAX_CONCURRENT_REPORT_GENERATIONS - runningCount);
+        int dispatchedCount = 0;
 
-        while (processedCount < MAX_BATCH_SIZE_PER_RUN && this.reportGenerator.generateNextPending()) {
-
-            processedCount++;
+        for (int i = 0; i < availableSlots; i++) {
+            try {
+                this.reportGenerationTaskExecutor.execute(this.reportGenerator::generateNextPending);
+                dispatchedCount++;
+            } catch (TaskRejectedException exception) {
+                LOG.warn("Report generation task rejected by executor: {}", exception.getMessage());
+                break;
+            }
         }
 
-        return new Output(processedCount);
+        return new Output(dispatchedCount, runningCount);
     }
 
-    public record Output(int processedCount) {
+    public record Output(int dispatchedCount,
+                         long runningCount) {
 
     }
 }

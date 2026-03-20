@@ -4,5 +4,7 @@ public interface ReportGenerator {
 
     boolean generateNextPending();
 
+    long countRunning();
+
     record Settings(int reportPageSize){}
 }
