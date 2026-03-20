@@ -12,8 +12,12 @@ import com.thitsaworks.operation_portal.core.reporting.download.model.repository
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -30,6 +34,7 @@ import java.util.Optional;
 public class ReportGeneratorHandler implements ReportGenerator {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReportGeneratorHandler.class);
+
     private static final int MAX_PENDING_CLAIM_RETRIES = 10;
 
     private final ReportDownloadRequestRepository reportDownloadRequestRepository;
@@ -40,15 +45,21 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
     private final Map<ReportType, ReportTypeGenerator> reportTypeGenerators;
 
+    private final TransactionTemplate requiresNewTransactionTemplate;
+
     public ReportGeneratorHandler(ReportDownloadRequestRepository reportDownloadRequestRepository,
                                   ReportDownloadRequestParamRepository reportDownloadRequestParamRepository,
                                   FileStorage fileStorage,
-                                  List<ReportTypeGenerator> reportTypeGeneratorList) {
+                                  List<ReportTypeGenerator> reportTypeGeneratorList,
+                                  @Qualifier(PersistenceQualifiers.Core.TRANSACTION_MANAGER)
+                                  PlatformTransactionManager transactionManager) {
 
         this.reportDownloadRequestRepository = reportDownloadRequestRepository;
         this.reportDownloadRequestParamRepository = reportDownloadRequestParamRepository;
         this.fileStorage = fileStorage;
         this.reportTypeGenerators = new HashMap<>();
+        this.requiresNewTransactionTemplate = new TransactionTemplate(transactionManager);
+        this.requiresNewTransactionTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
         for (ReportTypeGenerator reportTypeGenerator : reportTypeGeneratorList) {
             ReportType reportType = reportTypeGenerator.reportType();
@@ -60,7 +71,6 @@ public class ReportGeneratorHandler implements ReportGenerator {
     }
 
     @Override
-    @Transactional(transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public boolean generateNextPending() {
 
         Optional<ReportDownloadRequest> claimedPending = this.claimNextPendingRequest();
@@ -76,33 +86,31 @@ public class ReportGeneratorHandler implements ReportGenerator {
             ReportGeneratedFile generatedFile = this.generateReportFile(request);
             String fileUrl = this.uploadReportFile(request, generatedFile);
 
-            request.fileUrl(fileUrl);
-            request.status(FileDownloadStatus.READY);
-            request.errorMessage(null);
-            request.updatedDate(Instant.now());
-            request.finishedDate(Instant.now());
-            this.reportDownloadRequestRepository.save(request);
+            this.markReady(request.getId(), fileUrl);
 
             LOG.info(
-                "Report request [{}] completed and saved to [{}]", request.getId().getEntityId(),
+                "Report request [{}] completed and saved to [{}]",
+                request.getId()
+                       .getEntityId(),
                 fileUrl);
 
         } catch (Exception exception) {
 
-            request.status(FileDownloadStatus.FAILED);
-            request.errorMessage(this.trimError(exception.getMessage()));
-            request.updatedDate(Instant.now());
-            request.finishedDate(Instant.now());
-            this.reportDownloadRequestRepository.save(request);
+            this.markFailed(request.getId(), this.trimError(exception.getMessage()));
 
-            LOG.error("Report request [{}] failed", request.getId().getEntityId(), exception);
+            LOG.error("Report request [{}] failed",
+                      request.getId()
+                             .getEntityId(),
+                      exception);
         }
 
         return true;
     }
 
     @Override
-    @Transactional(readOnly = true, transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
+    @Transactional(
+        readOnly = true,
+        transactionManager = PersistenceQualifiers.Core.TRANSACTION_MANAGER)
     public long countRunning() {
 
         return this.reportDownloadRequestRepository.countByStatus(FileDownloadStatus.RUNNING);
@@ -156,45 +164,95 @@ public class ReportGeneratorHandler implements ReportGenerator {
 
     private Optional<ReportDownloadRequest> claimNextPendingRequest() {
 
-        int attempts = 0;
+        Optional<ReportDownloadRequest> claimed = this.requiresNewTransactionTemplate.execute(
+            transactionStatus -> {
+                int attempts = 0;
 
-        while (attempts < MAX_PENDING_CLAIM_RETRIES) {
+                while (attempts < MAX_PENDING_CLAIM_RETRIES) {
 
-            Optional<ReportDownloadRequest> nextPending = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
-                FileDownloadStatus.PENDING);
-            if (nextPending.isEmpty()) {
+                    Optional<ReportDownloadRequest>
+                        nextPending =
+                        this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
+                            FileDownloadStatus.PENDING);
+                    if (nextPending.isEmpty()) {
+                        return Optional.empty();
+                    }
+
+                    ReportDownloadRequest request = nextPending.get();
+                    Instant now = Instant.now();
+                    int updated = this.reportDownloadRequestRepository.updateStatusIfCurrent(
+                        request.getId(),
+                        FileDownloadStatus.PENDING,
+                        FileDownloadStatus.RUNNING,
+                        now);
+
+                    if (updated == 1) {
+                        request.status(FileDownloadStatus.RUNNING);
+                        request.updatedDate(now);
+                        return Optional.of(request);
+                    }
+
+                    attempts++;
+                }
+
+                LOG.warn("Could not claim pending report request after [{}] retries", MAX_PENDING_CLAIM_RETRIES);
                 return Optional.empty();
+            });
+
+        return claimed == null ? Optional.empty() : claimed;
+    }
+
+    private void markReady(ReportDownloadRequestId requestId, String fileUrl) {
+
+        this.requiresNewTransactionTemplate.executeWithoutResult(transactionStatus -> {
+            Optional<ReportDownloadRequest> optRequest = this.reportDownloadRequestRepository.findById(
+                requestId);
+            if (optRequest.isEmpty()) {
+                return;
             }
 
-            ReportDownloadRequest request = nextPending.get();
-            int claimed = this.reportDownloadRequestRepository.updateStatusIfCurrent(
-                request.getId(),
-                FileDownloadStatus.PENDING,
-                FileDownloadStatus.RUNNING,
-                Instant.now());
+            ReportDownloadRequest request = optRequest.get();
+            request.fileUrl(fileUrl);
+            request.status(FileDownloadStatus.READY);
+            request.errorMessage(null);
+            request.updatedDate(Instant.now());
+            request.finishedDate(Instant.now());
+            this.reportDownloadRequestRepository.save(request);
+        });
+    }
 
-            if (claimed == 1) {
-                request.status(FileDownloadStatus.RUNNING);
-                request.updatedDate(Instant.now());
-                return Optional.of(request);
+    private void markFailed(ReportDownloadRequestId requestId, String errorMessage) {
+
+        this.requiresNewTransactionTemplate.executeWithoutResult(transactionStatus -> {
+            Optional<ReportDownloadRequest> optRequest = this.reportDownloadRequestRepository.findById(
+                requestId);
+            if (optRequest.isEmpty()) {
+                return;
             }
 
-            attempts++;
-        }
-
-        LOG.warn("Could not claim pending report request after [{}] retries", MAX_PENDING_CLAIM_RETRIES);
-        return Optional.empty();
+            ReportDownloadRequest request = optRequest.get();
+            request.status(FileDownloadStatus.FAILED);
+            request.errorMessage(errorMessage);
+            request.updatedDate(Instant.now());
+            request.finishedDate(Instant.now());
+            this.reportDownloadRequestRepository.save(request);
+        });
     }
 
     public String createFilePath(ReportDownloadRequest request, String extension) {
 
-        String normalizedType = request.getReportType().name().toLowerCase(Locale.ROOT);
+        String
+            normalizedType =
+            request.getReportType()
+                   .name()
+                   .toLowerCase(Locale.ROOT);
         String timestamp = DateTimeFormatter
                                .ofPattern("yyyyMMddHHmmss")
                                .format(LocalDateTime.now(ZoneOffset.UTC));
         String normalizedExt = extension.toLowerCase(Locale.ROOT);
 
-        return normalizedType + "/" + request.getId().getEntityId() + "_" + timestamp + "." +
+        return normalizedType + "/" + request.getId()
+                                             .getEntityId() + "_" + timestamp + "." +
                    normalizedExt;
     }
 
