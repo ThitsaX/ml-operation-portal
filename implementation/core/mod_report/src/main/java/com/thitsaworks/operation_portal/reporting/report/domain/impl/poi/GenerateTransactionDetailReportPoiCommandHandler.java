@@ -228,11 +228,12 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             }
 
             RowCursor rowCursor = new RowCursor(rowIndex);
+            int baseOffset = input.offset() == null ? 0 : input.offset();
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
                     input.startDate(), input.endDate(), input.state(), input.dfspId(),
-                    input.filetype(), input.timeZoneOffset(), offset, limit);
+                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
                 this.streamRows(chunkInput, row -> this.writeDataRow(
                     sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
@@ -294,11 +295,12 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             this.writeCsvHeader(writer, input);
 
             RowCounter rowCounter = new RowCounter();
+            int baseOffset = input.offset() == null ? 0 : input.offset();
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
                     input.startDate(), input.endDate(), input.state(), input.dfspId(),
-                    input.filetype(), input.timeZoneOffset(), offset, limit);
+                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
                 this.streamRows(chunkInput, row -> {
                     writer.write(this.csvLine(this.toCsvValues(row)));

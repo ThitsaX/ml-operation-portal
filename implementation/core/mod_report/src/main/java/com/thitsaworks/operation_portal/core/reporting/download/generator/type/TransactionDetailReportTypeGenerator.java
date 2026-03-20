@@ -13,15 +13,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Component
 @RequiredArgsConstructor
 class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDetailReportTypeGenerator.class);
+    private static final int MAX_ROWS_PER_REPORT_FILE = 500_000;
 
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
 
@@ -67,6 +71,18 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
             return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
         }
 
+        if (totalRowCount > MAX_ROWS_PER_REPORT_FILE) {
+            return this.generateSplitZip(
+                startDate,
+                endDate,
+                state,
+                dfspId,
+                fileType,
+                timezoneOffset,
+                totalRowCount,
+                pageSize);
+        }
+
         GenerateTransactionDetailReportCommand.Output output =
             this.generateTransactionDetailReportCommand.exportAll(
                 new GenerateTransactionDetailReportCommand.Input(
@@ -75,6 +91,51 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
                 pageSize);
 
         return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
+    }
+
+    private ReportGeneratedFile generateSplitZip(Instant startDate,
+                                                 Instant endDate,
+                                                 String state,
+                                                 String dfspId,
+                                                 String fileType,
+                                                 String timezoneOffset,
+                                                 int totalRowCount,
+                                                 int pageSize)
+        throws ReportException, IOException {
+
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
+
+            int partNumber = 1;
+            for (int offset = 0; offset < totalRowCount; offset += MAX_ROWS_PER_REPORT_FILE) {
+                int rowsInPart = Math.min(MAX_ROWS_PER_REPORT_FILE, totalRowCount - offset);
+
+                GenerateTransactionDetailReportCommand.Output partOutput =
+                    this.generateTransactionDetailReportCommand.exportAll(
+                        new GenerateTransactionDetailReportCommand.Input(
+                            startDate,
+                            endDate,
+                            state,
+                            dfspId,
+                            fileType,
+                            timezoneOffset,
+                            offset,
+                            rowsInPart),
+                        rowsInPart,
+                        pageSize);
+
+                String entryName = "transaction_detail_part_" + partNumber + "." + fileType;
+                ZipEntry entry = new ZipEntry(entryName);
+                zipOutputStream.putNextEntry(entry);
+                zipOutputStream.write(partOutput.transactionDetailRptByte());
+                zipOutputStream.closeEntry();
+                LOGGER.info("Generated transaction detail report part [{}] with [{}] rows", partNumber, rowsInPart);
+                partNumber++;
+            }
+
+            zipOutputStream.finish();
+            return new ReportGeneratedFile(byteArrayOutputStream.toByteArray(), "zip");
+        }
     }
 
 }
