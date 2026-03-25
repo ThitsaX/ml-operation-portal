@@ -1,0 +1,54 @@
+@startuml
+title Transaction Detail Report Download Flow (Apache POI)
+
+autonumber
+actor User
+participant "Web API\n/secured/generateTransactionDetailReport" as API
+participant "ReportDownloadRequestManager" as RDRM
+database "tbl_report_request\n(RDR)" as DB
+participant "ReportGeneratorScheduler\n(every 5s)" as SCH
+participant "ReportGeneratorHandler" as RGH
+participant "TransactionDetailReportTypeGenerator" as TDG
+participant "GenerateTransactionDetailReportPoiCommandHandler\n(@Primary)" as POI
+participant "S3FileStorage" as S3
+
+== Submit Request ==
+User -> API : POST generateTransactionDetailReport
+API -> RDRM : createPendingOrReuse(reportType, params)
+RDRM -> DB : insert/reuse request (status=PENDING)
+API --> User : requestId
+
+== Background Scheduler ==
+SCH -> RGH : generateNextPending()
+RGH -> DB : claim oldest PENDING -> RUNNING
+RGH -> TDG : generate(request, params)
+TDG -> POI : countRows(...)
+
+alt totalRows <= 500000
+  alt totalRows <= pageSize
+    TDG -> POI : execute(offset=0, limit=pageSize)
+  else totalRows > pageSize
+    TDG -> POI : exportAll(offset=0, totalRows, pageSize)
+  end
+  POI --> TDG : single file bytes (.xlsx/.csv)
+else totalRows > 500000
+  loop each part (max 500000 rows)
+    TDG -> POI : exportAll(offset=partOffset, rowsInPart, pageSize)
+    POI --> TDG : part bytes (.xlsx/.csv)
+  end
+  TDG -> TDG : zip parts
+  TDG --> RGH : zip bytes
+end
+
+RGH -> S3 : upload(file bytes)
+S3 --> RGH : object key
+RGH -> DB : status=READY, fileUrl=key
+
+== Polling ==
+loop until ready
+  User -> API : GET /secured/getReportDownloadStatus?requestId=...
+  API -> DB : read status
+  API --> User : PENDING / RUNNING / READY / FAILED
+end
+
+@enduml

@@ -21,7 +21,6 @@ public interface GenerateAuditReport extends UseCase<GenerateAuditReport.Input, 
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  boolean reused,
                   String paramsSignature) { }
 
 }

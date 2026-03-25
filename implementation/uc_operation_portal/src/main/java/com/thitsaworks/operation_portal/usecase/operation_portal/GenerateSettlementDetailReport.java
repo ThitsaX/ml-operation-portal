@@ -17,7 +17,6 @@ public interface GenerateSettlementDetailReport extends
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  boolean reused,
                   String paramsSignature) { }
 
 }

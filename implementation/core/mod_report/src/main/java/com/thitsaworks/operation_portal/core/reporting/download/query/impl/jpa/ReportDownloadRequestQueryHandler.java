@@ -2,7 +2,6 @@ package com.thitsaworks.operation_portal.core.reporting.download.query.impl.jpa;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
-import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.persistence.transactional.CoreReadTransactional;
 import com.thitsaworks.operation_portal.core.reporting.download.data.ReportDownloadRequestData;
 import com.thitsaworks.operation_portal.core.reporting.download.exception.ReportDownloadErrors;
@@ -12,7 +11,6 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -34,22 +32,17 @@ public class ReportDownloadRequestQueryHandler implements ReportDownloadRequestQ
     }
 
     @Override
+    public Optional<ReportDownloadRequestData> findById(ReportDownloadRequestId id) {
+
+        return this.reportDownloadRequestRepository.findById(id)
+                                                   .map(ReportDownloadRequestData::new);
+    }
+
+    @Override
     public Optional<ReportDownloadRequestData> findTopByStatusOrderByCreatedAtAsc(FileDownloadStatus status) {
 
         var optReportDownloadRequest = this.reportDownloadRequestRepository.findTopByStatusOrderByCreatedAtAsc(
             status);
-
-        return optReportDownloadRequest.map(ReportDownloadRequestData::new);
-    }
-
-    @Override
-    public Optional<ReportDownloadRequestData> findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-        ReportType reportType,
-        String paramsSignature,
-        LocalDate dataVersion) {
-
-        var optReportDownloadRequest = this.reportDownloadRequestRepository.findTopByReportTypeAndParamsSignatureAndDataVersionOrderByCreatedAtDesc(
-            reportType, paramsSignature, dataVersion);
 
         return optReportDownloadRequest.map(ReportDownloadRequestData::new);
     }

@@ -65,7 +65,6 @@ public class GenerateManagementSummaryReportController {
             output.requestId().getEntityId().toString(),
             output.status().name(),
             output.fileUrl(),
-            output.reused(),
             output.paramsSignature());
 
         LOG.info("Generate Management Summary Report Response : [{}]", this.objectMapper.writeValueAsString(response));
@@ -77,7 +76,6 @@ public class GenerateManagementSummaryReportController {
     public record Response(@JsonProperty("requestId") String requestId,
                            @JsonProperty("status") String status,
                            @JsonProperty("fileUrl") String fileUrl,
-                           @JsonProperty("reused") boolean reused,
                            @JsonProperty("paramsSignature") String paramsSignature)
         implements Serializable { }
 

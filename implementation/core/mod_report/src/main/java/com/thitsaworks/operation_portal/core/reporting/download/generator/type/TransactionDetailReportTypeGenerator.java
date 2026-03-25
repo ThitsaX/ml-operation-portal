@@ -25,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDetailReportTypeGenerator.class);
+
     private static final int MAX_ROWS_PER_REPORT_FILE = 500_000;
 
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
@@ -43,52 +44,53 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
     public ReportGeneratedFile generate(ReportDownloadRequest request, Map<String, String> params)
         throws ReportException, IOException {
 
-        Instant startDate = Instant.parse(
-            this.reportGeneratorSupport.requireParam(params, "startDate"));
-        Instant endDate = Instant.parse(
-            this.reportGeneratorSupport.requireParam(params, "endDate"));
-        String state = this.reportGeneratorSupport.normalizeAllToken(
-            params.getOrDefault("state", "All"));
-        String dfspId = this.reportGeneratorSupport.normalizeAllToken(
-            params.getOrDefault("dfspId", "All"));
+        Instant startDate = Instant.parse(this.reportGeneratorSupport.requireParam(params, "startDate"));
+        Instant endDate = Instant.parse(this.reportGeneratorSupport.requireParam(params, "endDate"));
+        String state = this.reportGeneratorSupport.normalizeAllToken(params.getOrDefault("state", "All"));
+        String dfspId = this.reportGeneratorSupport.normalizeAllToken(params.getOrDefault("dfspId", "All"));
         String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
         String fileType = this.reportGeneratorSupport.fileType(request.getFileType());
 
         int pageSize = this.settings.reportPageSize();
-        int totalRowCount = this.generateTransactionDetailReportCommand.countRows(
-            new GenerateTransactionDetailReportCommand.CountInput(
-                startDate, endDate, state, dfspId,
+        int totalRowCount = this.generateTransactionDetailReportCommand.countRows(new GenerateTransactionDetailReportCommand.CountInput(
+                startDate,
+                endDate,
+                state,
+                dfspId,
                 timezoneOffset));
 
         LOGGER.info("Total Row Count : [{}]", totalRowCount);
 
+        GenerateTransactionDetailReportCommand.Input input = new GenerateTransactionDetailReportCommand.Input(startDate,
+                                                                                                              endDate,
+                                                                                                              state,
+                                                                                                              dfspId,
+                                                                                                              fileType,
+                                                                                                              timezoneOffset,
+                                                                                                              0,
+                                                                                                              pageSize);
         if (totalRowCount <= pageSize) {
             GenerateTransactionDetailReportCommand.Output output = this.generateTransactionDetailReportCommand.execute(
-                new GenerateTransactionDetailReportCommand.Input(
-                    startDate, endDate, state, dfspId,
-                    fileType, timezoneOffset, 0, pageSize));
+                input);
 
             return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
         }
 
         if (totalRowCount > MAX_ROWS_PER_REPORT_FILE) {
-            return this.generateSplitZip(
-                startDate,
-                endDate,
-                state,
-                dfspId,
-                fileType,
-                timezoneOffset,
-                totalRowCount,
-                pageSize);
+            return this.generateSplitZip(startDate,
+                                         endDate,
+                                         state,
+                                         dfspId,
+                                         fileType,
+                                         timezoneOffset,
+                                         totalRowCount,
+                                         pageSize);
         }
 
-        GenerateTransactionDetailReportCommand.Output output =
-            this.generateTransactionDetailReportCommand.exportAll(
-                new GenerateTransactionDetailReportCommand.Input(
-                    startDate, endDate, state, dfspId, fileType, timezoneOffset, 0, pageSize),
-                totalRowCount,
-                pageSize);
+        GenerateTransactionDetailReportCommand.Output output = this.generateTransactionDetailReportCommand.exportAll(
+            input,
+            totalRowCount,
+            pageSize);
 
         return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
     }
@@ -100,8 +102,7 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
                                                  String fileType,
                                                  String timezoneOffset,
                                                  int totalRowCount,
-                                                 int pageSize)
-        throws ReportException, IOException {
+                                                 int pageSize) throws ReportException, IOException {
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
@@ -110,19 +111,17 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
             for (int offset = 0; offset < totalRowCount; offset += MAX_ROWS_PER_REPORT_FILE) {
                 int rowsInPart = Math.min(MAX_ROWS_PER_REPORT_FILE, totalRowCount - offset);
 
-                GenerateTransactionDetailReportCommand.Output partOutput =
-                    this.generateTransactionDetailReportCommand.exportAll(
-                        new GenerateTransactionDetailReportCommand.Input(
-                            startDate,
-                            endDate,
-                            state,
-                            dfspId,
-                            fileType,
-                            timezoneOffset,
-                            offset,
-                            rowsInPart),
-                        rowsInPart,
-                        pageSize);
+                GenerateTransactionDetailReportCommand.Output
+                    partOutput =
+                    this.generateTransactionDetailReportCommand.exportAll(new GenerateTransactionDetailReportCommand.Input(
+                        startDate,
+                        endDate,
+                        state,
+                        dfspId,
+                        fileType,
+                        timezoneOffset,
+                        offset,
+                        rowsInPart), rowsInPart, pageSize);
 
                 String entryName = "transaction_detail_part_" + partNumber + "." + fileType;
                 ZipEntry entry = new ZipEntry(entryName);

@@ -21,7 +21,6 @@ public interface GenerateTransactionDetailReport extends
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  boolean reused,
                   String paramsSignature) {}
 
 }

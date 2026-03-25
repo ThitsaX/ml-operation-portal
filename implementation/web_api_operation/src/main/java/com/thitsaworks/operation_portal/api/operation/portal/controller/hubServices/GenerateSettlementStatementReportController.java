@@ -61,7 +61,6 @@ public class GenerateSettlementStatementReportController {
             output.requestId().getEntityId().toString(),
             output.status().name(),
             output.fileUrl(),
-            output.reused(),
             output.paramsSignature());
 
         LOG.info("Generate Settlement Statement Report Response : [{}]",
@@ -75,7 +74,6 @@ public class GenerateSettlementStatementReportController {
     public record Response(@JsonProperty("requestId") String requestId,
                            @JsonProperty("status") String status,
                            @JsonProperty("fileUrl") String fileUrl,
-                           @JsonProperty("reused") boolean reused,
                            @JsonProperty("paramsSignature") String paramsSignature)
         implements Serializable { }
 

@@ -34,31 +34,5 @@ public class ReportGeneratorSupport {
         return "all".equalsIgnoreCase(value.trim()) ? "All" : value.trim();
     }
 
-    public String normalizeOptionalFilter(String value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        String trimmed = value.trim();
-        if (trimmed.isEmpty() || "all".equalsIgnoreCase(trimmed)) {
-            return null;
-        }
-
-        return trimmed;
-    }
-
-    public List<String> parseListParam(String value) {
-
-        if (value == null || value.isBlank()) {
-            return List.of();
-        }
-
-        return Arrays
-                   .stream(value.split(","))
-                   .map(String::trim)
-                   .filter(item -> !item.isEmpty())
-                   .toList();
-    }
 
 }

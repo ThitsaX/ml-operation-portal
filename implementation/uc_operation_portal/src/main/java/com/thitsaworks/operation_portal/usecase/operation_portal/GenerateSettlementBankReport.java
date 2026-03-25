@@ -17,7 +17,6 @@ public interface GenerateSettlementBankReport extends
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  boolean reused,
                   String paramsSignature) {}
 
 }

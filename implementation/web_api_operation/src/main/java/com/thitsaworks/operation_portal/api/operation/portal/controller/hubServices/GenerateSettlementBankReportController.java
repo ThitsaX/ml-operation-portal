@@ -58,7 +58,6 @@ public class GenerateSettlementBankReportController {
             output.requestId().getEntityId().toString(),
             output.status().name(),
             output.fileUrl(),
-            output.reused(),
             output.paramsSignature());
 
         LOG.info("Generate Settlement Bank Report Response : [{}]", this.objectMapper.writeValueAsString(response));
@@ -70,7 +69,6 @@ public class GenerateSettlementBankReportController {
     public record Response(@JsonProperty("requestId") String requestId,
                            @JsonProperty("status") String status,
                            @JsonProperty("fileUrl") String fileUrl,
-                           @JsonProperty("reused") boolean reused,
                            @JsonProperty("paramsSignature") String paramsSignature)
         implements Serializable { }
 

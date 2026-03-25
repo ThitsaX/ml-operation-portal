@@ -70,7 +70,7 @@ public class GenerateManagementSummaryReportHandler
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
             ReportType.MANAGEMENT_SUMMARY, ReportDownloadUtil.normalizeFileType(input.fileType()),
-            null, params);
+            params);
 
         String fileKey = result.request().fileUrl();
         String fileUrl = null;
@@ -95,8 +95,7 @@ public class GenerateManagementSummaryReportHandler
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey,
-            result.reused(), result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
     }
 
 }

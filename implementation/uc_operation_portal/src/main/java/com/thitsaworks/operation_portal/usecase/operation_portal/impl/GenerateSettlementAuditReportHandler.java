@@ -87,7 +87,6 @@ public class GenerateSettlementAuditReportHandler
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
             ReportType.SETTLEMENT_AUDIT,
             ReportDownloadUtil.normalizeFileType(input.fileType()),
-            null,
             params);
 
         String fileKey = result.request().fileUrl();
@@ -113,8 +112,7 @@ public class GenerateSettlementAuditReportHandler
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey,
-            result.reused(), result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
     }
 
 }

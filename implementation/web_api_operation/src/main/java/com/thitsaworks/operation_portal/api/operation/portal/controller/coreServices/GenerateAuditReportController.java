@@ -60,8 +60,7 @@ public class GenerateAuditReportController {
             fileType));
 
         var response = new Response(
-            output.requestId().getEntityId().toString(), output.status().name(), output.fileUrl(),
-            output.reused(), output.paramsSignature());
+            output.requestId().getEntityId().toString(), output.status().name(), output.fileUrl(), output.paramsSignature());
 
         LOG.info("Generate Audit Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -73,7 +72,6 @@ public class GenerateAuditReportController {
     public record Response(@JsonProperty("requestId") String requestId,
                            @JsonProperty("status") String status,
                            @JsonProperty("fileUrl") String fileUrl,
-                           @JsonProperty("reused") boolean reused,
                            @JsonProperty("paramsSignature") String paramsSignature)
         implements Serializable { }
 

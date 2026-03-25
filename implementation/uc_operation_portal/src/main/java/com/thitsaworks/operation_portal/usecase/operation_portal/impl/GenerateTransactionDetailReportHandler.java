@@ -28,12 +28,7 @@ public class GenerateTransactionDetailReportHandler
     extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
     implements GenerateTransactionDetailReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(
-        GenerateTransactionDetailReportHandler.class);
-
     private final ReportDownloadRequestManager reportDownloadRequestManager;
-
-    private final S3FileStorage s3FileStorage;
 
     public GenerateTransactionDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
@@ -41,15 +36,13 @@ public class GenerateTransactionDetailReportHandler
                                                   ObjectMapper objectMapper,
                                                   PrincipalCache principalCache,
                                                   ActionAuthorizationManager actionAuthorizationManager,
-                                                  ReportDownloadRequestManager reportDownloadRequestManager,
-                                                  S3FileStorage s3FileStorage) {
+                                                  ReportDownloadRequestManager reportDownloadRequestManager) {
 
         super(
             createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
             objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
-        this.s3FileStorage = s3FileStorage;
     }
 
     @Override
@@ -64,36 +57,10 @@ public class GenerateTransactionDetailReportHandler
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
             ReportType.TRANSACTION_DETAIL, ReportDownloadUtil.normalizeFileType(input.fileType()),
-            null, params);
+            params);
 
-        String fileKey = result.request().fileUrl();
-        String fileUrl = null;
-
-        if (FileDownloadStatus.READY.equals(result.request().status()) && fileKey != null &&
-                !fileKey.isBlank()) {
-
-            try {
-
-                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
-
-            } catch (Exception e) {
-
-                LOG.warn(
-                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
-                    result.request().requestId().getEntityId(), e.getMessage());
-            }
-        }
-
-        if (FileDownloadStatus.FAILED.equals(result.request().status())) {
-
-            throw new ReportException(
-                ReportDownloadUtil.resolveFailedError(
-                    result.request().errorMessage(),
-                    ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION));
-        }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey,
-            result.reused(), result.paramsSignature());
+            result.request().requestId(), result.request().status(), null, null,result.paramsSignature());
     }
 }

@@ -12,6 +12,5 @@ public interface GenerateManagementSummaryReport extends UseCase<GenerateManagem
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  boolean reused,
                   String paramsSignature) {}
 }

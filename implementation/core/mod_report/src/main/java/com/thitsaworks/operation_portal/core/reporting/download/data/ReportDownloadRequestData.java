@@ -6,12 +6,10 @@ import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 public record ReportDownloadRequestData(ReportDownloadRequestId requestId,
                                         ReportType reportType,
                                         String paramsSignature,
-                                        LocalDate dataVersion,
                                         FileDownloadStatus status,
                                         String fileType,
                                         String fileUrl,
@@ -25,7 +23,6 @@ public record ReportDownloadRequestData(ReportDownloadRequestId requestId,
         this(request.getRequestId(),
              request.getReportType(),
              request.getParamsSignature(),
-             request.getDataVersion(),
              request.getStatus(),
              request.getFileType(),
              request.getFileUrl(),

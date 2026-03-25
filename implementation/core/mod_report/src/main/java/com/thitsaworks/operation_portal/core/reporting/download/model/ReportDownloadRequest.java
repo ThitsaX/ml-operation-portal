@@ -17,7 +17,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "tbl_report_request")
@@ -35,9 +34,6 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     @Column(name = "params_signature")
     private String paramsSignature;
 
-    @Column(name = "data_version")
-    private LocalDate dataVersion;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private FileDownloadStatus status;
@@ -51,16 +47,12 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     @Column(name = "error_message")
     private String errorMessage;
 
-    @Column(name = "retry_count")
-    private Integer retryCount;
-
     @Column(name = "finished_date")
     @Convert(converter = JpaInstantConverter.class)
     private Instant finishedDate;
 
     public ReportDownloadRequest(ReportType reportType,
                                  String paramsSignature,
-                                 LocalDate dataVersion,
                                  FileDownloadStatus status,
                                  String fileType,
                                  Instant createdDate,
@@ -69,10 +61,8 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
         this.requestId = new ReportDownloadRequestId(Snowflake.get().nextId());
         this.reportType = reportType;
         this.paramsSignature = paramsSignature;
-        this.dataVersion = dataVersion;
         this.status = status;
         this.fileType = fileType;
-        this.retryCount = 0;
         this.setCreatedAt(createdDate);
         this.setUpdatedAt(updatedDate);
     }
@@ -96,11 +86,6 @@ public class ReportDownloadRequest extends JpaEntity<ReportDownloadRequestId> {
     public void errorMessage(String errorMessage) {
 
         this.errorMessage = errorMessage;
-    }
-
-    public void retryCount(Integer retryCount) {
-
-        this.retryCount = retryCount;
     }
 
     public void updatedDate(Instant updatedDate) {
