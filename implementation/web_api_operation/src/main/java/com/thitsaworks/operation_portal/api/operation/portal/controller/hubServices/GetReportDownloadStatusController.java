@@ -37,7 +37,7 @@ public class GetReportDownloadStatusController {
             new GetReportDownloadStatus.Input(
                 new ReportDownloadRequestId(Long.parseLong(requestId))));
 
-        Response response = new Response(output.status().name());
+        Response response = new Response(output.status() == null ? null : output.status().name());
 
         LOG.info(
             "Get Report Download Status Response : [{}]",

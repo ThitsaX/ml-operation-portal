@@ -10,8 +10,11 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditComma
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.reporting.download.query.ReportDownloadRequestQuery;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetReportDownloadUrl;
+import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +54,6 @@ public class GetReportDownloadUrlHandler
     }
 
     @Override
-    public String getName() {
-
-        return "GetReportDownloadStatus";
-    }
-
-    @Override
     protected Output onExecute(Input input)
         throws DomainException, ConnectException, JsonProcessingException {
 
@@ -69,6 +66,13 @@ public class GetReportDownloadUrlHandler
         FileDownloadStatus status = request.get().status();
         String fileKey = request.get().fileUrl();
         String fileUrl = null;
+
+        if (FileDownloadStatus.FAILED.equals(status)) {
+            throw new ReportException(
+                ReportDownloadUtil.resolveFailedError(
+                    request.get().errorMessage(),
+                    ReportErrors.REPORT_FAILURE_EXCEPTION));
+        }
 
         if (FileDownloadStatus.READY.equals(status) && fileKey != null && !fileKey.isBlank()) {
             try {

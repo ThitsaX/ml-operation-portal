@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -16,8 +15,6 @@ import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
 import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -48,6 +45,11 @@ public class GenerateTransactionDetailReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        String normalizedFileType = ReportDownloadUtil.normalizeFileType(input.fileType());
+        if (!"xlsx".equals(normalizedFileType) && !"csv".equals(normalizedFileType)) {
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
+        }
+
         Map<String, String> params = new HashMap<>();
         params.put("startDate", input.startDate().toString());
         params.put("endDate", input.endDate().toString());
@@ -56,7 +58,7 @@ public class GenerateTransactionDetailReportHandler
         params.put("timezoneOffset", input.timezone());
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-            ReportType.TRANSACTION_DETAIL, ReportDownloadUtil.normalizeFileType(input.fileType()),
+            ReportType.TRANSACTION_DETAIL, normalizedFileType,
             params);
 
 

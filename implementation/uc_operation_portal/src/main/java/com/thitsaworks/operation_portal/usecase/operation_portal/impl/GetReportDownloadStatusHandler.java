@@ -30,7 +30,12 @@ public class GetReportDownloadStatusHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        FileDownloadStatus status= this.reportDownloadRequestQuery.getStatus(input.requestId());
+        var request = this.reportDownloadRequestQuery.findById(input.requestId());
+        if (request.isEmpty()) {
+            return new Output(null, false);
+        }
+
+        FileDownloadStatus status = request.get().status();
 
         return new Output(status, true);
     }
