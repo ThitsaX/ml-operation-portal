@@ -247,11 +247,11 @@ public class ReportGeneratorHandler implements ReportGenerator {
                    .name()
                    .toLowerCase(Locale.ROOT);
         String timestamp = DateTimeFormatter
-                               .ofPattern("yyyyMMddHHmmss")
+                               .ofPattern("ddMMyyyy")
                                .format(LocalDateTime.now(ZoneOffset.UTC));
         String normalizedExt = extension.toLowerCase(Locale.ROOT);
 
-        return normalizedType + "/" + request.getId()
+        return normalizedType + "/" + request.getReportType().name() +"-"+request.getId()
                                              .getEntityId() + "_" + timestamp + "." +
                    normalizedExt;
     }

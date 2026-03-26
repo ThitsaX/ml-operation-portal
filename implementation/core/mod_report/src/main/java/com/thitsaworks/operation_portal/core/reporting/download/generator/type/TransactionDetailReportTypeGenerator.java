@@ -37,7 +37,7 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
     @Override
     public ReportType reportType() {
 
-        return ReportType.TRANSACTION_DETAIL;
+        return ReportType.TransactionDetail;
     }
 
     @Override

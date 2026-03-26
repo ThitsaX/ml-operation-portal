@@ -8,9 +8,7 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -541,8 +539,6 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 
@@ -554,6 +550,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setFont(this.reportDataFont(workbook));
         return style;
     }
 
@@ -562,8 +559,18 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
-        style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
+        style.setDataFormat(workbook.createDataFormat()
+                                    .getFormat("#,##0.00"));
         return style;
+    }
+
+    private org.apache.poi.ss.usermodel.Font reportDataFont(
+        org.apache.poi.ss.usermodel.Workbook workbook) {
+
+        var font = workbook.createFont();
+        font.setFontName("Calibri");
+        font.setFontHeightInPoints((short) 11);
+        return font;
     }
 
     private String formatHeaderDate(Instant instant, String rawOffset) {
@@ -577,7 +584,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
+        return zoneOffset.getId()
+                         .equals("Z") ? "+00:00" : zoneOffset.getId();
     }
 
     private ZoneOffset parseOffset(String rawOffset) {
@@ -598,7 +606,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
     private String amountText(BigDecimal value) {
 
-        return value == null ? "" : value.stripTrailingZeros().toPlainString();
+        return value == null ? "" : value.stripTrailingZeros()
+                                         .toPlainString();
     }
 
     private String amountOrDashText(BigDecimal value) {
@@ -897,6 +906,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private interface TransactionDetailRowConsumer {
 
         void accept(TransactionDetailRow row) throws IOException;
+
     }
 
     private static final class IOExceptionRuntimeException extends RuntimeException {
@@ -905,6 +915,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
             super(cause);
         }
+
     }
 
     private static final class RowCursor {
@@ -925,6 +936,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
             return this.current;
         }
+
     }
 
     private static final class RowCounter {
@@ -940,5 +952,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
             return this.value;
         }
+
     }
+
 }

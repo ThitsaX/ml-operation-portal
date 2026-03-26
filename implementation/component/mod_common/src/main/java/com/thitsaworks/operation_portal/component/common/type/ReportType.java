@@ -3,7 +3,7 @@ package com.thitsaworks.operation_portal.component.common.type;
 public enum ReportType {
 
     SETTLEMENT_DETAIL,
-    TRANSACTION_DETAIL,
+    TransactionDetail,
     AUDIT,
     MANAGEMENT_SUMMARY,
     SETTLEMENT_BANK,
