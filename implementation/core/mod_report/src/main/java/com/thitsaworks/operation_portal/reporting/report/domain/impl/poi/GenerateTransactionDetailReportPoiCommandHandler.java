@@ -539,6 +539,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
+        style.setBorderBottom(BorderStyle.THIN);
         return style;
     }
 
