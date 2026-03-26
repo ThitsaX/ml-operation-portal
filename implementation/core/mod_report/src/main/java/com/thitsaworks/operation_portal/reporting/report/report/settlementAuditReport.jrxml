@@ -258,23 +258,7 @@ final AS (
       WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
 
       ELSE 3
-    END AS pair_sort,
-    
-    CASE
-      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
-        (
-          SELECT madeBy
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription LIKE 'Settlement:%'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        ) 
-
-      ELSE NULL
-    END AS pair_madeBy
+    END AS pair_sort
   FROM seq s
 )
 
@@ -289,12 +273,12 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  balance,
+		  ABS(balance) AS balance,
 		  ndcPercent, 
 		  ndc, 
 		  currency,
 		  settlementBankAccount,
-		 CASE WHEN processDescription = 'NDC Amount Update Due to Settlement' THEN pair_madeBy ELSE madeBy END AS madeBy,
+		 madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,
@@ -598,23 +582,7 @@ final AS (
       WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN 2
 
       ELSE 3
-    END AS pair_sort,
-    
-    CASE
-      WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
-        (
-          SELECT madeBy
-          FROM seq st
-          WHERE st.dfspId = s.dfspId
-            AND st.currency = s.currency
-            AND st.processDescription LIKE 'Settlement:%'
-            AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-          ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)), st.createdDate
-          LIMIT 1
-        ) 
-
-      ELSE NULL
-    END AS pair_madeBy
+    END AS pair_sort
   FROM seq s
 )
 
@@ -629,12 +597,12 @@ SELECT
 		  processDescription,
 		  fundsIn,
 		  fundsOut,
-		  balance,
+		  ABS(balance) AS balance,
 		  ndcPercent, 
 		  ndc, 
 		  currency,
 		  settlementBankAccount,
-		 CASE WHEN processDescription = 'NDC Amount Update Due to Settlement' THEN pair_madeBy ELSE madeBy END AS madeBy,
+		 madeBy,
 		CONCAT(DATE_FORMAT($P{startDate}, '%Y-%m-%dT%H:%i:%s'),
 		CASE WHEN SUBSTRING($P{timezoneoffset},1,1) = '-' THEN CONCAT('-', SUBSTRING($P{timezoneoffset},2,2), ':', SUBSTRING($P{timezoneoffset},4,2))
 		ELSE CONCAT('+', SUBSTRING($P{timezoneoffset},1,2), ':', SUBSTRING($P{timezoneoffset},3,2)) END) AS fromDate,

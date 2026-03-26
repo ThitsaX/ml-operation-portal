@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.21.5.final using JasperReports Library version 6.21.5-74d586df47b25dbd05bd0957999819196e59934a  -->
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SettleStatement" pageWidth="2800" pageHeight="10000" whenNoDataType="NoPages" columnWidth="2740" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="abcd1234-5678-90ab-cdef-000000000000">
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<property name="net.sf.jasperreports.export.xls.detect.cell.type" value="true"/>
 	<property name="net.sf.jasperreports.export.xlsx.detect.cell.type" value="true"/>
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="gin-dev"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="JDBC Adapter"/>
 	<property name="net.sf.jasperreports.export.xlsx.exclude.origin.keep.first.band.1" value="columnHeader"/>
 	<property name="net.sf.jasperreports.export.xlsx.one.page.per.sheet" value="false"/>
 	<property name="net.sf.jasperreports.export.xlsx.repeat.column.headers" value="false"/>
@@ -403,7 +403,7 @@ SELECT
   processDescription,
   fundsIn,
   fundsOut,
-  balance,
+  ABS(balance) AS balance,
   ndcPercent,
   ndc,
   currency,
@@ -728,7 +728,7 @@ SELECT
   processDescription,
   fundsIn,
   fundsOut,
-  balance,
+ ABS(balance) AS balance,
 
   ndcPercent,
   ndc,
