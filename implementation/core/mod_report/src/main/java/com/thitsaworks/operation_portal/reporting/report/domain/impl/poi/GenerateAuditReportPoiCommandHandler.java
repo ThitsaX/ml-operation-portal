@@ -470,9 +470,16 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
+    }
+
+    private org.apache.poi.ss.usermodel.Font reportDataFont(
+            org.apache.poi.ss.usermodel.Workbook workbook) {
+
+        var font = workbook.createFont();
+        font.setFontName("Calibri");
+        font.setFontHeightInPoints((short) 11);
+        return font;
     }
 
     private CellStyle textCellStyle(org.apache.poi.ss.usermodel.Workbook workbook) {
@@ -483,6 +490,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setFont(this.reportDataFont(workbook));
         return style;
     }
 
