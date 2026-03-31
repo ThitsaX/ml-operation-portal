@@ -72,7 +72,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     };
 
     private static final int[] COLUMN_WIDTHS = {
-        36, 28, 18, 49, 18, 49, 18, 18, 24, 16, 16, 14, 16
+        40, 32, 18, 49, 18, 49, 16, 24, 24, 18, 18, 18, 18
     };
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
