@@ -27,7 +27,7 @@ public class GenerateSettlementDetailReportController {
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generateDetailReport")
+    @PostMapping({"/secured/generateDetailReport", "/secured/generateSettlementDetailReport"})
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("fspId") String fspId,
                                             @RequestParam("fileType") String fileType,
