@@ -70,7 +70,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     };
 
     private static final int[] COLUMN_WIDTHS = {
-        36, 28, 18, 36, 18, 36, 18, 18, 24, 16, 16, 14, 16
+        36, 28, 18, 49, 18, 49, 18, 18, 24, 16, 16, 14, 16
     };
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
@@ -246,7 +246,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                 sheet.setColumnWidth(index, COLUMN_WIDTHS[index] * 256);
             }
 
-            sheet.createFreezePane(0, rowIndex);
+            //  sheet.createFreezePane(0, rowIndex);
 
             workbook.write(outputStream);
             workbook.dispose();
@@ -552,7 +552,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.setBorderRight(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.TOP);
+        style.setAlignment(HorizontalAlignment.LEFT);
         style.setWrapText(true);
         style.setFont(this.reportDataFont(workbook));
 
@@ -564,6 +565,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
+        style.setVerticalAlignment(VerticalAlignment.TOP);
         style.setDataFormat(workbook.createDataFormat()
                                     .getFormat("#,##0.00"));
         return style;
