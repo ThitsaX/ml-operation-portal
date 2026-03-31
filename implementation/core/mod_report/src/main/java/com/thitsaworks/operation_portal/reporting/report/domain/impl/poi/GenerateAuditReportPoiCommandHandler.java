@@ -337,7 +337,6 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
         parameters.add(this.normalizedOffset(input.timezoneOffset()));
         parameters.add(this.normalizedOffset(input.timezoneOffset()));
-        parameters.add(this.normalizedOffset(input.timezoneOffset()));
 
         parameters.add(input.realmId());
         parameters.add(input.realmId());

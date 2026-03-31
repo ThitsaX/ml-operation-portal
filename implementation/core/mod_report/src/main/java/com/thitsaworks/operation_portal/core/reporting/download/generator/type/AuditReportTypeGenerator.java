@@ -46,12 +46,12 @@ class AuditReportTypeGenerator implements ReportTypeGenerator {
     public ReportGeneratedFile generate(ReportDownloadRequest request, Map<String, String> params)
         throws ReportException, IOException {
 
-        String realmId = this.reportGeneratorSupport.normalizeAllToken(params.get("realmId"));
+        String realmId = this.optionalFilter(params.get("realmId"));
         Instant fromDate = Instant.parse(this.reportGeneratorSupport.requireParam(params, "fromDate"));
         Instant toDate = Instant.parse(this.reportGeneratorSupport.requireParam(params, "toDate"));
         String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
-        String userId = this.reportGeneratorSupport.normalizeAllToken(params.get("userId"));
-        String actionId = this.reportGeneratorSupport.normalizeAllToken(params.get("actionId"));
+        String userId = this.optionalFilter(params.get("userId"));
+        String actionId = this.optionalFilter(params.get("actionId"));
         String fileType = this.reportGeneratorSupport.fileType(request.getFileType());
         List<String> grantedActionList = Arrays.asList(params.getOrDefault("grantedActionList", "").split(","));
 
@@ -102,6 +102,15 @@ class AuditReportTypeGenerator implements ReportTypeGenerator {
             pageSize);
 
         return new ReportGeneratedFile(output.auditRptByte(), fileType);
+    }
+
+    private String optionalFilter(String value) {
+
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+
+        return "all".equalsIgnoreCase(value.trim()) ? null : value.trim();
     }
 
     private ReportGeneratedFile generateSplitZip(String realmId,
