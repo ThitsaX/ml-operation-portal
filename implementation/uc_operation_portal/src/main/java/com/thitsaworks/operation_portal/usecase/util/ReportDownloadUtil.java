@@ -47,6 +47,10 @@ public final class ReportDownloadUtil {
                 ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
             case "TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
                 ReportErrors.TRANSACTION_DETAIL_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
+            case "SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
+                ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
+            case "SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
+                ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
             default -> defaultFailureError.defaultMessage(storedError);
         };
     }

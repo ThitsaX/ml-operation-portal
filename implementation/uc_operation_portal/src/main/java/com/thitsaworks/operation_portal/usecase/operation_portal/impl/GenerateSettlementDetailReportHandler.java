@@ -64,6 +64,11 @@ public class GenerateSettlementDetailReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
+        String normalizedFileType = ReportDownloadUtil.normalizeFileType(input.fileType());
+        if (!"xlsx".equals(normalizedFileType) && !"csv".equals(normalizedFileType)) {
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
+        }
+
         String dfspName = input.fspId().equalsIgnoreCase("all") ? input.fspId().toUpperCase() : "";
 
         if (!input.fspId().equalsIgnoreCase("all")) {
@@ -82,7 +87,7 @@ public class GenerateSettlementDetailReportHandler
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
             ReportType.SETTLEMENT_DETAIL,
-            ReportDownloadUtil.normalizeFileType(input.fileType()),
+            normalizedFileType,
             params);
 
         String fileKey = result.request().fileUrl();

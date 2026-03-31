@@ -250,10 +250,25 @@ public class ReportGeneratorHandler implements ReportGenerator {
                                .ofPattern("ddMMMyyyy")
                                .format(LocalDateTime.now(ZoneOffset.UTC));
         String normalizedExt = extension.toLowerCase(Locale.ROOT);
+        String fileName = this.buildReportFileName(request, timestamp, normalizedExt);
 
-        return normalizedType + "/" + request.getReportType().name() +"-"+request.getId()
-                                             .getEntityId() + "-" + timestamp + "." +
-                   normalizedExt;
+        return normalizedType + "/" + fileName;
+    }
+
+    private String buildReportFileName(ReportDownloadRequest request,
+                                       String timestamp,
+                                       String extension) {
+
+        return switch (request.getReportType()) {
+            case SETTLEMENT_DETAIL -> "DFSPSettlementDetailReport-" + timestamp + "." + extension;
+            case TransactionDetail -> "TransactionDetailReport-" + timestamp + "." + extension;
+            case MANAGEMENT_SUMMARY -> "ManagementSummaryReport-" + timestamp + "." + extension;
+            case AUDIT -> "AuditReport-" + timestamp + "." + extension;
+            case SETTLEMENT_AUDIT -> "DFSPSettlementAuditReport-" + timestamp + "." + extension;
+            case SETTLEMENT_BANK -> "DFSPSettlementBankReport-" + timestamp + "." + extension;
+            case SETTLEMENT_STATEMENT -> "DFSPSettlementStatementReport-" + timestamp + "." + extension;
+            case SETTLEMENT_SUMMARY -> "DFSPSettlementReport-" + timestamp + "." + extension;
+        };
     }
 
 }
