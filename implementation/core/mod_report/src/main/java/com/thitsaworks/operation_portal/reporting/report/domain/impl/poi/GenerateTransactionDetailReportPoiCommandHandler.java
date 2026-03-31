@@ -538,8 +538,10 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
-        style.cloneStyleFrom(this.headerLabelStyle(workbook));
+        style.setBorderTop(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
         return style;
     }
 
@@ -551,7 +553,9 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
         style.setFont(this.reportDataFont(workbook));
+
         return style;
     }
 
