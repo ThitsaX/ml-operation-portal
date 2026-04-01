@@ -181,7 +181,7 @@ ORDER BY
         : "+00:00"
     )
 )
-.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
+.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")).replace("Z", "+00:00")]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="110" y="20" width="170" height="20" uuid="cf41f7dd-f04e-49d5-9d57-cf4bec6fc9f5">
@@ -211,7 +211,7 @@ ORDER BY
         : "+00:00"
     )
 )
-.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"))]]></textFieldExpression>
+.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX")).replace("Z", "+00:00")]]></textFieldExpression>
 			</textField>
 			<textField pattern="dd-MMM-yyyy">
 				<reportElement x="110" y="40" width="170" height="20" uuid="e9dd5127-c9e2-4f0e-a703-4cb61761a025">
