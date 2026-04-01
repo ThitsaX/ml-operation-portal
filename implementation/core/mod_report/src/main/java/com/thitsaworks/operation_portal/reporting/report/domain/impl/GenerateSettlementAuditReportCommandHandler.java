@@ -241,4 +241,16 @@ public class GenerateSettlementAuditReportCommandHandler implements GenerateSett
         }
     }
 
+    @Override
+    public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
+
+        return GenerateSettlementAuditReportCommand.super.exportAll(input, totalRowCount, pageSize);
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        return 0;
+    }
+
 }

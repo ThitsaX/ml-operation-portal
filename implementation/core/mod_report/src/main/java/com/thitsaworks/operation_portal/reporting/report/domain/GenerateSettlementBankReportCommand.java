@@ -10,10 +10,16 @@ public interface GenerateSettlementBankReportCommand {
                  String timezoneOffset,
                  String userName,
                  String dfspId,
-                 boolean isParent) {}
+                 boolean isParent,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] settlementBankRptByte) { }
 
     Output execute(Input input) throws ReportException;
+
+    record CountInput(String settlementId, String currencyId) { }
+
+    int countRows(CountInput input);
 
 }

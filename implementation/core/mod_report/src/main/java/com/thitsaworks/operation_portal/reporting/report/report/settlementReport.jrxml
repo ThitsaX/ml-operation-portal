@@ -64,6 +64,8 @@
 		<parameter name="timezoneoffset" class="java.lang.String"/>
 		<parameter name="report" class="java.lang.String"/>
 		<parameter name="user" class="java.lang.String"/>
+		<parameter name="limit" class="java.lang.Integer"/>
+		<parameter name="offset" class="java.lang.Integer"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT settlementId, 
        p.name AS participantId,
@@ -149,7 +151,8 @@ FROM participant p INNER JOIN
     ) s3 ON p.participantId = s3.participantId
 LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 WHERE p.name != 'Hub'
-ORDER BY p.name]]>
+ORDER BY p.name
+LIMIT $P!{offset}, $P!{limit};]]>
 		</queryString>
 		<field name="settlementId" class="java.math.BigInteger">
 			<property name="com.jaspersoft.studio.field.name" value="settlementId"/>
@@ -275,6 +278,8 @@ WHERE s.settlementId = $P{settlementId}
 		<parameter name="settlementId" class="java.lang.String"/>
 		<parameter name="dfspId" class="java.lang.String"/>
 		<parameter name="report" class="java.lang.String"/>
+		<parameter name="limit" class="java.lang.Integer"/>
+		<parameter name="offset" class="java.lang.Integer"/>
 		<queryString language="plsql">
 			<![CDATA[SELECT  
        currencyId,       
@@ -315,6 +320,8 @@ FROM
                  WHERE s.senderName = $P{dfspId}
                     OR s.receiverName = $P{dfspId}
                  GROUP BY  senderName, receiverName,s.currencyId
+                  ORDER BY   receiverName
+				 LIMIT $P!{offset}, $P!{limit}
              ) s2
         GROUP BY s2.currencyId
     ) s3  
@@ -330,6 +337,8 @@ ORDER BY currencyId]]>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
 	<parameter name="report" class="java.lang.String"/>
 	<parameter name="user" class="java.lang.String"/>
+	<parameter name="limit" class="java.lang.Integer"/>
+	<parameter name="offset" class="java.lang.Integer"/>
 	<queryString language="plsql">
 		<![CDATA[SELECT settlementId, 
        p.name AS participantId,
@@ -415,7 +424,8 @@ FROM participant p INNER JOIN
     ) s3 ON p.participantId = s3.participantId
 LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
 WHERE p.name != 'Hub'
-ORDER BY p.name]]>
+ORDER BY p.name
+LIMIT $P!{offset}, $P!{limit};]]>
 	</queryString>
 	<field name="settlementId" class="java.math.BigInteger">
 		<property name="com.jaspersoft.studio.field.name" value="settlementId"/>
@@ -1252,6 +1262,12 @@ ORDER BY p.name]]>
 						</datasetParameter>
 						<datasetParameter name="report">
 							<datasetParameterExpression><![CDATA[$P{report}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="limit">
+							<datasetParameterExpression><![CDATA[$P{limit}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="offset">
+							<datasetParameterExpression><![CDATA[$P{offset}]]></datasetParameterExpression>
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>

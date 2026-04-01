@@ -8,10 +8,17 @@ public interface GenerateSettlementReportCommand {
                  String fspName,
                  String settlementId,
                  String filetype,
-                 String timezoneOffset, String userName) { }
+                 String timezoneOffset,
+                 String userName,
+                 Integer offset,
+                 Integer limit) { }
 
     record Output(byte[] settlementRptByte) { }
 
     Output execute(Input input) throws ReportException;
+
+    record CountInput(String fspId, String settlementId) { }
+
+    int countRows(CountInput input);
 
 }

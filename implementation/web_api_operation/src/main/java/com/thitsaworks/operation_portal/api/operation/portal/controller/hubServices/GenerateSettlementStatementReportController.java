@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.time.Instant;
 
 @RestController
@@ -56,7 +57,11 @@ public class GenerateSettlementStatementReportController {
                                                         currencyId, timezone
             ));
 
-        var response = new Response(output.statementData());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.paramsSignature());
 
         LOG.info("Generate Settlement Statement Report Response : [{}]",
                  this.objectMapper.writeValueAsString(response));
@@ -66,6 +71,10 @@ public class GenerateSettlementStatementReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] statementReportByte) { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

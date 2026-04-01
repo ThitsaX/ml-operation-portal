@@ -24,7 +24,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -35,14 +34,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class GenerateSettlementBankReportCommandHandler implements GenerateSettlementBankReportCommand {
+public class GenerateSettlementBankReportCommandHandler
+    implements GenerateSettlementBankReportCommand {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportCommandHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateSettlementBankReportCommandHandler.class);
+
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public GenerateSettlementBankReportCommandHandler(
-            @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -60,19 +62,17 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
         params.put("dfspId", input.dfspId());
         params.put("isParent", input.isParent());
 
-        InputStream jrxmlStream = getClass().getClassLoader()
-                                            .getResourceAsStream(
-                                                    "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
+        InputStream jrxmlStream = getClass()
+                                      .getClassLoader()
+                                      .getResourceAsStream(
+                                          "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
 
-        try (Connection conn = this.jdbcTemplate.getDataSource()
-                                                .getConnection()) {
+        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
 
             DatabaseMetaData md = conn.getMetaData();
-            LOG.info("URL={} | user={} | driver={} {}",
-                     md.getURL(),
-                     md.getUserName(),
-                     md.getDriverName(),
-                     md.getDriverVersion());
+            LOG.info(
+                "URL={} | user={} | driver={} {}", md.getURL(), md.getUserName(),
+                md.getDriverName(), md.getDriverVersion());
 
             JasperDesign design = JRXmlLoader.load(jrxmlStream);
             design.setName("settlementBankReport");
@@ -91,19 +91,18 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
 
             JasperReport settlementBankReport = JasperCompileManager.compileReport(design);
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(settlementBankReport, params,
-                                                                   conn);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                settlementBankReport, params,
+                conn);
 
-            if (jasperPrint.getPages() == null || jasperPrint.getPages()
-                                                             .isEmpty()) {
+            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
 
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
             byte[] rptBytes = new byte[0];
 
-            if (input.fileType()
-                     .equalsIgnoreCase("xlsx")  ) {
+            if (input.fileType().equalsIgnoreCase("xlsx")) {
 
                 SimpleXlsxReportConfiguration xlsxConfig = new SimpleXlsxReportConfiguration();
                 xlsxConfig.setIgnorePageMargins(true);
@@ -116,9 +115,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
                 xlsxExporter.exportReport();
                 rptBytes = xlsReport.toByteArray();
 
-
-            } else if (input.fileType()
-                            .equalsIgnoreCase("pdf")) {
+            } else if (input.fileType().equalsIgnoreCase("pdf")) {
 
                 JRPdfExporter pdfExporter = new JRPdfExporter();
                 ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
@@ -127,8 +124,7 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
                 pdfExporter.exportReport();
                 rptBytes = pdfReport.toByteArray();
 
-            } else if (input.fileType()
-                            .equalsIgnoreCase("csv")) {
+            } else if (input.fileType().equalsIgnoreCase("csv")) {
 
                 JRCsvExporter csvExporter = new JRCsvExporter();
                 ByteArrayOutputStream csvReport = new ByteArrayOutputStream();
@@ -153,6 +149,34 @@ public class GenerateSettlementBankReportCommandHandler implements GenerateSettl
             throw new ReportException(ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION);
 
         }
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        Integer rowCount = this.jdbcTemplate.queryForObject(
+            """
+                SELECT COUNT(*) FROM (
+                    SELECT p.name
+                    FROM settlement s
+                    INNER JOIN settlementSettlementWindow ssw  ON  ssw.settlementId = s.settlementId
+                    INNER JOIN transferFulfilment tf           ON  tf.settlementWindowId = ssw.settlementWindowId
+                    INNER JOIN transferParticipant tp          ON  tp.transferId = tf.transferId
+                    INNER JOIN participantCurrency pc          ON  tp.participantCurrencyId = pc.participantCurrencyId
+                    INNER JOIN participant p                   ON  p.participantId = pc.participantId
+                    LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI  = p.name COLLATE UTF8MB4_UNICODE_CI
+                    LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI  = pc.currencyId COLLATE UTF8MB4_UNICODE_CI  AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI  = lp.participant_id  COLLATE UTF8MB4_UNICODE_CI
+                    INNER JOIN ledgerAccountType lat           ON  lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                    WHERE s.settlementId = ? AND lat.name = 'POSITION'
+                      AND (? = 'All' COLLATE UTF8MB4_UNICODE_CI OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ? COLLATE UTF8MB4_UNICODE_CI)
+                    GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number, op.description
+                ) x
+                """, new Object[]{
+                input.settlementId(),
+                input.currencyId(),
+                input.currencyId()}, Integer.class);
+
+        return rowCount == null ? 0 : rowCount;
     }
 
 }

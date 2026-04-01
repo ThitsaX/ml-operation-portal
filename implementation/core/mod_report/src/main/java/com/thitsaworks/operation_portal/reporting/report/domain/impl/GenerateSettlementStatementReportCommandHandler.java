@@ -265,4 +265,16 @@ public class GenerateSettlementStatementReportCommandHandler implements Generate
         }
     }
 
+    @Override
+    public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
+
+        return GenerateSettlementStatementReportCommand.super.exportAll(input, totalRowCount, pageSize);
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        return 0;
+    }
+
 }

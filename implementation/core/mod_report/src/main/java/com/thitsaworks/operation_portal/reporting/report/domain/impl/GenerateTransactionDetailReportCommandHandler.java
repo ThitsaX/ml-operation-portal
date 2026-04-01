@@ -196,4 +196,16 @@ public class GenerateTransactionDetailReportCommandHandler implements GenerateTr
         }
     }
 
+    @Override
+    public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
+
+        return GenerateTransactionDetailReportCommand.super.exportAll(input, totalRowCount, pageSize);
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        return 0;
+    }
+
 }

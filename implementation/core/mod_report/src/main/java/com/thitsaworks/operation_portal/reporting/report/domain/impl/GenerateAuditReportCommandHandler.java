@@ -192,4 +192,16 @@ public class GenerateAuditReportCommandHandler implements GenerateAuditReportCom
         }
     }
 
+    @Override
+    public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
+
+        return GenerateAuditReportCommand.super.exportAll(input, totalRowCount, pageSize);
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        return 0;
+    }
+
 }

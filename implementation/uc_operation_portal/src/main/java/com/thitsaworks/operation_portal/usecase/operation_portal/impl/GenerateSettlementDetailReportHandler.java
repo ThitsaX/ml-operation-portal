@@ -1,21 +1,29 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementDetailReportCommand;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementDetailReport;
+import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -25,9 +33,11 @@ public class GenerateSettlementDetailReportHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementDetailReportHandler.class);
 
-    private final GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand;
+    private final ReportDownloadRequestManager reportDownloadRequestManager;
 
     private final ParticipantQuery participantQuery;
+
+    private final S3FileStorage s3FileStorage;
 
     public GenerateSettlementDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                  CreateOutputAuditCommand createOutputAuditCommand,
@@ -35,8 +45,9 @@ public class GenerateSettlementDetailReportHandler
                                                  ObjectMapper objectMapper,
                                                  PrincipalCache principalCache,
                                                  ActionAuthorizationManager actionAuthorizationManager,
-                                                 GenerateSettlementDetailReportCommand generateSettlementDetailReportCommand,
-                                                 ParticipantQuery participantQuery) {
+                                                 ReportDownloadRequestManager reportDownloadRequestManager,
+                                                 ParticipantQuery participantQuery,
+                                                 S3FileStorage s3FileStorage) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -45,13 +56,18 @@ public class GenerateSettlementDetailReportHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.generateSettlementDetailReportCommand = generateSettlementDetailReportCommand;
-
+        this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.participantQuery = participantQuery;
+        this.s3FileStorage = s3FileStorage;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
+
+        String normalizedFileType = ReportDownloadUtil.normalizeFileType(input.fileType());
+        if (!"xlsx".equals(normalizedFileType) && !"csv".equals(normalizedFileType)) {
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
+        }
 
         String dfspName = input.fspId().equalsIgnoreCase("all") ? input.fspId().toUpperCase() : "";
 
@@ -63,14 +79,41 @@ public class GenerateSettlementDetailReportHandler
                     input.fspId() : optionalParticipantData.get().description();
         }
 
-        GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(
-                new GenerateSettlementDetailReportCommand.Input(input.settlementId(),
-                                                                input.fspId(),
-                                                                dfspName,
-                                                                input.fileType(),
-                                                                input.timezoneOffset()));
+        Map<String, String> params = new HashMap<>();
+        params.put("settlementId", input.settlementId());
+        params.put("fspId", ReportDownloadUtil.normalizeAllToken(input.fspId()));
+        params.put("dfspName", dfspName);
+        params.put("timezoneOffset", input.timezoneOffset());
 
-        return new Output(output.settlementDetailRptByte());
+        ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
+            ReportType.SETTLEMENT_DETAIL,
+            normalizedFileType,
+            params);
+
+        String fileKey = result.request().fileUrl();
+        String fileUrl = null;
+
+        if (FileDownloadStatus.READY.equals(result.request().status()) && fileKey != null &&
+                !fileKey.isBlank()) {
+
+            try {
+                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
+            } catch (Exception e) {
+                LOG.warn(
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    result.request().requestId().getEntityId(), e.getMessage());
+            }
+        }
+
+        if (FileDownloadStatus.FAILED.equals(result.request().status())) {
+            throw new ReportException(
+                ReportDownloadUtil.resolveFailedError(
+                    result.request().errorMessage(),
+                    ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION));
+        }
+
+        return new Output(
+            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
     }
 
 }
