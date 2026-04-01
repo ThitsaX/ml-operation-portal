@@ -3,9 +3,19 @@ package com.thitsaworks.operation_portal.reporting.report.domain.impl.poi;
 import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
-import com.thitsaworks.operation_portal.reporting.report.domain.impl.GenerateSettlementReportCommandHandler;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.design.JasperDesign;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.xml.JRXmlLoader;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
+import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -13,6 +23,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
@@ -22,7 +33,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -34,9 +47,10 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 
 @Service
 @Primary
@@ -52,17 +66,22 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
     private static final int MYSQL_STREAM_FETCH_SIZE = Integer.MIN_VALUE;
 
-    private static final String[] COLUMN_HEADERS = {
+    private static final String[] COLUMN_HEADERS_ROW1 = {
         "DFSP ID",
         "DFSP Name",
-        "Sent Volume",
-        "Sent Value",
-        "Received Volume",
-        "Received Value",
+        "Sent to FSP", null,
+        "Received from FSP", null,
         "Total Transaction Volume",
         "Total Value of All Transactions",
         "Net Position vs. Each DFSP",
         "Currency"
+    };
+
+    private static final String[] COLUMN_HEADERS_ROW2 = {
+        null, null,
+        "Volume", "Value",
+        "Volume", "Value",
+        null, null, null, null
     };
 
     private static final int[] COLUMN_WIDTHS = {18, 32, 16, 18, 16, 18, 22, 24, 24, 12};
@@ -72,37 +91,28 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final GenerateSettlementReportCommandHandler jasperHandler;
-
     public GenerateSettlementSummaryReportPoiCommandHandler(
-        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate,
-        GenerateSettlementReportCommandHandler jasperHandler) {
+        @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
-        this.jasperHandler = jasperHandler;
     }
 
     @Override
     public Output execute(Input input) throws ReportException {
 
-        String fileType = this.normalizeFileType(input.filetype());
-        Input normalizedInput = new Input(
-            input.fspId(),
-            input.fspName(),
-            input.settlementId(),
-            fileType,
-            input.timezoneOffset(),
-            input.userName(),
-            input.offset(),
-            input.limit());
-
         try {
+            String fileType = this.normalizeFileType(input.filetype());
+
+            Input normalizedInput = new Input(
+                input.fspId(), input.fspName(), input.settlementId(), fileType,
+                input.timezoneOffset(), input.userName(), input.offset(), input.limit());
+
             if ("xlsx".equalsIgnoreCase(fileType)) {
-                return new Output(this.exportXlsx(normalizedInput));
+                return new Output(this.exportSingleChunkXlsx(normalizedInput));
             }
 
             if ("pdf".equalsIgnoreCase(fileType)) {
-                return this.jasperHandler.execute(normalizedInput);
+                return new Output(this.exportPdf(normalizedInput));
             }
 
             throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
@@ -110,7 +120,39 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         } catch (ReportException exception) {
             throw exception;
         } catch (Exception exception) {
-            LOG.error("Error generating settlement summary report with POI", exception);
+            LOG.error("Error generating settlement summary report", exception);
+            throw new ReportException(ReportErrors.SETTLEMENT_REPORT_FAILURE_EXCEPTION);
+        }
+    }
+
+    @Override
+    public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
+
+        if (totalRowCount <= 0) {
+            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+        }
+
+        try {
+            String fileType = this.normalizeFileType(input.filetype());
+
+            Input normalizedInput = new Input(
+                input.fspId(), input.fspName(), input.settlementId(), fileType,
+                input.timezoneOffset(), input.userName(), input.offset(), input.limit());
+
+            if ("xlsx".equalsIgnoreCase(fileType)) {
+                return new Output(this.exportAllXlsx(normalizedInput, totalRowCount, pageSize));
+            }
+
+            if ("pdf".equalsIgnoreCase(fileType)) {
+                return new Output(this.exportPdf(normalizedInput));
+            }
+
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
+
+        } catch (ReportException exception) {
+            throw exception;
+        } catch (Exception exception) {
+            LOG.error("Error generating full settlement summary report", exception);
             throw new ReportException(ReportErrors.SETTLEMENT_REPORT_FAILURE_EXCEPTION);
         }
     }
@@ -160,7 +202,54 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         return rowCount == null ? 0 : rowCount;
     }
 
-    private byte[] exportXlsx(Input input) throws IOException, ReportException {
+    private byte[] exportPdf(Input input) throws Exception {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("dfspId", input.fspId());
+        params.put("dfspName", input.fspName());
+        params.put("settlementId", input.settlementId());
+        params.put("timezoneoffset", input.timezoneOffset());
+        params.put("report", input.filetype());
+        params.put("user", input.userName());
+        params.put("offset", input.offset() == null ? 0 : input.offset());
+        params.put("limit", input.limit() == null ? DEFAULT_LIMIT : input.limit());
+
+        InputStream jrxmlStream = this.getClass().getClassLoader().getResourceAsStream(
+            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
+
+        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
+
+            JasperDesign design = JRXmlLoader.load(jrxmlStream);
+            design.setName("settlementReport");
+
+            JasperReport compiledReport = JasperCompileManager.compileReport(design);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(compiledReport, params, conn);
+
+            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+            }
+
+            JRPdfExporter pdfExporter = new JRPdfExporter();
+            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
+            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
+
+            SimplePdfReportConfiguration pdfReportCfg = new SimplePdfReportConfiguration();
+            pdfReportCfg.setSizePageToContent(true);
+            pdfReportCfg.setForceSvgShapes(false);
+            pdfExporter.setConfiguration(pdfReportCfg);
+
+            SimplePdfExporterConfiguration pdfExportCfg = new SimplePdfExporterConfiguration();
+            pdfExportCfg.setMetadataTitle("Settlement Report");
+            pdfExportCfg.setMetadataAuthor("Hub Operator");
+            pdfExporter.setConfiguration(pdfExportCfg);
+
+            pdfExporter.exportReport();
+            return pdfReport.toByteArray();
+        }
+    }
+
+    private byte[] exportSingleChunkXlsx(Input input) throws IOException, ReportException {
 
         Path tempFile = Files.createTempFile("settlement-summary-", ".xlsx");
 
@@ -169,10 +258,8 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
             workbook.setCompressTempFiles(true);
 
-            Sheet mainSheet = workbook.createSheet("DFSPSettlementReport");
-            Sheet summarySheet = workbook.createSheet("Summary");
-            this.trackColumns(mainSheet);
-            this.trackColumns(summarySheet);
+            Sheet sheet = workbook.createSheet("DFSPSettlementReport");
+            this.trackColumns(sheet);
 
             CellStyle labelStyle = this.labelStyle(workbook);
             CellStyle valueStyle = this.valueStyle(workbook);
@@ -184,62 +271,36 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             String settlementCreatedDate = this.loadSettlementCreatedDate(
                 input.settlementId(), input.timezoneOffset());
 
-            int rowIndex = 0;
-            rowIndex = this.writeMeta(mainSheet, rowIndex, "Settlement ID", input.settlementId(),
-                                      labelStyle, valueStyle);
-            rowIndex = this.writeMeta(mainSheet, rowIndex, "Settlement Created Date",
-                                      settlementCreatedDate, labelStyle, valueStyle);
-            rowIndex = this.writeMeta(mainSheet, rowIndex, "DFSP ID", input.fspId(),
-                                      labelStyle, valueStyle);
-            rowIndex = this.writeMeta(mainSheet, rowIndex, "DFSP Name", input.fspName(),
-                                      labelStyle, valueStyle);
-            rowIndex = this.writeMeta(mainSheet, rowIndex, "TimeZoneOffSet",
-                                      this.displayOffset(input.timezoneOffset()),
-                                      labelStyle, valueStyle);
+            int rowIndex = this.writeMetaBlock(sheet, input, settlementCreatedDate,
+                                                labelStyle, valueStyle);
             rowIndex++;
 
-            Row headerRow = mainSheet.createRow(rowIndex++);
-            for (int index = 0; index < COLUMN_HEADERS.length; index++) {
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(COLUMN_HEADERS[index]);
-                cell.setCellStyle(headerStyle);
-            }
+            int freezeRow = this.writeColumnHeaders(sheet, rowIndex, headerStyle);
+            rowIndex = freezeRow;
 
             RowCursor rowCursor = new RowCursor(rowIndex);
-            RowCounter rowCounter = new RowCounter();
-            this.streamRows(input, row -> {
-                this.writeDataRow(
-                    mainSheet.createRow(rowCursor.next()), row, textStyle, amountStyle, volumeStyle);
-                rowCounter.increment();
-            });
+            this.streamRows(input, row -> this.writeDataRow(
+                sheet.createRow(rowCursor.next()), row, textStyle, amountStyle, volumeStyle));
 
-            if (rowCounter.value() == 0) {
+            if (rowCursor.current() == rowIndex) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
-            this.flush(mainSheet);
-            for (int index = 0; index < COLUMN_WIDTHS.length; index++) {
-                mainSheet.setColumnWidth(index, COLUMN_WIDTHS[index] * 256);
-            }
-            mainSheet.createFreezePane(0, rowIndex);
+            this.flush(sheet);
 
-            int summaryRowIndex = 0;
-            summaryRowIndex = this.writeMeta(summarySheet, summaryRowIndex, "Aggregated Net Positions", "",
-                                             labelStyle, valueStyle);
-            Row summaryHeaderRow = summarySheet.createRow(summaryRowIndex++);
-            summaryHeaderRow.createCell(0).setCellValue("Currency");
-            summaryHeaderRow.createCell(1).setCellValue("Net Position Amount");
-            summaryHeaderRow.getCell(0).setCellStyle(headerStyle);
-            summaryHeaderRow.getCell(1).setCellStyle(headerStyle);
+            // Aggregated Net Positions appended at bottom of same sheet
+            int netRow = rowCursor.current();
+            netRow++; // blank row separator
 
-            RowCursor summaryCursor = new RowCursor(summaryRowIndex);
-            this.streamSummaryRows(input, row -> this.writeSummaryRow(
-                summarySheet.createRow(summaryCursor.next()), row, textStyle, amountStyle));
+            Input summaryInput = new Input(
+                input.fspId(), input.fspName(), input.settlementId(), input.filetype(),
+                input.timezoneOffset(), input.userName(), 0, DEFAULT_LIMIT);
+            netRow = this.writeNetPositionBlock(
+                sheet, netRow, summaryInput, labelStyle, headerStyle, textStyle, amountStyle);
 
-            this.flush(summarySheet);
-            summarySheet.setColumnWidth(0, 18 * 256);
-            summarySheet.setColumnWidth(1, 20 * 256);
-            summarySheet.createFreezePane(0, summaryRowIndex);
+            this.flush(sheet);
+            this.applyColumnWidths(sheet);
+            sheet.createFreezePane(0, freezeRow);
 
             workbook.write(outputStream);
             workbook.dispose();
@@ -250,24 +311,156 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         }
     }
 
+    private byte[] exportAllXlsx(Input input, int totalRowCount, int pageSize)
+        throws IOException, ReportException {
+
+        Path tempFile = Files.createTempFile("settlement-summary-", ".xlsx");
+
+        try (SXSSFWorkbook workbook = new SXSSFWorkbook(DEFAULT_ROW_WINDOW);
+             OutputStream outputStream = Files.newOutputStream(tempFile)) {
+
+            workbook.setCompressTempFiles(true);
+
+            Sheet sheet = workbook.createSheet("DFSPSettlementReport");
+            this.trackColumns(sheet);
+
+            CellStyle labelStyle = this.labelStyle(workbook);
+            CellStyle valueStyle = this.valueStyle(workbook);
+            CellStyle headerStyle = this.headerStyle(workbook);
+            CellStyle textStyle = this.textStyle(workbook);
+            CellStyle amountStyle = this.amountStyle(workbook);
+            CellStyle volumeStyle = this.volumeStyle(workbook);
+
+            String settlementCreatedDate = this.loadSettlementCreatedDate(
+                input.settlementId(), input.timezoneOffset());
+
+            int rowIndex = this.writeMetaBlock(sheet, input, settlementCreatedDate,
+                                                labelStyle, valueStyle);
+            rowIndex++;
+
+            int freezeRow = this.writeColumnHeaders(sheet, rowIndex, headerStyle);
+            rowIndex = freezeRow;
+
+            RowCursor rowCursor = new RowCursor(rowIndex);
+            for (int offset = 0; offset < totalRowCount; offset += pageSize) {
+                int limit = Math.min(pageSize, totalRowCount - offset);
+                Input chunkInput = new Input(
+                    input.fspId(), input.fspName(), input.settlementId(), input.filetype(),
+                    input.timezoneOffset(), input.userName(), offset, limit);
+
+                this.streamRows(chunkInput, row -> this.writeDataRow(
+                    sheet.createRow(rowCursor.next()), row, textStyle, amountStyle, volumeStyle));
+                this.flush(sheet);
+            }
+
+            if (rowCursor.current() == rowIndex) {
+                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+            }
+
+            // Aggregated Net Positions appended at bottom of same sheet
+            int netRow = rowCursor.current();
+            netRow++; // blank row separator
+
+            Input summaryInput = new Input(
+                input.fspId(), input.fspName(), input.settlementId(), input.filetype(),
+                input.timezoneOffset(), input.userName(), 0, DEFAULT_LIMIT);
+            netRow = this.writeNetPositionBlock(
+                sheet, netRow, summaryInput, labelStyle, headerStyle, textStyle, amountStyle);
+
+            this.flush(sheet);
+            this.applyColumnWidths(sheet);
+            sheet.createFreezePane(0, freezeRow);
+
+            workbook.write(outputStream);
+            workbook.dispose();
+            return Files.readAllBytes(tempFile);
+
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+    }
+
+    private int writeColumnHeaders(Sheet sheet, int startRow, CellStyle headerStyle) {
+
+        Row row1 = sheet.createRow(startRow);
+        Row row2 = sheet.createRow(startRow + 1);
+
+        for (int col = 0; col < COLUMN_HEADERS_ROW1.length; col++) {
+            Cell cell1 = row1.createCell(col);
+            cell1.setCellStyle(headerStyle);
+            if (COLUMN_HEADERS_ROW1[col] != null) {
+                cell1.setCellValue(COLUMN_HEADERS_ROW1[col]);
+            }
+
+            Cell cell2 = row2.createCell(col);
+            cell2.setCellStyle(headerStyle);
+            if (COLUMN_HEADERS_ROW2[col] != null) {
+                cell2.setCellValue(COLUMN_HEADERS_ROW2[col]);
+            }
+        }
+
+        // Merge "DFSP ID" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 0, 0));
+        // Merge "DFSP Name" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 1, 1));
+        // Merge "Sent to FSP" (cols 2-3)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 2, 3));
+        // Merge "Received from FSP" (cols 4-5)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow, 4, 5));
+        // Merge "Total Transaction Volume" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 6, 6));
+        // Merge "Total Value of All Transactions" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 7, 7));
+        // Merge "Net Position vs. Each DFSP" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 8, 8));
+        // Merge "Currency" (rows)
+        sheet.addMergedRegion(new CellRangeAddress(startRow, startRow + 1, 9, 9));
+
+        return startRow + 2;
+    }
+
+
+    private int writeNetPositionBlock(Sheet sheet,
+                                       int startRow,
+                                       Input summaryInput,
+                                       CellStyle labelStyle,
+                                       CellStyle headerStyle,
+                                       CellStyle textStyle,
+                                       CellStyle amountStyle) {
+
+        Row titleRow = sheet.createRow(startRow);
+        Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("Aggregated Net Positions");
+        titleCell.setCellStyle(labelStyle);
+        int rowIndex = startRow + 1;
+
+        RowCursor cursor = new RowCursor(rowIndex);
+        this.streamSummaryRows(summaryInput, row -> {
+            Row dataRow = sheet.createRow(cursor.next());
+            this.writeTextCell(dataRow, 0, row.currencyId(), textStyle);
+            this.writeNumberCell(dataRow, 1, row.netPositionAmount(), amountStyle);
+        });
+
+        return cursor.current();
+    }
+
+
     private void streamRows(Input input, SettlementSummaryRowConsumer consumer) {
 
-        List<Object> params = new ArrayList<>();
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.settlementId());
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.offset() == null ? 0 : input.offset());
-        params.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
+        List<Object> params = List.of(
+            input.fspId(), input.fspId(), input.fspId(), input.fspId(), input.fspId(),
+            input.settlementId(), input.fspId(), input.fspId(),
+            input.limit() == null ? DEFAULT_LIMIT : input.limit(),
+            input.offset() == null ? 0 : input.offset());
+
+        String query = this.mainQuery();
 
         try {
             this.jdbcTemplate.query(connection -> {
                 PreparedStatement statement = connection.prepareStatement(
-                    this.mainQuery(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    query,
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_READ_ONLY);
                 statement.setFetchDirection(ResultSet.FETCH_FORWARD);
                 statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
                 for (int index = 0; index < params.size(); index++) {
@@ -276,12 +469,9 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                 return statement;
             }, resultSet -> {
                 while (resultSet.next()) {
-                    try {
-                        consumer.accept(this.mapRow(resultSet));
-                    } catch (IOException exception) {
-                        throw new IOExceptionRuntimeException(exception);
-                    }
+                    consumer.accept(this.mapRow(resultSet));
                 }
+                return null;
             });
         } catch (IOExceptionRuntimeException exception) {
             throw exception;
@@ -290,19 +480,19 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
     private void streamSummaryRows(Input input, SettlementSummaryNetPositionConsumer consumer) {
 
-        List<Object> params = new ArrayList<>();
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.settlementId());
-        params.add(input.fspId());
-        params.add(input.fspId());
-        params.add(input.offset() == null ? 0 : input.offset());
-        params.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
+        List<Object> params = List.of(
+            input.fspId(), input.fspId(), input.settlementId(), input.fspId(), input.fspId(),
+            input.limit() == null ? DEFAULT_LIMIT : input.limit(),
+            input.offset() == null ? 0 : input.offset());
+
+        String query = this.summaryQuery();
 
         try {
             this.jdbcTemplate.query(connection -> {
                 PreparedStatement statement = connection.prepareStatement(
-                    this.summaryQuery(), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    query,
+                    ResultSet.TYPE_FORWARD_ONLY,
+                    ResultSet.CONCUR_READ_ONLY);
                 statement.setFetchDirection(ResultSet.FETCH_FORWARD);
                 statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
                 for (int index = 0; index < params.size(); index++) {
@@ -311,18 +501,14 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                 return statement;
             }, resultSet -> {
                 while (resultSet.next()) {
-                    try {
-                        consumer.accept(this.mapSummaryRow(resultSet));
-                    } catch (IOException exception) {
-                        throw new IOExceptionRuntimeException(exception);
-                    }
+                    consumer.accept(this.mapSummaryRow(resultSet));
                 }
+                return null;
             });
         } catch (IOExceptionRuntimeException exception) {
             throw exception;
         }
     }
-
     private SettlementSummaryRow mapRow(ResultSet resultSet) throws SQLException {
 
         return new SettlementSummaryRow(
@@ -348,9 +534,11 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
     private String mainQuery() {
 
         return """
-            SELECT p.name AS participantId,
+            SELECT settlementId,
+                   p.name AS participantId,
                    IFNULL(op.description, p.name) AS dfspName,
                    s3.currencyId,
+                   s3.currencyScale,
                    ROUND(s3.sentAmount, 2) AS sentAmount,
                    s3.sentVolume,
                    ROUND(s3.receivedAmount, 2) AS receivedAmount,
@@ -362,6 +550,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             INNER JOIN (
                 SELECT settlementId,
                        MAX(currencyId) AS currencyId,
+                       MAX(currencyScale) AS currencyScale,
                        participantId,
                        SUM(sentAmount) AS sentAmount,
                        SUM(sentVolume) AS sentVolume,
@@ -370,6 +559,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                 FROM (
                     SELECT settlementId,
                            MAX(currencyId) AS currencyId,
+                           MAX(currencyScale) AS currencyScale,
                            IF(senderName != ?, senderId, receiverId) AS participantId,
                            SUM(IF(senderName = ?, amount, 0)) AS sentAmount,
                            SUM(IF(senderName = ?, volume, 0)) AS sentVolume,
@@ -382,6 +572,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                                MAX(CASE WHEN tP.amount < 0 THEN p.name END) AS receiverName,
                                MAX(tP.amount) AS amount,
                                MAX(c.currencyId) AS currencyId,
+                               MAX(c.scale) AS currencyScale,
                                COUNT(DISTINCT tF.transferId) AS volume,
                                s.settlementId
                         FROM transferParticipant tP
@@ -405,7 +596,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
             WHERE p.name != 'Hub'
             ORDER BY p.name
-            LIMIT ?, ?
+            LIMIT ? OFFSET ?
             """;
     }
 
@@ -416,8 +607,8 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                    ROUND((SUM(receivedAmount) - SUM(sentAmount)), 2) AS netPositionAmount
             FROM (
                 SELECT MAX(currencyId) AS currencyId,
-                       SUM(sentAmount) AS sentAmount,
-                       SUM(receivedAmount) AS receivedAmount
+                   SUM(sentAmount) AS sentAmount,
+                   SUM(receivedAmount) AS receivedAmount
                 FROM (
                     SELECT MAX(currencyId) AS currencyId,
                            SUM(IF(senderName = ?, amount, 0)) AS sentAmount,
@@ -443,7 +634,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                     WHERE s.senderName = ? OR s.receiverName = ?
                     GROUP BY senderName, receiverName, s.currencyId
                     ORDER BY receiverName
-                    LIMIT ?, ?
+                    LIMIT ? OFFSET ?
                 ) s2
                 GROUP BY s2.currencyId
             ) s3
@@ -470,12 +661,33 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                       .format(HEADER_DATE_FORMAT);
     }
 
+    private int writeMetaBlock(Sheet sheet,
+                                Input input,
+                                String settlementCreatedDate,
+                                CellStyle labelStyle,
+                                CellStyle valueStyle) {
+
+        int rowIndex = 0;
+        rowIndex = this.writeMeta(sheet, rowIndex, "Settlement ID", input.settlementId(),
+                                   labelStyle, valueStyle);
+        rowIndex = this.writeMeta(sheet, rowIndex, "Settlement Created Date",
+                                   settlementCreatedDate, labelStyle, valueStyle);
+        rowIndex = this.writeMeta(sheet, rowIndex, "DFSP ID", input.fspId(),
+                                   labelStyle, valueStyle);
+        rowIndex = this.writeMeta(sheet, rowIndex, "DFSP Name", input.fspName(),
+                                   labelStyle, valueStyle);
+        rowIndex = this.writeMeta(sheet, rowIndex, "TimeZoneOffSet",
+                                   this.displayOffset(input.timezoneOffset()),
+                                   labelStyle, valueStyle);
+        return rowIndex;
+    }
+
     private int writeMeta(Sheet sheet,
-                          int rowIndex,
-                          String label,
-                          String value,
-                          CellStyle labelStyle,
-                          CellStyle valueStyle) {
+                           int rowIndex,
+                           String label,
+                           String value,
+                           CellStyle labelStyle,
+                           CellStyle valueStyle) {
 
         Row row = sheet.createRow(rowIndex++);
         Cell labelCell = row.createCell(0);
@@ -489,10 +701,10 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
     }
 
     private void writeDataRow(Row row,
-                              SettlementSummaryRow data,
-                              CellStyle textStyle,
-                              CellStyle amountStyle,
-                              CellStyle volumeStyle) {
+                               SettlementSummaryRow data,
+                               CellStyle textStyle,
+                               CellStyle amountStyle,
+                               CellStyle volumeStyle) {
 
         this.writeTextCell(row, 0, data.participantId(), textStyle);
         this.writeTextCell(row, 1, data.dfspName(), textStyle);
@@ -504,15 +716,6 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         this.writeNumberCell(row, 7, data.totalAmount(), amountStyle);
         this.writeNumberCell(row, 8, data.netAmount(), amountStyle);
         this.writeTextCell(row, 9, data.currencyId(), textStyle);
-    }
-
-    private void writeSummaryRow(Row row,
-                                 SettlementSummaryNetPositionRow data,
-                                 CellStyle textStyle,
-                                 CellStyle amountStyle) {
-
-        this.writeTextCell(row, 0, data.currencyId(), textStyle);
-        this.writeNumberCell(row, 1, data.netPositionAmount(), amountStyle);
     }
 
     private void writeTextCell(Row row, int columnIndex, String value, CellStyle style) {
@@ -602,6 +805,13 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         style.setBorderLeft(BorderStyle.THIN);
     }
 
+    private void applyColumnWidths(Sheet sheet) {
+
+        for (int index = 0; index < COLUMN_WIDTHS.length; index++) {
+            sheet.setColumnWidth(index, COLUMN_WIDTHS[index] * 256);
+        }
+    }
+
     private void trackColumns(Sheet sheet) {
 
         if (sheet instanceof SXSSFSheet streamingSheet) {
@@ -622,7 +832,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             return "";
         }
 
-        String normalized = fileType.trim().toLowerCase(Locale.ROOT);
+        String normalized = fileType.trim().toLowerCase(java.util.Locale.ROOT);
         return normalized.startsWith(".") ? normalized.substring(1) : normalized;
     }
 
@@ -667,13 +877,13 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
     @FunctionalInterface
     private interface SettlementSummaryRowConsumer {
 
-        void accept(SettlementSummaryRow row) throws IOException;
+        void accept(SettlementSummaryRow row);
     }
 
     @FunctionalInterface
     private interface SettlementSummaryNetPositionConsumer {
 
-        void accept(SettlementSummaryNetPositionRow row) throws IOException;
+        void accept(SettlementSummaryNetPositionRow row);
     }
 
     private static final class IOExceptionRuntimeException extends RuntimeException {
@@ -693,24 +903,13 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             this.current = start;
         }
 
+        public int current() {
+            return this.current;
+        }
+
         private int next() {
 
             return this.current++;
-        }
-    }
-
-    private static final class RowCounter {
-
-        private int value;
-
-        private void increment() {
-
-            this.value++;
-        }
-
-        private int value() {
-
-            return this.value;
         }
     }
 }
