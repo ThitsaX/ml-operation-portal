@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -27,6 +30,7 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionDetailReportTypeGenerator.class);
 
     private static final int MAX_ROWS_PER_REPORT_FILE = 500_000;
+    private static final DateTimeFormatter FILE_DATE_FORMAT = DateTimeFormatter.ofPattern("ddMMMyyyy");
 
     private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
 
@@ -77,7 +81,8 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
         }
 
         if (totalRowCount > MAX_ROWS_PER_REPORT_FILE) {
-            return this.generateSplitZip(startDate,
+            return this.generateSplitZip(request,
+                                         startDate,
                                          endDate,
                                          state,
                                          dfspId,
@@ -95,7 +100,8 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
         return new ReportGeneratedFile(output.transactionDetailRptByte(), fileType);
     }
 
-    private ReportGeneratedFile generateSplitZip(Instant startDate,
+    private ReportGeneratedFile generateSplitZip(ReportDownloadRequest request,
+                                                 Instant startDate,
                                                  Instant endDate,
                                                  String state,
                                                  String dfspId,
@@ -107,6 +113,7 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
 
+            String baseFileName = this.baseFileName(request);
             int partNumber = 1;
             for (int offset = 0; offset < totalRowCount; offset += MAX_ROWS_PER_REPORT_FILE) {
                 int rowsInPart = Math.min(MAX_ROWS_PER_REPORT_FILE, totalRowCount - offset);
@@ -123,7 +130,7 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
                         offset,
                         rowsInPart), rowsInPart, pageSize);
 
-                String entryName = "transaction_detail_part_" + partNumber + "." + fileType;
+                String entryName = baseFileName + "-Part" + partNumber + "." + fileType;
                 ZipEntry entry = new ZipEntry(entryName);
                 zipOutputStream.putNextEntry(entry);
                 zipOutputStream.write(partOutput.transactionDetailRptByte());
@@ -135,6 +142,12 @@ class TransactionDetailReportTypeGenerator implements ReportTypeGenerator {
             zipOutputStream.finish();
             return new ReportGeneratedFile(byteArrayOutputStream.toByteArray(), "zip");
         }
+    }
+
+    private String baseFileName(ReportDownloadRequest request) {
+
+        String timestamp = FILE_DATE_FORMAT.format(LocalDateTime.now(ZoneOffset.UTC));
+        return request.getReportType().name() + "-" + request.getId().getEntityId() + "-" + timestamp;
     }
 
 }
