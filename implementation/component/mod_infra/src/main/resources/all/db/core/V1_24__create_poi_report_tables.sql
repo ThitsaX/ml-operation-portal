@@ -1,4 +1,4 @@
-CREATE TABLE `tbl_report_request` (
+CREATE TABLE IF NOT EXISTS `tbl_report_request` (
     `request_id`      BIGINT NOT NULL,
     `report_type`     VARCHAR(64) NOT NULL,
     `params_signature` CHAR(64) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE `tbl_report_request` (
     KEY `idx_tbl_report_request_status_created` (`status`, `created_date`)
 );
 
-CREATE TABLE `tbl_report_request_param` (
+CREATE TABLE IF NOT EXISTS `tbl_report_request_param` (
     `request_param_id` BIGINT NOT NULL,
     `request_id`       BIGINT NOT NULL,
     `param_key`        VARCHAR(128) NOT NULL,
