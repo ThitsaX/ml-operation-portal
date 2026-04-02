@@ -22,10 +22,12 @@ public class DFSPGenerateSettlementDetailReportCommandHandlerUnitTest {
     public void testGenerateReportSuccessfully() throws Exception {
 
         GenerateSettlementDetailReportCommand.Output output = this.generateSettlementDetailReportCommand.execute(new GenerateSettlementDetailReportCommand.Input("1",
-                                                                                                           "all",
-                                                                                                           "All",
-                                                                                                           ".xlsx",
-                                                                                                           "0630"));
+                                                                                                                                                                 "all",
+                                                                                                                                                                 "All",
+                                                                                                                                                                 ".xlsx",
+                                                                                                                                                                 "0630",
+                                                                                                                                                                 null,
+                                                                                                                                                                 null));
 
         System.out.println(Arrays.toString(output.settlementDetailRptByte()));
     }

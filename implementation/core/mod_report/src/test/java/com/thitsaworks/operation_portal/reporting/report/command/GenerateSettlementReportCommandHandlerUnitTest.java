@@ -29,6 +29,8 @@ public class GenerateSettlementReportCommandHandlerUnitTest extends EnvAwareUnit
                                                                                                  "1",
                                                                                                  ".xlsx",
                                                                                                  "0630",
-                                                                                                 ""));
+                                                                                                 "",
+                                                                                                 null,
+                                                                                                 null));
     }
 }
