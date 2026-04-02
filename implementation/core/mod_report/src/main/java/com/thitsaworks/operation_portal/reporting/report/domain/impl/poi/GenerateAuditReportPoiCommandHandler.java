@@ -335,9 +335,6 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         List<Object> parameters = new ArrayList<>();
         String reportQuery = this.auditReportQuery(input.grantedActionList());
 
-        parameters.add(this.normalizedOffset(input.timezoneOffset()));
-        parameters.add(this.normalizedOffset(input.timezoneOffset()));
-
         parameters.add(input.realmId());
         parameters.add(input.realmId());
         parameters.add(input.realmId());
@@ -362,6 +359,8 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         parameters.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
         parameters.add(input.offset() == null ? 0 : input.offset());
 
+        String timezoneOffset = this.normalizedOffset(input.timezoneOffset());
+
         try {
             this.jdbcTemplate.query(connection -> {
                 PreparedStatement statement = connection.prepareStatement(
@@ -377,7 +376,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
             }, resultSet -> {
                 while (resultSet.next()) {
                     try {
-                        consumer.accept(this.mapRow(resultSet));
+                        consumer.accept(this.mapRow(resultSet, timezoneOffset));
                     } catch (IOException exception) {
                         throw new IOExceptionRuntimeException(exception);
                     }
@@ -494,11 +493,10 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
     }
 
     private String formatHeaderDate(Instant instant, String rawOffset) {
-
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return instant.atOffset(ZoneOffset.UTC)
-                      .withOffsetSameInstant(zoneOffset)
-                      .format(HEADER_DATE_FORMAT);
+        String offsetStr = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
+        String utcFormatted = instant.atOffset(ZoneOffset.UTC).format(HEADER_DATE_FORMAT);
+        return utcFormatted.replace("Z", offsetStr);
     }
 
     private String displayOffset(String rawOffset) {
@@ -557,10 +555,16 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         return "\"" + safeValue.replace("\"", "\"\"") + "\"";
     }
 
-    private AuditReportRow mapRow(ResultSet resultSet) throws SQLException {
+    private AuditReportRow mapRow(ResultSet resultSet, String timezoneOffset) throws SQLException {
+
+        long createdDate = resultSet.getLong("createdDate");
+        String formattedDate = Instant.ofEpochSecond(createdDate)
+                                      .atOffset(ZoneOffset.UTC)
+                                      .withOffsetSameLocal(ZoneOffset.of(timezoneOffset))
+                                      .format(HEADER_DATE_FORMAT);
 
         return new AuditReportRow(
-            resultSet.getString("dateTime"),
+            formattedDate,
             resultSet.getString("action"),
             resultSet.getString("madeBy"));
     }
@@ -577,13 +581,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
         return """
             SELECT
-              CONCAT(
-                DATE_FORMAT(
-                  CONVERT_TZ(FROM_UNIXTIME(ta.created_date), '+00:00', ?),
-                  '%Y-%m-%dT%H:%i:%s'
-                ),
-                ?
-              ) AS dateTime,
+              ta.created_date AS createdDate,
               tac.action_code AS action,
               CASE
                 WHEN tac.action_code LIKE '%Scheduler' AND tu.email IS NULL
