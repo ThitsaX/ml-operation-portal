@@ -31,7 +31,7 @@ public class ReportGeneratorSupport {
             return "All";
         }
 
-        return "all".equalsIgnoreCase(value.trim()) ? "All" : value.trim();
+        return "all".equalsIgnoreCase(value.trim()) ? "ALL" : value.trim();
     }
 
 
