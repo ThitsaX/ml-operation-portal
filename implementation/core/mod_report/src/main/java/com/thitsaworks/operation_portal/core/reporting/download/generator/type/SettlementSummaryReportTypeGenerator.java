@@ -66,12 +66,12 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
 
         if (totalRowCount > MAX_ROWS_PER_REPORT_FILE) {
             return this.generateSplitZip(
-                settlementId, fspId, dfspName, fileType, timezoneOffset, userName, totalRowCount);
+                settlementId, fspId, dfspName, fileType, timezoneOffset, userName, totalRowCount, pageSize);
         }
 
-        GenerateSettlementReportCommand.Output output = this.generateSettlementReportCommand.execute(
+        GenerateSettlementReportCommand.Output output = this.generateSettlementReportCommand.exportAll(
             new GenerateSettlementReportCommand.Input(
-                fspId, dfspName, settlementId, fileType, timezoneOffset, userName, 0, totalRowCount));
+                fspId, dfspName, settlementId, fileType, timezoneOffset, userName, 0, pageSize), totalRowCount, pageSize);
 
         return new ReportGeneratedFile(output.settlementRptByte(), fileType);
     }
@@ -82,7 +82,8 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
                                                  String fileType,
                                                  String timezoneOffset,
                                                  String userName,
-                                                 int totalRowCount) throws ReportException, IOException {
+                                                 int totalRowCount,
+                                                 int pageSize) throws ReportException, IOException {
 
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
              ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream)) {
@@ -91,7 +92,7 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
             for (int offset = 0; offset < totalRowCount; offset += MAX_ROWS_PER_REPORT_FILE) {
                 int rowsInPart = Math.min(MAX_ROWS_PER_REPORT_FILE, totalRowCount - offset);
 
-                GenerateSettlementReportCommand.Output output = this.generateSettlementReportCommand.execute(
+                GenerateSettlementReportCommand.Output output = this.generateSettlementReportCommand.exportAll(
                     new GenerateSettlementReportCommand.Input(
                         fspId,
                         dfspName,
@@ -100,7 +101,7 @@ class SettlementSummaryReportTypeGenerator implements ReportTypeGenerator {
                         timezoneOffset,
                         userName,
                         offset,
-                        rowsInPart));
+                        rowsInPart), rowsInPart, pageSize);
 
                 zipOutputStream.putNextEntry(
                     new ZipEntry("settlement_summary_part_" + partNumber + "." + fileType));
