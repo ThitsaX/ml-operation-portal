@@ -97,6 +97,12 @@
         <parameter name="grantedActionList" class="java.util.List">
             <defaultValueExpression><![CDATA[null]]></defaultValueExpression>
         </parameter>
+        <parameter name="offset" class="java.lang.Integer">
+            <defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+        </parameter>
+        <parameter name="limit" class="java.lang.Integer">
+            <defaultValueExpression><![CDATA[2147483647]]></defaultValueExpression>
+        </parameter>
         <queryString language="plsql">
             <![CDATA[SELECT
     CASE
@@ -131,7 +137,8 @@ WHERE
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
     AND ($P{actionId} IS NULL OR   $P{actionId} = '' OR tac.action_id = $P{actionId})
     AND ($X{IN, tac.action_id, grantedActionList})
-ORDER BY ta.created_date DESC]]>
+ORDER BY ta.created_date DESC
+LIMIT $P{limit} OFFSET $P{offset}]]>
         </queryString>
         <field name="date" class="java.lang.String"/>
         <field name="user" class="java.lang.String"/>
@@ -155,6 +162,12 @@ ORDER BY ta.created_date DESC]]>
     </parameter>
     <parameter name="grantedActionList" class="java.util.List">
         <defaultValueExpression><![CDATA[null]]></defaultValueExpression>
+    </parameter>
+    <parameter name="offset" class="java.lang.Integer">
+        <defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+    </parameter>
+    <parameter name="limit" class="java.lang.Integer">
+        <defaultValueExpression><![CDATA[10000]]></defaultValueExpression>
     </parameter>
     <queryString language="plsql">
         <![CDATA[SELECT
@@ -190,7 +203,8 @@ WHERE
     AND ($P{userId} IS NULL OR  $P{userId} = '' OR ta.user_id = $P{userId})
     AND ($P{actionId} IS NULL OR   $P{actionId} = '' OR tac.action_id = $P{actionId})
     AND ($X{IN, tac.action_id, grantedActionList})
-ORDER BY ta.created_date DESC]]>
+ORDER BY ta.created_date DESC
+LIMIT $P{limit} OFFSET $P{offset}]]>
     </queryString>
     <field name="date" class="java.lang.String"/>
     <field name="user" class="java.lang.String"/>
@@ -383,6 +397,12 @@ ORDER BY ta.created_date DESC]]>
                         </datasetParameter>
                         <datasetParameter name="grantedActionList">
                             <datasetParameterExpression><![CDATA[$P{grantedActionList}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="offset">
+                            <datasetParameterExpression><![CDATA[$P{offset}]]></datasetParameterExpression>
+                        </datasetParameter>
+                        <datasetParameter name="limit">
+                            <datasetParameterExpression><![CDATA[$P{limit}]]></datasetParameterExpression>
                         </datasetParameter>
                         <datasetParameter name="ORACLE_REF_CURSOR">
                             <datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>

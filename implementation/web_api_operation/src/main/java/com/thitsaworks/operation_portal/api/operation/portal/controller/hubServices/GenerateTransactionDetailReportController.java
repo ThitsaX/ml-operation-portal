@@ -23,7 +23,8 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class GenerateTransactionDetailReportController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionDetailReportController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateTransactionDetailReportController.class);
 
     private final GenerateTransactionDetailReport generateTransactionDetailReport;
 
@@ -40,28 +41,31 @@ public class GenerateTransactionDetailReportController {
 
         LOG.info(
             "Generate Transaction Detail Report Request : startDate = [{}], endDate = [{}], state = [{}], dfspId = [{}], fileType = [{}], timezoneOffset = [{}]",
-            startDate,
-            endDate,
-            state,
-            dfspId,
-            fileType,
-            timezoneOffset);
+            startDate, endDate, state, dfspId, fileType, timezoneOffset);
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
-        GenerateTransactionDetailReport.Output output =
-            this.generateTransactionDetailReport.execute(new GenerateTransactionDetailReport.Input(Instant.parse(
-                startDate), Instant.parse(endDate), state, dfspId, fileType, timezone));
+        GenerateTransactionDetailReport.Output output = this.generateTransactionDetailReport.execute(
+            new GenerateTransactionDetailReport.Input(
+                Instant.parse(startDate), Instant.parse(endDate), state, dfspId, fileType,
+                timezone));
 
-        var response = new Response(output.reportData());
+        var response = new Response(
+            output.requestId().getEntityId().toString(), output.status().name(), output.fileUrl(), output.paramsSignature());
 
-        LOG.info("Generate Transaction Detail Report Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info(
+            "Generate Transaction Detail Report Response : [{}]",
+            this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

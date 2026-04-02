@@ -1,64 +1,67 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateTransactionDetailReportCommand;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
+import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class GenerateTransactionDetailReportHandler
-        extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
-        implements GenerateTransactionDetailReport {
+    extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
+    implements GenerateTransactionDetailReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionDetailReportHandler.class);
-
-    private final GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand;
-
-    private final ParticipantQuery participantQuery;
+    private final ReportDownloadRequestManager reportDownloadRequestManager;
 
     public GenerateTransactionDetailReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                   CreateOutputAuditCommand createOutputAuditCommand,
                                                   CreateExceptionAuditCommand createExceptionAuditCommand,
                                                   ObjectMapper objectMapper,
                                                   PrincipalCache principalCache,
-                                                  ParticipantQuery participantQuery,
                                                   ActionAuthorizationManager actionAuthorizationManager,
-                                                  GenerateTransactionDetailReportCommand generateTransactionDetailReportCommand) {
+                                                  ReportDownloadRequestManager reportDownloadRequestManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
-        this.generateTransactionDetailReportCommand = generateTransactionDetailReportCommand;
-        this.participantQuery = participantQuery;
+        this.reportDownloadRequestManager = reportDownloadRequestManager;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GenerateTransactionDetailReportCommand.Output output =
-                this.generateTransactionDetailReportCommand.execute(new GenerateTransactionDetailReportCommand.Input(
-                        input.startDate(),
-                        input.endDate(),
-                        input.state().toUpperCase(),
-                        input.dfspId().equalsIgnoreCase("all") ? input.dfspId().toUpperCase() : input.dfspId(),
-                        input.fileType(),
-                        input.timezone()));
+        String normalizedFileType = ReportDownloadUtil.normalizeFileType(input.fileType());
+        if (!"xlsx".equals(normalizedFileType) && !"csv".equals(normalizedFileType)) {
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
+        }
 
-        return new Output(output.transactionDetailRptByte());
+        Map<String, String> params = new HashMap<>();
+        params.put("startDate", input.startDate().toString());
+        params.put("endDate", input.endDate().toString());
+        params.put("state", ReportDownloadUtil.normalizeAllToken(input.state()));
+        params.put("dfspId", ReportDownloadUtil.normalizeAllToken(input.dfspId()));
+        params.put("timezoneOffset", input.timezone());
+
+        ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
+            ReportType.TransactionDetail, normalizedFileType,
+            params);
+
+
+        return new Output(
+            result.request().requestId(), result.request().status(), null, null,result.paramsSignature());
     }
-
 }

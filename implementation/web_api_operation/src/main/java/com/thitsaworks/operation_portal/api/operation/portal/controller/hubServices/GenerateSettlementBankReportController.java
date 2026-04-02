@@ -54,7 +54,11 @@ public class GenerateSettlementBankReportController {
             new GenerateSettlementBankReport.Input(settlementId, currencyId, fileType, timezone, userContext.userId()
                                                                                                             .getId()));
 
-        var response = new Response(output.reportData());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.paramsSignature());
 
         LOG.info("Generate Settlement Bank Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -62,6 +66,10 @@ public class GenerateSettlementBankReportController {
 
     }
 
-    public record Response(@JsonProperty("rptByte") byte[] detailReportByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

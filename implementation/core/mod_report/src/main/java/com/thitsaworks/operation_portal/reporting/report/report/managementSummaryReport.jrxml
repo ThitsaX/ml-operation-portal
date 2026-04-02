@@ -19,6 +19,12 @@
 	<parameter name="timezoneOffset" class="java.lang.String"/>
 	<parameter name="reportFileType" class="java.lang.String"/>
 	<parameter name="userName" class="java.lang.String"/>
+	<parameter name="offset" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="limit" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[2147483647]]></defaultValueExpression>
+	</parameter>
 	<queryString language="SQL">
 		<![CDATA[SELECT
     payer.name AS PayerDfsp,
@@ -54,7 +60,8 @@ GROUP BY
     t.currencyId
 ORDER BY
     tpayer.participantId,
-    tpayee.participantId]]>
+    tpayee.participantId
+LIMIT $P{limit} OFFSET $P{offset}]]>
 	</queryString>
 	<field name="PayerDfsp" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="name"/>

@@ -2,24 +2,28 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.common.type.ReportType;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
-import com.thitsaworks.operation_portal.core.participant.cache.UserCache;
-import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.participant.data.UserData;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
-import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportCommand;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
+import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.util.ReportDownloadUtil;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class GenerateSettlementBankReportHandler
@@ -28,11 +32,11 @@ public class GenerateSettlementBankReportHandler
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportHandler.class);
 
-    private final GenerateSettlementBankReportCommand generateSettlementBankReportCommand;
+    private final ReportDownloadRequestManager reportDownloadRequestManager;
 
-    private final ParticipantCache participantCache;
+    private final UserQuery userQuery;
 
-    private final UserCache userCache;
+    private final S3FileStorage s3FileStorage;
 
     public GenerateSettlementBankReportHandler(CreateInputAuditCommand createInputAuditCommand,
                                                CreateOutputAuditCommand createOutputAuditCommand,
@@ -40,9 +44,9 @@ public class GenerateSettlementBankReportHandler
                                                ObjectMapper objectMapper,
                                                PrincipalCache principalCache,
                                                ActionAuthorizationManager actionAuthorizationManager,
-                                               GenerateSettlementBankReportCommand generateSettlementBankReportCommand,
-                                               ParticipantCache participantCache,
-                                               UserCache userCache) {
+                                               ReportDownloadRequestManager reportDownloadRequestManager,
+                                               UserQuery userQuery,
+                                               S3FileStorage s3FileStorage) {
 
         super(createInputAuditCommand,
               createOutputAuditCommand,
@@ -51,44 +55,56 @@ public class GenerateSettlementBankReportHandler
               principalCache,
               actionAuthorizationManager);
 
-        this.generateSettlementBankReportCommand = generateSettlementBankReportCommand;
-        this.userCache = userCache;
-        this.participantCache = participantCache;
+        this.reportDownloadRequestManager = reportDownloadRequestManager;
+        this.userQuery = userQuery;
+        this.s3FileStorage = s3FileStorage;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        final UserData userData = userCache.get(new UserId(input.userId()));
-
-        if (userData == null) {
-
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId().toString()));
+        String normalizedFileType = ReportDownloadUtil.normalizeFileType(input.fileType());
+        if (!"xlsx".equals(normalizedFileType) && !"pdf".equals(normalizedFileType)) {
+            throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
         }
 
-        final ParticipantData userParticipant = participantCache.get(userData.participantId());
+        var getUser = this.userQuery.get(new UserId(input.userId()));
 
-        if (userParticipant == null) {
+        Map<String, String> params = new HashMap<>();
+        params.put("settlementId", input.settlementId());
+        params.put("currencyId", input.currencyId().toUpperCase());
+        params.put("timezoneOffset", input.timezone());
+        params.put("userName", getUser.name());
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(userData.participantId()
-                                                                                                  .getId()
-                                                                                                  .toString()));
+        ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
+            ReportType.SETTLEMENT_BANK,
+            normalizedFileType,
+            params);
+
+        String fileKey = result.request().fileUrl();
+        String fileUrl = null;
+
+        if (FileDownloadStatus.READY.equals(result.request().status()) && fileKey != null &&
+                !fileKey.isBlank()) {
+
+            try {
+                fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
+            } catch (Exception e) {
+                LOG.warn(
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    result.request().requestId().getEntityId(), e.getMessage());
+            }
         }
 
-        boolean isParent = userParticipant == null || userParticipant.parentParticipantName() == null ||
-                userParticipant.parentParticipantName().isBlank();
+        if (FileDownloadStatus.FAILED.equals(result.request().status())) {
+            throw new ReportException(
+                ReportDownloadUtil.resolveFailedError(
+                    result.request().errorMessage(),
+                    ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION));
+        }
 
-        GenerateSettlementBankReportCommand.Output output =
-                this.generateSettlementBankReportCommand.execute(new GenerateSettlementBankReportCommand.Input(input.settlementId(),
-                                                                                                               input.currencyId().toUpperCase(),
-                                                                                                               input.fileType(),
-                                                                                                               input.timezone(),
-                                                                                                               userData.name(),
-                                                                                                               userParticipant.participantName()
-                                                                                                                              .getValue(),
-                                                                                                               isParent));
-
-        return new Output(output.settlementBankRptByte());
+        return new Output(
+            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
     }
 
 }

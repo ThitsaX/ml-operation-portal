@@ -57,7 +57,11 @@ public class GenerateSettlementSummaryReportController {
                                                       userContext.userId()
                                                                  .getId()));
 
-        var response = new Response(output.settlementByte());
+        var response = new Response(
+            output.requestId().getEntityId().toString(),
+            output.status().name(),
+            output.fileUrl(),
+            output.paramsSignature());
 
         LOG.info("Generate Settlement Report Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -66,6 +70,10 @@ public class GenerateSettlementSummaryReportController {
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
-    public record Response(@JsonProperty("rptByte") byte[] settlementByte) implements Serializable { }
+    public record Response(@JsonProperty("requestId") String requestId,
+                           @JsonProperty("status") String status,
+                           @JsonProperty("fileUrl") String fileUrl,
+                           @JsonProperty("paramsSignature") String paramsSignature)
+        implements Serializable { }
 
 }

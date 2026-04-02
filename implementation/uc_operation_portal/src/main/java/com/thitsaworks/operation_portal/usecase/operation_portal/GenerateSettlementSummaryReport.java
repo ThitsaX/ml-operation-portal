@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal;
 
+import com.thitsaworks.operation_portal.component.common.identifier.ReportDownloadRequestId;
+import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
 public interface GenerateSettlementSummaryReport
@@ -11,6 +13,10 @@ public interface GenerateSettlementSummaryReport
                  String timezoneOffset,
                  Long userId) {}
 
-    record Output(byte[] settlementByte) { }
+    record Output(ReportDownloadRequestId requestId,
+                  FileDownloadStatus status,
+                  String fileUrl,
+                  String fileKey,
+                  String paramsSignature) { }
 
 }

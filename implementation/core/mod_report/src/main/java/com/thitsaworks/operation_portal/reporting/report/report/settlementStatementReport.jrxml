@@ -184,6 +184,8 @@ SELECT 'TimeZoneOffSet' AS label,
 		<parameter name="endDate" class="java.lang.String"/>
 		<parameter name="currencyId" class="java.lang.String"/>
 		<parameter name="timezoneoffset" class="java.lang.String"/>
+		<parameter name="limit" class="java.lang.Integer"/>
+		<parameter name="offset" class="java.lang.Integer"/>
 		<queryString language="plsql">
 			<![CDATA[WITH base AS (
   SELECT * FROM (
@@ -433,7 +435,8 @@ ORDER BY
   currency,
   pair_createdDate,
   pair_sort,
-  createdDate;]]>
+  createdDate
+  LIMIT $P!{offset}, $P!{limit};]]>
 		</queryString>
 		<field name="createdDate" class="java.lang.String">
 			<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
@@ -509,6 +512,8 @@ ORDER BY
 	<parameter name="endDate" class="java.lang.String"/>
 	<parameter name="currencyId" class="java.lang.String"/>
 	<parameter name="timezoneoffset" class="java.lang.String"/>
+	<parameter name="limit" class="java.lang.Integer"/>
+	<parameter name="offset" class="java.lang.Integer"/>
 	<queryString language="plsql">
 		<![CDATA[WITH base AS (
   SELECT * FROM (
@@ -759,7 +764,8 @@ ORDER BY
   currency,
   pair_createdDate,
   pair_sort,
-  createdDate;]]>
+  createdDate
+  LIMIT $P!{offset}, $P!{limit};]]>
 	</queryString>
 	<field name="createdDate" class="java.lang.String">
 		<property name="com.jaspersoft.studio.field.name" value="createdDate"/>
@@ -857,6 +863,12 @@ ORDER BY
 						</datasetParameter>
 						<datasetParameter name="timezoneoffset">
 							<datasetParameterExpression><![CDATA[$P{timezoneoffset}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="limit">
+							<datasetParameterExpression><![CDATA[$P{limit}]]></datasetParameterExpression>
+						</datasetParameter>
+						<datasetParameter name="offset">
+							<datasetParameterExpression><![CDATA[$P{offset}]]></datasetParameterExpression>
 						</datasetParameter>
 						<datasetParameter name="ORACLE_REF_CURSOR">
 							<datasetParameterExpression><![CDATA[$P{ORACLE_REF_CURSOR}]]></datasetParameterExpression>
