@@ -1,5 +1,8 @@
 package com.thitsaworks.operation_portal.component.misc.storage;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -13,16 +16,13 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.Duration;
 import java.util.Locale;
 
 @Service
-public class S3FileStorage  implements FileStorage{
+public class S3FileStorage implements FileStorage {
 
     private static final Logger LOG = LoggerFactory.getLogger(S3FileStorage.class);
 
@@ -80,12 +80,13 @@ public class S3FileStorage  implements FileStorage{
 
         var key = this.prefix + fileLocation;
 
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                                                            .bucket(this.bucket)
-                                                            .key(key)
-                                                            .contentType(this.contentType(extension))
-                                                            .contentLength((long) fileBytes.length)
-                                                            .build();
+        PutObjectRequest putObjectRequest = PutObjectRequest
+                                                .builder()
+                                                .bucket(this.bucket)
+                                                .key(key)
+                                                .contentType(this.contentType(extension))
+                                                .contentLength((long) fileBytes.length)
+                                                .build();
 
         this.s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileBytes));
 
@@ -96,13 +97,14 @@ public class S3FileStorage  implements FileStorage{
 
     private S3Client buildClient() {
 
-        var builder = S3Client.builder()
-                              .credentialsProvider(this.credentialsProvider())
-                              .region(Region.of(this.region))
-                              .serviceConfiguration(
-                                  S3Configuration.builder()
-                                                 .pathStyleAccessEnabled(this.pathStyleAccess)
-                                                 .build());
+        var builder = S3Client
+                          .builder()
+                          .credentialsProvider(this.credentialsProvider())
+                          .region(Region.of(this.region))
+                          .serviceConfiguration(S3Configuration
+                                                    .builder()
+                                                    .pathStyleAccessEnabled(this.pathStyleAccess)
+                                                    .build());
 
         if (!this.endpoint.isBlank()) {
 
@@ -114,12 +116,14 @@ public class S3FileStorage  implements FileStorage{
 
     private S3Presigner buildPresigner() {
 
-        S3Presigner.Builder builder = S3Presigner.builder()
-                                                 .credentialsProvider(this.credentialsProvider())
-                                                 .region(Region.of(this.region))
-                                                 .serviceConfiguration(
-                                                     S3Configuration.builder()
-                                                                    .pathStyleAccessEnabled(this.pathStyleAccess)
+        S3Presigner.Builder builder = S3Presigner
+                                          .builder()
+                                          .credentialsProvider(this.credentialsProvider())
+                                          .region(Region.of(this.region))
+                                          .serviceConfiguration(S3Configuration
+                                                                    .builder()
+                                                                    .pathStyleAccessEnabled(
+                                                                        this.pathStyleAccess)
                                                                     .build());
 
         if (!this.endpoint.isBlank()) {
@@ -143,15 +147,19 @@ public class S3FileStorage  implements FileStorage{
 
     public String generatePreSignedDownloadUrl(String key) {
 
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                                                            .bucket(this.bucket)
-                                                            .key(key)
-                                                            .build();
+        LOG.info("Presigned URL Life time seconds : [{}]", this.presignedUrlLifetime.getSeconds());
 
-        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-                                                                        .signatureDuration(this.presignedUrlLifetime)
-                                                                        .getObjectRequest(getObjectRequest)
-                                                                        .build();
+        GetObjectRequest getObjectRequest = GetObjectRequest
+                                                .builder()
+                                                .bucket(this.bucket)
+                                                .key(key)
+                                                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest
+                                                     .builder()
+                                                     .signatureDuration(this.presignedUrlLifetime)
+                                                     .getObjectRequest(getObjectRequest)
+                                                     .build();
 
         PresignedGetObjectRequest presignedRequest = this.s3Presigner.presignGetObject(
             presignRequest);
@@ -170,13 +178,13 @@ public class S3FileStorage  implements FileStorage{
     }
 
     public record Settings(boolean enabled,
-                             String bucket,
-                             String region,
-                             String accessKey,
-                             String secretKey,
-                             String prefix,
-                             String endpoint,
-                             boolean pathStyleAccess,
-                             Duration presignedUrlLifetime) { }
+                           String bucket,
+                           String region,
+                           String accessKey,
+                           String secretKey,
+                           String prefix,
+                           String endpoint,
+                           boolean pathStyleAccess,
+                           Duration presignedUrlLifetime) { }
 
 }

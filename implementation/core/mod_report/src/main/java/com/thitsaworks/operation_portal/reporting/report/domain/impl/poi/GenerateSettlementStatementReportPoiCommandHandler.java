@@ -17,6 +17,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Primary
 @NoLogging
 public class GenerateSettlementStatementReportPoiCommandHandler
     implements GenerateSettlementStatementReportCommand {
