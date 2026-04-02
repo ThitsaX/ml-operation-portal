@@ -18,12 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.Base64;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 public class GetParticipantProfileController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantProfileController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetParticipantProfileController.class);
 
     private final GetParticipantProfile getParticipantProfile;
 
@@ -35,26 +37,28 @@ public class GetParticipantProfileController {
 
         LOG.info("Get Participant Profile Request : ParticipantId = [{}]", participantId);
 
-        var
-            output =
-            this.getParticipantProfile.execute(new GetParticipantProfile.Input(new ParticipantId(Long.parseLong(
-                participantId))));
+        var output = this.getParticipantProfile.execute(
+            new GetParticipantProfile.Input(new ParticipantId(Long.parseLong(participantId))));
 
-        var response = new Response(output.participantId()
-                                          .getEntityId()
-                                          .toString(),
-                                    output.participantName(),
-                                    output.description(),
-                                    output.address(),
-                                    output.mobile() != null ? output.mobile()
-                                                                    .getValue() : null,
-                                    output.logoFileType(),
-                                    output.logoBase64() == null ? null : Base64.getEncoder()
-                                                                               .encodeToString(output.logoBase64()),
-                                    output.createdDate()
-                                          .getEpochSecond());
+        var response = new Response(
+            output.participantId().getEntityId().toString(), output.participantName(),
+            output.description(), output.address(),
+            output.mobile() != null ? output.mobile().getValue() : null, output.logoFileType(),
+            output.logoBase64() == null ? null :
+                Base64.getEncoder().encodeToString(output.logoBase64()), output.connectionType(),
+            output.connectedParticipants() == null ? List.of() : output
+                                                                     .connectedParticipants()
+                                                                     .stream()
+                                                                     .map(
+                                                                         participant -> new ConnectedParticipant(
+                                                                             participant.participantName(),
+                                                                             participant.participantDescription()))
+                                                                     .toList(),
+            output.createdDate().getEpochSecond());
 
-        LOG.info("Get Participant Profile Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info(
+            "Get Participant Profile Response : [{}]",
+            this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -67,6 +71,21 @@ public class GetParticipantProfileController {
                            @JsonProperty("mobile") String mobile,
                            @JsonProperty("logoFileType") String logoFileType,
                            @JsonProperty("logo") String logoBase64,
-                           @JsonProperty("createdDate") long createdDate) implements Serializable { }
+                           @JsonProperty("connectionType") String connectionType,
+                           @JsonProperty("connectedParticipants") List<ConnectedParticipant> connectedParticipants,
+                           @JsonProperty("createdDate") long createdDate) implements Serializable {
+
+        public Response {
+
+            connectedParticipants =
+                connectedParticipants != null ? connectedParticipants : List.of();
+
+        }
+
+    }
+
+    public record ConnectedParticipant(@JsonProperty("participantName") String participantName,
+                                       @JsonProperty("participantDescription") String participantDescription)
+        implements Serializable { }
 
 }

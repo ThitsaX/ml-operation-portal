@@ -17,7 +17,9 @@ public interface ParticipantQuery {
 
     List<ParticipantData> getOtherParticipants(ParticipantId participantId);
 
+    List<ParticipantData> getSponsoredParticipantList(ParticipantId participantId)
+        throws ParticipantException;
+
     Optional<ParticipantData> get(String participantName);
 
 }
-

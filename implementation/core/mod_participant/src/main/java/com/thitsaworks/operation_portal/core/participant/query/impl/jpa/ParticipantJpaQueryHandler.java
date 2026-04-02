@@ -87,6 +87,23 @@ public class ParticipantJpaQueryHandler implements ParticipantQuery {
     }
 
     @Override
+    public List<ParticipantData> getSponsoredParticipantList(ParticipantId participantId)
+        throws ParticipantException {
+
+        ParticipantData participantData = this.get(participantId);
+
+        BooleanExpression predicate = this.participant.parentParticipantName.eq(participantData.participantName()
+                                                                                                .getValue());
+
+        List<Participant> participants = (List<Participant>) this.participantRepository.findAll(predicate);
+
+        return participants.stream()
+                           .map(ParticipantData::new)
+                           .toList();
+
+    }
+
+    @Override
     public Optional<ParticipantData> get(String participantName) {
 
         BooleanExpression predicate = this.participant.participantName.eq(new ParticipantName(participantName));
