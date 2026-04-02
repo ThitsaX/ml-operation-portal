@@ -572,10 +572,12 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
     private String formatInstant(Instant instant, ZoneOffset zoneOffset) {
 
-        return instant
-                   .atOffset(ZoneOffset.UTC)
-                   .withOffsetSameInstant(zoneOffset)
-                   .format(HEADER_DATE_FORMAT);
+        String formatted = instant
+                               .atOffset(ZoneOffset.UTC)
+                               .withOffsetSameInstant(zoneOffset)
+                               .format(HEADER_DATE_FORMAT);
+
+        return "Z".equals(zoneOffset.getId()) ? formatted.replace("Z", "+00:00") : formatted;
     }
 
     private String auditReportQuery(List<String> grantedActionList) {
