@@ -85,6 +85,21 @@ MONGO_DB_HUB_DATA_READ_SETTINGS_DATA='{
     "readPreference": "primary"
 }'
 
+# S3 Settings
+S3_SETTINGS_PATH="operation_portal/s3/settings"
+S3_SETTINGS_DATA='{
+  "enabled": true,
+  "bucket": "tw-mcix-test",
+  "accessKey": "xxx",
+  "secretKey": "M+xxx",
+  "region": "ap-southeast-1",
+  "prefix": "reports/",
+  "endpoint": "",
+  "pathStyleAccess": true,
+  "presignedUrlLifetime": "PT15M"
+}'
+
+
 echo "Adding Redis Settings to Vault at path '$REDIS_SETTINGS_PATH'..."
 vault kv put $REDIS_SETTINGS_PATH @<(echo "$REDIS_SETTINGS_DATA")
 
@@ -114,6 +129,8 @@ vault kv put $MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH @<(echo "$MONGO_DB_HUB_DATA_
 echo "Adding Hub Data Mongodb Read Data Source Settings to Vault at path '$MONGO_DB_HUB_DATA_READ_SETTINGS_PATH'..."
 vault kv put $MONGO_DB_HUB_DATA_READ_SETTINGS_PATH @<(echo "$MONGO_DB_HUB_DATA_READ_SETTINGS_DATA")
 
+echo "Adding S3 Settings to Vault at path '$S3_SETTINGS_PATH'..."
+vault kv put $S3_SETTINGS_PATH @<(echo "$S3_SETTINGS_DATA")
 
 
 
@@ -127,6 +144,7 @@ vault kv get $MYSQL_HUB_DATA_WRITE_SETTINGS_PATH
 vault kv get $MYSQL_HUB_DATA_READ_SETTINGS_PATH
 vault kv get $MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH
 vault kv get $MONGO_DB_HUB_DATA_READ_SETTINGS_PATH
+vault kv get $S3_SETTINGS_PATH
 
 
 echo "Vault initialization and secret creation complete."

@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl.poi;
 
+import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
@@ -40,6 +41,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Primary
+@NoLogging
 public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReportCommand {
 
     private static final Logger LOG = LoggerFactory.getLogger(
@@ -374,12 +376,10 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
                 }
                 return statement;
             }, resultSet -> {
-                while (resultSet.next()) {
-                    try {
-                        consumer.accept(this.mapRow(resultSet, timezoneOffset));
-                    } catch (IOException exception) {
-                        throw new IOExceptionRuntimeException(exception);
-                    }
+                try {
+                    consumer.accept(this.mapRow(resultSet, timezoneOffset));
+                } catch (IOException exception) {
+                    throw new IOExceptionRuntimeException(exception);
                 }
             });
         } catch (IOExceptionRuntimeException exception) {
@@ -493,10 +493,12 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
     }
 
     private String formatHeaderDate(Instant instant, String rawOffset) {
-        ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        String offsetStr = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
-        String utcFormatted = instant.atOffset(ZoneOffset.UTC).format(HEADER_DATE_FORMAT);
-        return utcFormatted.replace("Z", offsetStr);
+
+        if (instant == null) {
+            return "";
+        }
+
+        return this.formatInstant(instant, this.parseOffset(rawOffset));
     }
 
     private String displayOffset(String rawOffset) {
@@ -558,15 +560,22 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
     private AuditReportRow mapRow(ResultSet resultSet, String timezoneOffset) throws SQLException {
 
         long createdDate = resultSet.getLong("createdDate");
-        String formattedDate = Instant.ofEpochSecond(createdDate)
-                                      .atOffset(ZoneOffset.UTC)
-                                      .withOffsetSameLocal(ZoneOffset.of(timezoneOffset))
-                                      .format(HEADER_DATE_FORMAT);
+        String formattedDate = this.formatInstant(
+            Instant.ofEpochSecond(createdDate),
+            ZoneOffset.of(timezoneOffset));
 
         return new AuditReportRow(
             formattedDate,
             resultSet.getString("action"),
             resultSet.getString("madeBy"));
+    }
+
+    private String formatInstant(Instant instant, ZoneOffset zoneOffset) {
+
+        return instant
+                   .atOffset(ZoneOffset.UTC)
+                   .withOffsetSameInstant(zoneOffset)
+                   .format(HEADER_DATE_FORMAT);
     }
 
     private String auditReportQuery(List<String> grantedActionList) {
@@ -604,7 +613,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
               AND (? IS NULL OR ? = '' OR ta.user_id = ?)
               AND (? IS NULL OR ? = '' OR tac.action_id = ?)
             """ + grantedActionFilter + """
-            ORDER BY ta.created_date DESC
+            ORDER BY ta.created_date ASC
             LIMIT ? OFFSET ?
             """;
     }
