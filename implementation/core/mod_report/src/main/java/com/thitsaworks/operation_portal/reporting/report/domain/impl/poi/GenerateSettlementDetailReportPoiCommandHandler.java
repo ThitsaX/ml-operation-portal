@@ -332,13 +332,13 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                 }
                 return statement;
             }, resultSet -> {
-                while (resultSet.next()) {
+
                     try {
                         consumer.accept(mapRow(resultSet));
                     } catch (IOException e) {
                         throw new IOExceptionRuntimeException(e);
                     }
-                }
+
             });
         } catch (IOExceptionRuntimeException e) {
             throw e;
@@ -445,7 +445,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                 INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
             LEFT JOIN transactionSubScenario tSub on tSub.transactionSubScenarioId = q.transactionSubScenarioId
                 WHERE tF.isValid AND s.settlementId = ? AND (pPayee.name = ?  OR pPayer.name = ?)
-                ORDER BY latestState.CreatedDate ASC, tF.transferId ASC
+                ORDER BY latestState.CreatedDate DESC, tF.transferId DESC
                 LIMIT ?, ?
                 """;
     }
