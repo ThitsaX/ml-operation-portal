@@ -1,21 +1,20 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl.poi;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
-import net.sf.jasperreports.export.SimplePdfExporterConfiguration;
-import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -44,12 +43,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -84,7 +87,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         null, null, null, null
     };
 
-    private static final int[] COLUMN_WIDTHS = {18, 32, 16, 18, 16, 18, 22, 24, 24, 12};
+    private static final int[] COLUMN_WIDTHS = {30, 32, 16, 18, 16, 18, 22, 24, 24, 12};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -204,49 +207,152 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
     private byte[] exportPdf(Input input) throws Exception {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("dfspId", input.fspId());
-        params.put("dfspName", input.fspName());
-        params.put("settlementId", input.settlementId());
-        params.put("timezoneoffset", input.timezoneOffset());
-        params.put("report", input.filetype());
-        params.put("user", input.userName());
-        params.put("offset", input.offset() == null ? 0 : input.offset());
-        params.put("limit", input.limit() == null ? DEFAULT_LIMIT : input.limit());
+        List<SettlementSummaryRow> rows = new ArrayList<>();
+        this.streamRows(input, rows::add);
 
-        InputStream jrxmlStream = this.getClass().getClassLoader().getResourceAsStream(
-            "com/thitsaworks/operation_portal/reporting/report/report/settlementReport.jrxml");
-
-        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
-
-            JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("settlementReport");
-
-            JasperReport compiledReport = JasperCompileManager.compileReport(design);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(compiledReport, params, conn);
-
-            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
-                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
-            }
-
-            JRPdfExporter pdfExporter = new JRPdfExporter();
-            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-
-            SimplePdfReportConfiguration pdfReportCfg = new SimplePdfReportConfiguration();
-            pdfReportCfg.setSizePageToContent(true);
-            pdfReportCfg.setForceSvgShapes(false);
-            pdfExporter.setConfiguration(pdfReportCfg);
-
-            SimplePdfExporterConfiguration pdfExportCfg = new SimplePdfExporterConfiguration();
-            pdfExportCfg.setMetadataTitle("Settlement Report");
-            pdfExportCfg.setMetadataAuthor("Hub Operator");
-            pdfExporter.setConfiguration(pdfExportCfg);
-
-            pdfExporter.exportReport();
-            return pdfReport.toByteArray();
+        if (rows.isEmpty()) {
+            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
         }
+
+        List<SettlementSummaryNetPositionRow> summaryRows = new ArrayList<>();
+        Input summaryInput = new Input(
+            input.fspId(), input.fspName(), input.settlementId(), input.filetype(),
+            input.timezoneOffset(), input.userName(), 0, DEFAULT_LIMIT);
+        this.streamSummaryRows(summaryInput, summaryRows::add);
+
+        String settlementCreatedDate = this.loadSettlementCreatedDate(
+            input.settlementId(), input.timezoneOffset());
+
+        Path tempFile = Files.createTempFile("settlement-summary-", ".pdf");
+
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
+
+        try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
+            Document document = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            PdfPTable metaTable = new PdfPTable(new float[]{3f, 5f});
+            metaTable.setWidthPercentage(45);
+            metaTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+            metaTable.setSpacingAfter(15f);
+
+            this.addPdfMetaRow(metaTable, "Settlement ID", input.settlementId(), labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "Settlement Created Date", settlementCreatedDate, labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "DFSP ID", input.fspId(), labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "DFSP Name", input.fspName(), labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "TimeZoneOffSet", this.displayOffset(input.timezoneOffset()), labelFont, normalFont);
+            document.add(metaTable);
+
+            PdfPTable mainTable = new PdfPTable(new float[]{2.5f, 3f, 1.2f, 1.8f, 1.2f, 1.8f, 1.5f, 1.8f, 1.8f, 1.2f});
+            mainTable.setWidthPercentage(100);
+
+            // Row 1 Headers
+            mainTable.addCell(this.pdfCell("DFSP ID", labelFont, Element.ALIGN_CENTER, 1, 2));
+            mainTable.addCell(this.pdfCell("DFSP Name", labelFont, Element.ALIGN_CENTER, 1, 2));
+            mainTable.addCell(this.pdfCell("Sent to FSP", labelFont, Element.ALIGN_CENTER, 2, 1));
+            mainTable.addCell(this.pdfCell("Received from FSP", labelFont, Element.ALIGN_CENTER, 2, 1));
+            mainTable.addCell(this.pdfCell("Total Transaction Volume", labelFont, Element.ALIGN_CENTER, 1, 2));
+            mainTable.addCell(this.pdfCell("Total Value of All Transactions", labelFont, Element.ALIGN_CENTER, 1, 2));
+            mainTable.addCell(this.pdfCell("Net Position vs. Each DFSP", labelFont, Element.ALIGN_CENTER, 1, 2));
+            mainTable.addCell(this.pdfCell("Currency", labelFont, Element.ALIGN_CENTER, 1, 2));
+
+            // Row 2 Headers
+            mainTable.addCell(this.pdfCell("Volume", labelFont, Element.ALIGN_CENTER));
+            mainTable.addCell(this.pdfCell("Value", labelFont, Element.ALIGN_CENTER));
+            mainTable.addCell(this.pdfCell("Volume", labelFont, Element.ALIGN_CENTER));
+            mainTable.addCell(this.pdfCell("Value", labelFont, Element.ALIGN_CENTER));
+
+            for (SettlementSummaryRow row : rows) {
+                mainTable.addCell(this.pdfCell(row.participantId(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(row.dfspName(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(this.formatCount(row.sentVolume()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatAmount(row.sentAmount()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatCount(row.receivedVolume()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatAmount(row.receivedAmount()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatCount(row.totalVolume()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatAmount(row.totalAmount()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatAmount(row.netAmount()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(row.currencyId(), normalFont, Element.ALIGN_LEFT));
+            }
+            document.add(mainTable);
+
+            // Aggregated Net Positions
+            PdfPTable summaryTitleTable = new PdfPTable(1);
+            summaryTitleTable.setWidthPercentage(100);
+            summaryTitleTable.setSpacingBefore(15f);
+            PdfPCell titleCell = new PdfPCell(new Phrase("Aggregated Net Positions", labelFont));
+            titleCell.setBorder(0);
+            summaryTitleTable.addCell(titleCell);
+            document.add(summaryTitleTable);
+
+            PdfPTable summaryTable = new PdfPTable(new float[]{2f, 3f});
+            summaryTable.setWidthPercentage(30);
+            summaryTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+            summaryTable.setSpacingBefore(5f);
+
+            for (SettlementSummaryNetPositionRow row : summaryRows) {
+                summaryTable.addCell(this.pdfCell(row.currencyId(), normalFont, Element.ALIGN_LEFT));
+                summaryTable.addCell(this.pdfCell(this.formatAmount(row.netPositionAmount()), normalFont, Element.ALIGN_RIGHT));
+            }
+            document.add(summaryTable);
+
+            document.close();
+            return Files.readAllBytes(tempFile);
+
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+    }
+
+    private PdfPCell pdfCell(String text, Font font, int horizontalAlignment) {
+
+        return this.pdfCell(text, font, horizontalAlignment, 1, 1);
+    }
+
+    private PdfPCell pdfCell(String text,
+                             Font font,
+                             int horizontalAlignment,
+                             int colspan,
+                             int rowspan) {
+
+        PdfPCell cell = new PdfPCell(new Phrase(text == null ? "" : text, font));
+        cell.setBorderWidth(0.5f);
+        cell.setPadding(4f);
+        cell.setHorizontalAlignment(horizontalAlignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        cell.setColspan(colspan);
+        cell.setRowspan(rowspan);
+        return cell;
+    }
+
+    private void addPdfMetaRow(PdfPTable table,
+                               String label,
+                               String value,
+                               Font labelFont,
+                               Font valueFont) {
+
+        table.addCell(this.pdfCell(label, labelFont, Element.ALIGN_LEFT));
+        table.addCell(this.pdfCell(value, valueFont, Element.ALIGN_LEFT));
+    }
+
+    private String formatAmount(BigDecimal amount) {
+
+        if (amount == null) {
+            return "0.00";
+        }
+        DecimalFormat format = new DecimalFormat("#,##0.00;(#,##0.00)", DecimalFormatSymbols.getInstance(Locale.US));
+        return format.format(amount);
+    }
+
+    private String formatCount(BigDecimal count) {
+
+        if (count == null) {
+            return "0";
+        }
+        DecimalFormat format = new DecimalFormat("#,##0", DecimalFormatSymbols.getInstance(Locale.US));
+        return format.format(count);
     }
 
     private byte[] exportSingleChunkXlsx(Input input) throws IOException, ReportException {

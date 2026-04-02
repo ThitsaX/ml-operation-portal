@@ -17,7 +17,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@Primary
 @NoLogging
 public class GenerateSettlementStatementReportPoiCommandHandler
     implements GenerateSettlementStatementReportCommand {
@@ -63,15 +61,23 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         "NDC %",
         "NDC",
         "Currency",
-        "Settlement Bank Account"
-    };
+        "Settlement Bank Account"};
 
     private static final int[] COLUMN_WIDTHS = {
-        32, 32, 40, 50, 18, 18, 20, 15, 20, 12, 50
-    };
+        32,
+        32,
+        40,
+        50,
+        18,
+        18,
+        20,
+        15,
+        20,
+        12,
+        50};
 
-    private static final DateTimeFormatter HEADER_DATE_FORMAT =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+    private static final DateTimeFormatter HEADER_DATE_FORMAT = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd'T'HH:mm:ssXXX");
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -138,12 +144,8 @@ public class GenerateSettlementStatementReportPoiCommandHandler
     @Override
     public int countRows(CountInput input) {
 
-        Integer rowCount = this.countSettlementStatementRows(
-            input.fspId(),
-            input.startDate(),
-            input.endDate(),
-            input.currencyId(),
-            input.timeZoneOffset());
+        Integer rowCount = this.countSettlementStatementRows(input.fspId(), input.startDate(),
+            input.endDate(), input.currencyId(), input.timeZoneOffset());
         return rowCount == null ? 0 : rowCount;
     }
 
@@ -155,7 +157,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
              OutputStream outputStream = Files.newOutputStream(tempFile)) {
 
             workbook.setCompressTempFiles(true);
-            Sheet sheet = workbook.createSheet("SettlementStatementReport");
+            Sheet sheet = workbook.createSheet("DFSPSettlementStatementReport");
 
             CellStyle headerLabelStyle = this.headerLabelStyle(workbook);
             CellStyle headerValueStyle = this.headerValueStyle(workbook);
@@ -177,9 +179,9 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             }
 
             RowCursor rowCursor = new RowCursor(rowIndex);
-            this.streamRows(input, row -> this.writeDataRow(
-                sheet.createRow(rowCursor.next()), row, dateTimeCellStyle, textCellStyle,
-                rightAlignedTextCellStyle, amountCellStyle));
+            this.streamRows(input,
+                row -> this.writeDataRow(sheet.createRow(rowCursor.next()), row, dateTimeCellStyle,
+                    textCellStyle, rightAlignedTextCellStyle, amountCellStyle));
             this.flushSheet(sheet);
 
             if (rowCursor.current() == rowIndex) {
@@ -210,7 +212,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
              OutputStream outputStream = Files.newOutputStream(tempFile)) {
 
             workbook.setCompressTempFiles(true);
-            Sheet sheet = workbook.createSheet("SettlementStatementReport");
+            Sheet sheet = workbook.createSheet("DFSPSettlementStatementReport");
 
             CellStyle headerLabelStyle = this.headerLabelStyle(workbook);
             CellStyle headerValueStyle = this.headerValueStyle(workbook);
@@ -235,20 +237,14 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             int baseOffset = input.offset() == null ? 0 : input.offset();
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
-                Input chunkInput = new Input(
-                    input.fspId(),
-                    input.dfspName(),
-                    input.startDate(),
-                    input.endDate(),
-                    input.filetype(),
-                    input.currencyId(),
-                    input.timeZoneOffset(),
-                    baseOffset + offset,
-                    limit);
+                Input chunkInput = new Input(input.fspId(), input.dfspName(), input.startDate(),
+                    input.endDate(), input.filetype(), input.currencyId(), input.timeZoneOffset(),
+                    baseOffset + offset, limit);
 
-                this.streamRows(chunkInput, row -> this.writeDataRow(
-                    sheet.createRow(rowCursor.next()), row, dateTimeCellStyle, textCellStyle,
-                    rightAlignedTextCellStyle, amountCellStyle));
+                this.streamRows(chunkInput,
+                    row -> this.writeDataRow(sheet.createRow(rowCursor.next()), row,
+                        dateTimeCellStyle, textCellStyle, rightAlignedTextCellStyle,
+                        amountCellStyle));
                 this.flushSheet(sheet);
             }
 
@@ -310,16 +306,9 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             int baseOffset = input.offset() == null ? 0 : input.offset();
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
-                Input chunkInput = new Input(
-                    input.fspId(),
-                    input.dfspName(),
-                    input.startDate(),
-                    input.endDate(),
-                    input.filetype(),
-                    input.currencyId(),
-                    input.timeZoneOffset(),
-                    baseOffset + offset,
-                    limit);
+                Input chunkInput = new Input(input.fspId(), input.dfspName(), input.startDate(),
+                    input.endDate(), input.filetype(), input.currencyId(), input.timeZoneOffset(),
+                    baseOffset + offset, limit);
 
                 this.streamRows(chunkInput, row -> {
                     writer.write(this.csvLine(this.toCsvValues(row)));
@@ -343,10 +332,10 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
         writer.write(this.csvLine("DFSP ID", input.fspId()));
         writer.write(this.csvLine("DFSP Name", input.dfspName()));
-        writer.write(this.csvLine(
-            "From Date", this.formatHeaderDate(input.startDate(), input.timeZoneOffset())));
-        writer.write(this.csvLine(
-            "To Date", this.formatHeaderDate(input.endDate(), input.timeZoneOffset())));
+        writer.write(this.csvLine("From Date",
+            this.formatHeaderDate(input.startDate(), input.timeZoneOffset())));
+        writer.write(this.csvLine("To Date",
+            this.formatHeaderDate(input.endDate(), input.timeZoneOffset())));
         writer.write(this.csvLine("Currency", input.currencyId()));
         writer.write(this.csvLine("TimeZoneOffSet", this.displayOffset(input.timeZoneOffset())));
         writer.newLine();
@@ -366,8 +355,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             row.ndcPercent(),
             this.amountOrDashText(row.ndc()),
             row.currency(),
-            row.settlementBankAccount()
-        };
+            row.settlementBankAccount()};
     }
 
     private void writeDataRow(Row row,
@@ -381,8 +369,10 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         this.writeTextCell(row, 1, data.dfspId(), textCellStyle);
         this.writeTextCell(row, 2, data.dfspName(), textCellStyle);
         this.writeTextCell(row, 3, data.processDescription(), textCellStyle);
-        this.writeAmountOrDashCell(row, 4, data.fundsIn(), rightAlignedTextCellStyle, amountCellStyle);
-        this.writeAmountOrDashCell(row, 5, data.fundsOut(), rightAlignedTextCellStyle, amountCellStyle);
+        this.writeAmountOrDashCell(
+            row, 4, data.fundsIn(), rightAlignedTextCellStyle, amountCellStyle);
+        this.writeAmountOrDashCell(
+            row, 5, data.fundsOut(), rightAlignedTextCellStyle, amountCellStyle);
         this.writeAmountOrDashCell(row, 6, data.balance(), textCellStyle, amountCellStyle);
         this.writeTextCell(row, 7, data.ndcPercent(), rightAlignedTextCellStyle);
         this.writeAmountOrDashCell(row, 8, data.ndc(), rightAlignedTextCellStyle, amountCellStyle);
@@ -394,21 +384,23 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
         List<Object> parameters = new ArrayList<>();
         String reportQuery = this.settlementStatementQuery();
+        String startDate = input.startDate().toString();
+        String endDate = input.endDate().toString();
 
         parameters.add(input.fspId());
         parameters.add(input.fspId());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.startDate());
+        parameters.add(startDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.startDate());
+        parameters.add(startDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.endDate());
+        parameters.add(endDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.endDate());
+        parameters.add(endDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
         parameters.add(input.currencyId());
@@ -417,17 +409,17 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         parameters.add(input.fspId());
         parameters.add(input.fspId());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.startDate());
+        parameters.add(startDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.startDate());
+        parameters.add(startDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.endDate());
+        parameters.add(endDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
-        parameters.add(input.endDate());
+        parameters.add(endDate);
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
         parameters.add(input.currencyId());
@@ -449,10 +441,8 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
         try {
             this.jdbcTemplate.query(connection -> {
-                PreparedStatement statement = connection.prepareStatement(
-                    reportQuery,
-                    ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_READ_ONLY);
+                PreparedStatement statement = connection.prepareStatement(reportQuery,
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
                 statement.setFetchDirection(ResultSet.FETCH_FORWARD);
                 statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
                 for (int index = 0; index < parameters.size(); index++) {
@@ -483,19 +473,15 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             sheet, rowIndex, "DFSP ID", input.fspId(), labelStyle, valueStyle);
         rowIndex = this.writeHeaderRow(
             sheet, rowIndex, "DFSP Name", input.dfspName(), labelStyle, valueStyle);
-        rowIndex = this.writeHeaderRow(
-            sheet, rowIndex, "From Date", this.formatHeaderDate(input.startDate(),
-                                                                input.timeZoneOffset()),
-            labelStyle, valueStyle);
-        rowIndex = this.writeHeaderRow(
-            sheet, rowIndex, "To Date", this.formatHeaderDate(input.endDate(),
-                                                              input.timeZoneOffset()),
-            labelStyle, valueStyle);
+        rowIndex = this.writeHeaderRow(sheet, rowIndex, "From Date",
+            this.formatHeaderDate(input.startDate(), input.timeZoneOffset()), labelStyle,
+            valueStyle);
+        rowIndex = this.writeHeaderRow(sheet, rowIndex, "To Date",
+            this.formatHeaderDate(input.endDate(), input.timeZoneOffset()), labelStyle, valueStyle);
         rowIndex = this.writeHeaderRow(
             sheet, rowIndex, "Currency", input.currencyId(), labelStyle, valueStyle);
-        return this.writeHeaderRow(
-            sheet, rowIndex, "TimeZoneOffSet", this.displayOffset(input.timeZoneOffset()),
-            labelStyle, valueStyle);
+        return this.writeHeaderRow(sheet, rowIndex, "TimeZoneOffSet",
+            this.displayOffset(input.timeZoneOffset()), labelStyle, valueStyle);
     }
 
     private int writeHeaderRow(Sheet sheet,
@@ -618,13 +604,11 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
-        style.setDataFormat(workbook.createDataFormat()
-                                    .getFormat("#,##0.00"));
+        style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
         return style;
     }
 
-    private org.apache.poi.ss.usermodel.Font reportDataFont(
-        org.apache.poi.ss.usermodel.Workbook workbook) {
+    private org.apache.poi.ss.usermodel.Font reportDataFont(org.apache.poi.ss.usermodel.Workbook workbook) {
 
         var font = workbook.createFont();
         font.setFontName("Calibri");
@@ -635,16 +619,16 @@ public class GenerateSettlementStatementReportPoiCommandHandler
     private String formatHeaderDate(Instant instant, String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return instant.atOffset(ZoneOffset.UTC)
-                      .withOffsetSameInstant(zoneOffset)
-                      .format(HEADER_DATE_FORMAT);
+        return instant
+                   .atOffset(ZoneOffset.UTC)
+                   .withOffsetSameLocal(zoneOffset)
+                   .format(HEADER_DATE_FORMAT);
     }
 
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return zoneOffset.getId()
-                         .equals("Z") ? "+00:00" : zoneOffset.getId();
+        return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
     }
 
     private ZoneOffset parseOffset(String rawOffset) {
@@ -669,8 +653,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             return "-";
         }
 
-        return value.stripTrailingZeros()
-                    .toPlainString();
+        return value.stripTrailingZeros().toPlainString();
     }
 
     private String csvLine(String... values) {
@@ -689,8 +672,8 @@ public class GenerateSettlementStatementReportPoiCommandHandler
     private String escapeCsv(String value) {
 
         String safeValue = value == null ? "" : value;
-        if (!safeValue.contains(",") && !safeValue.contains("\"") &&
-                !safeValue.contains("\n") && !safeValue.contains("\r")) {
+        if (!safeValue.contains(",") && !safeValue.contains("\"") && !safeValue.contains("\n") &&
+                !safeValue.contains("\r")) {
             return safeValue;
         }
 
@@ -699,18 +682,12 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
     private SettlementStatementRow mapRow(ResultSet resultSet) throws SQLException {
 
-        return new SettlementStatementRow(
-            resultSet.getString("createdDate"),
-            resultSet.getString("dfspId"),
-            resultSet.getString("dfspName"),
-            resultSet.getString("processDescription"),
-            resultSet.getBigDecimal("fundsIn"),
-            resultSet.getBigDecimal("fundsOut"),
-            resultSet.getBigDecimal("balance"),
-            resultSet.getString("ndcPercent"),
-            resultSet.getBigDecimal("ndc"),
-            resultSet.getString("currency"),
-            resultSet.getString("settlementBankAccount"));
+        return new SettlementStatementRow(resultSet.getString("createdDate"),
+            resultSet.getString("dfspId"), resultSet.getString("dfspName"),
+            resultSet.getString("processDescription"), resultSet.getBigDecimal("fundsIn"),
+            resultSet.getBigDecimal("fundsOut"), resultSet.getBigDecimal("balance"),
+            resultSet.getString("ndcPercent"), resultSet.getBigDecimal("ndc"),
+            resultSet.getString("currency"), resultSet.getString("settlementBankAccount"));
     }
 
     private String settlementStatementQuery() {
@@ -1042,6 +1019,9 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                                                  String currencyId,
                                                  String timeZoneOffset) {
 
+        String startDateValue = startDate.toString();
+        String endDateValue = endDate.toString();
+
         String reportQuery = """
             SELECT Count(createdDate) As rowCount FROM (
               SELECT
@@ -1160,47 +1140,43 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
         String countQuery = "SELECT * FROM (" + reportQuery + ") x";
 
-        return this.jdbcTemplate.queryForObject(
-            countQuery,
-            new Object[]{
-                fspId,
-                fspId,
-                timeZoneOffset,
-                startDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                startDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                timeZoneOffset,
-                endDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                endDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                currencyId,
-                currencyId,
-                fspId,
-                fspId,
-                timeZoneOffset,
-                startDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                startDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                timeZoneOffset,
-                endDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                endDate,
-                timeZoneOffset,
-                timeZoneOffset,
-                currencyId,
-                currencyId
-            },
-            Integer.class);
+        return this.jdbcTemplate.queryForObject(countQuery, new Object[]{
+            fspId,
+            fspId,
+            timeZoneOffset,
+            startDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            startDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            timeZoneOffset,
+            endDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            endDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            currencyId,
+            currencyId,
+            fspId,
+            fspId,
+            timeZoneOffset,
+            startDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            startDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            timeZoneOffset,
+            endDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            endDateValue,
+            timeZoneOffset,
+            timeZoneOffset,
+            currencyId,
+            currencyId}, Integer.class);
     }
 
     private void flushSheet(Sheet sheet) throws IOException {
@@ -1220,8 +1196,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                                           String ndcPercent,
                                           BigDecimal ndc,
                                           String currency,
-                                          String settlementBankAccount) {
-    }
+                                          String settlementBankAccount) { }
 
     @FunctionalInterface
     private interface SettlementStatementRowConsumer {

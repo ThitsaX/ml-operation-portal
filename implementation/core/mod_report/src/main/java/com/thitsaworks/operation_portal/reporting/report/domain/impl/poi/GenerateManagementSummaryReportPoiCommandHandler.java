@@ -1,20 +1,19 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl.poi;
 
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.PageSize;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateManagementSummaryReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.design.JRDesignBand;
-import net.sf.jasperreports.engine.design.JRDesignElement;
-import net.sf.jasperreports.engine.design.JasperDesign;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.xml.JRXmlLoader;
-import net.sf.jasperreports.export.SimpleExporterInput;
-import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -44,11 +43,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -298,44 +300,101 @@ public class GenerateManagementSummaryReportPoiCommandHandler
 
     private byte[] exportPdf(Input input, Integer offset, Integer limit) throws Exception {
 
-        Map<String, Object> params = new java.util.HashMap<>();
-        params.put("startDate", input.startDate());
-        params.put("endDate", input.endDate());
-        params.put("timezoneOffset", input.timezoneOffset());
-        params.put("reportFileType", input.fileType());
-        params.put("userName", input.userName());
-        params.put("offset", offset == null ? 0 : offset);
-        params.put("limit", limit == null ? DEFAULT_LIMIT : limit);
+        List<ManagementSummaryRow> rows = new ArrayList<>();
+        Input chunkInput = new Input(
+            input.startDate(), input.endDate(), input.timezoneOffset(),
+            input.fileType(), input.userName(), offset, limit);
 
-        InputStream jrxmlStream = this.getClass().getClassLoader().getResourceAsStream(
-            "com/thitsaworks/operation_portal/reporting/report/report/managementSummaryReport.jrxml");
+        this.streamRows(chunkInput, rows::add);
 
-        try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
-            JasperDesign design = JRXmlLoader.load(jrxmlStream);
-            design.setName("managementSummaryReport");
-
-            JRDesignBand pageFooter = (JRDesignBand) design.getPageFooter();
-            if (pageFooter != null && "xlsx".equalsIgnoreCase(input.fileType())) {
-                pageFooter.setHeight(0);
-                for (int index = pageFooter.getChildren().size() - 1; index >= 0; index--) {
-                    pageFooter.removeElement((JRDesignElement) pageFooter.getChildren().get(index));
-                }
-            }
-
-            JasperReport report = JasperCompileManager.compileReport(design);
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, params, conn);
-
-            if (jasperPrint.getPages() == null || jasperPrint.getPages().isEmpty()) {
-                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
-            }
-
-            JRPdfExporter pdfExporter = new JRPdfExporter();
-            ByteArrayOutputStream pdfReport = new ByteArrayOutputStream();
-            pdfExporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-            pdfExporter.setExporterOutput(new SimpleOutputStreamExporterOutput(pdfReport));
-            pdfExporter.exportReport();
-            return pdfReport.toByteArray();
+        if (rows.isEmpty()) {
+            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
         }
+
+        Path tempFile = Files.createTempFile("management-summary-", ".pdf");
+
+        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 9);
+        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
+
+        try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
+            Document document = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
+            PdfWriter.getInstance(document, outputStream);
+            document.open();
+
+            PdfPTable metaTable = new PdfPTable(new float[]{2f, 5f});
+            metaTable.setWidthPercentage(40);
+            metaTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+            metaTable.setSpacingAfter(15f);
+
+            this.addPdfMetaRow(metaTable, "Start Date",
+                this.formatHeaderDate(input.startDate(), input.timezoneOffset()), labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "End Date",
+                this.formatHeaderDate(input.endDate(), input.timezoneOffset()), labelFont, normalFont);
+            this.addPdfMetaRow(metaTable, "TimeZoneOffSet",
+                this.displayOffset(input.timezoneOffset()), labelFont, normalFont);
+            document.add(metaTable);
+
+            PdfPTable mainTable = new PdfPTable(new float[]{1.8f, 2.8f, 1.8f, 2.8f, 2.2f, 1.8f, 1.2f});
+            mainTable.setWidthPercentage(100);
+            for (String header : COLUMN_HEADERS) {
+                mainTable.addCell(this.pdfCell(header, labelFont, Element.ALIGN_CENTER));
+            }
+
+            for (ManagementSummaryRow row : rows) {
+                mainTable.addCell(this.pdfCell(row.payerDfsp(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(row.payerDfspName(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(row.payeeDfsp(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(row.payeeDfspName(), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(this.pdfCell(this.formatCount(row.numberOfTransactions()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(this.formatAmount(row.totalAmount()), normalFont, Element.ALIGN_RIGHT));
+                mainTable.addCell(this.pdfCell(row.currencyId(), normalFont, Element.ALIGN_LEFT));
+            }
+            document.add(mainTable);
+            document.close();
+
+            return Files.readAllBytes(tempFile);
+
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
+    }
+
+    private PdfPCell pdfCell(String text, Font font, int horizontalAlignment) {
+
+        PdfPCell cell = new PdfPCell(new Phrase(text == null ? "" : text, font));
+        cell.setBorderWidth(0.5f);
+        cell.setPadding(4f);
+        cell.setHorizontalAlignment(horizontalAlignment);
+        cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
+        return cell;
+    }
+
+    private void addPdfMetaRow(PdfPTable table,
+                               String label,
+                               String value,
+                               Font labelFont,
+                               Font valueFont) {
+
+        table.addCell(this.pdfCell(label, labelFont, Element.ALIGN_LEFT));
+        table.addCell(this.pdfCell(value, valueFont, Element.ALIGN_LEFT));
+    }
+
+    private String formatAmount(BigDecimal amount) {
+
+        if (amount == null) {
+            return "0.00";
+        }
+        DecimalFormat format = new DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US));
+        return format.format(amount);
+    }
+
+    private String formatCount(Long count) {
+
+        if (count == null) {
+            return "0";
+        }
+        DecimalFormat format = new DecimalFormat("#,##0", DecimalFormatSymbols.getInstance(Locale.US));
+        return format.format(count);
     }
 
     private void streamRows(Input input, ManagementSummaryRowConsumer consumer) {
