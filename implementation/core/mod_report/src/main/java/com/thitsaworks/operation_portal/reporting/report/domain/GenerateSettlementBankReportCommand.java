@@ -18,7 +18,7 @@ public interface GenerateSettlementBankReportCommand {
 
     Output execute(Input input) throws ReportException;
 
-    record CountInput(String settlementId, String currencyId) { }
+    record CountInput(String settlementId, String currencyId, String dfspId) { }
 
     int countRows(CountInput input);
 

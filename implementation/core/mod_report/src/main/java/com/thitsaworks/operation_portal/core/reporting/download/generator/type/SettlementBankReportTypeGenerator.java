@@ -26,6 +26,7 @@ class SettlementBankReportTypeGenerator implements ReportTypeGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(SettlementBankReportTypeGenerator.class);
 
     private static final int MAX_ROWS_PER_REPORT_FILE = 500_000;
+    private static final String DEFAULT_DFSP_ID = "hub";
 
     private final GenerateSettlementBankReportCommand generateSettlementBankReportCommand;
 
@@ -47,12 +48,15 @@ class SettlementBankReportTypeGenerator implements ReportTypeGenerator {
         String timezoneOffset = params.getOrDefault("timezoneOffset", "+0000");
         String userName = params.getOrDefault("userName", "");
         String fileType = this.reportGeneratorSupport.fileType(request.getFileType());
-        String dfspId = this.reportGeneratorSupport.requireParam(params, "dfspId");
+        String dfspId = params.getOrDefault("dfspId", DEFAULT_DFSP_ID);
+        if (dfspId == null || dfspId.isBlank()) {
+            dfspId = DEFAULT_DFSP_ID;
+        }
         boolean isParent = Boolean.parseBoolean(params.getOrDefault("isParent" , String.valueOf(false)));
 
         int pageSize = this.settings.reportPageSize();
         int totalRowCount = this.generateSettlementBankReportCommand.countRows(
-            new GenerateSettlementBankReportCommand.CountInput(settlementId, currencyId));
+            new GenerateSettlementBankReportCommand.CountInput(settlementId, currencyId,dfspId));
 
         LOGGER.info("Total Settlement Bank Row Count : [{}]", totalRowCount);
 
