@@ -31,6 +31,7 @@ import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -445,7 +446,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                 INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
             LEFT JOIN transactionSubScenario tSub on tSub.transactionSubScenarioId = q.transactionSubScenarioId
                 WHERE tF.isValid AND s.settlementId = ? AND (pPayee.name = ?  OR pPayer.name = ?)
-                ORDER BY latestState.CreatedDate DESC, tF.transferId DESC
+                ORDER BY latestState.CreatedDate ASC, tF.transferId ASC
                 LIMIT ?, ?
                 """;
     }
@@ -571,12 +572,27 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
 
     private String displayOffset(String rawOffset) {
 
-        if (rawOffset == null || rawOffset.isBlank()) {return "+00:00";}
-        String normalized = rawOffset.trim();
-        if (normalized.matches("[+-]\\d{4}")) {return normalized.substring(0, 3) + ":" + normalized.substring(3);}
-        if (normalized.matches("\\d{4}")) {return "+" + normalized.substring(0, 2) + ":" + normalized.substring(2);}
-        return normalized;
+        ZoneOffset zoneOffset = this.parseOffset(rawOffset);
+        String id = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
+        return " " + id; // leading space prevents formula interpretation
     }
+
+    private ZoneOffset parseOffset(String rawOffset) {
+
+        if (rawOffset == null || rawOffset.isBlank()) {
+            return ZoneOffset.UTC;
+        }
+
+        String normalized = rawOffset.trim();
+        if (normalized.matches("[+-]\\d{4}")) {
+            normalized = normalized.substring(0, 3) + ":" + normalized.substring(3);
+        } else if (normalized.matches("\\d{4}")) {
+            normalized = "+" + normalized.substring(0, 2) + ":" + normalized.substring(2);
+        }
+
+        return ZoneOffset.of(normalized);
+    }
+
 
     private String preserveAsText(String value) {return value == null ? "" : value + "\t";}
 
