@@ -264,8 +264,9 @@ public class ReportGeneratorHandler implements ReportGenerator {
             case TransactionDetail -> "TransactionDetailReport-" + timestamp + "." + extension;
             case MANAGEMENT_SUMMARY -> "ManagementSummaryReport-" + timestamp + "." + extension;
             case AUDIT -> "AuditReport-" + timestamp + "." + extension;
-            case SETTLEMENT_AUDIT -> "DFSPSettlementAuditReport-" + timestamp + "." + extension;
             case SETTLEMENT_BANK -> "SettlementBankReport-" + timestamp + "." + extension;
+            case SETTLEMENT_AUDIT -> "SettlementAuditReport-" + timestamp + "." + extension;
+
             case SETTLEMENT_STATEMENT -> "DFSPSettlementStatementReport-" + timestamp + "." + extension;
             case SETTLEMENT_SUMMARY -> "DFSPSettlementReport-" + timestamp + "." + extension;
         };
