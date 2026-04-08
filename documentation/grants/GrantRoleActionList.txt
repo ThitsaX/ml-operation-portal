@@ -71,6 +71,8 @@
                 "GetUser",
                 "GetUserListByParticipant",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "GrantMenuActionList",
                 "GrantRoleActionList",
                 "GrantUserActionList",
@@ -139,6 +141,8 @@
                 "GetTransferList",
                 "GetTransferStateList",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "ModifyContact",
                 "ModifyParticipantProfile",
                 "RemoveContact",
@@ -184,6 +188,8 @@
                 "GetTransferList",
                 "GetTransferStateList",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "ModifyApprovalAction",
                 "ModifyContact",
                 "ModifyLiquidityProfile",
@@ -242,6 +248,8 @@
                 "GetTransferList",
                 "GetTransferStateList",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "SyncHubParticipantsToPortal"
             ]
         },
@@ -290,6 +298,8 @@
                 "GetTransferStateList",
                 "GetUserListByParticipant",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "SyncHubParticipantsToPortal"
             ]
         },
@@ -327,6 +337,8 @@
                 "GetUser",
                 "GetUserListByParticipant",
                 "GetUserProfile",
+                "GetReportDownloadStatus",
+                "GetReportDownloadUrl",
                 "ModifyContact",
                 "ModifyParticipantProfile",
                 "ModifyUser",
