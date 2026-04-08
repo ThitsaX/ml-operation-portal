@@ -426,12 +426,10 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                 }
                 return statement;
             }, resultSet -> {
-                while (resultSet.next()) {
-                    try {
-                        consumer.accept(this.mapRow(resultSet));
-                    } catch (IOException exception) {
-                        throw new IOExceptionRuntimeException(exception);
-                    }
+                try {
+                    consumer.accept(this.mapRow(resultSet));
+                } catch (IOException exception) {
+                    throw new IOExceptionRuntimeException(exception);
                 }
             });
         } catch (IOExceptionRuntimeException exception) {
