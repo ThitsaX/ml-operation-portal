@@ -189,8 +189,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             this.streamRows(
                 input,
                 row -> this.writeDataRow(
-                    sheet.createRow(rowCursor.next()), row, textCellStyle,
-                    amountCellStyle));
+                    sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
             this.flushSheet(sheet);
 
             if (rowCursor.current() == rowIndex) {
@@ -245,15 +244,13 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
-                    input.startDate(), input.endDate(), input.state(),
-                    input.dfspId(), input.filetype(), input.timeZoneOffset(), baseOffset + offset,
-                    limit);
+                    input.startDate(), input.endDate(), input.state(), input.dfspId(),
+                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
                 this.streamRows(
                     chunkInput,
                     row -> this.writeDataRow(
-                        sheet.createRow(rowCursor.next()), row, textCellStyle,
-                        amountCellStyle));
+                        sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
                 this.flushSheet(sheet);
             }
 
@@ -317,9 +314,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
-                    input.startDate(), input.endDate(), input.state(),
-                    input.dfspId(), input.filetype(), input.timeZoneOffset(), baseOffset + offset,
-                    limit);
+                    input.startDate(), input.endDate(), input.state(), input.dfspId(),
+                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
                 this.streamRows(
                     chunkInput, row -> {
@@ -605,7 +601,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         return instant
                    .atOffset(ZoneOffset.UTC)
                    .withOffsetSameLocal(zoneOffset)
-                   .format(HEADER_DATE_FORMAT);
+                   .format(HEADER_DATE_FORMAT)
+                   .replace("Z", "+00:00");
     }
 
     private String displayOffset(String rawOffset) {
