@@ -51,6 +51,8 @@ public final class ReportDownloadUtil {
                 ReportErrors.SETTLEMENT_DETAIL_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
             case "SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
                 ReportErrors.SETTLEMENT_BANK_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
+            case "SETTLEMENT_BANK_USECASE_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
+                ReportErrors.SETTLEMENT_BANK_USECASE_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
             case "SETTLEMENT_STATEMENT_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
                 ReportErrors.STATEMENT_REPORT_FAILURE_EXCEPTION, errorDefaultMessage);
             case "SETTLEMENT_AUDIT_REPORT_FAILURE_EXCEPTION" -> withDefaultMessage(
