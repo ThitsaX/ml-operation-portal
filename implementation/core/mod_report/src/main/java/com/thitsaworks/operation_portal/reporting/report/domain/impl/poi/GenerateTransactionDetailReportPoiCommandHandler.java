@@ -569,7 +569,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.setBorderRight(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
-        style.setVerticalAlignment(VerticalAlignment.TOP);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setAlignment(HorizontalAlignment.LEFT);
         style.setWrapText(true);
         style.setFont(this.reportDataFont(workbook));
@@ -582,7 +582,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
-        style.setVerticalAlignment(VerticalAlignment.TOP);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
         return style;
     }
