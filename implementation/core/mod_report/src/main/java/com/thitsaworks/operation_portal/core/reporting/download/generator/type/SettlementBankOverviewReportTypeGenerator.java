@@ -6,7 +6,7 @@ import com.thitsaworks.operation_portal.core.reporting.download.generator.Report
 import com.thitsaworks.operation_portal.core.reporting.download.generator.ReportTypeGenerator;
 import com.thitsaworks.operation_portal.core.reporting.download.generator.support.ReportGeneratorSupport;
 import com.thitsaworks.operation_portal.core.reporting.download.model.ReportDownloadRequest;
-import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankOverviewReportUseCaseCommand;
+import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankOverviewReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -21,14 +21,14 @@ import java.util.zip.ZipOutputStream;
 
 @Component
 @RequiredArgsConstructor
-class SettlementBankOverviewReportUseCaseTypeGenerator implements ReportTypeGenerator {
+class SettlementBankOverviewReportTypeGenerator implements ReportTypeGenerator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SettlementBankOverviewReportUseCaseTypeGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SettlementBankOverviewReportTypeGenerator.class);
 
     private static final int MAX_ROWS_PER_REPORT_FILE = 500_000;
     private static final String DEFAULT_DFSP_ID = "hub";
 
-    private final GenerateSettlementBankOverviewReportUseCaseCommand generateSettlementBankOverviewReportUseCaseCommand;
+    private final GenerateSettlementBankOverviewReportCommand generateSettlementBankOverviewReportCommand;
 
     private final ReportGeneratorSupport reportGeneratorSupport;
 
@@ -55,15 +55,15 @@ class SettlementBankOverviewReportUseCaseTypeGenerator implements ReportTypeGene
         boolean isParent = Boolean.parseBoolean(params.getOrDefault("isParent", String.valueOf(false)));
 
         int pageSize = this.settings.reportPageSize();
-        int totalRowCount = this.generateSettlementBankOverviewReportUseCaseCommand.countRows(
-            new GenerateSettlementBankOverviewReportUseCaseCommand.CountInput(settlementId, currencyId, dfspId));
+        int totalRowCount = this.generateSettlementBankOverviewReportCommand.countRows(
+            new GenerateSettlementBankOverviewReportCommand.CountInput(settlementId, currencyId, dfspId));
 
         LOGGER.info("Total Settlement Bank Overview UseCase Row Count : [{}]", totalRowCount);
 
         if (totalRowCount <= pageSize) {
-            GenerateSettlementBankOverviewReportUseCaseCommand.Output output =
-                this.generateSettlementBankOverviewReportUseCaseCommand.execute(
-                    new GenerateSettlementBankOverviewReportUseCaseCommand.Input(
+            GenerateSettlementBankOverviewReportCommand.Output output =
+                this.generateSettlementBankOverviewReportCommand.execute(
+                    new GenerateSettlementBankOverviewReportCommand.Input(
                         settlementId, currencyId, fileType, timezoneOffset, userName, dfspId, isParent, 0,
                         Integer.MAX_VALUE));
 
@@ -75,9 +75,9 @@ class SettlementBankOverviewReportUseCaseTypeGenerator implements ReportTypeGene
                 settlementId, currencyId, fileType, timezoneOffset, userName, dfspId, isParent, totalRowCount);
         }
 
-        GenerateSettlementBankOverviewReportUseCaseCommand.Output output =
-            this.generateSettlementBankOverviewReportUseCaseCommand.execute(
-                new GenerateSettlementBankOverviewReportUseCaseCommand.Input(
+        GenerateSettlementBankOverviewReportCommand.Output output =
+            this.generateSettlementBankOverviewReportCommand.execute(
+                new GenerateSettlementBankOverviewReportCommand.Input(
                     settlementId, currencyId, fileType, timezoneOffset, userName, dfspId, isParent, 0,
                     Integer.MAX_VALUE));
 
@@ -100,9 +100,9 @@ class SettlementBankOverviewReportUseCaseTypeGenerator implements ReportTypeGene
             for (int offset = 0; offset < totalRowCount; offset += MAX_ROWS_PER_REPORT_FILE) {
                 int rowsInPart = Math.min(MAX_ROWS_PER_REPORT_FILE, totalRowCount - offset);
 
-                GenerateSettlementBankOverviewReportUseCaseCommand.Output output =
-                    this.generateSettlementBankOverviewReportUseCaseCommand.execute(
-                        new GenerateSettlementBankOverviewReportUseCaseCommand.Input(
+                GenerateSettlementBankOverviewReportCommand.Output output =
+                    this.generateSettlementBankOverviewReportCommand.execute(
+                        new GenerateSettlementBankOverviewReportCommand.Input(
                             settlementId,
                             currencyId,
                             fileType,

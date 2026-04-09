@@ -735,6 +735,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
             statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
 
             for (int i = 0; i < parameters.size(); i++) {
+
                 statement.setObject(i + 1, parameters.get(i));
             }
 
@@ -744,6 +745,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
             fetchedRowCount[0]++;
 
             try {
+
                 SettlementBankRow row = mapRow(resultSet);
 
                 LOG.info("Fetched row [{}] participant=[{}], account=[{}], currency=[{}], useCase=[{}]",

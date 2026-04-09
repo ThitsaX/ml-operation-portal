@@ -22,6 +22,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
@@ -43,7 +44,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -59,6 +62,10 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
     private static final int DEFAULT_ROW_WINDOW = 200;
 
     private static final int MYSQL_STREAM_FETCH_SIZE = Integer.MIN_VALUE;
+    private static final float PDF_LEFT_MARGIN = 10f;
+    private static final float PDF_RIGHT_MARGIN = 10f;
+    private static final float PDF_TOP_MARGIN = 24f;
+    private static final float PDF_BOTTOM_MARGIN = 32f;
 
     private static final String ALL_CURRENCY = "All";
 
@@ -72,7 +79,10 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
         "Currency"
     };
 
-    private static final int[] COLUMN_WIDTHS = {40, 40, 40, 22, 12};
+    private static final int[] COLUMN_WIDTHS = {40, 40, 45, 22, 12};
+    private static final float[] PDF_MAIN_COLUMN_WIDTHS = {40f, 40f, 45f, 22f, 12f};
+    private static final float PDF_META_WIDTH_PERCENTAGE = (80f / 159f) * 100f;
+    private static final float[] PDF_META_COLUMN_WIDTHS = {40f, 40f};
 
     private static final String FOOTER_NOTE =
         "The symbols '+' and '-' indicate whether funds are added to or deducted from the DFSP's liquidity balance for settlement.";
@@ -83,6 +93,46 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate) {
 
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    @Override
+    public int countRows(CountInput input) {
+
+        String currency = this.normalizeCurrency(input.currencyId());
+        String dfspId = this.normalizeDfspId(input.dfspId());
+
+        Integer rowCount = jdbcTemplate.queryForObject("""
+                                                           SELECT COUNT(*) FROM (
+                                                               SELECT p.name
+                                                               FROM settlement s
+                                                               INNER JOIN settlementSettlementWindow ssw ON ssw.settlementId = s.settlementId
+                                                               INNER JOIN transferFulfilment tf ON tf.settlementWindowId = ssw.settlementWindowId
+                                                               INNER JOIN transferParticipant tp ON tp.transferId = tf.transferId
+                                                               INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
+                                                               INNER JOIN participant p ON p.participantId = pc.participantId
+                                                               LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+                                                               LEFT JOIN operation_portal.tbl_participant opp ON op.parent_participant_name = opp.participant_name
+                                                               LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI = lp.participant_id COLLATE UTF8MB4_UNICODE_CI
+                                                               INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                                                               WHERE s.settlementId = ? AND lat.name = 'POSITION'
+                                                                 AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
+                                                                 AND (? = 'hub' OR (op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ? OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?))
+                                                               GROUP BY p.name, pc.participantCurrencyId,
+                                                                        lp.bank_name, lp.account_name, lp.account_number,
+                                                                        op.description, opp.participant_name, opp.parent_participant_name,
+                                                                        op.parent_participant_name, opp.description
+                                                           ) x
+                                                           """,
+                                                       new Object[]{
+                                                           input.settlementId(),
+                                                           currency,
+                                                           currency,
+                                                           dfspId,
+                                                           dfspId,
+                                                           dfspId},
+                                                       Integer.class);
+
+        return rowCount == null ? 0 : rowCount;
     }
 
     @Override
@@ -178,6 +228,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
             Cell noteCell = noteRow.createCell(0);
             noteCell.setCellValue(FOOTER_NOTE);
             noteCell.setCellStyle(noteCellStyle);
+            sheet.addMergedRegion(new CellRangeAddress(rowIndex, rowIndex, 0, COLUMN_HEADERS.length - 1));
 
             for (int i = 0; i < COLUMN_WIDTHS.length; i++) {
                 sheet.setColumnWidth(i, COLUMN_WIDTHS[i] * 256);
@@ -212,12 +263,16 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
 
         try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
-            Document document = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
-            PdfWriter.getInstance(document, outputStream);
+            Document document = new Document(PageSize.A4.rotate(),
+                                             PDF_LEFT_MARGIN,
+                                             PDF_RIGHT_MARGIN,
+                                             PDF_TOP_MARGIN,
+                                             PDF_BOTTOM_MARGIN);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
 
-            PdfPTable metaTable = new PdfPTable(new float[]{2f, 3f});
-            metaTable.setWidthPercentage(52);
+            PdfPTable metaTable = new PdfPTable(PDF_META_COLUMN_WIDTHS);
+            metaTable.setWidthPercentage(PDF_META_WIDTH_PERCENTAGE);
             metaTable.setHorizontalAlignment(Element.ALIGN_LEFT);
             metaTable.setSpacingAfter(16f);
             this.addPdfMetaRow(metaTable, "Settlement ID", input.settlementId(), labelFont, normalFont);
@@ -226,7 +281,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
             this.addPdfMetaRow(metaTable, "TimeZoneOffSet", this.displayOffset(input.timezoneOffset()), labelFont, normalFont);
             document.add(metaTable);
 
-            PdfPTable mainTable = new PdfPTable(new float[]{250f, 250f, 250f, 136f, 100f});
+            PdfPTable mainTable = new PdfPTable(PDF_MAIN_COLUMN_WIDTHS);
             mainTable.setWidthPercentage(100);
             mainTable.setSpacingAfter(20f);
             for (String header : COLUMN_HEADERS) {
@@ -252,6 +307,16 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
             noteCell.setVerticalAlignment(Element.ALIGN_MIDDLE);
             noteTable.addCell(noteCell);
             document.add(noteTable);
+
+            Phrase footer = new Phrase(this.buildPrintedByText(input.userName(), input.timezoneOffset()), normalFont);
+            PdfPTable footerTable = new PdfPTable(1);
+            footerTable.setTotalWidth(document.right() - document.left());
+            PdfPCell footerCell = new PdfPCell(footer);
+            footerCell.setBorder(0);
+            footerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            footerCell.setPaddingBottom(0f);
+            footerTable.addCell(footerCell);
+            footerTable.writeSelectedRows(0, -1, document.left(), document.bottom(), writer.getDirectContent());
 
             document.close();
             return Files.readAllBytes(tempFile);
@@ -318,24 +383,39 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
         parameters.add(dfspId);
         parameters.add(dfspId);
 
+        String sqlQuery = this.mainQuery();
+        if (input.limit() != null && input.offset() != null) {
+            sqlQuery += " LIMIT ? OFFSET ?";
+            parameters.add(input.limit());
+            parameters.add(input.offset());
+        }
+
+        final String finalSqlQuery = sqlQuery;
+
         this.jdbcTemplate.query(connection -> {
             PreparedStatement statement = connection.prepareStatement(
-                this.mainQuery(),
+                finalSqlQuery,
                 ResultSet.TYPE_FORWARD_ONLY,
                 ResultSet.CONCUR_READ_ONLY);
             statement.setFetchDirection(ResultSet.FETCH_FORWARD);
             statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
+
             for (int i = 0; i < parameters.size(); i++) {
+
                 statement.setObject(i + 1, parameters.get(i));
             }
+
             return statement;
+
         }, resultSet -> {
-            while (resultSet.next()) {
-                try {
+
+            try {
                     consumer.accept(this.mapRow(resultSet));
-                } catch (IOException e) {
-                    throw new IOExceptionRuntimeException(e);
-                }
+
+            } catch (IOException e) {
+
+                throw new IOExceptionRuntimeException(e);
+
             }
         });
     }
@@ -651,6 +731,24 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
 
         DecimalFormat format = new DecimalFormat("#,##0.00", DecimalFormatSymbols.getInstance(Locale.US));
         return format.format(value);
+    }
+
+    private String buildPrintedByText(String userName, String timezoneOffset) {
+
+        String user = this.safe(userName);
+        String offset = this.normalizeTimezoneOffset(timezoneOffset);
+
+        long millis = System.currentTimeMillis();
+        int sign = offset.startsWith("-") ? -1 : 1;
+        String abs = offset.replace(":", "").replace("-", "").replace("+", "");
+
+        int hours = Integer.parseInt(abs.substring(0, 2));
+        int minutes = Integer.parseInt(abs.substring(2, 4));
+
+        long adjustedMillis = millis + sign * ((hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L));
+        String formatted = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(new Date(adjustedMillis));
+
+        return "Printed by: " + user + " on " + formatted;
     }
 
     private String csvLine(String... values) {
