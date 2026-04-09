@@ -150,6 +150,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
             CellStyle headerValueStyle = this.headerValueStyle(workbook);
             CellStyle columnHeaderStyle = this.columnHeaderStyle(workbook);
             CellStyle textCellStyle = this.textCellStyle(workbook);
+            CellStyle rightTextCellStyle = this.rightTextCellStyle(workbook);
 
             int headerEndRow = this.writeReportHeader(
                 sheet, input, headerLabelStyle, headerValueStyle);
@@ -164,7 +165,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
             RowCursor rowCursor = new RowCursor(rowIndex);
             this.streamRows(input, row -> this.writeDataRow(
-                sheet.createRow(rowCursor.next()), row, textCellStyle));
+                sheet.createRow(rowCursor.next()), row, textCellStyle, rightTextCellStyle));
             this.flushSheet(sheet);
 
             if (rowCursor.current() == rowIndex) {
@@ -201,6 +202,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
             CellStyle headerValueStyle = this.headerValueStyle(workbook);
             CellStyle columnHeaderStyle = this.columnHeaderStyle(workbook);
             CellStyle textCellStyle = this.textCellStyle(workbook);
+            CellStyle rightTextCellStyle = this.rightTextCellStyle(workbook);
 
             int headerEndRow = this.writeReportHeader(
                 sheet, input, headerLabelStyle, headerValueStyle);
@@ -222,7 +224,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
                     input.grantedActionList(), offset, limit);
 
                 this.streamRows(chunkInput, row -> this.writeDataRow(
-                    sheet.createRow(rowCursor.next()), row, textCellStyle));
+                    sheet.createRow(rowCursor.next()), row, textCellStyle, rightTextCellStyle));
                 this.flushSheet(sheet);
             }
 
@@ -325,9 +327,9 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         return new String[]{row.dateTime(), row.action(), row.madeBy()};
     }
 
-    private void writeDataRow(Row row, AuditReportRow data, CellStyle textCellStyle) {
+    private void writeDataRow(Row row, AuditReportRow data, CellStyle textCellStyle, CellStyle rightTextCellStyle) {
 
-        this.writeTextCell(row, 0, data.dateTime(), textCellStyle);
+        this.writeTextCell(row, 0, data.dateTime(), rightTextCellStyle);
         this.writeTextCell(row, 1, data.action(), textCellStyle);
         this.writeTextCell(row, 2, data.madeBy(), textCellStyle);
     }
@@ -489,6 +491,14 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         style.setBorderLeft(BorderStyle.THIN);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setFont(this.reportDataFont(workbook));
+        return style;
+    }
+
+    private CellStyle rightTextCellStyle(org.apache.poi.ss.usermodel.Workbook workbook) {
+
+        CellStyle style = workbook.createCellStyle();
+        style.cloneStyleFrom(this.textCellStyle(workbook));
+        style.setAlignment(HorizontalAlignment.RIGHT);
         return style;
     }
 

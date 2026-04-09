@@ -87,7 +87,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         null, null, null, null
     };
 
-    private static final int[] COLUMN_WIDTHS = {30, 32, 16, 18, 16, 18, 22, 24, 24, 12};
+    private static final int[] COLUMN_WIDTHS = {30, 30, 16, 18, 16, 18, 22, 24, 24, 12};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -854,6 +854,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.labelStyle(workbook));
+        style.setWrapText(true);
         var font = workbook.createFont();
         font.setFontName("Calibri");
         font.setFontHeightInPoints((short) 11);

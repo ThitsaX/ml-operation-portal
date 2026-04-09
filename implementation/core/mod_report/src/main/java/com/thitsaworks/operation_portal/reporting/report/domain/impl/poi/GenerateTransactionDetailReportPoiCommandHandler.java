@@ -8,9 +8,7 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -189,7 +187,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             this.streamRows(
                 input,
                 row -> this.writeDataRow(
-                    sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
+                    sheet.createRow(rowCursor.next()), row, textCellStyle,
+                    amountCellStyle));
             this.flushSheet(sheet);
 
             if (rowCursor.current() == rowIndex) {
@@ -244,13 +243,15 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
-                    input.startDate(), input.endDate(), input.state(), input.dfspId(),
-                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
+                    input.startDate(), input.endDate(), input.state(),
+                    input.dfspId(), input.filetype(), input.timeZoneOffset(), baseOffset + offset,
+                    limit);
 
                 this.streamRows(
                     chunkInput,
                     row -> this.writeDataRow(
-                        sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
+                        sheet.createRow(rowCursor.next()), row, textCellStyle,
+                        amountCellStyle));
                 this.flushSheet(sheet);
             }
 
@@ -314,8 +315,9 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             for (int offset = 0; offset < totalRowCount; offset += pageSize) {
                 int limit = Math.min(pageSize, totalRowCount - offset);
                 Input chunkInput = new Input(
-                    input.startDate(), input.endDate(), input.state(), input.dfspId(),
-                    input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
+                    input.startDate(), input.endDate(), input.state(),
+                    input.dfspId(), input.filetype(), input.timeZoneOffset(), baseOffset + offset,
+                    limit);
 
                 this.streamRows(
                     chunkInput, row -> {
@@ -383,10 +385,10 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         this.writeAmountCell(row, 7, data.amount(), amountCellStyle);
         this.writeAmountCell(row, 8, data.payeeReceivedAmount(), amountCellStyle);
         this.writeAmountOrDashCell(
-            row, 9, data.payeeDfspFeeAmount(), textCellStyle,
+            row, 9, data.payeeDfspFeeAmount(), amountCellStyle,
             amountCellStyle);
         this.writeAmountOrDashCell(
-            row, 10, data.payeeDfspCommissionAmount(), textCellStyle,
+            row, 10, data.payeeDfspCommissionAmount(), amountCellStyle,
             amountCellStyle);
         this.writeTextCell(row, 11, data.currencyId(), textCellStyle);
         this.writeTextCell(row, 12, data.status(), textCellStyle);
@@ -557,8 +559,6 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 
@@ -569,7 +569,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.setBorderRight(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
-        style.setVerticalAlignment(VerticalAlignment.TOP);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setAlignment(HorizontalAlignment.LEFT);
         style.setWrapText(true);
         style.setFont(this.reportDataFont(workbook));
@@ -582,7 +582,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
-        style.setVerticalAlignment(VerticalAlignment.TOP);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
         return style;
     }

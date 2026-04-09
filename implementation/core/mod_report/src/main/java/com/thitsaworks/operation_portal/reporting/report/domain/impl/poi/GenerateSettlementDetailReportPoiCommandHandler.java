@@ -292,7 +292,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
         writeTextCell(row, 3, data.payeeFspName(), textCellStyle);
         writeTextCell(row, 4, data.transferId(), textCellStyle);
         writeTextCell(row, 5, data.transactionType(), textCellStyle);
-        writeTextCell(row, 6, data.lastModifiedDate(), textCellStyle);
+        writeTextCell(row, 6, data.lastModifiedDate(), rightTextCellStyle);
         writeTextCell(row, 7, data.payerIdentifierType(), textCellStyle);
         writeTextCell(row, 8, data.payerIdentifierValue(), textCellStyle);
         writeTextCell(row, 9, data.payeeIdentifierType(), textCellStyle);
