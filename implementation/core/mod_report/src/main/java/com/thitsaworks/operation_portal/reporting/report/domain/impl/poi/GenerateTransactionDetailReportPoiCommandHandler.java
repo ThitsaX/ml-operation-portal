@@ -68,15 +68,25 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         "Fee",
         "Commission",
         "Currency",
-        "Status"
-    };
+        "Status"};
 
     private static final int[] COLUMN_WIDTHS = {
-        40, 32, 18, 49, 18, 49, 16, 24, 24, 18, 18, 18, 18
-    };
+        40,
+        32,
+        18,
+        49,
+        18,
+        49,
+        16,
+        24,
+        24,
+        18,
+        18,
+        18,
+        18};
 
-    private static final DateTimeFormatter HEADER_DATE_FORMAT =
-        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
+    private static final DateTimeFormatter HEADER_DATE_FORMAT = DateTimeFormatter.ofPattern(
+        "yyyy-MM-dd'T'HH:mm:ssXXX");
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -143,8 +153,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     public int countRows(CountInput input) {
 
         Integer rowCount = this.countTransactionDetailRows(
-            input.startDate(), input.endDate(), input.state(), input.dfspId(),
-            input.timeZoneOffset());
+            input.startDate(), input.endDate(),
+            input.state(), input.dfspId(), input.timeZoneOffset());
         return rowCount == null ? 0 : rowCount;
     }
 
@@ -176,8 +186,10 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             }
 
             RowCursor rowCursor = new RowCursor(rowIndex);
-            this.streamRows(input, row -> this.writeDataRow(
-                sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
+            this.streamRows(
+                input,
+                row -> this.writeDataRow(
+                    sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
             this.flushSheet(sheet);
 
             if (rowCursor.current() == rowIndex) {
@@ -235,8 +247,10 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                     input.startDate(), input.endDate(), input.state(), input.dfspId(),
                     input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
-                this.streamRows(chunkInput, row -> this.writeDataRow(
-                    sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
+                this.streamRows(
+                    chunkInput,
+                    row -> this.writeDataRow(
+                        sheet.createRow(rowCursor.next()), row, textCellStyle, amountCellStyle));
                 this.flushSheet(sheet);
             }
 
@@ -268,10 +282,11 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             this.writeCsvHeader(writer, input);
 
             RowCounter rowCounter = new RowCounter();
-            this.streamRows(input, row -> {
-                writer.write(this.csvLine(this.toCsvValues(row)));
-                rowCounter.increment();
-            });
+            this.streamRows(
+                input, row -> {
+                    writer.write(this.csvLine(this.toCsvValues(row)));
+                    rowCounter.increment();
+                });
 
             if (rowCounter.value() == 0) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
@@ -302,10 +317,11 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                     input.startDate(), input.endDate(), input.state(), input.dfspId(),
                     input.filetype(), input.timeZoneOffset(), baseOffset + offset, limit);
 
-                this.streamRows(chunkInput, row -> {
-                    writer.write(this.csvLine(this.toCsvValues(row)));
-                    rowCounter.increment();
-                });
+                this.streamRows(
+                    chunkInput, row -> {
+                        writer.write(this.csvLine(this.toCsvValues(row)));
+                        rowCounter.increment();
+                    });
             }
 
             if (rowCounter.value() == 0) {
@@ -323,9 +339,11 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private void writeCsvHeader(BufferedWriter writer, Input input) throws IOException {
 
         writer.write(this.csvLine(
-            "Start Date", this.formatHeaderDate(input.startDate(), input.timeZoneOffset())));
+            "Start Date",
+            this.formatHeaderDate(input.startDate(), input.timeZoneOffset())));
         writer.write(this.csvLine(
-            "End Date", this.formatHeaderDate(input.endDate(), input.timeZoneOffset())));
+            "End Date",
+            this.formatHeaderDate(input.endDate(), input.timeZoneOffset())));
         writer.write(this.csvLine("Status", input.state()));
         writer.write(this.csvLine("TimeZoneOffSet", this.displayOffset(input.timeZoneOffset())));
         writer.newLine();
@@ -347,8 +365,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             this.amountOrDashText(row.payeeDfspFeeAmount()),
             this.amountOrDashText(row.payeeDfspCommissionAmount()),
             row.currencyId(),
-            row.status()
-        };
+            row.status()};
     }
 
     private void writeDataRow(Row row,
@@ -365,10 +382,12 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         this.writeTextCell(row, 6, data.transferType(), textCellStyle);
         this.writeAmountCell(row, 7, data.amount(), amountCellStyle);
         this.writeAmountCell(row, 8, data.payeeReceivedAmount(), amountCellStyle);
-        this.writeAmountOrDashCell(row, 9, data.payeeDfspFeeAmount(), textCellStyle,
-                                   amountCellStyle);
-        this.writeAmountOrDashCell(row, 10, data.payeeDfspCommissionAmount(), textCellStyle,
-                                   amountCellStyle);
+        this.writeAmountOrDashCell(
+            row, 9, data.payeeDfspFeeAmount(), textCellStyle,
+            amountCellStyle);
+        this.writeAmountOrDashCell(
+            row, 10, data.payeeDfspCommissionAmount(), textCellStyle,
+            amountCellStyle);
         this.writeTextCell(row, 11, data.currencyId(), textCellStyle);
         this.writeTextCell(row, 12, data.status(), textCellStyle);
     }
@@ -414,26 +433,24 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         parameters.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
 
         try {
-            this.jdbcTemplate.query(connection -> {
-                PreparedStatement statement = connection.prepareStatement(
-                    reportQuery,
-                    ResultSet.TYPE_FORWARD_ONLY,
-                    ResultSet.CONCUR_READ_ONLY);
-                statement.setFetchDirection(ResultSet.FETCH_FORWARD);
-                statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
-                for (int index = 0; index < parameters.size(); index++) {
-                    statement.setObject(index + 1, parameters.get(index));
-                }
-                return statement;
-            }, resultSet -> {
-                while (resultSet.next()) {
+            this.jdbcTemplate.query(
+                connection -> {
+                    PreparedStatement statement = connection.prepareStatement(
+                        reportQuery,
+                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+                    statement.setFetchDirection(ResultSet.FETCH_FORWARD);
+                    statement.setFetchSize(MYSQL_STREAM_FETCH_SIZE);
+                    for (int index = 0; index < parameters.size(); index++) {
+                        statement.setObject(index + 1, parameters.get(index));
+                    }
+                    return statement;
+                }, resultSet -> {
                     try {
                         consumer.accept(this.mapRow(resultSet));
                     } catch (IOException exception) {
                         throw new IOExceptionRuntimeException(exception);
                     }
-                }
-            });
+                });
         } catch (IOExceptionRuntimeException exception) {
             throw exception;
         }
@@ -446,13 +463,12 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
         int rowIndex = 0;
         rowIndex = this.writeHeaderRow(
-            sheet, rowIndex, "Start Date", this.formatHeaderDate(input.startDate(),
-                                                                 input.timeZoneOffset()),
-            labelStyle, valueStyle);
+            sheet, rowIndex, "Start Date",
+            this.formatHeaderDate(input.startDate(), input.timeZoneOffset()), labelStyle,
+            valueStyle);
         rowIndex = this.writeHeaderRow(
-            sheet, rowIndex, "End Date", this.formatHeaderDate(input.endDate(),
-                                                               input.timeZoneOffset()),
-            labelStyle, valueStyle);
+            sheet, rowIndex, "End Date",
+            this.formatHeaderDate(input.endDate(), input.timeZoneOffset()), labelStyle, valueStyle);
         rowIndex = this.writeHeaderRow(
             sheet, rowIndex, "Status", input.state(), labelStyle, valueStyle);
         return this.writeHeaderRow(
@@ -567,13 +583,11 @@ public class GenerateTransactionDetailReportPoiCommandHandler
         style.cloneStyleFrom(this.textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
         style.setVerticalAlignment(VerticalAlignment.TOP);
-        style.setDataFormat(workbook.createDataFormat()
-                                    .getFormat("#,##0.00"));
+        style.setDataFormat(workbook.createDataFormat().getFormat("#,##0.00"));
         return style;
     }
 
-    private org.apache.poi.ss.usermodel.Font reportDataFont(
-        org.apache.poi.ss.usermodel.Workbook workbook) {
+    private org.apache.poi.ss.usermodel.Font reportDataFont(org.apache.poi.ss.usermodel.Workbook workbook) {
 
         var font = workbook.createFont();
         font.setFontName("Calibri");
@@ -584,9 +598,11 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private String formatHeaderDate(Instant instant, String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return instant.atOffset(ZoneOffset.UTC)
-                      .withOffsetSameInstant(zoneOffset)
-                      .format(HEADER_DATE_FORMAT);
+        return instant
+                   .atOffset(ZoneOffset.UTC)
+                   .withOffsetSameLocal(zoneOffset)
+                   .format(HEADER_DATE_FORMAT)
+                   .replace("Z", "+00:00");
     }
 
     private String displayOffset(String rawOffset) {
@@ -614,8 +630,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
     private String amountText(BigDecimal value) {
 
-        return value == null ? "" : value.stripTrailingZeros()
-                                         .toPlainString();
+        return value == null ? "" : value.stripTrailingZeros().toPlainString();
     }
 
     private String amountOrDashText(BigDecimal value) {
@@ -643,8 +658,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private String escapeCsv(String value) {
 
         String safeValue = value == null ? "" : value;
-        if (!safeValue.contains(",") && !safeValue.contains("\"") &&
-                !safeValue.contains("\n") && !safeValue.contains("\r")) {
+        if (!safeValue.contains(",") && !safeValue.contains("\"") && !safeValue.contains("\n") &&
+                !safeValue.contains("\r")) {
             return safeValue;
         }
 
@@ -654,18 +669,13 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private TransactionDetailRow mapRow(ResultSet resultSet) throws SQLException {
 
         return new TransactionDetailRow(
-            resultSet.getString("transferId"),
-            resultSet.getString("transactionDate"),
-            resultSet.getString("senderDfspId"),
-            resultSet.getString("senderDfspName"),
-            resultSet.getString("receiverDfspId"),
-            resultSet.getString("receiverDfspName"),
-            resultSet.getString("transferType"),
-            resultSet.getBigDecimal("amount"),
+            resultSet.getString("transferId"), resultSet.getString("transactionDate"),
+            resultSet.getString("senderDfspId"), resultSet.getString("senderDfspName"),
+            resultSet.getString("receiverDfspId"), resultSet.getString("receiverDfspName"),
+            resultSet.getString("transferType"), resultSet.getBigDecimal("amount"),
             resultSet.getBigDecimal("payeeReceivedAmount"),
             resultSet.getBigDecimal("payeeDfspFeeAmount"),
-            resultSet.getBigDecimal("payeeDfspCommissionAmount"),
-            resultSet.getString("currencyId"),
+            resultSet.getBigDecimal("payeeDfspCommissionAmount"), resultSet.getString("currencyId"),
             resultSet.getString("status"));
     }
 
@@ -863,8 +873,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
             """;
 
         return this.jdbcTemplate.queryForObject(
-            reportQuery,
-            new Object[]{
+            reportQuery, new Object[]{
                 timeZoneOffset,
                 startDate,
                 timeZoneOffset,
@@ -883,9 +892,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                 state,
                 dfspId,
                 dfspId,
-                dfspId
-            },
-            Integer.class);
+                dfspId}, Integer.class);
     }
 
     private void flushSheet(Sheet sheet) throws IOException {
@@ -907,8 +914,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                                         BigDecimal payeeDfspFeeAmount,
                                         BigDecimal payeeDfspCommissionAmount,
                                         String currencyId,
-                                        String status) {
-    }
+                                        String status) { }
 
     @FunctionalInterface
     private interface TransactionDetailRowConsumer {

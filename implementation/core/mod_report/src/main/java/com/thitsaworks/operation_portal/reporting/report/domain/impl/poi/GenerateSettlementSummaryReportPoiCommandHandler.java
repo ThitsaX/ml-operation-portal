@@ -574,10 +574,8 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
                 }
                 return statement;
             }, resultSet -> {
-                while (resultSet.next()) {
+
                     consumer.accept(this.mapRow(resultSet));
-                }
-                return null;
             });
         } catch (IOExceptionRuntimeException exception) {
             throw exception;

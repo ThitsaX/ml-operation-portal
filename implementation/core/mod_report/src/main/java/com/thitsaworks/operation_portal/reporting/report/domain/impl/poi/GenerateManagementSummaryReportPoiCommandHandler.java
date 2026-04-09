@@ -457,9 +457,9 @@ public class GenerateManagementSummaryReportPoiCommandHandler
                 }
                 return statement;
             }, resultSet -> {
-                while (resultSet.next()) {
+
                     consumer.accept(this.mapRow(resultSet));
-                }
+
             });
         } catch (IOExceptionRuntimeException exception) {
             throw exception;
