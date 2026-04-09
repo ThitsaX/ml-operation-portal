@@ -4,19 +4,18 @@ import com.thitsaworks.operation_portal.component.common.identifier.ReportDownlo
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.misc.usecase.UseCase;
 
-public interface GenerateSettlementBankOverviewReport extends
-                                              UseCase<GenerateSettlementBankOverviewReport.Input, GenerateSettlementBankOverviewReport.Output> {
+public interface GenerateSettlementBankReportUseCase extends
+        UseCase<GenerateSettlementBankReportUseCase.Input, GenerateSettlementBankReportUseCase.Output> {
 
     record Input(String settlementId,
                  String currencyId,
                  String fileType,
                  String timezone,
-                 Long userId) {}
+                 Long userId) { }
 
     record Output(ReportDownloadRequestId requestId,
                   FileDownloadStatus status,
                   String fileUrl,
                   String fileKey,
-                  String paramsSignature) {}
-
+                  String paramsSignature) { }
 }

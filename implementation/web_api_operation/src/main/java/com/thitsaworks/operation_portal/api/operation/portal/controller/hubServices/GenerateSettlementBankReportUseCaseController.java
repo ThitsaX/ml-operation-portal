@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankOverviewReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReportUseCase;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,60 +21,56 @@ import java.io.Serializable;
 
 @RestController
 @RequiredArgsConstructor
-public class GenerateSettlementBankOverviewReportController {
+public class GenerateSettlementBankReportUseCaseController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankOverviewReportController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportUseCaseController.class);
 
-    private final GenerateSettlementBankOverviewReport generateSettlementBankOverviewReport;
+    private final GenerateSettlementBankReportUseCase generateSettlementBankReportUseCase;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generateSettlementBankOverviewReport")
+    @PostMapping("/secured/generateSettlementBankReportUseCase")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("currencyId") String currencyId,
                                             @RequestParam("fileType") String fileType,
                                             @RequestParam("timezoneOffset") String timezoneOffset)
-        throws DomainException, JsonProcessingException {
+            throws DomainException, JsonProcessingException {
 
         LOG.info(
-                "Generate Settlement Bank Overview Report : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
-            settlementId,
-            currencyId,
-            fileType,
-            timezoneOffset);
+                "Generate Settlement Bank Report Use Case : settlementId = [{}], currencyId = [{}], fileType = [{}], timezoneOffset = [{}]",
+                settlementId,
+                currencyId,
+                fileType,
+                timezoneOffset);
 
         String timezone = TimeZoneOffsetFormater.normalizeOffsetFormat(timezoneOffset);
 
         UserContext userContext =
-            (UserContext) SecurityContextHolder.getContext()
-                                               .getAuthentication()
-                                               .getDetails();
+                (UserContext) SecurityContextHolder.getContext()
+                                                   .getAuthentication()
+                                                   .getDetails();
 
-        GenerateSettlementBankOverviewReport.Output output = this.generateSettlementBankOverviewReport.execute(
-                new GenerateSettlementBankOverviewReport.Input(settlementId,
-                                                               currencyId,
-                                                               fileType,
-                                                               timezone,
-                                                               userContext.userId()
-                                                                          .getId()));
+        GenerateSettlementBankReportUseCase.Output output = this.generateSettlementBankReportUseCase.execute(
+                new GenerateSettlementBankReportUseCase.Input(settlementId,
+                                                              currencyId,
+                                                              fileType,
+                                                              timezone,
+                                                              userContext.userId().getId()));
 
-        var response = new Response(
-            output.requestId().getEntityId().toString(),
-            output.status().name(),
-            output.fileUrl(),
-            output.paramsSignature());
+        var response = new Response(output.requestId().getEntityId().toString(),
+                                    output.status().name(),
+                                    output.fileUrl(),
+                                    output.paramsSignature());
 
-        LOG.info("Generate Settlement Bank Overview Report Response : [{}]",
+        LOG.info("Generate Settlement Bank Report Use Case Response : [{}]",
                  this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
-
     }
 
     public record Response(@JsonProperty("requestId") String requestId,
                            @JsonProperty("status") String status,
                            @JsonProperty("fileUrl") String fileUrl,
                            @JsonProperty("paramsSignature") String paramsSignature)
-        implements Serializable { }
-
+            implements Serializable { }
 }
