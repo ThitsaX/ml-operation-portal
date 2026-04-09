@@ -567,7 +567,7 @@ public class GenerateManagementSummaryReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
-
+        style.setWrapText(true);
         var font = workbook.createFont();
         font.setBold(false);
         style.setFont(font);
@@ -598,6 +598,7 @@ public class GenerateManagementSummaryReportPoiCommandHandler
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setWrapText(true);
         style.setFont(this.reportDataFont(workbook));
         return style;
     }
