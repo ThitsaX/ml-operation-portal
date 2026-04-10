@@ -65,7 +65,7 @@ public class GenerateSettlementBankReportCommandHandler
         InputStream jrxmlStream = getClass()
                                       .getClassLoader()
                                       .getResourceAsStream(
-                                          "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
+                                              "com/thitsaworks/operation_portal/reporting/report/report/settlementBankReport.jrxml");
 
         try (Connection conn = this.jdbcTemplate.getDataSource().getConnection()) {
 

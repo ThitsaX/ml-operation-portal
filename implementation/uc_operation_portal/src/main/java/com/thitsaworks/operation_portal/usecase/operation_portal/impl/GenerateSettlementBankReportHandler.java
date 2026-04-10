@@ -10,8 +10,12 @@ import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditC
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
+import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -36,6 +40,8 @@ public class GenerateSettlementBankReportHandler
 
     private final UserQuery userQuery;
 
+    private final ParticipantCache participantCache;
+
     private final S3FileStorage s3FileStorage;
 
     public GenerateSettlementBankReportHandler(CreateInputAuditCommand createInputAuditCommand,
@@ -46,6 +52,7 @@ public class GenerateSettlementBankReportHandler
                                                ActionAuthorizationManager actionAuthorizationManager,
                                                ReportDownloadRequestManager reportDownloadRequestManager,
                                                UserQuery userQuery,
+                                               ParticipantCache participantCache,
                                                S3FileStorage s3FileStorage) {
 
         super(createInputAuditCommand,
@@ -57,6 +64,7 @@ public class GenerateSettlementBankReportHandler
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.userQuery = userQuery;
+        this.participantCache = participantCache;
         this.s3FileStorage = s3FileStorage;
     }
 
@@ -69,12 +77,21 @@ public class GenerateSettlementBankReportHandler
         }
 
         var getUser = this.userQuery.get(new UserId(input.userId()));
+        ParticipantData userParticipant = this.participantCache.get(getUser.participantId());
+        if (userParticipant == null) {
+            throw new ParticipantException(
+                ParticipantErrors.PARTICIPANT_NOT_FOUND.format(getUser.participantId().getId().toString()));
+        }
+        boolean isParent = userParticipant.parentParticipantName() == null ||
+            userParticipant.parentParticipantName().isBlank();
 
         Map<String, String> params = new HashMap<>();
         params.put("settlementId", input.settlementId());
         params.put("currencyId", input.currencyId().toUpperCase());
         params.put("timezoneOffset", input.timezone());
         params.put("userName", getUser.name());
+        params.put("dfspId", userParticipant.participantName().getValue());
+        params.put("isParent", String.valueOf(isParent));
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
             ReportType.SETTLEMENT_BANK,
