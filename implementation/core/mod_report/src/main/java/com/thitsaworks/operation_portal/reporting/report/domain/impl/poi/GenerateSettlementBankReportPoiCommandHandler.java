@@ -62,26 +62,18 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     private static final float PDF_RIGHT_MARGIN = 10f;
     private static final float PDF_TOP_MARGIN = 24f;
     private static final float PDF_BOTTOM_MARGIN = 32f;
-
     private static final String ALL_CURRENCY = "All";
-
-    private static final String DEFAULT_DFSP_ID = "hub";
-
     private static final String[] COLUMN_HEADERS = {
-            "Participant", "Parent Participant", "Settlement Bank Account", "Settlement Transfer", "Currency"
+            "Participant", "Settlement Bank Account", "Balance", "Settlement Transfer", "Currency"
     };
 
-    private static final int[] COLUMN_WIDTHS = {40, 40, 45, 22, 12};
-    private static final float[] PDF_MAIN_COLUMN_WIDTHS = {40f, 40f, 45f, 22f, 12f};
-    private static final float PDF_META_WIDTH_PERCENTAGE = (80f / 159f) * 100f;
-    private static final float[] PDF_META_COLUMN_WIDTHS = {40f, 40f};
+    private static final int[] COLUMN_WIDTHS = {32, 48, 16, 32, 18};
 
-    private static final String[] SUMMARY_HEADERS = {
-            "Settlement Bank Account", "Settlement Transfer", "Currency"
-    };
+    private static final float[] PDF_MAIN_COLUMN_WIDTHS = {200f, 300f, 105f, 200f, 129f};
 
-    private static final int[] SUMMARY_COLUMN_WIDTHS = {40, 40, 45};
-    private static final float[] PDF_SUMMARY_COLUMN_WIDTHS = {40f, 40f, 45f};
+    private static final float[] PDF_META_COLUMN_WIDTHS = {200f, 300f};
+
+    private static final float PDF_META_WIDTH_PERCENTAGE = (500f / 934f) * 100f;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -90,15 +82,11 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
-    public GenerateSettlementBankReportCommand.Output execute(GenerateSettlementBankReportCommand.Input input)
-            throws ReportException {
-
+    public Output execute(Input input) throws ReportException {
         String fileType = normalizeFileType(input.fileType());
 
         try {
-
             if ("xlsx".equalsIgnoreCase(fileType)) {
                 return new Output(exportSingleChunkXlsx(input));
             }
@@ -108,7 +96,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             }
 
             throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
-
         } catch (ReportException e) {
             throw e;
         } catch (Exception e) {
@@ -118,8 +105,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     @Override
-    public int countRows(GenerateSettlementBankReportCommand.CountInput input) {
-
+    public int countRows(CountInput input) {
         Integer rowCount = jdbcTemplate.queryForObject("""
                                                                SELECT COUNT(*) FROM (
                                                                    SELECT p.name
@@ -131,8 +117,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                                                                    INNER JOIN participant p ON p.participantId = pc.participantId
                                                                    LEFT JOIN operation_portal.tbl_participant op
                                                                        ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
-                                                                   LEFT JOIN operation_portal.tbl_participant opp
-                                                                       ON op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = opp.participant_name COLLATE UTF8MB4_UNICODE_CI
                                                                    LEFT JOIN operation_portal.tbl_liquidity_profile lp
                                                                        ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI
                                                                       AND is_active = 1
@@ -141,29 +125,20 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                                                                    WHERE s.settlementId = ?
                                                                      AND lat.name = 'POSITION'
                                                                      AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-                                                                     AND (? = 'hub' OR (
-                                                                           op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                                                                           OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                                                                     ))
-                                                                   GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number,
-                                                                            op.description, opp.participant_name, opp.parent_participant_name,
-                                                                            op.parent_participant_name, opp.description
+                                                                   GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name,
+                                                                            lp.account_number, op.description
                                                                ) x
                                                                """,
                                                        new Object[]{
                                                                input.settlementId(),
                                                                normalizeCurrency(input.currencyId()),
-                                                               normalizeCurrency(input.currencyId()),
-                                                               normalizeDfspId(input.dfspId()),
-                                                               normalizeDfspId(input.dfspId()),
-                                                               normalizeDfspId(input.dfspId())},
+                                                               normalizeCurrency(input.currencyId())},
                                                        Integer.class);
 
         return rowCount == null ? 0 : rowCount;
     }
 
     public Output exportAll(Input input, int totalRowCount, int pageSize) throws ReportException {
-
         if (totalRowCount <= 0) {
             throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
         }
@@ -184,7 +159,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             }
 
             throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
-
         } catch (ReportException e) {
             throw e;
         } catch (Exception e) {
@@ -194,6 +168,54 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private byte[] exportSingleChunkXlsx(Input input) throws IOException, ReportException {
+
+        List<SettlementBankRow> rows = new ArrayList<>();
+        MetadataCapture metadata = new MetadataCapture();
+
+        streamRows(input, row -> {
+            rows.add(row);
+            metadata.capture(row);
+        });
+
+        return buildXlsx(input, rows, metadata);
+    }
+
+    private byte[] exportAllXlsx(Input input, int totalRowCount, int pageSize) throws IOException, ReportException {
+
+        List<SettlementBankRow> rows = fetchRowsAcrossPages(input, totalRowCount, pageSize);
+        MetadataCapture metadata = new MetadataCapture();
+        rows.forEach(metadata::capture);
+        return buildXlsx(input, rows, metadata);
+    }
+
+    private byte[] exportPdf(Input input) throws IOException, ReportException, DocumentException {
+
+        List<SettlementBankRow> rows = new ArrayList<>();
+        MetadataCapture metadata = new MetadataCapture();
+
+        streamRows(input, row -> {
+            rows.add(row);
+            metadata.capture(row);
+        });
+
+        return buildPdf(input, rows, metadata);
+    }
+
+    private byte[] exportAllPdf(Input input, int totalRowCount, int pageSize)
+            throws IOException, ReportException, DocumentException {
+
+        List<SettlementBankRow> rows = fetchRowsAcrossPages(input, totalRowCount, pageSize);
+        MetadataCapture metadata = new MetadataCapture();
+        rows.forEach(metadata::capture);
+        return buildPdf(input, rows, metadata);
+    }
+
+    private byte[] buildXlsx(Input input, List<SettlementBankRow> rows, MetadataCapture metadata)
+            throws IOException, ReportException {
+
+        if (rows.isEmpty()) {
+            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
+        }
 
         Path tempFile = Files.createTempFile("settlement-bank-", ".xlsx");
 
@@ -213,19 +235,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             CellStyle textStyle = textCellStyle(workbook);
             CellStyle amountStyle = amountCellStyle(workbook);
             CellStyle rightTextStyle = rightTextCellStyle(workbook);
-            CellStyle summaryTitleStyle = sectionTitleStyle(workbook);
-
-            List<SettlementBankRow> rows = new ArrayList<>();
-            MetadataCapture metadata = new MetadataCapture();
-
-            this.streamRows(input, row -> {
-                rows.add(row);
-                metadata.capture(row);
-            });
-
-            if (rows.isEmpty()) {
-                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
-            }
 
             int rowIndex = 0;
             rowIndex = writeMeta(sheet,
@@ -234,24 +243,12 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                                  input.settlementId(),
                                  metaLabelStyle,
                                  metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "Settlement Created Date",
-                                 metadata.createdDate(),
-                                 metaLabelStyle,
+            rowIndex = writeMeta(sheet, rowIndex, "Settlement Created Date", metadata.createdDate(), metaLabelStyle,
                                  metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "Currency",
-                                 normalizeCurrency(input.currencyId()),
-                                 metaLabelStyle,
+            rowIndex = writeMeta(sheet, rowIndex, "Currency", normalizeCurrency(input.currencyId()), metaLabelStyle,
                                  metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "TimeZoneOffSet",
-                                 displayOffset(input.timezoneOffset()),
-                                 metaLabelStyle,
-                                 metaValueStyle);
+            rowIndex = writeMeta(sheet, rowIndex, "TimeZoneOffSet", displayOffset(input.timezoneOffset()),
+                                 metaLabelStyle, metaValueStyle);
             rowIndex++;
 
             Row headerRow = sheet.createRow(rowIndex++);
@@ -266,29 +263,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                 writeDataRow(dataRow, row, textStyle, amountStyle, rightTextStyle);
             }
 
-            if (Boolean.TRUE.equals(input.isParent())) {
-                rowIndex++;
-                Row titleRow = sheet.createRow(rowIndex++);
-                Cell titleCell = titleRow.createCell(0);
-                titleCell.setCellValue("Net Summary");
-                titleCell.setCellStyle(summaryTitleStyle);
-
-                Row summaryHeaderRow = sheet.createRow(rowIndex++);
-                for (int i = 0; i < SUMMARY_HEADERS.length; i++) {
-                    Cell cell = summaryHeaderRow.createCell(i + 2);
-                    cell.setCellValue(SUMMARY_HEADERS[i]);
-                    cell.setCellStyle(headerStyle);
-                }
-
-                List<NetSummaryRow> summaryRows = fetchNetSummaryRows(input);
-                for (NetSummaryRow summaryRow : summaryRows) {
-                    Row row = sheet.createRow(rowIndex++);
-                    writeSummaryRow(row, summaryRow, textStyle, amountStyle);
-                }
-            }
-
-            rowIndex++;
-
             for (int i = 0; i < COLUMN_WIDTHS.length; i++) {
                 sheet.setColumnWidth(i, COLUMN_WIDTHS[i] * 256);
             }
@@ -303,137 +277,17 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         }
     }
 
-    private byte[] exportAllXlsx(Input input, int totalRowCount, int pageSize) throws IOException, ReportException {
-
-        Path tempFile = Files.createTempFile("settlement-bank-", ".xlsx");
-
-        try (SXSSFWorkbook workbook = new SXSSFWorkbook(DEFAULT_ROW_WINDOW);
-             OutputStream outputStream = Files.newOutputStream(tempFile)) {
-
-            workbook.setCompressTempFiles(true);
-
-            Sheet sheet = workbook.createSheet("SettlementBankReport");
-            if (sheet instanceof SXSSFSheet streamingSheet) {
-                streamingSheet.trackAllColumnsForAutoSizing();
-            }
-
-            CellStyle metaLabelStyle = metaLabelStyle(workbook);
-            CellStyle metaValueStyle = metaValueStyle(workbook);
-            CellStyle headerStyle = columnHeaderStyle(workbook);
-            CellStyle textStyle = textCellStyle(workbook);
-            CellStyle amountStyle = amountCellStyle(workbook);
-            CellStyle rightTextStyle = rightTextCellStyle(workbook);
-            CellStyle summaryTitleStyle = sectionTitleStyle(workbook);
-
-            List<SettlementBankRow> allRows = fetchRowsAcrossPages(input, totalRowCount, pageSize);
-            if (allRows.isEmpty()) {
-                throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
-            }
-
-            MetadataCapture metadata = new MetadataCapture();
-            allRows.forEach(metadata::capture);
-
-            int rowIndex = 0;
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "Settlement ID",
-                                 input.settlementId(),
-                                 metaLabelStyle,
-                                 metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "Settlement Created Date",
-                                 metadata.createdDate(),
-                                 metaLabelStyle,
-                                 metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "Currency",
-                                 normalizeCurrency(input.currencyId()),
-                                 metaLabelStyle,
-                                 metaValueStyle);
-            rowIndex = writeMeta(sheet,
-                                 rowIndex,
-                                 "TimeZoneOffSet",
-                                 displayOffset(input.timezoneOffset()),
-                                 metaLabelStyle,
-                                 metaValueStyle);
-            rowIndex++;
-
-            Row headerRow = sheet.createRow(rowIndex++);
-            for (int i = 0; i < COLUMN_HEADERS.length; i++) {
-                Cell cell = headerRow.createCell(i);
-                cell.setCellValue(COLUMN_HEADERS[i]);
-                cell.setCellStyle(headerStyle);
-            }
-
-            for (SettlementBankRow row : allRows) {
-                Row dataRow = sheet.createRow(rowIndex++);
-                writeDataRow(dataRow, row, textStyle, amountStyle, rightTextStyle);
-            }
-
-            if (Boolean.TRUE.equals(input.isParent())) {
-                rowIndex++;
-                Row titleRow = sheet.createRow(rowIndex++);
-                Cell titleCell = titleRow.createCell(0);
-                titleCell.setCellValue("Net Summary");
-                titleCell.setCellStyle(summaryTitleStyle);
-
-                Row summaryHeaderRow = sheet.createRow(rowIndex++);
-                for (int i = 0; i < SUMMARY_HEADERS.length; i++) {
-                    Cell cell = summaryHeaderRow.createCell(i + 2);
-                    cell.setCellValue(SUMMARY_HEADERS[i]);
-                    cell.setCellStyle(headerStyle);
-                }
-
-                List<NetSummaryRow> summaryRows = fetchNetSummaryRows(input);
-                for (NetSummaryRow summaryRow : summaryRows) {
-                    Row row = sheet.createRow(rowIndex++);
-                    writeSummaryRow(row, summaryRow, textStyle, amountStyle);
-                }
-            }
-
-            rowIndex++;
-
-            for (int i = 0; i < COLUMN_WIDTHS.length; i++) {
-                sheet.setColumnWidth(i, COLUMN_WIDTHS[i] * 256);
-            }
-
-            flushSheet(sheet);
-            workbook.write(outputStream);
-            workbook.dispose();
-
-            return Files.readAllBytes(tempFile);
-
-        } finally {
-            Files.deleteIfExists(tempFile);
-        }
-    }
-
-    private byte[] exportPdf(Input input) throws IOException, ReportException, DocumentException {
-        List<SettlementBankRow> rows = new ArrayList<>();
-        MetadataCapture metadata = new MetadataCapture();
-
-        streamRows(input, row -> {
-            rows.add(row);
-            metadata.capture(row);
-        });
-
+    private byte[] buildPdf(Input input, List<SettlementBankRow> rows, MetadataCapture metadata)
+            throws IOException, ReportException, DocumentException {
         if (rows.isEmpty()) {
-
             throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
         }
 
-        List<NetSummaryRow> summaryRows =
-                Boolean.TRUE.equals(input.isParent()) ? fetchNetSummaryRows(input) : List.of();
-
         Path tempFile = Files.createTempFile("settlement-bank-", ".pdf");
-
         Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11);
         Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
 
         try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
-
             Document document = new Document(PageSize.A4.rotate(),
                                              PDF_LEFT_MARGIN,
                                              PDF_RIGHT_MARGIN,
@@ -459,44 +313,18 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             mainTable.setSpacingAfter(14f);
 
             for (String header : COLUMN_HEADERS) {
-
                 mainTable.addCell(pdfCell(header, labelFont, Element.ALIGN_LEFT));
             }
 
             for (SettlementBankRow row : rows) {
                 mainTable.addCell(pdfCell(safe(row.participant()), normalFont, Element.ALIGN_LEFT));
-                mainTable.addCell(pdfCell(safe(row.parentParticipant()), normalFont, Element.ALIGN_LEFT));
                 mainTable.addCell(pdfCell(safe(row.settlementBankAccount()), normalFont, Element.ALIGN_LEFT));
+                mainTable.addCell(pdfCell("", normalFont, Element.ALIGN_LEFT));
                 mainTable.addCell(pdfCell(amountOrDashText(row.transfer()), normalFont, Element.ALIGN_RIGHT));
                 mainTable.addCell(pdfCell(safe(row.currency()), normalFont, Element.ALIGN_LEFT));
             }
 
             document.add(mainTable);
-
-            if (Boolean.TRUE.equals(input.isParent())) {
-                PdfPTable summaryTitle = new PdfPTable(new float[]{1f});
-                summaryTitle.setWidthPercentage(40);
-                summaryTitle.setSpacingBefore(10f);
-                summaryTitle.setSpacingAfter(8f);
-                summaryTitle.addCell(pdfCell("Net Summary", labelFont, Element.ALIGN_LEFT));
-                document.add(summaryTitle);
-
-                PdfPTable summaryTable = new PdfPTable(PDF_SUMMARY_COLUMN_WIDTHS);
-                summaryTable.setWidthPercentage(75);
-
-                for (String header : SUMMARY_HEADERS) {
-
-                    summaryTable.addCell(pdfCell(header, labelFont, Element.ALIGN_LEFT));
-                }
-
-                for (NetSummaryRow row : summaryRows) {
-                    summaryTable.addCell(pdfCell(safe(row.settlementBankAccount()), normalFont, Element.ALIGN_LEFT));
-                    summaryTable.addCell(pdfCell(amountOrDashText(row.transfer()), normalFont, Element.ALIGN_RIGHT));
-                    summaryTable.addCell(pdfCell(safe(row.currency()), normalFont, Element.ALIGN_LEFT));
-                }
-
-                document.add(summaryTable);
-            }
 
             Phrase footer = new Phrase(buildPrintedByText(input.userName(), input.timezoneOffset()), normalFont);
             PdfPTable footerTable = new PdfPTable(1);
@@ -510,113 +338,12 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
 
             document.close();
             return Files.readAllBytes(tempFile);
-
-        } finally {
-            Files.deleteIfExists(tempFile);
-        }
-    }
-
-    private byte[] exportAllPdf(Input input, int totalRowCount, int pageSize)
-            throws IOException, ReportException, DocumentException {
-
-        List<SettlementBankRow> rows = fetchRowsAcrossPages(input, totalRowCount, pageSize);
-        if (rows.isEmpty()) {
-            throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
-        }
-
-        MetadataCapture metadata = new MetadataCapture();
-        rows.forEach(metadata::capture);
-
-        List<NetSummaryRow> summaryRows =
-                Boolean.TRUE.equals(input.isParent()) ? fetchNetSummaryRows(input) : List.of();
-
-        Path tempFile = Files.createTempFile("settlement-bank-", ".pdf");
-
-        Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11);
-        Font normalFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
-
-        try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
-            Document document = new Document(PageSize.A4.rotate(),
-                                             PDF_LEFT_MARGIN,
-                                             PDF_RIGHT_MARGIN,
-                                             PDF_TOP_MARGIN,
-                                             PDF_BOTTOM_MARGIN);
-            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
-            document.open();
-
-            PdfPTable metaTable = new PdfPTable(PDF_META_COLUMN_WIDTHS);
-            metaTable.setWidthPercentage(PDF_META_WIDTH_PERCENTAGE);
-            metaTable.setHorizontalAlignment(Element.ALIGN_LEFT);
-            metaTable.setSpacingAfter(16f);
-
-            addPdfMetaRow(metaTable, "Settlement ID", input.settlementId(), labelFont, normalFont);
-            addPdfMetaRow(metaTable, "Settlement Created Date", metadata.createdDate(), labelFont, normalFont);
-            addPdfMetaRow(metaTable, "Currency", normalizeCurrency(input.currencyId()), labelFont, normalFont);
-            addPdfMetaRow(metaTable, "TimeZoneOffSet", displayOffset(input.timezoneOffset()), labelFont, normalFont);
-
-            document.add(metaTable);
-
-            PdfPTable mainTable = new PdfPTable(PDF_MAIN_COLUMN_WIDTHS);
-            mainTable.setWidthPercentage(100);
-            mainTable.setSpacingAfter(14f);
-
-            for (String header : COLUMN_HEADERS) {
-                mainTable.addCell(pdfCell(header, labelFont, Element.ALIGN_LEFT));
-            }
-
-            for (SettlementBankRow row : rows) {
-                mainTable.addCell(pdfCell(safe(row.participant()), normalFont, Element.ALIGN_LEFT));
-                mainTable.addCell(pdfCell(safe(row.parentParticipant()), normalFont, Element.ALIGN_LEFT));
-                mainTable.addCell(pdfCell(safe(row.settlementBankAccount()), normalFont, Element.ALIGN_LEFT));
-                mainTable.addCell(pdfCell(amountOrDashText(row.transfer()), normalFont, Element.ALIGN_RIGHT));
-                mainTable.addCell(pdfCell(safe(row.currency()), normalFont, Element.ALIGN_LEFT));
-            }
-
-            document.add(mainTable);
-
-            if (Boolean.TRUE.equals(input.isParent())) {
-                PdfPTable summaryTitle = new PdfPTable(new float[]{1f});
-                summaryTitle.setWidthPercentage(40);
-                summaryTitle.setSpacingBefore(10f);
-                summaryTitle.setSpacingAfter(8f);
-                summaryTitle.addCell(pdfCell("Net Summary", labelFont, Element.ALIGN_LEFT));
-                document.add(summaryTitle);
-
-                PdfPTable summaryTable = new PdfPTable(PDF_SUMMARY_COLUMN_WIDTHS);
-                summaryTable.setWidthPercentage(75);
-
-                for (String header : SUMMARY_HEADERS) {
-                    summaryTable.addCell(pdfCell(header, labelFont, Element.ALIGN_LEFT));
-                }
-
-                for (NetSummaryRow row : summaryRows) {
-                    summaryTable.addCell(pdfCell(safe(row.settlementBankAccount()), normalFont, Element.ALIGN_LEFT));
-                    summaryTable.addCell(pdfCell(amountOrDashText(row.transfer()), normalFont, Element.ALIGN_RIGHT));
-                    summaryTable.addCell(pdfCell(safe(row.currency()), normalFont, Element.ALIGN_LEFT));
-                }
-
-                document.add(summaryTable);
-            }
-
-            Phrase footer = new Phrase(buildPrintedByText(input.userName(), input.timezoneOffset()), normalFont);
-            PdfPTable footerTable = new PdfPTable(1);
-            footerTable.setTotalWidth(document.right() - document.left());
-            PdfPCell footerCell = new PdfPCell(footer);
-            footerCell.setBorder(0);
-            footerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-            footerTable.addCell(footerCell);
-            footerTable.writeSelectedRows(0, -1, document.left(), document.bottom(), writer.getDirectContent());
-
-            document.close();
-            return Files.readAllBytes(tempFile);
-
         } finally {
             Files.deleteIfExists(tempFile);
         }
     }
 
     private List<SettlementBankRow> fetchRowsAcrossPages(Input input, int totalRowCount, int pageSize) {
-
         List<SettlementBankRow> rows = new ArrayList<>();
         if (pageSize <= 0) {
             return rows;
@@ -626,7 +353,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
 
         for (int offset = 0; offset < totalRowCount; offset += pageSize) {
             int limit = Math.min(pageSize, totalRowCount - offset);
-
             Input pageInput = new Input(input.settlementId(),
                                         input.currencyId(),
                                         input.fileType(),
@@ -636,76 +362,15 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                                         input.isParent(),
                                         baseOffset + offset,
                                         limit);
-
             streamRows(pageInput, rows::add);
         }
 
         return rows;
     }
 
-    private List<NetSummaryRow> fetchNetSummaryRows(Input input) {
-
-        String currency = normalizeCurrency(input.currencyId());
-        String dfspId = normalizeDfspId(input.dfspId());
-
-        return jdbcTemplate.query("""
-                                          SELECT settlementBankAccount, SUM(transfer) AS transfer, currency
-                                          FROM (
-                                              SELECT
-                                                  IFNULL(CONCAT(
-                                                      IFNULL(lp.bank_name, ''),
-                                                      ' - ',
-                                                      IFNULL(lp.account_name, ''),
-                                                      ' - ',
-                                                      IFNULL(lp.account_number, '')
-                                                  ), '') AS settlementBankAccount,
-                                                  SUM(tp.amount) AS transfer,
-                                                  pc.currencyId AS currency
-                                              FROM settlement s
-                                              INNER JOIN settlementSettlementWindow ssw ON ssw.settlementId = s.settlementId
-                                              INNER JOIN transferFulfilment tf ON tf.settlementWindowId = ssw.settlementWindowId
-                                              INNER JOIN transferParticipant tp ON tp.transferId = tf.transferId
-                                              INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
-                                              INNER JOIN participant p ON p.participantId = pc.participantId
-                                              LEFT JOIN operation_portal.tbl_participant op
-                                                  ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
-                                              LEFT JOIN operation_portal.tbl_participant opp
-                                                  ON op.parent_participant_name = opp.participant_name
-                                              LEFT JOIN operation_portal.tbl_liquidity_profile lp
-                                                  ON lp.currency = pc.currencyId
-                                                 AND is_active = 1
-                                                 AND op.participant_id = lp.participant_id
-                                              INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
-                                              WHERE s.settlementId = ?
-                                                AND lat.name = 'POSITION'
-                                                AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-                                                AND (? = 'hub' OR (
-                                                      op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                                                      OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                                                ))
-                                              GROUP BY pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number
-                                          ) q
-                                          GROUP BY settlementBankAccount, currency
-                                          ORDER BY settlementBankAccount ASC, currency ASC
-                                          """,
-                                  ps -> {
-                                      ps.setString(1, input.settlementId());
-                                      ps.setString(2, currency);
-                                      ps.setString(3, currency);
-                                      ps.setString(4, dfspId);
-                                      ps.setString(5, dfspId);
-                                      ps.setString(6, dfspId);
-                                  },
-                                  (rs, rowNum) -> new NetSummaryRow(rs.getString("settlementBankAccount"),
-                                                                    rs.getBigDecimal("transfer"),
-                                                                    rs.getString("currency")));
-    }
-
     private void streamRows(Input input, SettlementBankRowConsumer consumer) {
-
         String timezoneOffset = normalizeTimezoneOffset(input.timezoneOffset());
         String currency = normalizeCurrency(input.currencyId());
-        String dfspId = normalizeDfspId(input.dfspId());
 
         List<Object> parameters = new ArrayList<>();
         addTimezoneDateFormatParams(parameters, timezoneOffset);
@@ -713,16 +378,12 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         parameters.add(input.settlementId());
         parameters.add(currency);
         parameters.add(currency);
-        parameters.add(dfspId);
-        parameters.add(dfspId);
-        parameters.add(dfspId);
         parameters.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
         parameters.add(input.offset() == null ? 0 : input.offset());
 
         final int[] fetchedRowCount = {0};
 
         this.jdbcTemplate.query(connection -> {
-
             PreparedStatement statement = connection.prepareStatement(mainQuery(),
                                                                       ResultSet.TYPE_FORWARD_ONLY,
                                                                       ResultSet.CONCUR_READ_ONLY);
@@ -737,41 +398,31 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         }, resultSet -> {
 
             fetchedRowCount[0]++;
-
                 try {
                     SettlementBankRow row = mapRow(resultSet);
-
-                    LOG.info("Fetched row [{}] participant=[{}], parentParticipant=[{}], account=[{}], currency=[{}]",
+                    LOG.info("Fetched row [{}] participant=[{}], account=[{}], currency=[{}]",
                              fetchedRowCount[0],
                              row.participant(),
-                             row.parentParticipant(),
                              row.settlementBankAccount(),
                              row.currency());
-
                     consumer.accept(row);
-
                 } catch (IOException e) {
                     throw new IOExceptionRuntimeException(e);
                 }
 
         });
 
-        LOG.info(
-                "SettlementBank result set row count = [{}], settlementId=[{}], currency=[{}], dfspId=[{}], offset=[{}], limit=[{}]",
-                fetchedRowCount[0],
-                input.settlementId(),
-                currency,
-                dfspId,
-                input.offset(),
-                input.limit());
-
+        LOG.info("SettlementBank result set row count = [{}], settlementId=[{}], currency=[{}], offset=[{}], limit=[{}]",
+                 fetchedRowCount[0],
+                 input.settlementId(),
+                 currency,
+                 input.offset(),
+                 input.limit());
     }
 
     private SettlementBankRow mapRow(ResultSet rs) throws SQLException {
-
         return new SettlementBankRow(rs.getString("createdDate"),
                                      rs.getString("participant"),
-                                     rs.getString("parentParticipant"),
                                      rs.getString("settlementBankAccount"),
                                      rs.getBigDecimal("transfer"),
                                      rs.getString("currency"),
@@ -784,16 +435,8 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                     DATE_FORMAT(
                         CASE
                             WHEN SUBSTRING(?,1,1) = '-'
-                                THEN CONVERT_TZ(
-                                    s.createdDate,
-                                    '+00:00',
-                                    CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
-                                )
-                            ELSE CONVERT_TZ(
-                                    s.createdDate,
-                                    '+00:00',
-                                    CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
-                                )
+                                THEN CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2)))
+                            ELSE CONVERT_TZ(s.createdDate, '+00:00', CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)))
                         END,
                         '%Y-%m-%dT%H:%i:%s'
                     ),
@@ -803,26 +446,8 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                         ELSE CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
                     END
                 ) AS createdDate,
-                IFNULL(CONCAT(
-                    IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI, ''),
-                    ' - ',
-                    IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI, '')
-                ), '') AS participant,
-                CASE
-                    WHEN op.parent_participant_name IS NULL THEN ''
-                    ELSE IFNULL(CONCAT(
-                        IFNULL(opp.participant_name COLLATE UTF8MB4_UNICODE_CI, ''),
-                        ' - ',
-                        IFNULL(opp.description COLLATE UTF8MB4_UNICODE_CI, '')
-                    ), '')
-                END AS parentParticipant,
-                IFNULL(CONCAT(
-                    IFNULL(lp.bank_name, ''),
-                    ' - ',
-                    IFNULL(lp.account_name, ''),
-                    ' - ',
-                    IFNULL(lp.account_number, '')
-                ), '') AS settlementBankAccount,
+                IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI, ''), ' - ', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI, '')), '') AS participant,
+                IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')), '') AS settlementBankAccount,
                 SUM(tp.amount) AS transfer,
                 pc.currencyId AS currency,
                 CASE
@@ -838,8 +463,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                 INNER JOIN participant p ON p.participantId = pc.participantId
                 LEFT JOIN operation_portal.tbl_participant op
                     ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
-                LEFT JOIN operation_portal.tbl_participant opp
-                    ON op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = opp.participant_name COLLATE UTF8MB4_UNICODE_CI
                 LEFT JOIN operation_portal.tbl_liquidity_profile lp
                     ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI
                    AND is_active = 1
@@ -848,15 +471,8 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                 WHERE s.settlementId = ?
                   AND lat.name = 'POSITION'
                   AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-                  AND (? = 'hub' OR (
-                        op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                        OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?
-                  ))
-                GROUP BY p.name, pc.participantCurrencyId,
-                         lp.bank_name, lp.account_name, lp.account_number,
-                         op.description, opp.participant_name, opp.parent_participant_name,
-                         op.parent_participant_name, opp.description
-                ORDER BY participant ASC, parentParticipant ASC, settlementBankAccount ASC, pc.currencyId ASC 
+                GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number, op.description
+                ORDER BY participant ASC, settlementBankAccount ASC, pc.currencyId ASC
                 LIMIT ? OFFSET ?
                 """;
     }
@@ -866,18 +482,10 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                               CellStyle textCellStyle,
                               CellStyle amountCellStyle,
                               CellStyle rightTextCellStyle) {
-
         writeTextCell(row, 0, data.participant(), textCellStyle);
-        writeTextCell(row, 1, data.parentParticipant(), textCellStyle);
-        writeTextCell(row, 2, data.settlementBankAccount(), textCellStyle);
+        writeTextCell(row, 1, data.settlementBankAccount(), textCellStyle);
+        writeTextCell(row, 2, "", textCellStyle);
         writeAmountOrDashCell(row, 3, data.transfer(), rightTextCellStyle, amountCellStyle);
-        writeTextCell(row, 4, data.currency(), textCellStyle);
-    }
-
-    private void writeSummaryRow(Row row, NetSummaryRow data, CellStyle textCellStyle, CellStyle amountCellStyle) {
-
-        writeTextCell(row, 2, data.settlementBankAccount(), textCellStyle);
-        writeAmountCell(row, 3, data.transfer(), amountCellStyle);
         writeTextCell(row, 4, data.currency(), textCellStyle);
     }
 
@@ -887,7 +495,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                           String value,
                           CellStyle keyStyle,
                           CellStyle valueStyle) {
-
         Row row = sheet.createRow(rowIndex++);
         Cell keyCell = row.createCell(0);
         keyCell.setCellValue(key);
@@ -896,7 +503,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         Cell valueCell = row.createCell(1);
         valueCell.setCellValue(value == null ? "" : value);
         valueCell.setCellStyle(valueStyle);
-
         return rowIndex;
     }
 
@@ -925,12 +531,10 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             writeTextCell(row, col, "-", rightTextStyle);
             return;
         }
-
         writeAmountCell(row, col, value, amountStyle);
     }
 
     private PdfPCell pdfCell(String text, Font font, int horizontalAlignment) {
-
         PdfPCell cell = new PdfPCell(new Phrase(text, font));
         cell.setBorderWidth(0.5f);
         cell.setPaddingTop(4f);
@@ -943,13 +547,11 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private void addPdfMetaRow(PdfPTable table, String label, String value, Font labelFont, Font valueFont) {
-
         table.addCell(pdfCell(label, labelFont, Element.ALIGN_LEFT));
         table.addCell(pdfCell(safe(value), valueFont, Element.ALIGN_LEFT));
     }
 
     private CellStyle metaLabelStyle(SXSSFWorkbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         applyCommonBorder(style);
         style.setAlignment(HorizontalAlignment.LEFT);
@@ -960,12 +562,10 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         font.setFontHeightInPoints((short) 11);
         font.setBold(true);
         style.setFont(font);
-
         return style;
     }
 
     private CellStyle metaValueStyle(SXSSFWorkbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(metaLabelStyle(workbook));
 
@@ -974,12 +574,10 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         font.setFontHeightInPoints((short) 11);
         font.setBold(false);
         style.setFont(font);
-
         return style;
     }
 
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(metaLabelStyle(workbook));
         style.setWrapText(false);
@@ -987,7 +585,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private CellStyle textCellStyle(org.apache.poi.ss.usermodel.Workbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         applyCommonBorder(style);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
@@ -998,57 +595,23 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         font.setFontName("Calibri");
         font.setFontHeightInPoints((short) 11);
         style.setFont(font);
-
         return style;
     }
 
     private CellStyle amountCellStyle(org.apache.poi.ss.usermodel.Workbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
 
         DataFormat dataFormat = workbook.createDataFormat();
         style.setDataFormat(dataFormat.getFormat("#,##0.00"));
-
         return style;
     }
 
     private CellStyle rightTextCellStyle(org.apache.poi.ss.usermodel.Workbook workbook) {
-
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(textCellStyle(workbook));
         style.setAlignment(HorizontalAlignment.RIGHT);
-        return style;
-    }
-
-    private CellStyle sectionTitleStyle(SXSSFWorkbook workbook) {
-
-        CellStyle style = workbook.createCellStyle();
-        applyCommonBorder(style);
-        style.setAlignment(HorizontalAlignment.LEFT);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-
-        var font = workbook.createFont();
-        font.setFontName("Calibri");
-        font.setFontHeightInPoints((short) 11);
-        font.setBold(true);
-        style.setFont(font);
-
-        return style;
-    }
-
-    private CellStyle footerStyle(SXSSFWorkbook workbook) {
-
-        CellStyle style = workbook.createCellStyle();
-        style.setAlignment(HorizontalAlignment.RIGHT);
-        style.setVerticalAlignment(VerticalAlignment.CENTER);
-
-        var font = workbook.createFont();
-        font.setFontName("Calibri");
-        font.setFontHeightInPoints((short) 11);
-        style.setFont(font);
-
         return style;
     }
 
@@ -1060,21 +623,18 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private void addTimezoneDateFormatParams(List<Object> params, String timezoneOffset) {
-
         for (int i = 0; i < 10; i++) {
             params.add(timezoneOffset);
         }
     }
 
     private void addTimezoneOffsetOnlyParams(List<Object> params, String timezoneOffset) {
-
         for (int i = 0; i < 5; i++) {
             params.add(timezoneOffset);
         }
     }
 
     private void flushSheet(Sheet sheet) throws IOException {
-
         if (sheet instanceof SXSSFSheet streamingSheet) {
             streamingSheet.flushRows(DEFAULT_ROW_WINDOW);
         }
@@ -1095,19 +655,10 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         }
 
         if ("ALL".equalsIgnoreCase(currencyId.trim()) || "All".equalsIgnoreCase(currencyId.trim())) {
-            return "All";
+            return ALL_CURRENCY;
         }
 
         return currencyId.trim().toUpperCase(Locale.ROOT);
-    }
-
-    private String normalizeDfspId(String dfspId) {
-
-        if (dfspId == null || dfspId.isBlank()) {
-            return DEFAULT_DFSP_ID;
-        }
-
-        return dfspId.trim();
     }
 
     private String normalizeTimezoneOffset(String rawOffset) {
@@ -1116,10 +667,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
         }
 
         String normalized = rawOffset.trim().replace(":", "");
-        if (normalized.matches("[+-]\\d{4}")) {
-            return normalized;
-        }
-        if (normalized.matches("\\d{4}")) {
+        if (normalized.matches("[+-]\\d{4}") || normalized.matches("\\d{4}")) {
             return normalized;
         }
 
@@ -1127,7 +675,6 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private String displayOffset(String rawOffset) {
-
         String normalized = normalizeTimezoneOffset(rawOffset);
         if (normalized.matches("[+-]\\d{4}")) {
             return normalized.substring(0, 3) + ":" + normalized.substring(3);
@@ -1149,43 +696,38 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     }
 
     private String buildPrintedByText(String userName, String timezoneOffset) {
-
         String user = safe(userName);
         String offset = normalizeTimezoneOffset(timezoneOffset);
 
         long millis = System.currentTimeMillis();
         int sign = offset.startsWith("-") ? -1 : 1;
         String abs = offset.replace(":", "").replace("-", "").replace("+", "");
-
         int hours = Integer.parseInt(abs.substring(0, 2));
         int minutes = Integer.parseInt(abs.substring(2, 4));
-
         long adjustedMillis = millis + sign * ((hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L));
         String formatted = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(new Date(adjustedMillis));
 
         return "Printed by: " + user + " on " + formatted;
     }
 
-    private record SettlementBankRow(String createdDate, String participant, String parentParticipant,
-                                     String settlementBankAccount, BigDecimal transfer, String currency,
+    private record SettlementBankRow(String createdDate,
+                                     String participant,
+                                     String settlementBankAccount,
+                                     BigDecimal transfer,
+                                     String currency,
                                      String timezoneoffset) {
-    }
-
-    private record NetSummaryRow(String settlementBankAccount, BigDecimal transfer, String currency) {
     }
 
     private static final class MetadataCapture {
         private String createdDate = "";
 
         private void capture(SettlementBankRow row) {
-
             if (createdDate == null || createdDate.isBlank()) {
                 createdDate = row.createdDate();
             }
         }
 
         private String createdDate() {
-
             return createdDate == null ? "" : createdDate;
         }
     }
@@ -1200,5 +742,4 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             super(cause);
         }
     }
-
 }
