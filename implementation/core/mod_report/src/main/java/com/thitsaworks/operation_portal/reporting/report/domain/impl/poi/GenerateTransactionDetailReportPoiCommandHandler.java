@@ -8,7 +8,9 @@ import com.thitsaworks.operation_portal.reporting.report.exception.ReportExcepti
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -263,7 +265,7 @@ public class GenerateTransactionDetailReportPoiCommandHandler
                 sheet.setColumnWidth(index, COLUMN_WIDTHS[index] * 256);
             }
 
-            //  sheet.createFreezePane(0, rowIndex);
+              sheet.createFreezePane(0, rowIndex);
 
             workbook.write(outputStream);
             workbook.dispose();
@@ -559,6 +561,9 @@ public class GenerateTransactionDetailReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
+        style.cloneStyleFrom(this.headerLabelStyle(workbook));
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         return style;
     }
 
