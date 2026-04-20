@@ -121,6 +121,12 @@
             ]
         },
         {
+            "menuName": "Settlement Bank Report (Use Case)",
+            "actionCodeList": [
+                "GenerateSettlementBankReportUseCase"
+            ]
+        },
+        {
             "menuName": "Pending Approvals",
             "actionCodeList": [
                 "GetPendingApprovalList",
