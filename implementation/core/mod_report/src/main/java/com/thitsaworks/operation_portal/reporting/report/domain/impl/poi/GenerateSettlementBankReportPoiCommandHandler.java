@@ -62,7 +62,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
     private static final float PDF_RIGHT_MARGIN = 10f;
     private static final float PDF_TOP_MARGIN = 24f;
     private static final float PDF_BOTTOM_MARGIN = 32f;
-    private static final String ALL_CURRENCY = "All";
+    private static final String ALL_CURRENCY = "ALL";
     private static final String[] COLUMN_HEADERS = {
             "Participant", "Settlement Bank Account", "Balance", "Settlement Transfer", "Currency"
     };

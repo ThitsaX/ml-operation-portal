@@ -515,6 +515,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
 
         CellStyle s = wb.createCellStyle();
         s.cloneStyleFrom(headerLabelStyle(wb));
+        s.setWrapText(true);
         var f = wb.createFont();
         f.setBold(false);
         s.setFont(f);

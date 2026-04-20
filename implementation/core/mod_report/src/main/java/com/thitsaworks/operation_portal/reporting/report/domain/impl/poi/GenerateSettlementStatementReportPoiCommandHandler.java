@@ -375,7 +375,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
             row, 4, data.fundsIn(), rightAlignedTextCellStyle, amountCellStyle);
         this.writeAmountOrDashCell(
             row, 5, data.fundsOut(), rightAlignedTextCellStyle, amountCellStyle);
-        this.writeAmountOrDashCell(row, 6, data.balance(), textCellStyle, amountCellStyle);
+        this.writeAmountOrDashCell(row, 6, data.balance(), rightAlignedTextCellStyle, amountCellStyle);
         this.writeTextCell(row, 7, data.ndcPercent(), rightAlignedTextCellStyle);
         this.writeAmountOrDashCell(row, 8, data.ndc(), rightAlignedTextCellStyle, amountCellStyle);
         this.writeTextCell(row, 9, data.currency(), textCellStyle);
@@ -555,7 +555,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
-
+        style.setWrapText(true);
         var font = workbook.createFont();
         font.setBold(false);
         style.setFont(font);
