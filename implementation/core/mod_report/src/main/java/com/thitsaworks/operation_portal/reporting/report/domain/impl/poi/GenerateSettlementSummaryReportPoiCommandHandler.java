@@ -68,6 +68,8 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
     private static final int DEFAULT_LIMIT = Integer.MAX_VALUE;
 
     private static final int MYSQL_STREAM_FETCH_SIZE = Integer.MIN_VALUE;
+    private static final float[] MAIN_TABLE_RELATIVE_WIDTHS =
+        {2.8f, 3f, 1.2f, 1.8f, 1.2f, 1.8f, 1.5f, 1.8f, 1.8f, 1.2f};
 
     private static final String[] COLUMN_HEADERS_ROW1 = {
         "DFSP ID",
@@ -232,9 +234,13 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             Document document = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
             PdfWriter.getInstance(document, outputStream);
             document.open();
+            float pageContentWidth = document.right() - document.left();
+            float[] mainTableAbsoluteWidths = this.scaleToTotal(MAIN_TABLE_RELATIVE_WIDTHS, pageContentWidth);
+            float[] leftBlockAbsoluteWidths = new float[]{mainTableAbsoluteWidths[0], mainTableAbsoluteWidths[1]};
 
-            PdfPTable metaTable = new PdfPTable(new float[]{3f, 5f});
-            metaTable.setWidthPercentage(45);
+            PdfPTable metaTable = new PdfPTable(2);
+            metaTable.setTotalWidth(leftBlockAbsoluteWidths);
+            metaTable.setLockedWidth(true);
             metaTable.setHorizontalAlignment(Element.ALIGN_LEFT);
             metaTable.setSpacingAfter(15f);
 
@@ -245,8 +251,9 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             this.addPdfMetaRow(metaTable, "TimeZoneOffSet", this.displayOffset(input.timezoneOffset()), labelFont, normalFont);
             document.add(metaTable);
 
-            PdfPTable mainTable = new PdfPTable(new float[]{2.5f, 3f, 1.2f, 1.8f, 1.2f, 1.8f, 1.5f, 1.8f, 1.8f, 1.2f});
-            mainTable.setWidthPercentage(100);
+            PdfPTable mainTable = new PdfPTable(10);
+            mainTable.setTotalWidth(mainTableAbsoluteWidths);
+            mainTable.setLockedWidth(true);
 
             // Row 1 Headers
             mainTable.addCell(this.pdfCell("DFSP ID", labelFont, Element.ALIGN_CENTER, 1, 2));
@@ -279,18 +286,13 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             document.add(mainTable);
 
             // Aggregated Net Positions
-            PdfPTable summaryTitleTable = new PdfPTable(1);
-            summaryTitleTable.setWidthPercentage(100);
-            summaryTitleTable.setSpacingBefore(15f);
-            PdfPCell titleCell = new PdfPCell(new Phrase("Aggregated Net Positions", labelFont));
-            titleCell.setBorder(0);
-            summaryTitleTable.addCell(titleCell);
-            document.add(summaryTitleTable);
-
-            PdfPTable summaryTable = new PdfPTable(new float[]{2f, 3f});
-            summaryTable.setWidthPercentage(30);
+            PdfPTable summaryTable = new PdfPTable(2);
+            summaryTable.setTotalWidth(leftBlockAbsoluteWidths);
+            summaryTable.setLockedWidth(true);
             summaryTable.setHorizontalAlignment(Element.ALIGN_LEFT);
-            summaryTable.setSpacingBefore(5f);
+            summaryTable.setSpacingBefore(15f);
+            summaryTable.addCell(this.pdfCell("Aggregated Net Positions", labelFont, Element.ALIGN_LEFT));
+            summaryTable.addCell(this.pdfCell("", normalFont, Element.ALIGN_LEFT));
 
             for (SettlementSummaryNetPositionRow row : summaryRows) {
                 summaryTable.addCell(this.pdfCell(row.currencyId(), normalFont, Element.ALIGN_LEFT));
@@ -325,6 +327,19 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         cell.setColspan(colspan);
         cell.setRowspan(rowspan);
         return cell;
+    }
+
+    private float[] scaleToTotal(float[] relativeWidths, float totalWidth) {
+
+        float sum = 0f;
+        for (float width : relativeWidths) {
+            sum += width;
+        }
+        float[] absolute = new float[relativeWidths.length];
+        for (int i = 0; i < relativeWidths.length; i++) {
+            absolute[i] = (relativeWidths[i] / sum) * totalWidth;
+        }
+        return absolute;
     }
 
     private void addPdfMetaRow(PdfPTable table,
