@@ -48,6 +48,25 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
     private static final int DEFAULT_LIMIT = Integer.MAX_VALUE;
 
     private static final int MYSQL_STREAM_FETCH_SIZE = Integer.MIN_VALUE;
+    private static final int[] MAX_COLUMN_WIDTHS = {
+            32,
+            40,
+            32,
+            40,
+            32,
+            18,
+            32,
+            18,
+            26,
+            18,
+            26,
+            18,
+            18,
+            22,
+            24,
+            18,
+            12
+    };
 
     private static final String[] COLUMN_HEADERS = {
             "Sender DFSP ID",
@@ -221,7 +240,9 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
             }
 
             for (int i = 0; i < COLUMN_HEADERS.length; i++) {
-                sheet.autoSizeColumn(i);
+
+                int maxWidth = MAX_COLUMN_WIDTHS[i] * 256;
+                sheet.setColumnWidth(i, maxWidth);
             }
             sheet.createFreezePane(0, freezeRow);
 
@@ -574,8 +595,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        String id = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
-        return " " + id; // leading space prevents formula interpretation
+        return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
     }
 
     private ZoneOffset parseOffset(String rawOffset) {

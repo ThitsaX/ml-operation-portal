@@ -613,8 +613,8 @@ public class GenerateTransactionDetailReportPoiCommandHandler
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        String id = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
-        return " " + id; // leading space prevents formula interpretation
+        return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
+
     }
 
     private ZoneOffset parseOffset(String rawOffset) {

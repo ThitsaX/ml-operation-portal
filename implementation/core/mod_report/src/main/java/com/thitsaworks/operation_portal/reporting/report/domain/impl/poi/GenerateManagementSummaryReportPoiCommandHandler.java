@@ -45,6 +45,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -327,9 +328,9 @@ public class GenerateManagementSummaryReportPoiCommandHandler
             metaTable.setSpacingAfter(15f);
 
             this.addPdfMetaRow(metaTable, "Start Date",
-                this.formatHeaderDate(input.startDate(), input.timezoneOffset()), labelFont, normalFont);
+                this.formatHeaderDate(Instant.parse(input.startDate()), input.timezoneOffset()), labelFont, normalFont);
             this.addPdfMetaRow(metaTable, "End Date",
-                this.formatHeaderDate(input.endDate(), input.timezoneOffset()), labelFont, normalFont);
+                this.formatHeaderDate(Instant.parse(input.endDate()), input.timezoneOffset()), labelFont, normalFont);
             this.addPdfMetaRow(metaTable, "TimeZoneOffSet",
                 this.displayOffset(input.timezoneOffset()), labelFont, normalFont);
             document.add(metaTable);
@@ -474,11 +475,11 @@ public class GenerateManagementSummaryReportPoiCommandHandler
         int rowIndex = 0;
         rowIndex = this.writeHeaderRow(
             sheet, rowIndex, "Start Date",
-            this.formatHeaderDate(input.startDate(), input.timezoneOffset()),
+            this.formatHeaderDate(Instant.parse(input.startDate()), input.timezoneOffset()),
             labelStyle, valueStyle);
         rowIndex = this.writeHeaderRow(
             sheet, rowIndex, "End Date",
-            this.formatHeaderDate(input.endDate(), input.timezoneOffset()),
+            this.formatHeaderDate(Instant.parse(input.endDate()), input.timezoneOffset()),
             labelStyle, valueStyle);
         return this.writeHeaderRow(
             sheet, rowIndex, "TimeZoneOffSet", this.displayOffset(input.timezoneOffset()),
@@ -621,20 +622,31 @@ public class GenerateManagementSummaryReportPoiCommandHandler
         return style;
     }
 
-    private String formatHeaderDate(String rawDate, String rawOffset) {
+    private String formatHeaderDate(Instant instant, String rawOffset) {
 
-        ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        return OffsetDateTime.parse(rawDate)
-                             .withOffsetSameLocal(zoneOffset)
-                             .format(HEADER_DATE_FORMAT);
+        if (instant == null) {
+            return "";
+        }
+
+        return this.formatInstant(instant, this.parseOffset(rawOffset));
     }
 
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
         return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
+
     }
 
+    private String formatInstant(Instant instant, ZoneOffset zoneOffset) {
+
+        String formatted = instant
+                               .atOffset(ZoneOffset.UTC)
+                               .withOffsetSameInstant(zoneOffset)
+                               .format(HEADER_DATE_FORMAT);
+
+        return "Z".equals(zoneOffset.getId()) ? formatted.replace("Z", "+00:00") : formatted;
+    }
     private ZoneOffset parseOffset(String rawOffset) {
 
         if (rawOffset == null || rawOffset.isBlank()) {

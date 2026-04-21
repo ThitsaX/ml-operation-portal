@@ -514,13 +514,12 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
     private String displayOffset(String rawOffset) {
 
         ZoneOffset zoneOffset = this.parseOffset(rawOffset);
-        String id = zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
-        return " " + id; // leading space prevents formula interpretation
+        return zoneOffset.getId().equals("Z") ? "+00:00" : zoneOffset.getId();
     }
 
     private String displayFilterValue(String value) {
 
-        return value == null || value.isBlank() ? "All" : value;
+        return value == null || value.isBlank() ? "ALL" : value;
     }
 
     private ZoneOffset parseOffset(String rawOffset) {
