@@ -21,6 +21,63 @@ public interface ReportDownloadRequestRepository extends JpaRepository<ReportDow
 
     long countByStatus(FileDownloadStatus status);
 
+    long countByStatusAndUpdatedAtGreaterThanEqual(FileDownloadStatus status, Instant updatedAt);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        "UPDATE ReportDownloadRequest r " +
+        "SET r.status = :failedStatus, " +
+        "r.errorMessage = :errorMessage, " +
+        "r.finishedDate = :finishedAt, " +
+        "r.updatedAt = :updatedAt " +
+        "WHERE r.status = :runningStatus AND r.updatedAt < :staleBefore")
+    int failStaleRunningRequests(@Param("runningStatus") FileDownloadStatus runningStatus,
+                                 @Param("failedStatus") FileDownloadStatus failedStatus,
+                                 @Param("errorMessage") String errorMessage,
+                                 @Param("staleBefore") Instant staleBefore,
+                                 @Param("finishedAt") Instant finishedAt,
+                                 @Param("updatedAt") Instant updatedAt);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        "UPDATE ReportDownloadRequest r " +
+        "SET r.updatedAt = :updatedAt " +
+        "WHERE r.requestId = :requestId AND r.status = :runningStatus")
+    int touchRunningRequest(@Param("requestId") ReportDownloadRequestId requestId,
+                            @Param("runningStatus") FileDownloadStatus runningStatus,
+                            @Param("updatedAt") Instant updatedAt);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        "UPDATE ReportDownloadRequest r " +
+        "SET r.status = :readyStatus, " +
+        "r.fileUrl = :fileUrl, " +
+        "r.errorMessage = NULL, " +
+        "r.finishedDate = :finishedAt, " +
+        "r.updatedAt = :updatedAt " +
+        "WHERE r.requestId = :requestId AND r.status = :runningStatus")
+    int transitionToReadyIfRunning(@Param("requestId") ReportDownloadRequestId requestId,
+                                   @Param("runningStatus") FileDownloadStatus runningStatus,
+                                   @Param("readyStatus") FileDownloadStatus readyStatus,
+                                   @Param("fileUrl") String fileUrl,
+                                   @Param("finishedAt") Instant finishedAt,
+                                   @Param("updatedAt") Instant updatedAt);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(
+        "UPDATE ReportDownloadRequest r " +
+        "SET r.status = :failedStatus, " +
+        "r.errorMessage = :errorMessage, " +
+        "r.finishedDate = :finishedAt, " +
+        "r.updatedAt = :updatedAt " +
+        "WHERE r.requestId = :requestId AND r.status = :runningStatus")
+    int transitionToFailedIfRunning(@Param("requestId") ReportDownloadRequestId requestId,
+                                    @Param("runningStatus") FileDownloadStatus runningStatus,
+                                    @Param("failedStatus") FileDownloadStatus failedStatus,
+                                    @Param("errorMessage") String errorMessage,
+                                    @Param("finishedAt") Instant finishedAt,
+                                    @Param("updatedAt") Instant updatedAt);
+
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(
         "UPDATE ReportDownloadRequest r " +
