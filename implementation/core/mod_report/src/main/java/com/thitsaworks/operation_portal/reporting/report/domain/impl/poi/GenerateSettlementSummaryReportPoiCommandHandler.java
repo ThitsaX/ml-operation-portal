@@ -83,7 +83,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         null, null, null, null
     };
 
-    private static final int[] COLUMN_WIDTHS = {30, 30, 16, 18, 16, 18, 22, 24, 24, 12};
+    private static final int[] COLUMN_WIDTHS = {(int) 29.36, (int) 29.36, (int) 15.36, (int) 17.36, (int) 15.36, (int) 17.36, (int) 21.36, (int) 23.36, (int) 23.36, (int) 11.36};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -547,6 +547,12 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue("Aggregated Net Positions");
         titleCell.setCellStyle(labelStyle);
+        
+        // Add right field cell with bold border style even when empty
+        Cell rightFieldCell = titleRow.createCell(1);
+        rightFieldCell.setCellValue("");
+        rightFieldCell.setCellStyle(labelStyle);
+        
         int rowIndex = startRow + 1;
 
         RowCursor cursor = new RowCursor(rowIndex);
@@ -875,6 +881,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.cloneStyleFrom(this.labelStyle(workbook));
         style.setWrapText(true);
         return style;

@@ -59,7 +59,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
         "Made By"
     };
 
-    private static final int[] COLUMN_WIDTHS = {28, 40, 40};
+    private static final int[] COLUMN_WIDTHS = {(int) 29.36, (int) 49.36, (int) 49.36};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -470,6 +470,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
 
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
         return style;
     }
