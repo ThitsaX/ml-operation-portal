@@ -578,9 +578,9 @@ public class GenerateManagementSummaryReportPoiCommandHandler
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
+        style.cloneStyleFrom(this.headerLabelStyle(workbook));
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.cloneStyleFrom(this.headerLabelStyle(workbook));
         return style;
     }
 
