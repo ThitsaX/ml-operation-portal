@@ -61,18 +61,19 @@ public class GenerateSettlementAuditReportPoiCommandHandler
         "Made By"};
 
     private static final int[] COLUMN_WIDTHS = {
-        32,
-        32,
-        40,
-        50,
-        18,
-        18,
-        20,
-        15,
-        20,
-        12,
-        50,
-        32};
+            (int) 29.36,
+            (int) 49.36,
+            (int) 49.36,
+            (int) 66.03,
+            (int) 14.86,
+            (int) 14.86,
+            (int) 14.86,
+            (int) 14.86,
+            (int) 14.86,
+            (int) 14.86,
+            (int) 66.03,
+            (int) 49.36
+    };
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -562,6 +563,7 @@ public class GenerateSettlementAuditReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
         style.setBorderBottom(BorderStyle.THIN);
         return style;

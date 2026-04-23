@@ -73,7 +73,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
         "Currency"
     };
 
-    private static final int[] COLUMN_WIDTHS = {40, 40, 45, 22, 12};
+    private static final int[] COLUMN_WIDTHS = {41, 41 , 41 , 22 , 16};
     private static final float[] PDF_MAIN_COLUMN_WIDTHS = {40f, 40f, 45f, 22f, 12f};
     private static final float PDF_META_WIDTH_PERCENTAGE = (80f / 159f) * 100f;
     private static final float[] PDF_META_COLUMN_WIDTHS = {40f, 40f};
@@ -597,6 +597,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.cloneStyleFrom(this.metaLabelStyle(workbook));
         style.setWrapText(false);
         return style;

@@ -78,7 +78,7 @@ public class GenerateManagementSummaryReportPoiCommandHandler
         "Currency"
     };
 
-    private static final int[] COLUMN_WIDTHS = {18, 28, 18, 28, 22, 18, 12};
+    private static final int[] COLUMN_WIDTHS = {(int) 17.7, (int) 27.7, (int) 17.7, (int) 27.7, (int) 27.7, (int) 17.7, (int) 17.7};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -579,6 +579,7 @@ public class GenerateManagementSummaryReportPoiCommandHandler
 
         CellStyle style = workbook.createCellStyle();
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
         return style;
     }
