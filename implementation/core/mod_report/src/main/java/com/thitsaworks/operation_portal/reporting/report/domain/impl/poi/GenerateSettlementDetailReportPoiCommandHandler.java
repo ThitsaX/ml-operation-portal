@@ -43,23 +43,23 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
 
     private static final int MYSQL_STREAM_FETCH_SIZE = Integer.MIN_VALUE;
     private static final int[] MAX_COLUMN_WIDTHS = {
-            32,
-            40,
-            32,
-            40,
-            32,
-            18,
-            32,
-            18,
-            26,
-            18,
-            26,
-            18,
-            18,
-            22,
-            24,
-            18,
-            12
+        (int) 29.36,
+        (int) 49.36,
+        (int) 29.36,
+        (int) 49.36,
+        (int) 49.36,
+        16,
+        (int) 29.36,
+        (int) 24.36,
+        (int) 24.36,
+        (int) 24.36,
+        (int) 24.36,
+        16,
+        16,
+        16,
+        (int) 29.36,
+        16,
+        16
     };
 
     private static final String[] COLUMN_HEADERS = {
@@ -540,8 +540,9 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
     private CellStyle columnHeaderStyle(SXSSFWorkbook wb) {
 
         CellStyle s = wb.createCellStyle();
-        s.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         s.cloneStyleFrom(headerLabelStyle(wb));
+        s.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        s.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         s.setWrapText(false);
         return s;
     }

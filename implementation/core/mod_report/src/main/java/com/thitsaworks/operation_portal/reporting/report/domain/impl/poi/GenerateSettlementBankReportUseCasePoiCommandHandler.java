@@ -71,7 +71,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
             "Participant", "Settlement Bank Account", "Balance", "Settlement Transfer", "Currency", "Use Case"
     };
 
-    private static final int[] COLUMN_WIDTHS = {40, 54, 20, 30, 16, 33};
+    private static final int[] COLUMN_WIDTHS = {41, 41, 20, 22, 16, 33};
 
     private static final float[] PDF_MAIN_COLUMN_WIDTHS = {200f, 270f, 100f, 150f, 80f, 167f};
 
@@ -995,8 +995,9 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.cloneStyleFrom(metaLabelStyle(workbook));
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setWrapText(false);
         return style;
     }
@@ -1043,6 +1044,8 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
         applyCommonBorder(style);
         style.setAlignment(HorizontalAlignment.LEFT);
         style.setVerticalAlignment(VerticalAlignment.CENTER);
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         var font = workbook.createFont();
         font.setFontName("Calibri");

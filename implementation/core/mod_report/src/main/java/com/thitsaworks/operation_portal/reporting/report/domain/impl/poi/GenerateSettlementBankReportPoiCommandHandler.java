@@ -60,7 +60,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
             "Participant", "Settlement Bank Account", "Balance", "Settlement Transfer", "Currency"
     };
 
-    private static final int[] COLUMN_WIDTHS = {32, 48, 16, 32, 18};
+    private static final int[] COLUMN_WIDTHS = {41, 41, 20, 22, 16};
 
     private static final float[] PDF_MAIN_COLUMN_WIDTHS = {200f, 300f, 105f, 200f, 129f};
 
@@ -572,8 +572,9 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
 
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
         CellStyle style = workbook.createCellStyle();
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.cloneStyleFrom(metaLabelStyle(workbook));
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setWrapText(false);
         return style;
     }

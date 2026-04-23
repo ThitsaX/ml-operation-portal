@@ -60,17 +60,17 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         "Settlement Bank Account"};
 
     private static final int[] COLUMN_WIDTHS = {
-        32,
-        32,
-        40,
-        50,
-        18,
-        18,
-        20,
-        15,
-        20,
-        12,
-        50};
+        (int) 29.36,
+        (int) 49.36,
+        (int) 49.36,
+        (int) 82.7,
+        (int) 24.36,
+        (int) 24.36,
+        (int) 24.36,
+        (int) 24.36,
+        (int) 24.36,
+        16,
+        (int) 82.7};
 
     private static final DateTimeFormatter HEADER_DATE_FORMAT = DateTimeFormatter.ofPattern(
         "yyyy-MM-dd'T'HH:mm:ssXXX");
@@ -559,8 +559,9 @@ public class GenerateSettlementStatementReportPoiCommandHandler
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
-        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setBorderBottom(BorderStyle.THIN);
         return style;
     }
