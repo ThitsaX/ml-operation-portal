@@ -15,14 +15,7 @@ import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQu
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankReportUseCaseCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
@@ -1002,6 +995,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.cloneStyleFrom(metaLabelStyle(workbook));
         style.setWrapText(false);
         return style;

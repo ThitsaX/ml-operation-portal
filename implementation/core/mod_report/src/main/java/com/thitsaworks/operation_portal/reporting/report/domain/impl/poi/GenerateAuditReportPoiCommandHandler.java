@@ -469,6 +469,7 @@ public class GenerateAuditReportPoiCommandHandler implements GenerateAuditReport
     private CellStyle columnHeaderStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
+        style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.cloneStyleFrom(this.headerLabelStyle(workbook));
         return style;
     }
