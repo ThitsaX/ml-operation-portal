@@ -250,6 +250,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                 cell.setCellValue(COLUMN_HEADERS[i]);
                 cell.setCellStyle(headerStyle);
             }
+            int freezeRow = rowIndex;
 
             for (SettlementBankRow row : rows) {
                 Row dataRow = sheet.createRow(rowIndex++);
@@ -260,6 +261,7 @@ public class GenerateSettlementBankReportPoiCommandHandler implements GenerateSe
                 sheet.setColumnWidth(i, COLUMN_WIDTHS[i] * 256);
             }
 
+            sheet.createFreezePane(0, freezeRow);
             flushSheet(sheet);
             workbook.write(outputStream);
             workbook.dispose();

@@ -197,6 +197,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
                 cell.setCellValue(COLUMN_HEADERS[i]);
                 cell.setCellStyle(columnHeaderStyle);
             }
+            int freezeRow = rowIndex;
 
             MetadataCapture metadataCapture = new MetadataCapture();
             RowCursor cursor = new RowCursor(rowIndex);
@@ -228,6 +229,7 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
                 sheet.setColumnWidth(i, COLUMN_WIDTHS[i] * 256);
             }
 
+            sheet.createFreezePane(0, freezeRow);
             workbook.write(outputStream);
             workbook.dispose();
             return Files.readAllBytes(tempFile);
