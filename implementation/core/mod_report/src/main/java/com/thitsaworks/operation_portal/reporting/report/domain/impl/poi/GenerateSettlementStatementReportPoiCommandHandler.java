@@ -432,6 +432,26 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
 
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+
+        parameters.add(startDate);
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+
+        parameters.add(endDate);
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+        parameters.add(input.timeZoneOffset());
+
         parameters.add(input.offset() == null ? 0 : input.offset());
         parameters.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
 
@@ -698,7 +718,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                   COALESCE(tscIn.reason, tscOut.reason) AS processDescription,
                   ROUND(CASE WHEN tp.amount < 0 THEN -tp.amount END, 2) AS fundsIn,
                   ROUND(CASE WHEN tp.amount > 0 THEN tp.amount END, 2) AS fundsOut,
-                  ROUND(ppc.value, 2) AS balance,
+                  ABS(ROUND(ppc.value, 2)) AS balance,
                   '-' AS ndcPercent,
                   NULL AS ndc,
                   pc.currencyId AS currency,
@@ -782,13 +802,13 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                   END AS processDescription,
                   NULL AS fundsIn,
                   NULL AS fundsOut,
-                  NULL AS balance,
+                  ndc_percent.dbBalance AS balance,
                   CASE
                     WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0
                       THEN '-'
                     ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%')
                   END AS ndcPercent,
-                  IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc,
+                  IFNULL(ndc_percent.ndcAmount, IFNULL(ROUND(IFNULL(pl.value,0),2),0)) AS ndc,
                   pc.currencyId AS currency,
                   IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''),
                                 ' - ', IFNULL(lp.account_number, '')), '') AS settlementBankAccount
@@ -800,10 +820,12 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                 LEFT JOIN (
                   SELECT * FROM (
                     SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent,
+                           ndc_amount AS ndcAmount, balance AS dbBalance,
                            FROM_UNIXTIME(updated_date) AS updatedDate
                     FROM operation_portal.tbl_participant_ndc
                     UNION
                     SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent,
+                           ndc_amount AS ndcAmount, balance AS dbBalance,
                            FROM_UNIXTIME(updated_date) AS updatedDate
                     FROM operation_portal.tbl_participant_ndc_history
                   ) Q
@@ -900,45 +922,6 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                   ELSE s.createdDate
                 END AS pair_createdDate,
                 CASE
-                  WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN
-                    (
-                      SELECT ABS(st.balance)
-                      FROM seq st
-                      WHERE st.dfspId = s.dfspId
-                        AND st.currency = s.currency
-                        AND st.processDescription LIKE 'Settlement:%'
-                        AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-                      ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)),
-                               st.createdDate
-                      LIMIT 1
-                    )
-                  WHEN s.processDescription = 'NDC Amount Updated Due to Deposit' THEN
-                    (
-                      SELECT ABS(st.balance)
-                      FROM seq st
-                      WHERE st.dfspId = s.dfspId
-                        AND st.currency = s.currency
-                        AND st.processDescription = 'Deposit'
-                        AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-                      ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)),
-                               st.createdDate
-                      LIMIT 1
-                    )
-                  WHEN s.processDescription = 'NDC Amount Updated Due to Withdrawal' THEN
-                    (
-                      SELECT ABS(st.balance)
-                      FROM seq st
-                      WHERE st.dfspId = s.dfspId
-                        AND st.currency = s.currency
-                        AND st.processDescription = 'Withdrawal'
-                        AND ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)) <= 2
-                      ORDER BY ABS(TIMESTAMPDIFF(SECOND, st.createdDate, s.createdDate)),
-                               st.createdDate
-                      LIMIT 1
-                    )
-                  ELSE NULL
-                END AS pair_balance,
-                CASE
                   WHEN s.processDescription LIKE 'Settlement:%' THEN 1
                   WHEN s.processDescription = 'NDC Amount Update Due to Settlement' THEN 2
                   WHEN s.processDescription = 'Deposit' THEN 1
@@ -972,25 +955,32 @@ public class GenerateSettlementStatementReportPoiCommandHandler
               processDescription,
               fundsIn,
               fundsOut,
-              CASE
-                WHEN processDescription IN (
-                  'NDC Amount Update Due to Settlement',
-                  'NDC Amount Updated Due to Deposit',
-                  'NDC Amount Updated Due to Withdrawal'
-                )
-                  THEN COALESCE(pair_balance, 0)
-                WHEN processDescription LIKE 'NDC%' THEN
-                  COALESCE(
-                    MAX(CASE WHEN processDescription NOT LIKE 'NDC%' THEN ABS(balance) END)
-                      OVER (PARTITION BY dfspId, currency, grp),
-                    0
-                  )
-                ELSE ABS(balance)
-              END AS balance,
+              ABS(balance) AS balance,
               ndcPercent,
               ndc,
               currency,
-              settlementBankAccount
+              settlementBankAccount,
+              CASE WHEN SUBSTRING(?,1,1) = '-' THEN
+                  CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
+               ELSE
+                  CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
+              END AS timezoneoffset,
+              CONCAT(
+                DATE_FORMAT(?, '%Y-%m-%dT%H:%i:%s'),
+                CASE WHEN SUBSTRING(?,1,1) = '-' THEN
+                    CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
+                 ELSE
+                    CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
+                END
+              ) AS fromDate,
+              CONCAT(
+                DATE_FORMAT(?, '%Y-%m-%dT%H:%i:%s'),
+                CASE WHEN SUBSTRING(?,1,1) = '-' THEN
+                    CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
+                 ELSE
+                    CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
+                END
+              ) AS toDate
             FROM final
             WHERE NOT (
               COALESCE(NULLIF(fundsIn, ''), 0) = 0
@@ -1081,13 +1071,13 @@ public class GenerateSettlementStatementReportPoiCommandHandler
                 pl.createdDate AS createdDate,
                 NULL AS fundsIn,
                 NULL AS fundsOut,
-                NULL AS balance,
+                ndc_percent.balance AS balance,
                 CASE
                   WHEN ndc_percent.ndcPercent IS NULL OR ndc_percent.ndcPercent = 0
                     THEN '-'
                   ELSE CONCAT(ROUND(IFNULL(ndc_percent.ndcPercent,0),0), '%')
                 END AS ndcPercent,
-                IFNULL(ROUND(IFNULL(pl.value,0),2),0) AS ndc
+                IFNULL(ndc_percent.ndcAmount, IFNULL(ROUND(IFNULL(pl.value,0),2),0)) AS ndc
               FROM participant p
               INNER JOIN participantCurrency pc ON p.participantId = pc.participantId
               INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
@@ -1095,10 +1085,12 @@ public class GenerateSettlementStatementReportPoiCommandHandler
               LEFT JOIN (
                 SELECT * FROM (
                   SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent,
+                         ndc_amount AS ndcAmount, balance AS balance,
                          FROM_UNIXTIME(updated_date) AS updatedDate
                   FROM operation_portal.tbl_participant_ndc
                   UNION
                   SELECT participant_name AS dfspCode, currency, ndc_percent AS ndcPercent,
+                         ndc_amount AS ndcAmount, balance AS balance,
                          FROM_UNIXTIME(updated_date) AS updatedDate
                   FROM operation_portal.tbl_participant_ndc_history
                 ) Q
