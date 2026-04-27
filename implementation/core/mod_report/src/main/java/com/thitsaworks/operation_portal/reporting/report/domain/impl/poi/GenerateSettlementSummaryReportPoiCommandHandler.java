@@ -880,9 +880,9 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
     private CellStyle headerStyle(SXSSFWorkbook workbook) {
 
         CellStyle style = workbook.createCellStyle();
+        style.cloneStyleFrom(this.labelStyle(workbook));
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        style.cloneStyleFrom(this.labelStyle(workbook));
         style.setWrapText(true);
         return style;
     }
