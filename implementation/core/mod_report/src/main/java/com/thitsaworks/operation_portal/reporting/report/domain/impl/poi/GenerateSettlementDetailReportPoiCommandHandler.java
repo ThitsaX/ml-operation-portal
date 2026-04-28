@@ -367,9 +367,9 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                                        rs.getString("settlementCreatedDate"),
                                        rs.getString("transferId"),
                                        rs.getString("lastModifiedDate"),
-                                       rs.getString("payerFspId"),
+                                       rs.getString("payerFspid"),
                                        rs.getString("payerFspName"),
-                                       rs.getString("payeeFspId"),
+                                       rs.getString("payeeFspid"),
                                        rs.getString("payeeFspName"),
                                        rs.getString("payerIdentifierType"),
                                        rs.getString("payerIdentifierValue"),
@@ -387,22 +387,22 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
 
         return """
                 SELECT
-                  ( SELECT participantId FROM participant WHERE NAME = ? AND name != 'Hub') AS participantId,
-                  IFNULL(pPayer.name,'') AS payerFspId,
+                  ( SELECT participantId FROM participant WHERE NAME = ? AND name != 'Hub') AS ParticipantID,
+                  IFNULL(pPayer.name,'') AS payerFspid,
                   IFNULL(pPayer.description,pPayer.name) AS payerFspName,
-                  IFNULL(pPayee.name,'') AS payeeFspId,
+                  IFNULL(pPayee.name,'') AS payeeFspid,
                   IFNULL(pPayee.description,pPayee.name) AS payeeFspName,
                   tF.transferId,
-              tS.name AS transactionType,
-              tSub.name AS transactionNature,
-              CONCAT(
-                DATE_FORMAT(CASE WHEN SUBSTRING(?,1,1) = '-' THEN
-                CONVERT_TZ(latestState.CreatedDate, '+00:00', CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2)))
-                ELSE CONVERT_TZ(latestState.CreatedDate, '+00:00', CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)))
-                END,'%Y-%m-%dT%H:%i:%s'),
-                CASE WHEN SUBSTRING(?,1,1) = '-' THEN CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
-                ELSE CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)) END
-                ) AS lastModifiedDate,
+                  tS.name AS transactionType,
+                  tSS.name AS transactionNature,
+                  CONCAT(
+                    DATE_FORMAT(CASE WHEN SUBSTRING(?,1,1) = '-' THEN
+                    CONVERT_TZ(latestState.CreatedDate, '+00:00', CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2)))
+                    ELSE CONVERT_TZ(latestState.CreatedDate, '+00:00', CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)))
+                    END,'%Y-%m-%dT%H:%i:%s'),
+                    CASE WHEN SUBSTRING(?,1,1) = '-' THEN CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
+                    ELSE CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)) END
+                    ) AS lastModifiedDate,
                   pITPayer.name AS payerIdentifierType,
                   CAST(qpPayer.partyIdentifierValue AS CHAR) AS payerIdentifierValue,
                   pITPayee.name AS payeeIdentifierType,
@@ -410,7 +410,7 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                   ROUND(IF(pPayee.name = ?  , t.amount, 0),2) AS receivedAmount,
                   ROUND( IF(pPayer.name = ?   , t.amount, 0),2) AS sentAmount,
                   c.currencyId,
-                  CAST(s.settlementId AS CHAR) AS settlementId,
+                  s.settlementId,
                   CONCAT(
                     DATE_FORMAT(CASE WHEN SUBSTRING(?,1,1) = '-' THEN
                     CONVERT_TZ(s.createdDate, '+00:00', CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2)))
@@ -459,9 +459,8 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                 INNER JOIN quoteParty qpPayee on qpPayee.quoteId = q.quoteId AND qpPayee.partyTypeId = (SELECT partyTypeId FROM partyType WHERE name = 'PAYEE')
                 INNER JOIN partyIdentifierType pITPayee ON pITPayee.partyIdentifierTypeId = qpPayee.partyIdentifierTypeId
                 INNER JOIN transactionScenario tS on tS.transactionScenarioId = q.transactionScenarioId
-            LEFT JOIN transactionSubScenario tSub on tSub.transactionSubScenarioId = q.transactionSubScenarioId
+                LEFT JOIN transactionSubScenario tSS on tSS.transactionSubScenarioId = q.transactionSubScenarioId
                 WHERE tF.isValid AND s.settlementId = ? AND (pPayee.name = ?  OR pPayer.name = ?)
-                ORDER BY latestState.CreatedDate ASC, tF.transferId ASC
                 LIMIT ?, ?
                 """;
     }

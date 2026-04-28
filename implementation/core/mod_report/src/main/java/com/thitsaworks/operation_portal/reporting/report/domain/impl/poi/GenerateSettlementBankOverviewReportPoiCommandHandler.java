@@ -104,13 +104,13 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
                                                                INNER JOIN transferParticipant tp ON tp.transferId = tf.transferId
                                                                INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
                                                                INNER JOIN participant p ON p.participantId = pc.participantId
-                                                               LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+                                                               LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
                                                                LEFT JOIN operation_portal.tbl_participant opp ON op.parent_participant_name = opp.participant_name
-                                                               LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI = lp.participant_id COLLATE UTF8MB4_UNICODE_CI
+                                                               LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
                                                                INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
                                                                WHERE s.settlementId = ? AND lat.name = 'POSITION'
-                                                                 AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-                                                                 AND (? = 'hub' OR (op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ? OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?))
+                                                                 AND (? = 'All' OR pc.currencyId = ?)
+                                                                 AND (? = 'hub' OR (op.parent_participant_name = ? OR op.participant_name = ?))
                                                                GROUP BY p.name, pc.participantCurrencyId,
                                                                         lp.bank_name, lp.account_name, lp.account_number,
                                                                         op.description, opp.participant_name, opp.parent_participant_name,
@@ -438,9 +438,9 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
               CASE WHEN SUBSTRING(?,1,1) = '-' THEN CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
                    ELSE CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2)) END
             ) AS createdDate,
-            IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI, ''), ' - ', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI, '')), '') AS participant,
+            IFNULL(CONCAT(IFNULL(p.name, ''), ' - ', IFNULL(op.description, '')), '') AS participant,
             CASE WHEN op.parent_participant_name IS NULL THEN '' ELSE
-              IFNULL(CONCAT(IFNULL(opp.participant_name COLLATE UTF8MB4_UNICODE_CI, ''), ' - ', IFNULL(opp.description COLLATE UTF8MB4_UNICODE_CI, '')), '') END AS parentParticipant,
+              IFNULL(CONCAT(IFNULL(opp.participant_name, ''), ' - ', IFNULL(opp.description, '')), '') END AS parentParticipant,
             IFNULL(CONCAT(IFNULL(lp.bank_name, ''), ' - ', IFNULL(lp.account_name, ''), ' - ', IFNULL(lp.account_number, '')), '') AS settlementBankAccount,
             SUM(tp.amount) * -1 AS transfer,
             pc.currencyId AS currency,
@@ -451,13 +451,13 @@ public class GenerateSettlementBankOverviewReportPoiCommandHandler
             INNER JOIN transferParticipant tp ON tp.transferId = tf.transferId
             INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
             INNER JOIN participant p ON p.participantId = pc.participantId
-            LEFT JOIN operation_portal.tbl_participant op ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+            LEFT JOIN operation_portal.tbl_participant op ON op.participant_name = p.name
             LEFT JOIN operation_portal.tbl_participant opp ON op.parent_participant_name = opp.participant_name
-            LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI AND is_active = 1 AND op.participant_id COLLATE UTF8MB4_UNICODE_CI = lp.participant_id COLLATE UTF8MB4_UNICODE_CI
+            LEFT JOIN operation_portal.tbl_liquidity_profile lp ON lp.currency = pc.currencyId AND is_active = 1 AND op.participant_id = lp.participant_id
             INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
             WHERE s.settlementId = ? AND lat.name = 'POSITION'
-              AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-              AND (? = 'hub' OR (op.parent_participant_name COLLATE UTF8MB4_UNICODE_CI = ? OR op.participant_name COLLATE UTF8MB4_UNICODE_CI = ?))
+              AND (? = 'All' OR pc.currencyId = ?)
+              AND (? = 'hub' OR (op.parent_participant_name = ? OR op.participant_name = ?))
             GROUP BY p.name, pc.participantCurrencyId,
                      lp.bank_name, lp.account_name, lp.account_number,
                      op.description, opp.participant_name, opp.parent_participant_name,

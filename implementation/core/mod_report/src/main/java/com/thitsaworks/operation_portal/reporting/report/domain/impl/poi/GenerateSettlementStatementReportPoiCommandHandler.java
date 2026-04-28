@@ -432,26 +432,6 @@ public class GenerateSettlementStatementReportPoiCommandHandler
         parameters.add(input.timeZoneOffset());
         parameters.add(input.timeZoneOffset());
 
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-
-        parameters.add(startDate);
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-
-        parameters.add(endDate);
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-        parameters.add(input.timeZoneOffset());
-
         parameters.add(input.offset() == null ? 0 : input.offset());
         parameters.add(input.limit() == null ? DEFAULT_LIMIT : input.limit());
 
@@ -960,27 +940,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
               ndc,
               currency,
               settlementBankAccount,
-              CASE WHEN SUBSTRING(?,1,1) = '-' THEN
-                  CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
-               ELSE
-                  CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
-              END AS timezoneoffset,
-              CONCAT(
-                DATE_FORMAT(?, '%Y-%m-%dT%H:%i:%s'),
-                CASE WHEN SUBSTRING(?,1,1) = '-' THEN
-                    CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
-                 ELSE
-                    CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
-                END
-              ) AS fromDate,
-              CONCAT(
-                DATE_FORMAT(?, '%Y-%m-%dT%H:%i:%s'),
-                CASE WHEN SUBSTRING(?,1,1) = '-' THEN
-                    CONCAT('-', SUBSTRING(?,2,2), ':', SUBSTRING(?,4,2))
-                 ELSE
-                    CONCAT('+', SUBSTRING(?,1,2), ':', SUBSTRING(?,3,2))
-                END
-              ) AS toDate
+              
             FROM final
             WHERE NOT (
               COALESCE(NULLIF(fundsIn, ''), 0) = 0

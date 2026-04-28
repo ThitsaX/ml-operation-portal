@@ -132,9 +132,9 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                                                                    INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
                                                                    INNER JOIN participant p ON p.participantId = pc.participantId
                                                                    LEFT JOIN operation_portal.tbl_participant op
-                                                                       ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+                                                                       ON op.participant_name = p.name
                                                                    LEFT JOIN operation_portal.tbl_liquidity_profile lp
-                                                                       ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI
+                                                                       ON lp.currency = pc.currencyId
                                                                       AND is_active = 1
                                                                       AND op.participant_id = lp.participant_id
                                                                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
@@ -142,7 +142,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                                                                    LEFT JOIN transactionSubScenario tss ON tss.transactionSubScenarioId = q.transactionSubScenarioId
                                                                    WHERE s.settlementId = ?
                                                                      AND lat.name = 'POSITION'
-                                                                     AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
+                                                                     AND (? = 'All' OR pc.currencyId = ?)
                                                                    GROUP BY p.name, pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number,
                                                                             op.description, tss.name
                                                                ) x
@@ -665,7 +665,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
         return jdbcTemplate.query("""
                                           SELECT participant, settlementBankAccount, SUM(transfer) AS transfer, currency
                                           FROM (
-                                              SELECT IFNULL(CONCAT(IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI, ''), ' - ', IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI, '')), '') AS participant,
+                                              SELECT IFNULL(CONCAT(IFNULL(p.name, ''), ' - ', IFNULL(op.description, '')), '') AS participant,
                                                   IFNULL(CONCAT(
                                                       IFNULL(lp.bank_name, ''),
                                                       ' - ',
@@ -682,7 +682,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                                               INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
                                               INNER JOIN participant p ON p.participantId = pc.participantId
                                               LEFT JOIN operation_portal.tbl_participant op
-                                                  ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+                                                  ON op.participant_name = p.name
                                               LEFT JOIN operation_portal.tbl_liquidity_profile lp
                                                   ON lp.currency = pc.currencyId
                                                  AND is_active = 1
@@ -690,7 +690,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                                               INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
                                               WHERE s.settlementId = ?
                                                 AND lat.name = 'POSITION'
-                                                AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
+                                                AND (? = 'All' OR pc.currencyId = ?)
                                               GROUP BY pc.participantCurrencyId, lp.bank_name, lp.account_name, lp.account_number, p.name, op.description
                                           ) q
                                           GROUP BY participant, settlementBankAccount, currency
@@ -808,9 +808,9 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                     END
                 ) AS createdDate,
                 IFNULL(CONCAT(
-                    IFNULL(p.name COLLATE UTF8MB4_UNICODE_CI, ''),
+                    IFNULL(p.name, ''),
                     ' - ',
-                    IFNULL(op.description COLLATE UTF8MB4_UNICODE_CI, '')
+                    IFNULL(op.description, '')
                 ), '') AS participant,
                 IFNULL(CONCAT(
                     IFNULL(lp.bank_name, ''),
@@ -834,9 +834,9 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                 INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
                 INNER JOIN participant p ON p.participantId = pc.participantId
                 LEFT JOIN operation_portal.tbl_participant op
-                    ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
+                    ON op.participant_name = p.name
                 LEFT JOIN operation_portal.tbl_liquidity_profile lp
-                    ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI
+                    ON lp.currency = pc.currencyId
                    AND is_active = 1
                    AND op.participant_id = lp.participant_id
                 INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
@@ -844,7 +844,7 @@ public class GenerateSettlementBankReportUseCasePoiCommandHandler
                 LEFT JOIN transactionSubScenario tSS ON tSS.transactionSubScenarioId = q.transactionSubScenarioId
                 WHERE s.settlementId = ?
                   AND lat.name = 'POSITION'
-                  AND (? = 'All' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
+                  AND (? = 'All' OR pc.currencyId = ?)
                 GROUP BY p.name, pc.participantCurrencyId,
                          lp.bank_name, lp.account_name, lp.account_number,
                          op.description, tSS.name
