@@ -939,8 +939,7 @@ public class GenerateSettlementStatementReportPoiCommandHandler
               ndcPercent,
               ndc,
               currency,
-              settlementBankAccount,
-              
+              settlementBankAccount
             FROM final
             WHERE NOT (
               COALESCE(NULLIF(fundsIn, ''), 0) = 0
