@@ -145,6 +145,17 @@
                 "GetParticipantList",
                 "GetContactList"
             ]
-        }
+        },
+        {
+            "menuName": "System Settings",
+            "actionCodeList": [
+                "GetRoleList",
+                "GetActionListByRole",
+                "ModifyRoleGrantList"
+            ]
+        },
+
+
+
     ]
 }
