@@ -6,7 +6,6 @@ import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.iam.model.Menu;
 import com.thitsaworks.operation_portal.core.iam.model.repository.MenuRepository;
-import com.thitsaworks.operation_portal.core.iam.model.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,7 @@ public class CreateMenuCommandHandler implements CreateMenuCommand {
     public Output execute(Input input) throws IAMException {
 
         Optional<Menu> optMenu = this.menuRepository.findOne(
-            RoleRepository.Filters.withName(input.name()));
+            MenuRepository.Filters.withName(input.name()));
 
         if (optMenu.isPresent()) {
 
