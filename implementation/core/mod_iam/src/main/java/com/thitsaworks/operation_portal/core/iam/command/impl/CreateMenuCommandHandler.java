@@ -18,9 +18,7 @@ public class CreateMenuCommandHandler implements CreateMenuCommand {
     @CoreWriteTransactional
     public Output execute(Input input) throws IAMException {
 
-        var menu = new Menu(input.name(),
-                            input.parentId(),
-                            input.isActive());
+        var menu = new Menu(input.menuId(), input.name(), input.parentId(), input.isActive());
 
         this.menuRepository.save(menu);
 

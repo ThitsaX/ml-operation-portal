@@ -80,7 +80,7 @@ public class GenerateAuditReportHandler
         String userId = input.userId() == null ? null : input.userId().getEntityId().toString();
         String actionId = input.actionId() == null ? null : input.actionId().getEntityId().toString();
 
-        List<String> grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(currentUser.principalId())
+        List<String> grantedActionList = this.iamQuery.getGrantedActionListByPrincipal(currentUser.principalId())
                                                       .stream()
                                                       .map(action -> String.valueOf(action.actionId().getEntityId()))
                                                       .sorted()

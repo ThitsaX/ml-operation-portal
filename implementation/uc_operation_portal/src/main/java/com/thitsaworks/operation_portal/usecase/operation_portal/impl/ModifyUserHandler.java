@@ -116,7 +116,7 @@ public class ModifyUserHandler
 
         var
             existingRoleList =
-            this.iamQuery.getRolesByPrincipal(principalId)
+            this.iamQuery.getRoleListByPrincipal(principalId)
                          .stream()
                          .map(RoleData::roleId)
                          .collect(Collectors.toSet());

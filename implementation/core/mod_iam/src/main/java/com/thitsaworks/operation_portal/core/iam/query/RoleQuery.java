@@ -15,4 +15,5 @@ public interface RoleQuery {
 
     RoleData get(RoleId roleId) throws IAMException;
 
+
 }

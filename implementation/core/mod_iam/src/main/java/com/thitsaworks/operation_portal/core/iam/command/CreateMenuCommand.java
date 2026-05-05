@@ -7,7 +7,8 @@ public interface CreateMenuCommand {
 
     Output execute(Input input) throws IAMException;
 
-    record Input(String name,
+    record Input(MenuId menuId,
+                 String name,
                  String parentId,
                  boolean isActive) { }
 

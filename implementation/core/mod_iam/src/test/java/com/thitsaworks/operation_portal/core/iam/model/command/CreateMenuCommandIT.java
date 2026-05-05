@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.core.iam.model.command;
 
+import com.thitsaworks.operation_portal.component.common.identifier.MenuId;
 import com.thitsaworks.operation_portal.core.iam.IAMConfiguration;
 import com.thitsaworks.operation_portal.core.iam.command.CreateMenuCommand;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
@@ -15,7 +16,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(
-    classes = {IAMConfiguration.class, TestSettings.class})
+    classes = {
+        IAMConfiguration.class,
+        TestSettings.class})
 public class CreateMenuCommandIT extends BaseVaultSetUpTest {
 
     private final Logger LOGGER = LoggerFactory.getLogger(CreateMenuCommandIT.class);
@@ -25,10 +28,11 @@ public class CreateMenuCommandIT extends BaseVaultSetUpTest {
 
     @Test
     public void success() throws IAMException {
-        var result = this.createMenuCommand.execute(new CreateMenuCommand.Input("hi",
-                                                                                "1",
-                                                                                true));
 
-        LOGGER.info("Boolean{}",result.menuId());
+        var result = this.createMenuCommand.execute(
+            new CreateMenuCommand.Input(new MenuId(1L), "hi", "1", true));
+
+        LOGGER.info("Boolean{}", result.menuId());
     }
+
 }

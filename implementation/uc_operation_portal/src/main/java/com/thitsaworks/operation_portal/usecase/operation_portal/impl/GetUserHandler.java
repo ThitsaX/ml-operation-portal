@@ -73,7 +73,7 @@ public class GetUserHandler
 
         var
             roleList =
-            this.iamQuery.getRolesByPrincipal(new PrincipalId(userId.getId()))
+            this.iamQuery.getRoleListByPrincipal(new PrincipalId(userId.getId()))
                          .stream()
                          .map(RoleData::name)
                          .toList();

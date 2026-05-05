@@ -40,7 +40,7 @@ public class CreateUserController {
     public ResponseEntity<Response> execute(@Valid @RequestBody Request request)
         throws Exception {
 
-        LOG.info("Onboard User Request : [{}]",
+        LOG.info("Create User Request : [{}]",
                  MaskPassword.maskPassword(this.objectMapper, this.objectMapper.writeValueAsString(request)));
 
         CreateUser.Output output = this.createUser.execute(new CreateUser.Input(request.name(),
@@ -65,7 +65,7 @@ public class CreateUserController {
                                                .toString(),
                                          output.created());
 
-        LOG.info("Onboard User Response : [{}]", this.objectMapper.writeValueAsString(response));
+        LOG.info("Create User Response : [{}]", this.objectMapper.writeValueAsString(response));
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 

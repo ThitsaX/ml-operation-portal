@@ -53,7 +53,7 @@ public class GetAuditListByParticipantHandler
 
         var existingRealmId = currentUser.realmId();
 
-        var grantedActionList = this.iamQuery.getGrantedActionsByPrincipal(currentUser.principalId())
+        var grantedActionList = this.iamQuery.getGrantedActionListByPrincipal(currentUser.principalId())
                                              .stream()
                                              .map(ActionData::actionId)
                                              .toList();

@@ -47,10 +47,9 @@ public class Menu extends JpaEntity<MenuId> {
         fetch = FetchType.EAGER)
     protected Set<MenuGrant> grants = new HashSet<>();
 
-    public Menu(String name, String parentId, boolean isActive) {
+    public Menu(MenuId menuId, String name, String parentId, boolean isActive) {
 
-        this.menuId = new MenuId(Snowflake.get()
-                                          .nextId());
+        this.menuId = menuId;
         this.name = name;
         this.parentId = parentId;
         this.isActive = isActive;
