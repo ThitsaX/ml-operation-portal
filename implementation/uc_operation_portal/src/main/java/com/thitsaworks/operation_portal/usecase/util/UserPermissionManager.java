@@ -36,7 +36,7 @@ public class UserPermissionManager {
 
     public boolean isDfsp(PrincipalId principalId) throws IAMException {
 
-        var roleList = this.iamQuery.getRolesByPrincipal(principalId);
+        var roleList = this.iamQuery.getRoleListByPrincipal(principalId);
 
         var isDfsp = true;
 

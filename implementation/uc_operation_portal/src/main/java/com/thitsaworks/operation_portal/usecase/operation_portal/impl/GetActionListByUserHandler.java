@@ -43,7 +43,7 @@ public class GetActionListByUserHandler
         var auditableActionNames = this.actionAuthorizationManager.findAuditableActions();
 
         List<Output.Action> actionList = this.iamQuery
-                                             .getGrantedActionsByPrincipal(currentUser.principalId())
+                                             .getGrantedActionListByPrincipal(currentUser.principalId())
                                              .stream()
                                              .filter(action -> auditableActionNames.contains(action.actionCode()
                                                                                                    .getValue()))

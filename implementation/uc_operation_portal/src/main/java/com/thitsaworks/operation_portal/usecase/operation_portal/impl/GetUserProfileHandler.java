@@ -70,13 +70,13 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
         var
             roleList =
-            this.iamQuery.getRolesByPrincipal(principalData.principalId())
+            this.iamQuery.getRoleListByPrincipal(principalData.principalId())
                          .stream()
                          .map(RoleData::name)
                          .toList();
 
         var permittedMenuAndActionList =
-            this.iamQuery.getMenusAndActionsByUserId(principalData.principalId());
+            this.iamQuery.getMenuAndActionListByUserId(principalData.principalId());
 
         return new Output(userData.userId(),
                           userData.name(),

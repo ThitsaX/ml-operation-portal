@@ -1,6 +1,7 @@
 package com.thitsaworks.operation_portal.core.iam.query;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.data.MenuData;
@@ -13,9 +14,9 @@ import java.util.Map;
 
 public interface IAMQuery {
 
-    List<RoleData> getRoles();
+    List<RoleData> getRoleList();
 
-    List<PrincipalData> getPrincipals();
+    List<PrincipalData> getPrincipalList();
 
     RoleData getRole(String name) throws IAMException;
 
@@ -23,12 +24,16 @@ public interface IAMQuery {
 
     MenuData getMenu(String name) throws IAMException;
 
-    List<ActionData> getActions();
+    List<ActionData> getActionList();
 
-    List<RoleData> getRolesByPrincipal(PrincipalId principalId) throws IAMException;
+    List<RoleData> getRoleListByPrincipal(PrincipalId principalId) throws IAMException;
 
-    Map<List<MenuData>, List<ActionData>> getMenusAndActionsByUserId(PrincipalId principalId) throws IAMException;
+    Map<List<MenuData>, List<ActionData>> getMenuAndActionListByUserId(PrincipalId principalId) throws IAMException;
 
-    List<ActionData> getGrantedActionsByPrincipal(PrincipalId principalId) throws IAMException;
+    List<ActionData> getGrantedActionListByPrincipal(PrincipalId principalId) throws IAMException;
+
+    List<ActionData> getActionListByRole(RoleId roleId) throws IAMException;
+
+
 
 }

@@ -90,7 +90,7 @@ public class GetPendingApprovalListHandler
 
     private boolean hasApprovalPermissions(PrincipalId principalId) throws IAMException {
 
-        final var grantedActions = this.iamQuery.getGrantedActionsByPrincipal(principalId);
+        final var grantedActions = this.iamQuery.getGrantedActionListByPrincipal(principalId);
 
         final var createApprovalRequest = this.actionQuery.get(new ActionCode("CreateApprovalRequest"));
         final var modifyApprovalAction = this.actionQuery.get(new ActionCode("ModifyApprovalAction"));

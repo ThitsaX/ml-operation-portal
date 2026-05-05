@@ -19,7 +19,8 @@ public class GetRoleListByParticipantHandler
     extends OperationPortalUseCase<GetRoleListByParticipant.Input, GetRoleListByParticipant.Output>
     implements GetRoleListByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetRoleListByParticipantHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetRoleListByParticipantHandler.class);
 
     private final RoleQuery roleQuery;
 
@@ -30,8 +31,7 @@ public class GetRoleListByParticipantHandler
                                            RoleQuery roleQuery,
                                            UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.roleQuery = roleQuery;
         this.userPermissionManager = userPermissionManager;
@@ -46,17 +46,17 @@ public class GetRoleListByParticipantHandler
 
         boolean isDfspUser = this.userPermissionManager.isDfsp(currentUser.principalId());
 
-        if (isDfspUser || !input.participantName()
-                                .equalsIgnoreCase("hub")) {
+        if (isDfspUser || !input.participantName().equalsIgnoreCase("hub")) {
 
-            roleList = roleList.stream()
-                               .filter(RoleData::isDfsp)
-                               .toList();
+            roleList = roleList.stream().filter(RoleData::isDfsp).toList();
+
         } else {
 
-            roleList = roleList.stream()
-                               .filter(role -> !role.isDfsp())
-                               .toList();
+            roleList = roleList
+                           .stream()
+                           .filter(role -> !role.isDfsp() &&
+                                               !role.name().equalsIgnoreCase("SYSTEM-Admin"))
+                           .toList();
         }
 
         return new Output(roleList);

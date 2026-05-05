@@ -78,7 +78,7 @@ public class GetUserListByParticipantHandler
 
             var
                 roleList =
-                this.iamQuery.getRolesByPrincipal(principalData.principalId())
+                this.iamQuery.getRoleListByPrincipal(principalData.principalId())
                              .stream()
                              .sorted(Comparator.comparingLong(r -> r.roleId()
                                                                     .getId()))
