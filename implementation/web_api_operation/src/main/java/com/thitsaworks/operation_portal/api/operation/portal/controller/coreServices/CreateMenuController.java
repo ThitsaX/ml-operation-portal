@@ -38,7 +38,7 @@ public class CreateMenuController {
         LOG.info("Create Menu Request : [{}]", this.objectMapper.writeValueAsString(request));
 
         var output = this.createMenu.execute(new CreateMenu.Input(
-            new MenuId(Long.parseLong(request.menuId())), request.menuName(), request.menuId(),
+            new MenuId(Long.parseLong(request.menuId())), request.menuName(), request.parentId(),
             request.isActive()));
 
         var response = new Response(output.menuId().getId().toString());

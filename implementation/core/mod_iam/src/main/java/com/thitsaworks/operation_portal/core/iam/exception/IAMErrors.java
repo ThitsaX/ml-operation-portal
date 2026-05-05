@@ -13,6 +13,7 @@ public class IAMErrors {
 
     public static final ErrorMessage DUPLICATE_PRINCIPAL = new ErrorMessage("DUPLICATE_PRINCIPAL", "Duplicate principal for user : [{0}].");
     public static final ErrorMessage DUPLICATE_ROLE_NAME = new ErrorMessage("DUPLICATE_ROLE_NAME","Duplicate role : [{0}].");
+    public static final ErrorMessage DUPLICATE_MENU_NAME = new ErrorMessage("DUPLICATE_MENU_NAME","Duplicate menu : [{0}].");
 
     public static final ErrorMessage ROLE_ALREADY_ASSIGNED = new ErrorMessage("ROLE_ALREADY_ASSIGNED","The Role has already assigned to the user : [{0}].");
 
