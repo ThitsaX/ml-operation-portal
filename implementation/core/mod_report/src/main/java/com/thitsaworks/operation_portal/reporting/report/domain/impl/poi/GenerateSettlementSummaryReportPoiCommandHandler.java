@@ -39,9 +39,11 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -226,7 +228,7 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
         try (OutputStream outputStream = Files.newOutputStream(tempFile)) {
             Document document = new Document(PageSize.A4.rotate(), 10, 10, 10, 10);
-            PdfWriter.getInstance(document, outputStream);
+            PdfWriter writer = PdfWriter.getInstance(document, outputStream);
             document.open();
             float pageContentWidth = document.right() - document.left();
             float[] mainTableAbsoluteWidths = this.scaleToTotal(MAIN_TABLE_RELATIVE_WIDTHS, pageContentWidth);
@@ -294,9 +296,18 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
             }
             document.add(summaryTable);
 
+            Phrase footer = new Phrase(buildPrintedByText(input.userName(), input.timezoneOffset()), normalFont);
+            PdfPTable footerTable = new PdfPTable(1);
+            footerTable.setTotalWidth(document.right() - document.left());
+            PdfPCell footerCell = new PdfPCell(footer);
+            footerCell.setBorder(0);
+            footerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+            footerCell.setPaddingBottom(1f);
+            footerTable.addCell(footerCell);
+            footerTable.writeSelectedRows(0, -1, document.left(), document.bottom() + 15f, writer.getDirectContent());
+
             document.close();
             return Files.readAllBytes(tempFile);
-
         } finally {
             Files.deleteIfExists(tempFile);
         }
@@ -978,6 +989,38 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
         }
 
         return ZoneOffset.of(normalized);
+    }
+
+    private String buildPrintedByText(String userName, String timezoneOffset) {
+        String user = safe(userName);
+        String offset = normalizeTimezoneOffset(timezoneOffset);
+
+        long millis = System.currentTimeMillis();
+        int sign = offset.startsWith("-") ? -1 : 1;
+        String abs = offset.replace(":", "").replace("-", "").replace("+", "");
+        int hours = Integer.parseInt(abs.substring(0, 2));
+        int minutes = Integer.parseInt(abs.substring(2, 4));
+        long adjustedMillis = millis + sign * ((hours * 60L * 60L * 1000L) + (minutes * 60L * 1000L));
+        String formatted = new SimpleDateFormat("dd/MM/yyyy hh:mm a").format(new Date(adjustedMillis));
+
+        return "Printed by: " + user + " on " + formatted;
+    }
+
+    private String normalizeTimezoneOffset(String rawOffset) {
+        if (rawOffset == null || rawOffset.isBlank()) {
+            return "0000";
+        }
+
+        String normalized = rawOffset.trim().replace(":", "");
+        if (normalized.matches("[+-]\\d{4}") || normalized.matches("\\d{4}")) {
+            return normalized;
+        }
+
+        return "0000";
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
     }
 
     private record SettlementSummaryRow(String participantId,
