@@ -786,9 +786,15 @@ public class GenerateSettlementSummaryReportPoiCommandHandler implements Generat
 
         ZoneOffset zoneOffset = this.parseOffset(timezoneOffset);
         Instant instant = timestamp.toInstant();
-        return instant.atOffset(ZoneOffset.UTC)
-                      .withOffsetSameInstant(zoneOffset)
-                      .format(HEADER_DATE_FORMAT);
+        String formattedDate = instant.atOffset(ZoneOffset.UTC)
+                                     .withOffsetSameInstant(zoneOffset)
+                                     .format(HEADER_DATE_FORMAT);
+        
+        if (zoneOffset.equals(ZoneOffset.UTC)) {
+            formattedDate = formattedDate.replace("Z", "+00:00");
+        }
+        
+        return formattedDate;
     }
 
     private int writeMetaBlock(Sheet sheet,
