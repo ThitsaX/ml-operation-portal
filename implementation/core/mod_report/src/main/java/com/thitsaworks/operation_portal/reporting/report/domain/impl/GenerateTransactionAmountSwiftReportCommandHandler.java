@@ -39,46 +39,91 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
             List<SwiftParticipantAmountRow> rows = this.jdbcTemplate.query(
                 """
                     SELECT
-                        p.name AS participantName,
-                        IFNULL(op.participant_id, p.name) AS participantSwiftCode,
-                        pc.currencyId AS currencyId,
-                        SUM(tp.amount) AS amount,
-                        IFNULL(lp.account_number, '') AS accountNumber,
-                        DATE_FORMAT(
-                            CASE
-                                WHEN SUBSTRING(?, 1, 1) = '-'
-                                    THEN CONVERT_TZ(
+                        result.participantName,
+                        result.participantSwiftCode,
+                        result.currencyId,
+                        SUM(result.amount) AS amount,
+                        result.accountNumber,
+                        result.settlementDate
+                    FROM (
+                        SELECT
+                            COALESCE(op.parent_participant_name, op.participant_name) AS participantName,
+                    
+                            COALESCE(parent_op.participant_id, op.participant_id) AS participantSwiftCode,
+                    
+                            pc.currencyId,
+                    
+                            tp.amount,
+                    
+                            COALESCE(parent_lp.account_number, lp.account_number, '') AS accountNumber,
+                    
+                            DATE_FORMAT(
+                                CASE
+                                    WHEN SUBSTRING('?', 1, 1) = '-'
+                                        THEN CONVERT_TZ(
+                                            s.createdDate,
+                                            '+00:00',
+                                            CONCAT('-', SUBSTRING('?', 2, 2), ':', SUBSTRING('?', 4, 2))
+                                        )
+                                    ELSE CONVERT_TZ(
                                         s.createdDate,
                                         '+00:00',
-                                        CONCAT('-', SUBSTRING(?, 2, 2), ':', SUBSTRING(?, 4, 2))
+                                        CONCAT('+', SUBSTRING('?', 1, 2), ':', SUBSTRING('?', 3, 2))
                                     )
-                                ELSE CONVERT_TZ(
-                                    s.createdDate,
-                                    '+00:00',
-                                    CONCAT('+', SUBSTRING(?, 1, 2), ':', SUBSTRING(?, 3, 2))
-                                )
-                            END,
-                            '%y%m%d'
-                        ) AS settlementDate
-                    FROM settlement s
-                    INNER JOIN settlementSettlementWindow ssw ON ssw.settlementId = s.settlementId
-                    INNER JOIN transferFulfilment tf ON tf.settlementWindowId = ssw.settlementWindowId
-                    INNER JOIN transferParticipant tp ON tp.transferId = tf.transferId
-                    INNER JOIN participantCurrency pc ON tp.participantCurrencyId = pc.participantCurrencyId
-                    INNER JOIN participant p ON p.participantId = pc.participantId
-                    LEFT JOIN operation_portal.tbl_participant op
-                        ON op.participant_name COLLATE UTF8MB4_UNICODE_CI = p.name COLLATE UTF8MB4_UNICODE_CI
-                    LEFT JOIN operation_portal.tbl_liquidity_profile lp
-                        ON lp.currency COLLATE UTF8MB4_UNICODE_CI = pc.currencyId COLLATE UTF8MB4_UNICODE_CI
-                       AND is_active = 1
-                       AND op.participant_id COLLATE UTF8MB4_UNICODE_CI = lp.participant_id COLLATE UTF8MB4_UNICODE_CI
-                    INNER JOIN ledgerAccountType lat ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
-                    WHERE s.settlementId = ?
-                      AND lat.name = 'POSITION'
-                      AND (UPPER(?) = 'ALL' OR pc.currencyId COLLATE UTF8MB4_UNICODE_CI = ?)
-                    GROUP BY p.name, op.participant_id, pc.participantCurrencyId, pc.currencyId,
-                             lp.bank_name, lp.account_name, lp.account_number, op.description, s.createdDate
-                    ORDER BY participantSwiftCode ASC
+                                END,
+                                '%y%m%d'
+                            ) AS settlementDate
+                    
+                        FROM settlement s
+                    
+                        INNER JOIN settlementSettlementWindow ssw
+                            ON ssw.settlementId = s.settlementId
+                    
+                        INNER JOIN transferFulfilment tf
+                            ON tf.settlementWindowId = ssw.settlementWindowId
+                    
+                        INNER JOIN transferParticipant tp
+                            ON tp.transferId = tf.transferId
+                    
+                        INNER JOIN participantCurrency pc
+                            ON tp.participantCurrencyId = pc.participantCurrencyId
+                    
+                        INNER JOIN participant p
+                            ON p.participantId = pc.participantId
+                    
+                        LEFT JOIN operation_portal.tbl_participant op
+                            ON op.participant_name = p.name
+                    
+                        LEFT JOIN operation_portal.tbl_participant parent_op
+                            ON parent_op.participant_name = op.parent_participant_name
+                    
+                        LEFT JOIN operation_portal.tbl_liquidity_profile lp
+                            ON lp.participant_id = op.participant_id
+                           AND lp.currency = pc.currencyId
+                           AND lp.is_active = 1
+                    
+                        LEFT JOIN operation_portal.tbl_liquidity_profile parent_lp
+                            ON parent_lp.participant_id = parent_op.participant_id
+                           AND parent_lp.currency = pc.currencyId
+                           AND parent_lp.is_active = 1
+                    
+                        INNER JOIN ledgerAccountType lat
+                            ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
+                    
+                        WHERE s.settlementId = ?
+                          AND pc.currencyId = ?
+                          AND lat.name = 'POSITION'
+                    ) result
+                    
+                    GROUP BY
+                        result.participantName,
+                        result.participantSwiftCode,
+                        result.currencyId,
+                        result.accountNumber,
+                        result.settlementDate
+                        HAVING SUM(result.amount) <> 0
+                    
+                    ORDER BY result.participantSwiftCode ASC;
                     """,
                 (rs, rowNum) -> new SwiftParticipantAmountRow(
                     rs.getString("participantName"),
@@ -93,7 +138,6 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
                 input.timezone(),
                 input.timezone(),
                 input.settlementId(),
-                input.currency(),
                 input.currency());
 
             if (rows == null || rows.isEmpty()) {
