@@ -59,16 +59,16 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
                     
                             DATE_FORMAT(
                                 CASE
-                                    WHEN SUBSTRING('?', 1, 1) = '-'
+                                    WHEN SUBSTRING(?, 1, 1) = '-'
                                         THEN CONVERT_TZ(
                                             s.createdDate,
                                             '+00:00',
-                                            CONCAT('-', SUBSTRING('?', 2, 2), ':', SUBSTRING('?', 4, 2))
+                                            CONCAT('-', SUBSTRING(?, 2, 2), ':', SUBSTRING(?, 4, 2))
                                         )
                                     ELSE CONVERT_TZ(
                                         s.createdDate,
                                         '+00:00',
-                                        CONCAT('+', SUBSTRING('?', 1, 2), ':', SUBSTRING('?', 3, 2))
+                                        CONCAT('+', SUBSTRING(?, 1, 2), ':', SUBSTRING(?, 3, 2))
                                     )
                                 END,
                                 '%y%m%d'
@@ -111,7 +111,7 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
                             ON lat.ledgerAccountTypeId = pc.ledgerAccountTypeId
                     
                         WHERE s.settlementId = ?
-                          AND pc.currencyId = ?
+                          AND ( ? = 'ALL' OR pc.currencyId = ? )
                           AND lat.name = 'POSITION'
                     ) result
                     
@@ -138,6 +138,7 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
                 input.timezone(),
                 input.timezone(),
                 input.settlementId(),
+                input.currency(),
                 input.currency());
 
             if (rows == null || rows.isEmpty()) {
