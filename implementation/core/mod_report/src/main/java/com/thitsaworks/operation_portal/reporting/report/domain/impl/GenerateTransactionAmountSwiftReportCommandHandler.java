@@ -20,7 +20,7 @@ public class GenerateTransactionAmountSwiftReportCommandHandler implements Gener
     private static final String DEFAULT_SETTLEMENT_DATE = "000000";
     private static final String DEFAULT_CURRENCY = "XXX";
     private static final String DEFAULT_RECEIVER_BIC = "UNKNOWNBIC";
-    private static final String DEFAULT_SENDER_BLOCK = "default-sender_block";
+    private static final String DEFAULT_SENDER_BLOCK = "{1:NULL}";
     private static final String DEFAULT_SENDER_BLOCK_PARTICIPANT_ID = "1111111111111111";
 
     private final JdbcTemplate jdbcTemplate;
