@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.command.AuthenticateCommand;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
@@ -13,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.AUTHENTICATION_AND_ACCOUNT_SECURITY)
 public class LoginUserAccountHandler implements LoginUserAccount {
 
     private static final Logger LOG = LoggerFactory.getLogger(LoginUserAccountHandler.class);
@@ -21,8 +24,7 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
     private final AuthenticateCommand authenticateCommand;
 
-    public LoginUserAccountHandler(UserQuery userQuery,
-                                   AuthenticateCommand authenticateCommand) {
+    public LoginUserAccountHandler(UserQuery userQuery, AuthenticateCommand authenticateCommand) {
 
         this.userQuery = userQuery;
         this.authenticateCommand = authenticateCommand;
@@ -35,19 +37,18 @@ public class LoginUserAccountHandler implements LoginUserAccount {
 
         if (userData.userId() == null) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(input.email()
-                                                                                         .getValue()));
+            throw new ParticipantException(
+                ParticipantErrors.EMAIL_NOT_FOUND.format(input.email().getValue()));
         }
 
         AuthenticateCommand.Output securityToken = this.authenticateCommand.execute(
-            new AuthenticateCommand.Input(new PrincipalId(userData.userId()
-                                                                  .getId()),
-                                          input.passwordPlain()));
+            new AuthenticateCommand.Input(
+                new PrincipalId(userData.userId().getId()),
+                input.passwordPlain()));
 
-        return new Output(securityToken.securityToken()
-                                       .getAccessKey(),
-                          securityToken.securityToken()
-                                       .getSecretKey());
+        return new Output(
+            securityToken.securityToken().getAccessKey(),
+            securityToken.securityToken().getSecretKey());
     }
 
 }

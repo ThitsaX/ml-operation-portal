@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ActionId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
@@ -18,6 +20,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@ActionMetadata(
+    category = ActionCategory.ROLE_MENU_PERMISSION_IAM,
+    isMandatory = true)
 public class GetActionListByRoleHandler
     extends OperationPortalUseCase<GetActionListByRole.Input, GetActionListByRole.Output>
     implements GetActionListByRole {
@@ -25,10 +30,6 @@ public class GetActionListByRoleHandler
     private static final Logger LOG = LoggerFactory.getLogger(GetActionListByRoleHandler.class);
 
     private final IAMQuery iamQuery;
-
-    Set<String> mandatoryActionCodeList = Set.of(
-        "GrantRoleActionList", "GrantMenuActionList", "ModifyRoleGrantList", "GetRoleList",
-        "GetActionListByRole");
 
     public GetActionListByRoleHandler(PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager,
@@ -55,9 +56,10 @@ public class GetActionListByRoleHandler
             String code = action.actionCode().getValue();
 
             boolean selected = selectedIds.contains(action.actionId());
-            boolean mandatory = selected && mandatoryActionCodeList.contains(code);
+            boolean mandatory = selected && action.isMandatory();
 
-            return new Output.ActionOption(action.actionId(), code, selected, mandatory);
+            return new Output.ActionOption(
+                action.actionId(), code, action.category(), selected, mandatory);
         }).toList();
 
         return new Output(result);

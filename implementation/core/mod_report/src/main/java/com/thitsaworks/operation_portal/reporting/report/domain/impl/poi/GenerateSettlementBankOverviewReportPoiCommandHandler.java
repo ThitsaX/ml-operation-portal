@@ -10,7 +10,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
-import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
+import com.thitsaworks.operation_portal.component.misc.annotation.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateSettlementBankOverviewReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;

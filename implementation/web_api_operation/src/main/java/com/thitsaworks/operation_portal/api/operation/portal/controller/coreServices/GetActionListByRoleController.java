@@ -45,10 +45,11 @@ public class GetActionListByRoleController {
         var response = new Response(output
                                         .actionOptionList()
                                         .stream()
-                                        .sorted(Comparator.comparing(a -> a.actionName()))
+                                        .sorted(Comparator.comparing(
+                                            GetActionListByRole.Output.ActionOption::actionName))
                                         .map(a -> new Response.ActionOption(
-                                            a.actionId(), a.actionName(), a.selected(),
-                                            a.mandatory()))
+                                            a.actionId(), a.actionName(), a.category(),
+                                            a.selected(), a.mandatory()))
                                         .toList());
 
         LOG.info(
@@ -63,6 +64,7 @@ public class GetActionListByRoleController {
 
         public record ActionOption(@JsonProperty("actionId") ActionId actionId,
                                    @JsonProperty("actionName") String actionName,
+                                   @JsonProperty("category") String category,
                                    @JsonProperty("selected") boolean selected,
                                    @JsonProperty("mandatory") boolean mandatory) { }
 

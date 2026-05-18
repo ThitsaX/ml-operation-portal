@@ -3,8 +3,10 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -29,6 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateAuditReportHandler
     extends OperationPortalAuditableUseCase<GenerateAuditReport.Input, GenerateAuditReport.Output>
     implements GenerateAuditReport {
@@ -54,12 +57,9 @@ public class GenerateAuditReportHandler
                                       ReportDownloadRequestManager reportDownloadRequestManager,
                                       S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
         this.userPermissionManager = userPermissionManager;
@@ -78,13 +78,17 @@ public class GenerateAuditReportHandler
         }
 
         String userId = input.userId() == null ? null : input.userId().getEntityId().toString();
-        String actionId = input.actionId() == null ? null : input.actionId().getEntityId().toString();
+        String actionId =
+            input.actionId() == null ? null : input.actionId().getEntityId().toString();
 
-        List<String> grantedActionList = this.iamQuery.getGrantedActionListByPrincipal(currentUser.principalId())
-                                                      .stream()
-                                                      .map(action -> String.valueOf(action.actionId().getEntityId()))
-                                                      .sorted()
-                                                      .toList();
+        List<String> grantedActionList = this.iamQuery
+                                             .getGrantedActionListByPrincipal(
+                                                 currentUser.principalId())
+                                             .stream()
+                                             .map(action -> String.valueOf(
+                                                 action.actionId().getEntityId()))
+                                             .sorted()
+                                             .toList();
 
         Map<String, String> params = new HashMap<>();
         params.put("fromDate", input.fromDate().toString());
@@ -93,12 +97,11 @@ public class GenerateAuditReportHandler
         params.put("realmId", ReportDownloadUtil.normalizeAllToken(realmId));
         params.put("userId", ReportDownloadUtil.normalizeAllToken(userId));
         params.put("actionId", ReportDownloadUtil.normalizeAllToken(actionId));
-        params.put("grantedActionList", grantedActionList.stream().collect(Collectors.joining(",")));
+        params.put(
+            "grantedActionList", grantedActionList.stream().collect(Collectors.joining(",")));
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-            ReportType.AUDIT,
-            ReportDownloadUtil.normalizeFileType(input.fileType()),
-            params);
+            ReportType.AUDIT, ReportDownloadUtil.normalizeFileType(input.fileType()), params);
 
         String fileKey = result.request().fileUrl();
         String fileUrl = null;
@@ -122,12 +125,12 @@ public class GenerateAuditReportHandler
 
             throw new ReportException(
                 ReportDownloadUtil.resolveFailedError(
-                    result.request().errorMessage(),
-                    ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION));
+                    result.request().errorMessage(), ReportErrors.AUDIT_REPORT_FAILURE_EXCEPTION));
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.paramsSignature());
     }
 
 }

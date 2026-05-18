@@ -1,7 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.query.GetAuditDetailByIdQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.AUDIT_AND_LOGS)
 public class GetAuditDetailByIdHandler
     extends OperationPortalUseCase<GetAuditDetailById.Input, GetAuditDetailById.Output>
     implements GetAuditDetailById {
@@ -34,15 +36,13 @@ public class GetAuditDetailByIdHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var
-            output =
-            this.getAuditDetailByIdQuery.execute(new GetAuditDetailByIdQuery.Input(input.auditId()))
-                                        .auditData();
+        var output = this.getAuditDetailByIdQuery
+                         .execute(new GetAuditDetailByIdQuery.Input(input.auditId()))
+                         .auditData();
 
-        return new Output(output.auditId(),
-                          output.inputInfo(),
-                          output.outputInfo(),
-                          output.exceptionInfo());
+        return new Output(
+            output.auditId(), output.inputInfo(), output.outputInfo(),
+            output.exceptionInfo());
 
     }
 

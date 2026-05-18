@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -20,7 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RemoveContactHandler extends OperationPortalAuditableUseCase<RemoveContact.Input, RemoveContact.Output>
+@ActionMetadata(category = ActionCategory.CONTACT_MANAGEMENT)
+public class RemoveContactHandler
+    extends OperationPortalAuditableUseCase<RemoveContact.Input, RemoveContact.Output>
     implements RemoveContact {
 
     private static final Logger LOG = LoggerFactory.getLogger(RemoveContactHandler.class);
@@ -41,12 +45,9 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
                                 CreateContactHistoryCommand createContactHistoryCommand,
                                 UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.removeContactCommand = removeContactCommand;
         this.createContactHistoryCommand = createContactHistoryCommand;
@@ -59,18 +60,17 @@ public class RemoveContactHandler extends OperationPortalAuditableUseCase<Remove
         var currentUser = this.userPermissionManager.getCurrentUser();
 
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
-            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
-                                                                                           .getId()),
-                                                              input.participantId())) {
+            if (!this.userPermissionManager.isSameParticipant(
+                new ParticipantId(currentUser.realmId().getId()), input.participantId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
         }
 
-        this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
-            input.contactId(), input.participantId()));
+        this.createContactHistoryCommand.execute(
+            new CreateContactHistoryCommand.Input(input.contactId(), input.participantId()));
 
-        var output = this.removeContactCommand.execute(new RemoveContactCommand.Input(input.participantId(),
-                                                                                      input.contactId()));
+        var output = this.removeContactCommand.execute(
+            new RemoveContactCommand.Input(input.participantId(), input.contactId()));
 
         return new Output(output.removed(), output.contactId());
     }

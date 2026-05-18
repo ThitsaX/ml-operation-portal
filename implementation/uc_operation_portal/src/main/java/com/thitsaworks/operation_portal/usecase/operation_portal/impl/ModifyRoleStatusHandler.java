@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.ModifyRoleStatusCommand;
 import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
 public class ModifyRoleStatusHandler
     extends OperationPortalUseCase<ModifyRoleStatus.Input, ModifyRoleStatus.Output>
     implements ModifyRoleStatus {
@@ -38,8 +41,8 @@ public class ModifyRoleStatusHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.modifyRoleStatusCommand.execute(new ModifyRoleStatusCommand.Input(input.roleId(),
-                                                                                             input.active()));
+        var output = this.modifyRoleStatusCommand.execute(
+            new ModifyRoleStatusCommand.Input(input.roleId(), input.active()));
 
         this.iamEngine.bootstrap();
 

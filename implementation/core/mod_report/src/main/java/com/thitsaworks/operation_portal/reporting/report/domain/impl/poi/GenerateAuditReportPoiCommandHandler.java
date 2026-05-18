@@ -1,6 +1,6 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl.poi;
 
-import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
+import com.thitsaworks.operation_portal.component.misc.annotation.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.reporting.report.domain.GenerateAuditReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;

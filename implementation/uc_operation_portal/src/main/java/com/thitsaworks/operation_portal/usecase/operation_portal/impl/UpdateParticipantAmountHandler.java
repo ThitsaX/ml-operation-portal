@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_PROFILE_AND_FINANCIAL_CONFIGURATION)
 public class UpdateParticipantAmountHandler
     extends OperationPortalAuditableUseCase<UpdateParticipantAmount.Input, UpdateParticipantAmount.Output>
     implements UpdateParticipantAmount {
@@ -36,12 +39,9 @@ public class UpdateParticipantAmountHandler
                                           ActionAuthorizationManager actionAuthorizationManager,
                                           ParticipantHubClient participantHubClient) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.participantHubClient = participantHubClient;
     }
@@ -49,18 +49,12 @@ public class UpdateParticipantAmountHandler
     @Override
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
-        PostParticipantBalance.Request request = new PostParticipantBalance.Request(input.transferId(),
-                                                                                    input.externalReference(),
-                                                                                    input.action(),
-                                                                                    input.reason(),
-                                                                                    input.amount(),
-                                                                                    input.extensionList());
+        PostParticipantBalance.Request request = new PostParticipantBalance.Request(
+            input.transferId(), input.externalReference(), input.action(), input.reason(),
+            input.amount(), input.extensionList());
 
-        PostParticipantBalance.Response
-            response =
-            this.participantHubClient.postParticipantBalance(input.participantId(),
-                                                             input.accountId(),
-                                                             request);
+        PostParticipantBalance.Response response = this.participantHubClient.postParticipantBalance(
+            input.participantId(), input.accountId(), request);
 
         return new Output(response.accessKey(), response.secretKey());
     }

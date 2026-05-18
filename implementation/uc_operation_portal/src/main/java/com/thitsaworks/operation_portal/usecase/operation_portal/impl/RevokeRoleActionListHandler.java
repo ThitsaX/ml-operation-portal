@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.RevokeRoleActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
 public class RevokeRoleActionListHandler
     extends OperationPortalUseCase<RevokeRoleActionList.Input, RevokeRoleActionList.Output>
     implements RevokeRoleActionList {
@@ -25,8 +28,7 @@ public class RevokeRoleActionListHandler
                                        ActionAuthorizationManager actionAuthorizationManager,
                                        RevokeRoleActionCommand revokeRoleActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.revokeRoleActionCommand = revokeRoleActionCommand;
     }
@@ -36,7 +38,8 @@ public class RevokeRoleActionListHandler
 
         for (var actionCode : input.actionCodeList()) {
 
-            this.revokeRoleActionCommand.execute(new RevokeRoleActionCommand.Input(input.roleName(), actionCode));
+            this.revokeRoleActionCommand.execute(
+                new RevokeRoleActionCommand.Input(input.roleName(), actionCode));
         }
 
         return new Output(true);

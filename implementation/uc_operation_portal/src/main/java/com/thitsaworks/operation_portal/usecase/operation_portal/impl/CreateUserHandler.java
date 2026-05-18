@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -23,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class CreateUserHandler
     extends OperationPortalAuditableUseCase<CreateUser.Input, CreateUser.Output>
     implements CreateUser {
@@ -48,12 +51,9 @@ public class CreateUserHandler
                              AssignRoleToPrincipalCommand assignRoleToPrincipalCommand,
                              UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.createUserCommand = createUserCommand;
         this.createPrincipalCommand = createPrincipalCommand;
@@ -70,26 +70,22 @@ public class CreateUserHandler
 
         if (isDfsp) {
 
-            if (!input.participantId()
-                      .equals(new ParticipantId(currentUser.realmId()
-                                                           .getId()))) {
+            if (!input.participantId().equals(new ParticipantId(currentUser.realmId().getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
         }
 
         CreateUserCommand.Output output = this.createUserCommand.execute(
-            new CreateUserCommand.Input(input.name(), input.email(), input.participantId(),
-                                        input.firstName(), input.lastName(), input.jobTitle()));
+            new CreateUserCommand.Input(
+                input.name(), input.email(), input.participantId(), input.firstName(),
+                input.lastName(), input.jobTitle()));
 
-        var principalId = new PrincipalId(output.userId()
-                                                .getId());
+        var principalId = new PrincipalId(output.userId().getId());
 
-        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(principalId,
-                                                                             input.password().getValue(),
-                                                                             new RealmId(input.participantId()
-                                                                                              .getId()),
-                                                                             input.status()));
+        this.createPrincipalCommand.execute(new CreatePrincipalCommand.Input(
+            principalId, input.password().getValue(), new RealmId(input.participantId().getId()),
+            input.status()));
 
         var roleIdList = input.roleIdList();
 
@@ -98,11 +94,11 @@ public class CreateUserHandler
         }
 
         for (var roleId : roleIdList) {
-            this.assignRoleToPrincipalCommand.execute(new AssignRoleToPrincipalCommand.Input(principalId, roleId));
+            this.assignRoleToPrincipalCommand.execute(
+                new AssignRoleToPrincipalCommand.Input(principalId, roleId));
         }
 
-        return new Output(output.userId(),
-                          output.created());
+        return new Output(output.userId(), output.created());
     }
 
 }

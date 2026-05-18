@@ -3,8 +3,10 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -27,11 +29,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateSettlementStatementReportHandler
     extends OperationPortalAuditableUseCase<GenerateSettlementStatementReport.Input, GenerateSettlementStatementReport.Output>
     implements GenerateSettlementStatementReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementStatementReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateSettlementStatementReportHandler.class);
 
     private final ReportDownloadRequestManager reportDownloadRequestManager;
 
@@ -49,12 +53,9 @@ public class GenerateSettlementStatementReportHandler
                                                     ParticipantQuery participantQuery,
                                                     S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.participantQuery = participantQuery;
@@ -69,17 +70,17 @@ public class GenerateSettlementStatementReportHandler
             throw new ReportException(ReportErrors.FILE_FORMAT_NOT_ALLOWED_EXCEPTION);
         }
 
-        String
-            dfspName =
-                input.fspId().equalsIgnoreCase("all") ? input.fspId().toUpperCase() : "";
+        String dfspName = input.fspId().equalsIgnoreCase("all") ? input.fspId().toUpperCase() : "";
 
-        if (!input.fspId()
-                  .equalsIgnoreCase("all")) {
+        if (!input.fspId().equalsIgnoreCase("all")) {
 
-            Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(input.fspId());
+            Optional<ParticipantData> optionalParticipantData = this.participantQuery.get(
+                input.fspId());
 
-            dfspName = (optionalParticipantData.isEmpty() || optionalParticipantData.get().description() == null || optionalParticipantData.get().description().isEmpty()) ?
-                    input.fspId() : optionalParticipantData.get().description();
+            dfspName = (optionalParticipantData.isEmpty() ||
+                            optionalParticipantData.get().description() == null ||
+                            optionalParticipantData.get().description().isEmpty()) ? input.fspId() :
+                           optionalParticipantData.get().description();
         }
 
         Map<String, String> params = new HashMap<>();
@@ -91,9 +92,7 @@ public class GenerateSettlementStatementReportHandler
         params.put("timezoneOffset", input.timezoneOffSet());
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-            ReportType.SETTLEMENT_STATEMENT,
-            normalizedFileType,
-            params);
+            ReportType.SETTLEMENT_STATEMENT, normalizedFileType, params);
 
         String fileKey = result.request().fileUrl();
         String fileUrl = null;
@@ -118,7 +117,8 @@ public class GenerateSettlementStatementReportHandler
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.paramsSignature());
     }
 
 }

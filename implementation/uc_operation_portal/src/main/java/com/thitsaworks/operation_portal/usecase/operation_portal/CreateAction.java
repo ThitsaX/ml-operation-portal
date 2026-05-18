@@ -8,6 +8,8 @@ public interface CreateAction extends UseCase<CreateAction.Input, CreateAction.O
 
     record Input(ActionCode actionCode,
                  String scope,
+                 String category,
+                 boolean isMandatory,
                  String description) { }
 
     record Output(ActionId actionId) { }

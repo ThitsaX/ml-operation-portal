@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.DeleteSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class RemoveSchedulerConfigHandler
     extends OperationPortalUseCase<RemoveSchedulerConfig.Input, RemoveSchedulerConfig.Output>
     implements RemoveSchedulerConfig {
@@ -27,8 +30,7 @@ public class RemoveSchedulerConfigHandler
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SchedulerEngine schedulerEngine) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.deleteSchedulerConfigCommand = deleteSchedulerConfigCommand;
         this.schedulerEngine = schedulerEngine;
@@ -41,8 +43,7 @@ public class RemoveSchedulerConfigHandler
 
         var output = this.deleteSchedulerConfigCommand.execute(input.schedulerConfigId());
 
-        this.schedulerEngine.cancel(input.schedulerConfigId()
-                                         .getId());
+        this.schedulerEngine.cancel(input.schedulerConfigId().getId());
 
         return new Output(output.deleted());
     }

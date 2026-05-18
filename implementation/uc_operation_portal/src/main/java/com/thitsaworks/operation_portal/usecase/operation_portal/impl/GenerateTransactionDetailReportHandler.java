@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateTransactionDetailReportHandler
     extends OperationPortalAuditableUseCase<GenerateTransactionDetailReport.Input, GenerateTransactionDetailReport.Output>
     implements GenerateTransactionDetailReport {
@@ -57,11 +60,11 @@ public class GenerateTransactionDetailReportHandler
         params.put("timezoneOffset", input.timezone());
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-            ReportType.TransactionDetail, normalizedFileType,
-            params);
-
+            ReportType.TransactionDetail, normalizedFileType, params);
 
         return new Output(
-            result.request().requestId(), result.request().status(), null, null,result.paramsSignature());
+            result.request().requestId(), result.request().status(), null, null,
+            result.paramsSignature());
     }
+
 }

@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.SchedulerConfigId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -24,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_MODEL_MANAGEMENT)
 public class CreateSettlementModelHandler
     extends OperationPortalAuditableUseCase<CreateSettlementModel.Input, CreateSettlementModel.Output>
     implements CreateSettlementModel {
@@ -31,8 +34,6 @@ public class CreateSettlementModelHandler
     private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementModelHandler.class);
 
     private final SettlementModelQuery settlementModelQuery;
-
-    private final ObjectMapper objectMapper;
 
     private final CreateSettlementModelCommand createSettlementModelCommand;
 
@@ -45,49 +46,42 @@ public class CreateSettlementModelHandler
                                         SettlementModelQuery settlementModelQuery,
                                         CreateSettlementModelCommand createSettlementModelCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.settlementModelQuery = settlementModelQuery;
         this.createSettlementModelCommand = createSettlementModelCommand;
-        this.objectMapper = objectMapper;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        LOG.info("Settlement Model Query Request : settlementModelName : {}", input.settlementModelName());
+        LOG.info(
+            "Settlement Model Query Request : settlementModelName : {}",
+            input.settlementModelName());
 
-        Optional<SettlementModelData> optionalSettlementModelData =
-            this.settlementModelQuery.get(input.settlementModelName());
+        Optional<SettlementModelData> optionalSettlementModelData = this.settlementModelQuery.get(
+            input.settlementModelName());
 
         LOG.info("Settlement Model Query Response : {}", optionalSettlementModelData);
 
         if (optionalSettlementModelData.isPresent()) {
 
-            throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_ALREADY_REGISTERED.format(input.settlementModelName()));
+            throw new SettlementException(
+                SettlementErrors.SETTLEMENT_MODEL_ALREADY_REGISTERED.format(
+                    input.settlementModelName()));
 
         }
 
         List<SchedulerConfigId> schedulerConfigIdList = new ArrayList<>();
 
-        var output = this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
+        var output = this.createSettlementModelCommand.execute(
+            new CreateSettlementModelCommand.Input(
 
-            input.settlementModelName(),
-            input.modelType(),
-            input.currencyID(),
-            true,
-            false,
-            true,
-            input.zoneId(),
-            input.requireLiquidityCheck(),
-            input.autoPositionReset(),
-            input.adjustPosition(),
-            schedulerConfigIdList));
+                input.settlementModelName(), input.modelType(), input.currencyID(), true, false,
+                true, input.zoneId(), input.requireLiquidityCheck(), input.autoPositionReset(),
+                input.adjustPosition(), schedulerConfigIdList));
 
         return new Output(output.created(), output.settlementModelId());
 

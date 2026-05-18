@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateSchedulerConfigCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class CreateSchedulerConfigHandler
     extends OperationPortalUseCase<CreateSchedulerConfig.Input, CreateSchedulerConfig.Output>
     implements CreateSchedulerConfig {
@@ -27,8 +30,7 @@ public class CreateSchedulerConfigHandler
                                         ActionAuthorizationManager actionAuthorizationManager,
                                         SchedulerEngine schedulerEngine) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
         this.schedulerEngine = schedulerEngine;
@@ -37,14 +39,10 @@ public class CreateSchedulerConfigHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var
-            output =
-            this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
-                                                                                             input.jobName(),
-                                                                                             input.description(),
-                                                                                             input.cronExpression(),
-                                                                                             input.zoneId()
-                                                                                                  .getId()));
+        var output = this.createSchedulerConfigCommand.execute(
+            new CreateSchedulerConfigCommand.Input(
+                input.name(), input.jobName(), input.description(), input.cronExpression(),
+                input.zoneId().getId()));
 
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 

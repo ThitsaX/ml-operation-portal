@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferStateData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransferStatesQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -15,9 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.TRANSFER_OPERATIONS)
 public class GetTransferStateListHandler
-    extends OperationPortalUseCase<GetTransferStateList.Input, GetTransferStateList.Output> implements
-                                                                                            GetTransferStateList {
+    extends OperationPortalUseCase<GetTransferStateList.Input, GetTransferStateList.Output>
+    implements GetTransferStateList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetTransferStateListHandler.class);
 
@@ -36,16 +39,15 @@ public class GetTransferStateListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetTransferStatesQuery.Output output = this.getTransferStatesQuery.execute(new GetTransferStatesQuery.Input());
+        GetTransferStatesQuery.Output output = this.getTransferStatesQuery.execute(
+            new GetTransferStatesQuery.Input());
 
         List<TransferStateData> transferStateDataList = new ArrayList<>();
 
         for (TransferStateData data : output.getTransferStateDataList()) {
 
             transferStateDataList.add(
-                new TransferStateData(
-                    data.getTransferStateId(),
-                    data.getTransferState()));
+                new TransferStateData(data.getTransferStateId(), data.getTransferState()));
         }
 
         return new GetTransferStateList.Output(transferStateDataList);

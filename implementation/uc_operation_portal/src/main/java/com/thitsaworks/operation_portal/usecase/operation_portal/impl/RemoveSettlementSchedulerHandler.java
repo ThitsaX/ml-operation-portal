@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -19,11 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class RemoveSettlementSchedulerHandler
-        extends OperationPortalAuditableUseCase<RemoveSettlementScheduler.Input, RemoveSettlementScheduler.Output>
-        implements RemoveSettlementScheduler {
+    extends OperationPortalAuditableUseCase<RemoveSettlementScheduler.Input, RemoveSettlementScheduler.Output>
+    implements RemoveSettlementScheduler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemoveSettlementSchedulerHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        RemoveSettlementSchedulerHandler.class);
 
     private final SchedulerEngine schedulerEngine;
 
@@ -42,15 +46,11 @@ public class RemoveSettlementSchedulerHandler
                                             SchedulerEngine schedulerEngine,
                                             SettlementModelQuery settlementModelQuery,
                                             DeleteSchedulerConfigCommand deleteSchedulerConfigCommand,
-                                            RemoveSettlementSchedulerCommand removeSettlementSchedulerCommand
-                                           ) {
+                                            RemoveSettlementSchedulerCommand removeSettlementSchedulerCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.schedulerEngine = schedulerEngine;
         this.settlementModelQuery = settlementModelQuery;
@@ -61,17 +61,19 @@ public class RemoveSettlementSchedulerHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(
+            input.settlementModelId());
 
-        var schedulerConfigOutput =
-                this.deleteSchedulerConfigCommand.execute(input.schedulerConfigId());
+        var schedulerConfigOutput = this.deleteSchedulerConfigCommand.execute(
+            input.schedulerConfigId());
 
-        this.schedulerEngine.cancel(schedulerConfigOutput.schedulerConfigData().schedulerConfigId().getId());
+        this.schedulerEngine.cancel(
+            schedulerConfigOutput.schedulerConfigData().schedulerConfigId().getId());
 
-        var output =
-                this.removeSettlementSchedulerCommand.execute(new RemoveSettlementSchedulerCommand.Input(
-                        settlementModelData.settlementModelId(),
-                        schedulerConfigOutput.schedulerConfigData().schedulerConfigId()));
+        var output = this.removeSettlementSchedulerCommand.execute(
+            new RemoveSettlementSchedulerCommand.Input(
+                settlementModelData.settlementModelId(),
+                schedulerConfigOutput.schedulerConfigData().schedulerConfigId()));
 
         return new Output(output.removed(), output.schedulerConfigId());
     }

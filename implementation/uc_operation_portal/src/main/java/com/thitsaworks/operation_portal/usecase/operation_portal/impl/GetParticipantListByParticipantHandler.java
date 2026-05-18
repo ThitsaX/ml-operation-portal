@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class GetParticipantListByParticipantHandler
     extends OperationPortalUseCase<GetParticipantListByParticipant.Input, GetParticipantListByParticipant.Output>
     implements GetParticipantListByParticipant {
@@ -29,8 +32,7 @@ public class GetParticipantListByParticipantHandler
                                                   ParticipantQuery participantQuery,
                                                   UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
         this.userPermissionManager = userPermissionManager;
@@ -45,28 +47,22 @@ public class GetParticipantListByParticipantHandler
 
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            var participantData = this.participantQuery.get(new ParticipantId(currentUser.realmId()
-                                                                                         .getId()));
-            participantInfoList.add(
-                new Output.ParticipantInfo(participantData.participantId(),
-                                           participantData.participantName()
-                                                          .getValue(),
-                                           participantData.description(),
-                                           participantData.logoFileType(),
-                                           participantData.logo()));
+            var participantData = this.participantQuery.get(
+                new ParticipantId(currentUser.realmId().getId()));
+            participantInfoList.add(new Output.ParticipantInfo(
+                participantData.participantId(), participantData.participantName().getValue(),
+                participantData.description(), participantData.logoFileType(),
+                participantData.logo()));
 
         } else {
 
             List<ParticipantData> participantDataList = this.participantQuery.getAllParticipants();
 
             for (ParticipantData participantData : participantDataList) {
-                participantInfoList.add(
-                    new Output.ParticipantInfo(participantData.participantId(),
-                                               participantData.participantName()
-                                                              .getValue(),
-                                               participantData.description(),
-                                               participantData.logoFileType(),
-                                               participantData.logo()));
+                participantInfoList.add(new Output.ParticipantInfo(
+                    participantData.participantId(), participantData.participantName().getValue(),
+                    participantData.description(), participantData.logoFileType(),
+                    participantData.logo()));
             }
 
         }

@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
 import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.ANNOUNCEMENT_AND_GREETING_CONTENT)
 public class GetAnnouncementByIdHandler
     extends OperationPortalUseCase<GetAnnouncementById.Input, GetAnnouncementById.Output>
     implements GetAnnouncementById {
@@ -26,24 +29,21 @@ public class GetAnnouncementByIdHandler
                                       PrincipalCache principalCache,
                                       ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.announcementQuery = announcementQuery;
     }
 
     @Override
-    public GetAnnouncementById.Output onExecute(GetAnnouncementById.Input input) throws
-                                                                                 DomainException {
+    public GetAnnouncementById.Output onExecute(GetAnnouncementById.Input input)
+        throws DomainException {
 
         AnnouncementData announcementData = this.announcementQuery.get(input.announcementId());
 
-        return new GetAnnouncementById.Output(announcementData.announcementId(),
-                                              announcementData.announcementTitle(),
-                                              announcementData.announcementDetail(),
-                                              announcementData.announcementDate(),
-                                              announcementData.isDeleted(),
-                                              announcementData.createdDate());
+        return new GetAnnouncementById.Output(
+            announcementData.announcementId(), announcementData.announcementTitle(),
+            announcementData.announcementDetail(), announcementData.announcementDate(),
+            announcementData.isDeleted(), announcementData.createdDate());
 
     }
 

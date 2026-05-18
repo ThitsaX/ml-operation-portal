@@ -1,8 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.participant.command.CreateGreetingMessageCommand;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.command.CreateGreetingMessageCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.CreateGreetingMessage;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -11,11 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.ANNOUNCEMENT_AND_GREETING_CONTENT)
 public class CreateGreetingMessageHandler
     extends OperationPortalUseCase<CreateGreetingMessage.Input, CreateGreetingMessage.Output>
     implements CreateGreetingMessage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CreateGreetingMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        CreateGreetingMessageHandler.class);
 
     private final CreateGreetingMessageCommand createGreetingMessageCommand;
 
@@ -31,11 +35,10 @@ public class CreateGreetingMessageHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var
-            output =
-            this.createGreetingMessageCommand.execute(new CreateGreetingMessageCommand.Input(input.greetingTitle(),
-                                                                                             input.greetingDetail(),
-                                                                                             input.greetingDate()));
+        var output = this.createGreetingMessageCommand.execute(
+            new CreateGreetingMessageCommand.Input(
+                input.greetingTitle(), input.greetingDetail(),
+                input.greetingDate()));
 
         return new CreateGreetingMessage.Output(output.created());
 

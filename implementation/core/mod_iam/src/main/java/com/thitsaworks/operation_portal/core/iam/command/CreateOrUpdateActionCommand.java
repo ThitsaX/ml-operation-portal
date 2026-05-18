@@ -9,6 +9,8 @@ public interface CreateOrUpdateActionCommand {
 
     record Input(ActionCode actionCode,
                  String scope,
+                 String category,
+                 boolean isMandatory,
                  String description) { }
 
     record Output(ActionId actionId) { }

@@ -37,12 +37,11 @@ public class CreateActionController {
 
         LOG.info("Create Action Request : [{}]", this.objectMapper.writeValueAsString(request));
 
-        var output = this.createAction.execute(new CreateAction.Input(new ActionCode(request.name()),
-                                                                      request.description(),
-                                                                      request.scope()));
+        var output = this.createAction.execute(new CreateAction.Input(
+            new ActionCode(request.name()), request.scope(), request.category(),
+            request.isMandatory(), request.description()));
 
-        var response = new Response(output.actionId()
-                                          .toString());
+        var response = new Response(output.actionId().toString());
 
         LOG.info("Create Action Response : [{}]", this.objectMapper.writeValueAsString(response));
 
@@ -51,8 +50,11 @@ public class CreateActionController {
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public record Request(@NotNull @NotBlank @JsonProperty("name") String name,
-                          @NotNull @NotBlank @JsonProperty("description") String description,
-                          @NotNull @NotBlank @JsonProperty("scope") String scope) implements Serializable { }
+                          @NotNull @NotBlank @JsonProperty("scope") String scope,
+                          @NotNull @NotBlank @JsonProperty("category") String category,
+                          @NotNull @JsonProperty("isMandatory") boolean isMandatory,
+                          @NotNull @NotBlank @JsonProperty("description") String description)
+        implements Serializable { }
 
     public record Response(@JsonProperty("actionId") String actionId) implements Serializable { }
 

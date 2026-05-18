@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateManagementSummaryReportHandler
     extends OperationPortalAuditableUseCase<GenerateManagementSummaryReport.Input, GenerateManagementSummaryReport.Output>
     implements GenerateManagementSummaryReport {
@@ -89,13 +92,15 @@ public class GenerateManagementSummaryReportHandler
 
         if (FileDownloadStatus.FAILED.equals(result.request().status())) {
 
-            throw new ReportException(ReportDownloadUtil.resolveFailedError(
-                result.request().errorMessage(),
-                ReportErrors.MANAGEMENT_SUMMARY_REPORT_FAILURE_EXCEPTION));
+            throw new ReportException(
+                ReportDownloadUtil.resolveFailedError(
+                    result.request().errorMessage(),
+                    ReportErrors.MANAGEMENT_SUMMARY_REPORT_FAILURE_EXCEPTION));
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.paramsSignature());
     }
 
 }

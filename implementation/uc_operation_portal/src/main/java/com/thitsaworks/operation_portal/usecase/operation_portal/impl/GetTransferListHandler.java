@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransfersQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.TRANSFER_OPERATIONS)
 public class GetTransferListHandler
     extends OperationPortalUseCase<GetTransferList.Input, GetTransferList.Output>
     implements GetTransferList {
@@ -44,8 +47,7 @@ public class GetTransferListHandler
                                   UserCache userCache,
                                   UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getTransfersQuery = getTransfersQuery;
         this.participantCache = participantCache;
@@ -60,57 +62,40 @@ public class GetTransferListHandler
 
         if (userData == null) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
-                                                                                        .getId().toString()));
+            throw new ParticipantException(
+                ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId().toString()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND
-                                               .format(userData.participantId()
-                                                               .getId().toString()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(
+                userData.participantId().getId().toString()));
         }
 
-        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId().getId()));
+        final boolean isDfspUser = userPermissionManager.isDfsp(
+            new PrincipalId(input.userId().getId()));
 
         final String fspName = isDfspUser ? participantData.participantName().getValue() : "";
 
-        GetTransfersQuery.Output output = this.getTransfersQuery.execute(new GetTransfersQuery.Input(input.fromDate(),
-                                                                                                     input.toDate(),
-                                                                                                     input.transferId(),
-                                                                                                     input.payerFspId(),
-                                                                                                     input.payeeFspId(),
-                                                                                                     input.payerIdentifierTypeId(),
-                                                                                                     input.payeeIdentifierTypeId(),
-                                                                                                     input.payerIdentifierValue(),
-                                                                                                     input.payeeIdentifierValue(),
-                                                                                                     input.currencyId(),
-                                                                                                     input.transferStateId(),
-                                                                                                     fspName,
-                                                                                                     input.timeZone(),
-                                                                                                     input.page(),
-                                                                                                     input.pageSize()));
+        GetTransfersQuery.Output output = this.getTransfersQuery.execute(
+            new GetTransfersQuery.Input(
+                input.fromDate(), input.toDate(), input.transferId(), input.payerFspId(),
+                input.payeeFspId(), input.payerIdentifierTypeId(), input.payeeIdentifierTypeId(),
+                input.payerIdentifierValue(), input.payeeIdentifierValue(), input.currencyId(),
+                input.transferStateId(), fspName, input.timeZone(), input.page(),
+                input.pageSize()));
 
         List<TransferData> transferDataList = new ArrayList<>();
 
         for (TransferData data : output.getTransferInfoList()) {
 
-            transferDataList.add(
-                new TransferData(
-                    data.getTransferId(),
-                    data.getState(),
-                    data.getType(),
-                    data.getCurrency(),
-                    data.getAmount(),
-                    data.getPayerDfsp(),
-                    data.getPayerDfspName(),
-                    data.getPayeeDfsp(),
-                    data.getPayeeDfspName(),
-                    data.getWindowId(),
-                    data.getSettlementBatch(),
-                    data.getSubmittedOnDate()));
+            transferDataList.add(new TransferData(
+                data.getTransferId(), data.getState(), data.getType(), data.getCurrency(),
+                data.getAmount(), data.getPayerDfsp(), data.getPayerDfspName(), data.getPayeeDfsp(),
+                data.getPayeeDfspName(), data.getWindowId(), data.getSettlementBatch(),
+                data.getSubmittedOnDate()));
         }
 
         return new GetTransferList.Output(transferDataList, output.getTotalCount());

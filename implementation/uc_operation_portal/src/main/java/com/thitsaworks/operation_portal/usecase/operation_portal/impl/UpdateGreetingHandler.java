@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.command.UpdateGreetingCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -9,7 +11,9 @@ import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationM
 import org.springframework.stereotype.Service;
 
 @Service
-public class UpdateGreetingHandler extends OperationPortalUseCase<UpdateGreeting.Input, UpdateGreeting.Output>
+@ActionMetadata(category = ActionCategory.ANNOUNCEMENT_AND_GREETING_CONTENT)
+public class UpdateGreetingHandler
+    extends OperationPortalUseCase<UpdateGreeting.Input, UpdateGreeting.Output>
     implements UpdateGreeting {
 
     private final UpdateGreetingCommand updateGreetingCommand;
@@ -18,8 +22,7 @@ public class UpdateGreetingHandler extends OperationPortalUseCase<UpdateGreeting
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  UpdateGreetingCommand updateGreetingCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.updateGreetingCommand = updateGreetingCommand;
     }
@@ -27,11 +30,9 @@ public class UpdateGreetingHandler extends OperationPortalUseCase<UpdateGreeting
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var output = this.updateGreetingCommand.execute(new UpdateGreetingCommand.Input(input.greetingId(),
-                                                                                        input.greetingTitle(),
-                                                                                        input.greetingDetail(),
-                                                                                        input.isDeleted(),
-                                                                                        input.greetingDate()));
+        var output = this.updateGreetingCommand.execute(new UpdateGreetingCommand.Input(
+            input.greetingId(), input.greetingTitle(), input.greetingDetail(), input.isDeleted(),
+            input.greetingDate()));
 
         return new Output(output.greetingId());
     }

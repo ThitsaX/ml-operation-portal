@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -16,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class GetParticipantListIncludingHubHandler
     extends OperationPortalUseCase<GetParticipantListIncludingHub.Input, GetParticipantListIncludingHub.Output>
     implements GetParticipantListIncludingHub {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantListIncludingHubHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetParticipantListIncludingHubHandler.class);
 
     private final ParticipantQuery participantQuery;
 
@@ -28,8 +32,7 @@ public class GetParticipantListIncludingHubHandler
                                                  ActionAuthorizationManager actionAuthorizationManager,
                                                  ParticipantQuery participantQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
     }
@@ -45,16 +48,11 @@ public class GetParticipantListIncludingHubHandler
 
             if (participantData.participantName() != null) {
 
-                participantInfoList.add(new Output.ParticipantInfo(participantData.participantId(),
-                                                                   participantData.participantName()
-                                                                                  .getValue(),
-                                                                   participantData.description(),
-                                                                   participantData.address(),
-                                                                   participantData.mobile(),
-                                                                   participantData.logoFileType(),
-                                                                   participantData.logo(),
-                                                                   Instant.ofEpochSecond(
-                                                                       participantData.createdDate())));
+                participantInfoList.add(new Output.ParticipantInfo(
+                    participantData.participantId(), participantData.participantName().getValue(),
+                    participantData.description(), participantData.address(),
+                    participantData.mobile(), participantData.logoFileType(),
+                    participantData.logo(), Instant.ofEpochSecond(participantData.createdDate())));
             }
         }
 

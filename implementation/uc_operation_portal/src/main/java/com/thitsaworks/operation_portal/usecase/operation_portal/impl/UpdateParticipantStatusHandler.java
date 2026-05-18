@@ -3,7 +3,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -24,6 +26,7 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class UpdateParticipantStatusHandler
     extends OperationPortalAuditableUseCase<UpdateParticipantStatus.Input, UpdateParticipantStatus.Output>
     implements UpdateParticipantStatus {
@@ -44,12 +47,9 @@ public class UpdateParticipantStatusHandler
                                           ParticipantHubClient participantHubClient,
                                           ModifyParticipantStatusCommand modifyParticipantStatusCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.participantHubClient = participantHubClient;
         this.modifyParticipantStatusCommand = modifyParticipantStatusCommand;
@@ -59,30 +59,30 @@ public class UpdateParticipantStatusHandler
     public Output onExecute(Input input) throws DomainException, ConnectException {
 
         boolean isActive = "active".equalsIgnoreCase(input.activeStatus());
-        ParticipantStatus participantStatus = isActive ? ParticipantStatus.ACTIVE : ParticipantStatus.INACTIVE;
+        ParticipantStatus participantStatus =
+            isActive ? ParticipantStatus.ACTIVE : ParticipantStatus.INACTIVE;
 
-        PutParticipantStatus.Request request = new PutParticipantStatus.Request(input.participantName(),
-                                                                                input.participantCurrencyId(),
-                                                                                isActive);
+        PutParticipantStatus.Request request = new PutParticipantStatus.Request(
+            input.participantName(), input.participantCurrencyId(), isActive);
 
-        PutParticipantStatus.Response response = this.participantHubClient.putParticipantStatus(request);
+        PutParticipantStatus.Response response = this.participantHubClient.putParticipantStatus(
+            request);
 
-         this.modifyParticipantStatusCommand.execute(new ModifyParticipantStatusCommand.Input(new ParticipantName(input.participantName()),
-                                                                                                           participantStatus));
+        this.modifyParticipantStatusCommand.execute(
+            new ModifyParticipantStatusCommand.Input(
+                new ParticipantName(input.participantName()), participantStatus));
 
+        GetParticipant.Response getParticipantResponse = this.participantHubClient.getParticipant(
+            new GetParticipant.Request(input.participantName()));
 
-        GetParticipant.Response
-            getParticipantResponse =
-            this.participantHubClient.getParticipant(new GetParticipant.Request(input.participantName()));
-
-        
         List<GetParticipant.Response.Account> accounts = getParticipantResponse.accounts();
 
-        String status = accounts.stream()
-                                .filter(account -> account.id() == input.participantCurrencyId())
-                                .findFirst()
-                                .map(account -> account.isActive() == 1 ? "active" : "inActive")
-                                .orElse("Unknown");
+        String status = accounts
+                            .stream()
+                            .filter(account -> account.id() == input.participantCurrencyId())
+                            .findFirst()
+                            .map(account -> account.isActive() == 1 ? "active" : "inActive")
+                            .orElse("Unknown");
 
         return new Output(request.participantName(), request.participantCurrencyId(), status);
     }

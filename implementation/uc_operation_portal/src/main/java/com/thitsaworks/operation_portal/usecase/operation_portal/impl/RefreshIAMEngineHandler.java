@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.engine.IAMEngine;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
-public class RefreshIAMEngineHandler extends OperationPortalUseCase<RefreshIAMEngine.Input, RefreshIAMEngine.Output>
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
+public class RefreshIAMEngineHandler
+    extends OperationPortalUseCase<RefreshIAMEngine.Input, RefreshIAMEngine.Output>
     implements RefreshIAMEngine {
 
     private static final Logger LOG = LoggerFactory.getLogger(RefreshIAMEngineHandler.class);
@@ -24,8 +28,7 @@ public class RefreshIAMEngineHandler extends OperationPortalUseCase<RefreshIAMEn
                                    ActionAuthorizationManager actionAuthorizationManager,
                                    IAMEngine iamEngine) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.iamEngine = iamEngine;
     }

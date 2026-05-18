@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.ParticipantName;
 import com.thitsaworks.operation_portal.component.common.type.ParticipantStatus;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.HubParticipantData;
 import com.thitsaworks.operation_portal.core.hub_services.query.HubParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -21,11 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class SyncHubParticipantsToPortalHandler
     extends OperationPortalUseCase<SyncHubParticipantsToPortal.Input, SyncHubParticipantsToPortal.Output>
     implements SyncHubParticipantsToPortal {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyncHubParticipantsToPortalHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        SyncHubParticipantsToPortalHandler.class);
 
     private final HubParticipantQuery hubParticipantQuery;
 
@@ -51,37 +55,28 @@ public class SyncHubParticipantsToPortalHandler
 
         List<HubParticipantData> hubParticipantDataList = this.hubParticipantQuery.getParticipantList();
 
-        Set<String>
-            existingParticipantNames =
-            this.participantQuery.getAllParticipants()
-                                 .stream()
-                                 .map(pd -> pd.participantName()
-                                              .getValue())
-                                 .collect(Collectors.toSet());
+        Set<String> existingParticipantNames = this.participantQuery
+                                                   .getAllParticipants()
+                                                   .stream()
+                                                   .map(pd -> pd.participantName().getValue())
+                                                   .collect(Collectors.toSet());
 
         List<CreatedParticipantInfo> createdParticipantInfoList = new ArrayList<>();
 
         for (HubParticipantData hubParticipant : hubParticipantDataList) {
             if (!existingParticipantNames.contains(hubParticipant.name())) {
 
-                CreateParticipantCommand.Output output =
-                    this.createParticipantCommand.execute(new CreateParticipantCommand.Input(Integer.parseInt(
-                        hubParticipant.participantId()),
-                                                                                             new ParticipantName(
-                                                                                                 hubParticipant.name()),
-                                                                                             hubParticipant.description(),
-                                                                                             null,
-                                                                                             null,
-                                                                                             ParticipantStatus.ACTIVE,
+                CreateParticipantCommand.Output output = this.createParticipantCommand.execute(
+                    new CreateParticipantCommand.Input(
+                        Integer.parseInt(hubParticipant.participantId()),
+                        new ParticipantName(hubParticipant.name()), hubParticipant.description(),
+                        null, null, ParticipantStatus.ACTIVE,
 
-                                                                                             null,
-                                                                                             null));
+                        null, null));
 
-                createdParticipantInfoList.add(new CreatedParticipantInfo(output.participantId()
-                                                                                .getId()
-                                                                                .toString(),
-                                                                          hubParticipant.name(),
-                                                                          hubParticipant.description()));
+                createdParticipantInfoList.add(new CreatedParticipantInfo(
+                    output.participantId().getId().toString(), hubParticipant.name(),
+                    hubParticipant.description()));
 
             }
         }

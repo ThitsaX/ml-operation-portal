@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.data.JobExecutionLogData;
 import com.thitsaworks.operation_portal.core.scheduler.query.JobExecutionLogQuery;
@@ -18,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.AUDIT_AND_LOGS)
 public class GetJobExecutionLogListHandler
     extends OperationPortalUseCase<GetJobExecutionLogList.Input, GetJobExecutionLogList.Output>
     implements GetJobExecutionLogList {
@@ -33,11 +36,9 @@ public class GetJobExecutionLogListHandler
      */
     public GetJobExecutionLogListHandler(PrincipalCache principalCache,
                                          JobExecutionLogQuery jobExecutionLogQuery,
-                                         ActionAuthorizationManager actionAuthorizationManager
-                                        ) {
+                                         ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.jobExecutionLogQuery = jobExecutionLogQuery;
     }
@@ -56,59 +57,37 @@ public class GetJobExecutionLogListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        LOG.info("Fetching job execution logs with filters: jobName={}, jobStatus={}, startDate={}, endDate={}",
-                 input.jobName()
-                      .orElse("<none>"),
-                 input.jobStatus()
-                      .orElse(null),
-                 input.startDate()
-                      .orElse("<none>"),
-                 input.endDate()
-                      .orElse("<none>")
-                );
+        LOG.info(
+            "Fetching job execution logs with filters: jobName={}, jobStatus={}, startDate={}, endDate={}",
+            input.jobName().orElse("<none>"), input.jobStatus().orElse(null),
+            input.startDate().orElse("<none>"), input.endDate().orElse("<none>"));
 
         // Create sort object based on input
         Sort sort = Sort.by(
-            input.sortDirection()
-                 .orElse(Sort.Direction.DESC),
-            input.sortBy()
-                 .orElse(GetJobExecutionLogList.DEFAULT_SORT_FIELD)
-                           );
+            input.sortDirection().orElse(Sort.Direction.DESC),
+            input.sortBy().orElse(GetJobExecutionLogList.DEFAULT_SORT_FIELD));
 
         // Apply filters based on input
         List<JobExecutionLogData> logs;
 
         // Case 1: Filter by job name if specified
-        if (input.jobName()
-                 .isPresent()) {
-            logs = jobExecutionLogQuery.getJobExecutionLogsByJobName(
-                input.jobName()
-                     .get(),
-                sort
-                                                                    );
+        if (input.jobName().isPresent()) {
+            logs = jobExecutionLogQuery.getJobExecutionLogsByJobName(input.jobName().get(), sort);
         }
         // Case 2: Filter by jobStatus if specified
-        else if (input.jobStatus()
-                      .isPresent()) {
-            logs = jobExecutionLogQuery.getJobExecutionLogsByStatus(
-                input.jobStatus()
-                     .get(),
-                sort
-                                                                   );
+        else if (input.jobStatus().isPresent()) {
+            logs = jobExecutionLogQuery.getJobExecutionLogsByStatus(input.jobStatus().get(), sort);
         }
         // Case 3: Filter by date range if specified
-        else if (input.startDate()
-                      .isPresent() && input.endDate()
-                                           .isPresent()) {
+        else if (input.startDate().isPresent() && input.endDate().isPresent()) {
             try {
-                LocalDateTime start = LocalDateTime.parse(input.startDate()
-                                                               .get(), DATE_FORMAT);
-                LocalDateTime end = LocalDateTime.parse(input.endDate()
-                                                             .get(), DATE_FORMAT);
+                LocalDateTime start = LocalDateTime.parse(input.startDate().get(), DATE_FORMAT);
+                LocalDateTime end = LocalDateTime.parse(input.endDate().get(), DATE_FORMAT);
 
                 logs = jobExecutionLogQuery.getJobExecutionLogsByDateRange(start, end, sort);
             } catch (DateTimeParseException e) {
-                LOG.warn("Invalid date format provided. Expected ISO-8601 format (yyyy-MM-dd'T'HH:mm:ss)");
+                LOG.warn(
+                    "Invalid date format provided. Expected ISO-8601 format (yyyy-MM-dd'T'HH:mm:ss)");
                 throw new IllegalArgumentException(
                     "Invalid date format. Expected ISO-8601 format (e.g., 2023-01-01T00:00:00)");
             }

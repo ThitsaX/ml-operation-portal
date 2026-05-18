@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_MODEL_MANAGEMENT)
 public class ModifySettlementModelHandler
     extends OperationPortalAuditableUseCase<ModifySettlementModel.Input, ModifySettlementModel.Output>
     implements ModifySettlementModel {
@@ -60,12 +63,9 @@ public class ModifySettlementModelHandler
                                         ModifySchedulerConfigCommand modifySchedulerConfigCommand,
                                         SchedulerEngine schedulerEngine) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.settlementModelQuery = settlementModelQuery;
         this.settlementSchedulerQuery = settlementSchedulerQuery;
@@ -78,20 +78,23 @@ public class ModifySettlementModelHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(
+            input.settlementModelId());
 
         if (!input.autoCloseWindow() && !input.manualCloseWindow()) {
-            throw new SettlementException(SettlementErrors.WINDOW_CLOSING_METHOD_MISSING.format(
-                settlementModelData.name()));
+            throw new SettlementException(
+                SettlementErrors.WINDOW_CLOSING_METHOD_MISSING.format(settlementModelData.name()));
         }
 
-        List<SchedulerConfigData> settlementSchedulers =
-                this.settlementSchedulerQuery.getSettlementSchedulers(input.settlementModelId());
+        List<SchedulerConfigData> settlementSchedulers = this.settlementSchedulerQuery.getSettlementSchedulers(
+            input.settlementModelId());
 
         boolean zoneChanged = true;
         if (!settlementModelData.zoneId().isEmpty()) {
-            zoneChanged = !ZoneOffset.from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
-                                             .equals(ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
+            zoneChanged = !ZoneOffset
+                               .from(ZonedDateTime.now(ZoneId.of(settlementModelData.zoneId())))
+                               .equals(
+                                   ZoneOffset.from(ZonedDateTime.now(ZoneId.of(input.zoneId()))));
         }
 
         boolean statusChanged = input.isActive() != settlementModelData.isActive();
@@ -105,15 +108,13 @@ public class ModifySettlementModelHandler
                 List<SchedulerConfigData> updatedSchedulerList = new ArrayList<>();
 
                 for (SchedulerConfigData scheduler : settlementSchedulers) {
-                    scheduler =
-                            this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommand.Input(
-                                    scheduler.schedulerConfigId(),
-                                    scheduler.name(),
-                                    scheduler.jobName(),
-                                    scheduler.description(),
-                                    scheduler.cronExpression(),
-                                    input.zoneId(),
-                                    scheduler.active())).schedulerConfigData();
+                    scheduler = this.modifySchedulerConfigCommand
+                                    .execute(new ModifySchedulerConfigCommand.Input(
+                                        scheduler.schedulerConfigId(), scheduler.name(),
+                                        scheduler.jobName(), scheduler.description(),
+                                        scheduler.cronExpression(), input.zoneId(),
+                                        scheduler.active()))
+                                    .schedulerConfigData();
 
                     updatedSchedulerList.add(scheduler);
                 }
@@ -123,19 +124,16 @@ public class ModifySettlementModelHandler
 
             boolean isSchedulerActive = input.isActive() && input.autoCloseWindow();
 
-            this.schedulerEngine.rescheduleSettlementSchedulers(settlementSchedulers, isSchedulerActive);
+            this.schedulerEngine.rescheduleSettlementSchedulers(
+                settlementSchedulers, isSchedulerActive);
 
         }
 
-        var output = this.modifySettlementModelCommand.execute(new ModifySettlementModelCommandHandler.Input(
-            settlementModelData.settlementModelId(),
-            input.settlementModelName(),
-            input.modelType(),
-            input.currencyID(),
-            input.isActive(),
-            input.autoCloseWindow(),
-            input.manualCloseWindow(),
-            input.zoneId()));
+        var output = this.modifySettlementModelCommand.execute(
+            new ModifySettlementModelCommandHandler.Input(
+                settlementModelData.settlementModelId(), input.settlementModelName(),
+                input.modelType(), input.currencyID(), input.isActive(), input.autoCloseWindow(),
+                input.manualCloseWindow(), input.zoneId()));
 
         return new Output(output.modified(), output.settlementModelId());
 

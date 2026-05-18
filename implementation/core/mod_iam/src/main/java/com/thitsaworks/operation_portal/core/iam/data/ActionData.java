@@ -10,16 +10,16 @@ import java.util.Objects;
 public record ActionData(ActionId actionId,
                          ActionCode actionCode,
                          String scope,
+                         String category,
+                         boolean isMandatory,
                          String description) implements Serializable {
 
     public ActionData(Action action) {
 
-        this(action.getActionId(),
-             action.getActionCode(),
-             action.getScope(),
-             action.getDescription());
+        this(
+            action.getActionId(), action.getActionCode(), action.getScope(), action.getCategory(),
+            action.getIsMandatory(), action.getDescription());
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -36,6 +36,5 @@ public record ActionData(ActionId actionId,
 
         return Objects.hashCode(actionId);
     }
-
 
 }

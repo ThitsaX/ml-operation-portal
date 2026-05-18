@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.CreateOrUpdateActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,7 +15,9 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
-public class CreateActionHandler extends OperationPortalUseCase<CreateAction.Input, CreateAction.Output>
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
+public class CreateActionHandler
+    extends OperationPortalUseCase<CreateAction.Input, CreateAction.Output>
     implements CreateAction {
 
     private static final Logger LOG = LoggerFactory.getLogger(CreateActionHandler.class);
@@ -24,8 +28,7 @@ public class CreateActionHandler extends OperationPortalUseCase<CreateAction.Inp
                                ActionAuthorizationManager actionAuthorizationManager,
                                CreateOrUpdateActionCommand createOrUpdateActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.createOrUpdateActionCommand = createOrUpdateActionCommand;
     }
@@ -33,9 +36,9 @@ public class CreateActionHandler extends OperationPortalUseCase<CreateAction.Inp
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.createOrUpdateActionCommand.execute(new CreateOrUpdateActionCommand.Input(input.actionCode(),
-                                                                                                    input.scope(),
-                                                                                                    input.description()));
+        var output = this.createOrUpdateActionCommand.execute(new CreateOrUpdateActionCommand.Input(
+            input.actionCode(), input.scope(), input.category(), input.isMandatory(),
+            input.description()));
 
         return new Output(output.actionId());
     }

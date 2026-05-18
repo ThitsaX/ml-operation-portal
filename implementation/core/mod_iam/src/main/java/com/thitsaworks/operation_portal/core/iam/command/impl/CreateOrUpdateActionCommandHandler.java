@@ -19,20 +19,21 @@ public class CreateOrUpdateActionCommandHandler implements CreateOrUpdateActionC
     @CoreWriteTransactional
     public Output execute(Input input) {
 
-        Optional<Action> optAction =
-            this.actionRepository.findOne(ActionRepository.Filters.withActionCode(input.actionCode()));
+        Optional<Action> optAction = this.actionRepository.findOne(
+            ActionRepository.Filters.withActionCode(input.actionCode()));
 
         Action action;
 
         if (optAction.isPresent()) {
 
             action = optAction.get();
-            action.scope(input.scope())
-                  .description(input.description());
+            action.scope(input.scope()).category(input.category()).mandatory(input.isMandatory()).description(input.description());
 
         } else {
 
-            action = new Action(input.actionCode(), input.scope(), input.description());
+            action = new Action(
+                input.actionCode(), input.scope(), input.category(), input.isMandatory(),
+                input.description());
         }
 
         this.actionRepository.save(action);

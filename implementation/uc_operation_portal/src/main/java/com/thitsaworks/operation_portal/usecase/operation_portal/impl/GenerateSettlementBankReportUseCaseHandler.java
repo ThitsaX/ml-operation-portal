@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,11 +28,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateSettlementBankReportUseCaseHandler
-        extends OperationPortalAuditableUseCase<GenerateSettlementBankReportUseCase.Input, GenerateSettlementBankReportUseCase.Output>
-        implements GenerateSettlementBankReportUseCase {
+    extends OperationPortalAuditableUseCase<GenerateSettlementBankReportUseCase.Input, GenerateSettlementBankReportUseCase.Output>
+    implements GenerateSettlementBankReportUseCase {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportUseCaseHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateSettlementBankReportUseCaseHandler.class);
 
     private final ReportDownloadRequestManager reportDownloadRequestManager;
 
@@ -48,12 +52,9 @@ public class GenerateSettlementBankReportUseCaseHandler
                                                       UserQuery userQuery,
                                                       S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.userQuery = userQuery;
@@ -77,9 +78,7 @@ public class GenerateSettlementBankReportUseCaseHandler
         params.put("userName", getUser.name());
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-                ReportType.SETTLEMENT_BANK_USECASE,
-                normalizedFileType,
-                params);
+            ReportType.SETTLEMENT_BANK_USECASE, normalizedFileType, params);
 
         String fileKey = result.request().fileUrl();
         String fileUrl = null;
@@ -91,19 +90,21 @@ public class GenerateSettlementBankReportUseCaseHandler
                 fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
             } catch (Exception e) {
                 LOG.warn(
-                        "Failed to generate pre-signed URL for requestId [{}]: [{}]",
-                        result.request().requestId().getEntityId(), e.getMessage());
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    result.request().requestId().getEntityId(), e.getMessage());
             }
         }
 
         if (FileDownloadStatus.FAILED.equals(result.request().status())) {
             throw new ReportException(
-                    ReportDownloadUtil.resolveFailedError(
-                            result.request().errorMessage(),
-                            ReportErrors.SETTLEMENT_BANK_USECASE_REPORT_FAILURE_EXCEPTION));
+                ReportDownloadUtil.resolveFailedError(
+                    result.request().errorMessage(),
+                    ReportErrors.SETTLEMENT_BANK_USECASE_REPORT_FAILURE_EXCEPTION));
         }
 
         return new Output(
-                result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.paramsSignature());
     }
+
 }

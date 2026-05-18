@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.FinancialData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetParticipantPositionsDataQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -33,11 +35,13 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_PROFILE_AND_FINANCIAL_CONFIGURATION)
 public class GetParticipantPositionListHandler
     extends OperationPortalUseCase<GetParticipantPositionList.Input, GetParticipantPositionList.Output>
     implements GetParticipantPositionList {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantPositionListHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetParticipantPositionListHandler.class);
 
     private static final String allDfsp = "All";
 
@@ -66,7 +70,8 @@ public class GetParticipantPositionListHandler
 
         super(principalCache, actionAuthorizationManager);
 
-        this.getParticipantPositionsDataQuery = Objects.requireNonNull(getParticipantPositionsDataQuery);
+        this.getParticipantPositionsDataQuery = Objects.requireNonNull(
+            getParticipantPositionsDataQuery);
         this.participantCache = Objects.requireNonNull(participantCache);
         this.userCache = Objects.requireNonNull(userCache);
         this.participantNDCQuery = Objects.requireNonNull(participantNDCQuery);
@@ -79,68 +84,52 @@ public class GetParticipantPositionListHandler
 
         final UserData userData = userCache.get(input.userId());
         if (userData == null) {
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
-                                                                                        .getId()
-                                                                                        .toString()));
+            throw new ParticipantException(
+                ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId().toString()));
         }
 
         final ParticipantData userParticipant = participantCache.get(userData.participantId());
 
         if (userParticipant == null) {
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(userData.participantId()
-                                                                                                  .getId()
-                                                                                                  .toString()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(
+                userData.participantId().getId().toString()));
         }
 
-        final boolean isDfspUser = userPermissionManager.isDfsp(new PrincipalId(input.userId()
-                                                                                     .getId()));
-        final String fspName = isDfspUser
-                                   ? userParticipant.participantName()
-                                                    .getValue()
-                                   : allDfsp;
+        final boolean isDfspUser = userPermissionManager.isDfsp(
+            new PrincipalId(input.userId().getId()));
+        final String fspName = isDfspUser ? userParticipant.participantName().getValue() : allDfsp;
 
-        final GetParticipantPositionsDataQuery.Output output =
-            getParticipantPositionsDataQuery.execute(new GetParticipantPositionsDataQuery.Input(fspName));
+        final GetParticipantPositionsDataQuery.Output output = getParticipantPositionsDataQuery.execute(
+            new GetParticipantPositionsDataQuery.Input(fspName));
 
-        final var
-            rows =
-            Optional.ofNullable(output.getFinancialData())
-                    .orElseGet(List::of);
+        final var rows = Optional.ofNullable(output.getFinancialData()).orElseGet(List::of);
         final List<FinancialData> result = new ArrayList<>(rows.size());
 
         final Map<String, ParticipantData> participantDescCache = new ConcurrentHashMap<>();
 
         for (var dto : rows) {
 
-            final BigDecimal ndcPercent = participantNDCQuery.get(dto.dfspId(), dto.currency())
-                                                             .map(ParticipantNDC::getNdcPercent)
-                                                             .map(v -> v.setScale(2, RoundingMode.DOWN))
-                                                             .orElse(roundingValue);
+            final BigDecimal ndcPercent = participantNDCQuery
+                                              .get(dto.dfspId(), dto.currency())
+                                              .map(ParticipantNDC::getNdcPercent)
+                                              .map(v -> v.setScale(2, RoundingMode.DOWN))
+                                              .orElse(roundingValue);
 
-            final ParticipantData resolved = isDfspUser
-                                                 ? userParticipant
-                                                 : participantDescCache.computeIfAbsent(dto.dfspId(),
-                                                                                        id -> resolveParticipantDescription(
-                                                                                            id));
+            final ParticipantData resolved = isDfspUser ? userParticipant :
+                                                 participantDescCache.computeIfAbsent(
+                                                     dto.dfspId(),
+                                                     id -> resolveParticipantDescription(id));
 
             final ParticipantId participantId = resolved.participantId();
 
-            final String displayName = isDfspUser ? userParticipant.description() : resolved.description();
+            final String displayName =
+                isDfspUser ? userParticipant.description() : resolved.description();
 
             final FinancialData updated = new FinancialData(
-                participantId,
-                dto.dfspId(),
-                displayName,
-                dto.currency(),
-                dto.balance(),
-                dto.currentPosition(),
-                ndcPercent,
-                dto.ndc(),
-                dto.ndcUsed(),
-                dto.participantSettlementCurrencyId(),
-                dto.participantPositionCurrencyId(),
-                dto.isActive()
-            );
+                participantId, dto.dfspId(), displayName, dto.currency(), dto.balance(),
+                dto.currentPosition(), ndcPercent, dto.ndc(), dto.ndcUsed(),
+                dto.participantSettlementCurrencyId(), dto.participantPositionCurrencyId(),
+                dto.isActive());
 
             result.add(updated);
         }
@@ -152,11 +141,10 @@ public class GetParticipantPositionListHandler
 
         try {
 
-            return participantQuery.get(dfspId)
-                                   .orElseGet(() -> {
-                                       LOG.warn("Participant not found for dfspId={}", dfspId);
-                                       return unknownParticipant(dfspId);
-                                   });
+            return participantQuery.get(dfspId).orElseGet(() -> {
+                LOG.warn("Participant not found for dfspId={}", dfspId);
+                return unknownParticipant(dfspId);
+            });
         } catch (Exception ex) {
 
             LOG.error("Error resolving participant for dfspId={}", dfspId, ex);
@@ -167,19 +155,8 @@ public class GetParticipantPositionListHandler
     private ParticipantData unknownParticipant(String dfspId) {
 
         return new ParticipantData(
-            new ParticipantId(1L),
-            "",
-            1,
-            null,
-            null,
-            "",
-            null,
-            null,
-            null,
-            null,
-            null,
-            null
-        );
+            new ParticipantId(1L), "", 1, null, null, "", null, null, null,
+            null, null, null);
     }
 
 }

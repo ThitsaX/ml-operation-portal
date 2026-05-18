@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetCurrentParticipantCurrenciesQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -11,11 +13,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_PROFILE_AND_FINANCIAL_CONFIGURATION)
 public class GetParticipantCurrenciesHandler
     extends OperationPortalUseCase<GetParticipantCurrencies.Input, GetParticipantCurrencies.Output>
     implements GetParticipantCurrencies {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetParticipantCurrenciesHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetParticipantCurrenciesHandler.class);
 
     private final GetCurrentParticipantCurrenciesQuery getCurrentParticipantCurrenciesQuery;
 
@@ -31,8 +35,8 @@ public class GetParticipantCurrenciesHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetCurrentParticipantCurrenciesQuery.Output output =
-            this.getCurrentParticipantCurrenciesQuery.execute(new GetCurrentParticipantCurrenciesQuery.Input(input.dfspId()));
+        GetCurrentParticipantCurrenciesQuery.Output output = this.getCurrentParticipantCurrenciesQuery.execute(
+            new GetCurrentParticipantCurrenciesQuery.Input(input.dfspId()));
 
         return new Output(output.getCurrencyDataList());
     }

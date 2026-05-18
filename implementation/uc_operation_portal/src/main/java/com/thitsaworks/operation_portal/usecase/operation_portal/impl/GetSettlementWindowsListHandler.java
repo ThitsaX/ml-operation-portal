@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.api.GetSettlementWindows;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -16,11 +18,13 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetSettlementWindowsListHandler
     extends OperationPortalUseCase<GetSettlementWindowsList.Input, GetSettlementWindowsList.Output>
-        implements GetSettlementWindowsList {
+    implements GetSettlementWindowsList {
 
-    private static final Logger logger = LoggerFactory.getLogger(GetSettlementWindowsListHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(
+        GetSettlementWindowsListHandler.class);
 
     private final SettlementHubClient settlementHubClient;
 
@@ -29,8 +33,7 @@ public class GetSettlementWindowsListHandler
                                            ActionAuthorizationManager actionAuthorizationManager,
                                            SettlementHubClient settlementHubClient) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
         this.settlementHubClient = settlementHubClient;
     }
 
@@ -39,15 +42,11 @@ public class GetSettlementWindowsListHandler
 
         GetSettlementWindows.Request request = new GetSettlementWindows.Request();
 
-        List<GetSettlementWindows.SettlementWindow> response =
-                this.settlementHubClient.getSettlementWindowsList(
-                        input.fromDate(),
-                        input.toDate(),
-                        input.currency(),
-                        input.state(),
-                        input.participantId(),
-                        request
-                                                                     );
+        List<GetSettlementWindows.SettlementWindow> response = this.settlementHubClient.getSettlementWindowsList(
+            input.fromDate(), input.toDate(), input.currency(), input.state(),
+            input.participantId(), request);
 
         return new Output(response);
-    }}
+    }
+
+}

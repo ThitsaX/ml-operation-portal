@@ -5,7 +5,9 @@ import com.thitsaworks.operation_portal.component.common.identifier.ParticipantI
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
 import com.thitsaworks.operation_portal.component.common.identifier.RoleId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -31,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class ModifyUserHandler
     extends OperationPortalAuditableUseCase<ModifyUser.Input, ModifyUser.Output>
     implements ModifyUser {
@@ -62,12 +65,9 @@ public class ModifyUserHandler
                              UserPermissionManager userPermissionManager,
                              IAMQuery iamQuery) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.modifyUserCommand = modifyUserCommand;
         this.assignRoleToPrincipalCommand = assignRoleToPrincipalCommand;
@@ -81,8 +81,7 @@ public class ModifyUserHandler
     protected Output onExecute(Input input) throws DomainException {
 
         var currentUser = this.userPermissionManager.getCurrentUser();
-        var currentUserParticipantId = new ParticipantId(currentUser.realmId()
-                                                                    .getId());
+        var currentUserParticipantId = new ParticipantId(currentUser.realmId().getId());
 
         var isDfsp = this.userPermissionManager.isDfsp(currentUser.principalId());
         var roleIdList = input.roleIdList();
@@ -91,7 +90,8 @@ public class ModifyUserHandler
 
         if (isDfsp) {
 
-            if (!this.userPermissionManager.isSameParticipant(currentUserParticipantId, input.participantId())) {
+            if (!this.userPermissionManager.isSameParticipant(
+                currentUserParticipantId, input.participantId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
 
@@ -100,26 +100,23 @@ public class ModifyUserHandler
             }
         }
 
-        ModifyUserCommand.Output output =
-            this.modifyUserCommand.execute(new ModifyUserCommand.Input(
-                userId,
-                input.name(),
-                input.firstName(),
-                input.lastName(),
-                input.jobTitle(),
+        ModifyUserCommand.Output output = this.modifyUserCommand.execute(
+            new ModifyUserCommand.Input(
+                userId, input.name(), input.firstName(), input.lastName(), input.jobTitle(),
                 participantId));
 
         var principalId = new PrincipalId(userId.getId());
 
-        this.modifyPrincipalRealmIdCommand.execute(new ModifyPrincipalRealmIdCommand.Input(principalId,
-                                                                                           new RealmId(participantId.getId())));
+        this.modifyPrincipalRealmIdCommand.execute(
+            new ModifyPrincipalRealmIdCommand.Input(
+                principalId,
+                new RealmId(participantId.getId())));
 
-        var
-            existingRoleList =
-            this.iamQuery.getRoleListByPrincipal(principalId)
-                         .stream()
-                         .map(RoleData::roleId)
-                         .collect(Collectors.toSet());
+        var existingRoleList = this.iamQuery
+                                   .getRoleListByPrincipal(principalId)
+                                   .stream()
+                                   .map(RoleData::roleId)
+                                   .collect(Collectors.toSet());
 
         Set<RoleId> newRoleList = new HashSet<>(roleIdList);
 
@@ -130,13 +127,13 @@ public class ModifyUserHandler
         revokeRoleList.removeAll(newRoleList);
 
         for (RoleId role : assignRoleList) {
-            this.assignRoleToPrincipalCommand
-                .execute(new AssignRoleToPrincipalCommand.Input(principalId, role));
+            this.assignRoleToPrincipalCommand.execute(
+                new AssignRoleToPrincipalCommand.Input(principalId, role));
         }
 
         for (RoleId role : revokeRoleList) {
-            this.removeRoleFromPrincipalCommand
-                .execute(new RemoveRoleFromPrincipalCommand.Input(principalId, role));
+            this.removeRoleFromPrincipalCommand.execute(
+                new RemoveRoleFromPrincipalCommand.Input(principalId, role));
         }
         return new Output(output.modified(), output.userId());
 

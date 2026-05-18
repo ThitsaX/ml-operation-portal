@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifySchedulerConfigStatusCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -14,11 +16,13 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class ModifySchedulerConfigStatusHandler
     extends OperationPortalUseCase<ModifySchedulerConfigStatus.Input, ModifySchedulerConfigStatus.Output>
     implements ModifySchedulerConfigStatus {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifySchedulerConfigStatusHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        ModifySchedulerConfigStatusHandler.class);
 
     private final ModifySchedulerConfigStatusCommand modifySchedulerConfigStatusCommand;
 
@@ -29,8 +33,7 @@ public class ModifySchedulerConfigStatusHandler
                                               ModifySchedulerConfigStatusCommand modifySchedulerConfigStatusCommand,
                                               SchedulerEngine schedulerEngine) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.modifySchedulerConfigStatusCommand = modifySchedulerConfigStatusCommand;
         this.schedulerEngine = schedulerEngine;
@@ -40,7 +43,9 @@ public class ModifySchedulerConfigStatusHandler
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         var output = this.modifySchedulerConfigStatusCommand.execute(
-            new ModifySchedulerConfigStatusCommand.Input(input.schedulerConfigId(), input.active()));
+            new ModifySchedulerConfigStatusCommand.Input(
+                input.schedulerConfigId(),
+                input.active()));
 
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 

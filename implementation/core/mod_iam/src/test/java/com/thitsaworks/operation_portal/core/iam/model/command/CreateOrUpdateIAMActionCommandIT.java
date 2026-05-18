@@ -25,7 +25,7 @@ public class CreateOrUpdateIAMActionCommandIT extends BaseVaultSetUpTest {
 
     @Test
     public void success(){
-        var success= this.createOrUpdateActionCommand.execute(new CreateOrUpdateActionCommand.Input(new ActionCode("UpdateParticipantAmount"), "hi", "Automatically registered action for use case: UpdateParticipantAmountHandler"));
+        var success= this.createOrUpdateActionCommand.execute(new CreateOrUpdateActionCommand.Input(new ActionCode("UpdateParticipantAmount"), "hi", "", false, "Automatically registered action for use case: UpdateParticipantAmountHandler"));
 
             LOGGER.info("ActionId {}",success.actionId());
     }

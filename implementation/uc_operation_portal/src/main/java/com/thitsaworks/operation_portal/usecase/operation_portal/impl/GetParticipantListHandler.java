@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class GetParticipantListHandler
     extends OperationPortalUseCase<GetParticipantList.Input, GetParticipantList.Output>
     implements GetParticipantList {
@@ -28,14 +31,14 @@ public class GetParticipantListHandler
                                      ActionAuthorizationManager actionAuthorizationManager,
                                      ParticipantQuery participantQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
     }
 
     @Override
-    public GetParticipantList.Output onExecute(GetParticipantList.Input input) throws DomainException {
+    public GetParticipantList.Output onExecute(GetParticipantList.Input input)
+        throws DomainException {
 
         List<ParticipantData> participantDataList = this.participantQuery.getAllParticipants();
 
@@ -44,23 +47,15 @@ public class GetParticipantListHandler
         for (ParticipantData participantData : participantDataList) {
 
             if (participantData.participantName() != null &&
-                    !participantData.participantName()
-                                    .getValue()
-                                    .toLowerCase()
-                                    .contains("hub")) {
+                    !participantData.participantName().getValue().toLowerCase().contains("hub")) {
 
-                participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(participantData.participantId(),
-                                                                                      participantData.dfspId(),
-                                                                                      participantData.participantName()
-                                                                                                     .getValue(),
+                participantInfoList.add(new GetParticipantList.Output.ParticipantInfo(
+                    participantData.participantId(), participantData.dfspId(),
+                    participantData.participantName().getValue(),
 
-                                                                                      participantData.description(),
-                                                                                      participantData.address(),
-                                                                                      participantData.mobile(),
-                                                                                      participantData.logoFileType(),
-                                                                                      participantData.logo(),
-                                                                                      Instant.ofEpochSecond(
-                                                                                          participantData.createdDate())));
+                    participantData.description(), participantData.address(),
+                    participantData.mobile(), participantData.logoFileType(),
+                    participantData.logo(), Instant.ofEpochSecond(participantData.createdDate())));
             }
         }
 

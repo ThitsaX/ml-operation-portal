@@ -1,7 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowInfoData;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.WindowInfoData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetNetTransferAmountByWindowIdQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -16,11 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetNetTransferAmountByWindowIdHandler
     extends OperationPortalUseCase<GetNetTransferAmountByWindowId.Input, GetNetTransferAmountByWindowId.Output>
     implements GetNetTransferAmountByWindowId {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetNetTransferAmountByWindowIdHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetNetTransferAmountByWindowIdHandler.class);
 
     private final GetNetTransferAmountByWindowIdQuery getNetTrasferAmountByWindowIdQuery;
 
@@ -28,8 +31,7 @@ public class GetNetTransferAmountByWindowIdHandler
                                                  ActionAuthorizationManager actionAuthorizationManager,
                                                  GetNetTransferAmountByWindowIdQuery getNetTransferAmountByWindowIdQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getNetTrasferAmountByWindowIdQuery = getNetTransferAmountByWindowIdQuery;
 
@@ -38,35 +40,29 @@ public class GetNetTransferAmountByWindowIdHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GetNetTransferAmountByWindowIdQuery.Output
-            output =
-            this.getNetTrasferAmountByWindowIdQuery.execute(new GetNetTransferAmountByWindowIdQuery.Input(
-                input.settlementWindowId()));
+        GetNetTransferAmountByWindowIdQuery.Output output = this.getNetTrasferAmountByWindowIdQuery.execute(
+            new GetNetTransferAmountByWindowIdQuery.Input(input.settlementWindowId()));
 
         List<GetNetTransferAmountByWindowId.Detail> details = new ArrayList<>();
 
         for (WindowInfoData windowInfo : output.getWindowInfoList()) {
 
             GetNetTransferAmountByWindowId.Detail detail = new GetNetTransferAmountByWindowId.Detail(
-                windowInfo.getDfspName(),
-                windowInfo.getDebit(),
-                windowInfo.getCredit(),
+                windowInfo.getDfspName(), windowInfo.getDebit(), windowInfo.getCredit(),
                 windowInfo.getCurrencyId());
 
             details.add(detail);
         }
 
         String windowOpenedDate = output.getWindowInfoList().isEmpty() ? null :
-            output.getWindowInfoList().get(0).getWindowOpenedDate();
+                                      output.getWindowInfoList().get(0).getWindowOpenedDate();
 
         String windowClosedDate = output.getWindowInfoList().isEmpty() ? null :
-            output.getWindowInfoList().get(0).getWindowClosedDate();
+                                      output.getWindowInfoList().get(0).getWindowClosedDate();
 
         return new GetNetTransferAmountByWindowId.Output(
             input.settlementWindowId(),
-            windowOpenedDate,
-            windowClosedDate,
-            details);
+            windowOpenedDate, windowClosedDate, details);
 
     }
 

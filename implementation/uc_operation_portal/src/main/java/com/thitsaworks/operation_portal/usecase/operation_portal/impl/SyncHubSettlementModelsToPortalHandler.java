@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -25,11 +27,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_MODEL_MANAGEMENT)
 public class SyncHubSettlementModelsToPortalHandler
     extends OperationPortalAuditableUseCase<SyncHubSettlementModelsToPortal.Input, SyncHubSettlementModelsToPortal.Output>
     implements SyncHubSettlementModelsToPortal {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SyncHubSettlementModelsToPortalHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        SyncHubSettlementModelsToPortalHandler.class);
 
     private final HubSettlementModelQuery hubSettlementModelQuery;
 
@@ -47,12 +51,9 @@ public class SyncHubSettlementModelsToPortalHandler
                                                   SettlementModelQuery settlementModelQuery,
                                                   CreateSettlementModelCommand createSettlementModelCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.hubSettlementModelQuery = hubSettlementModelQuery;
         this.settlementModelQuery = settlementModelQuery;
@@ -64,43 +65,38 @@ public class SyncHubSettlementModelsToPortalHandler
 
         List<HubSettlementModelData> hubSettlementModelList = this.hubSettlementModelQuery.getSettlementModelList();
 
-        Set<String>
-            existingSettlementModelNames =
-            this.settlementModelQuery.getSettlementModels()
-                                     .stream()
-                                     .map(SettlementModelData::name)
-                                     .collect(Collectors.toSet());
+        Set<String> existingSettlementModelNames = this.settlementModelQuery
+                                                       .getSettlementModels()
+                                                       .stream()
+                                                       .map(SettlementModelData::name)
+                                                       .collect(Collectors.toSet());
 
         List<CreatedSettlementModelInfo> createdSettlementModelInfoList = new ArrayList<>();
 
         for (HubSettlementModelData hubSettlementModel : hubSettlementModelList) {
             if (!existingSettlementModelNames.contains(hubSettlementModel.name())) {
 
-                CreateSettlementModelCommand.Output output =
-                    this.createSettlementModelCommand.execute(new CreateSettlementModelCommand.Input(
-                            hubSettlementModel.name(),
-                            hubSettlementModel.settlementInterchangeName() + "_" + hubSettlementModel.name() + "_" +
+                CreateSettlementModelCommand.Output output = this.createSettlementModelCommand.execute(
+                    new CreateSettlementModelCommand.Input(
+                        hubSettlementModel.name(),
+                        hubSettlementModel.settlementInterchangeName() + "_" +
+                            hubSettlementModel.name() + "_" +
                             hubSettlementModel.settlementGranularityName(),
-                            hubSettlementModel.currencyId(),
-                            hubSettlementModel.isActive(),
-                            false, // set Manual as default
-                            true,
-                            ZoneId.of("UTC").getId(),
-                            hubSettlementModel.requireLiquidityCheck(),
-                            hubSettlementModel.autoPositionReset(),
-                            hubSettlementModel.adjustPosition(),
-                            new ArrayList<>()));
+                        hubSettlementModel.currencyId(), hubSettlementModel.isActive(),
+                        false, // set Manual as default
+                        true, ZoneId.of("UTC").getId(), hubSettlementModel.requireLiquidityCheck(),
+                        hubSettlementModel.autoPositionReset(), hubSettlementModel.adjustPosition(),
+                        new ArrayList<>()));
 
-                createdSettlementModelInfoList.add(new CreatedSettlementModelInfo(output.settlementModelId()
-                                                                                        .getId(),
-                                                                                  hubSettlementModel.name()));
+                createdSettlementModelInfoList.add(
+                    new CreatedSettlementModelInfo(
+                        output.settlementModelId().getId(), hubSettlementModel.name()));
 
             }
         }
 
         try {
-            LOG.info("Created settlement models : [{}]",
-                     createdSettlementModelInfoList);
+            LOG.info("Created settlement models : [{}]", createdSettlementModelInfoList);
 
         } catch (Exception e) {
             LOG.info("Something went wrong: [{}]", e.getMessage());

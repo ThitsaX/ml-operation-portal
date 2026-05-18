@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,6 +28,7 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class CreateSettlementHandler
     extends OperationPortalAuditableUseCase<CreateSettlement.Input, CreateSettlement.Output>
     implements CreateSettlement {
@@ -45,54 +48,57 @@ public class CreateSettlementHandler
                                    ActionAuthorizationManager actionAuthorizationManager,
                                    SettlementHubClient settlementHubClient) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.settlementHubClient = settlementHubClient;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public Output onExecute(Input input) throws DomainException, ConnectException, JsonProcessingException {
+    public Output onExecute(Input input)
+        throws DomainException, ConnectException, JsonProcessingException {
 
         LOG.info(
             "Create Settlement Request from op to mojaloop : settlementModel : {}, reason : {}, settlementWindowIdList : {}",
-            input.settlementModel(),
-            input.reason(),
-            input.settlementWindowIdList());
+            input.settlementModel(), input.reason(), input.settlementWindowIdList());
 
-        PostCreateSettlement.Response response =
-            this.settlementHubClient.createSettlement(new PostCreateSettlement.Request(input.settlementModel(),
-                                                                                       input.reason(),
-                                                                                       input.settlementWindowIdList()));
+        PostCreateSettlement.Response response = this.settlementHubClient.createSettlement(
+            new PostCreateSettlement.Request(
+                input.settlementModel(), input.reason(),
+                input.settlementWindowIdList()));
 
-        LOG.info("Create Settlement Response from mojaloop to op : {}", this.objectMapper.writeValueAsString(response));
+        LOG.info(
+            "Create Settlement Response from mojaloop to op : {}",
+            this.objectMapper.writeValueAsString(response));
 
         LOG.info("Get Settlement Request from op to mojaloop : {}", response.id());
 
         Settlement settlement = this.settlementHubClient.getSettlement(response.id());
 
-        LOG.info("Get Settlement Response from mojaloop to op : {}", this.objectMapper.writeValueAsString(settlement));
+        LOG.info(
+            "Get Settlement Response from mojaloop to op : {}",
+            this.objectMapper.writeValueAsString(settlement));
 
-        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(settlement.getParticipants());
+        PutUpdateSettlement.Request request = new PutUpdateSettlement.Request(
+            settlement.getParticipants());
 
         List<SettlementParticipant> settlementParticipants = request.participants();
 
         SettlementState settlementState = SettlementState.valueOf(settlement.getState());
 
-        while (!settlementParticipants.getFirst()
-                                      .getAccounts()
-                                      .getFirst()
-                                      .getState()
-                                      .equals(SettlementState.PS_TRANSFERS_RESERVED.toString())) {
+        while (!settlementParticipants
+                    .getFirst()
+                    .getAccounts()
+                    .getFirst()
+                    .getState()
+                    .equals(SettlementState.PS_TRANSFERS_RESERVED.toString())) {
 
             switch (settlementState) {
                 case PENDING_SETTLEMENT -> settlementState = SettlementState.PS_TRANSFERS_RECORDED;
-                case PS_TRANSFERS_RECORDED -> settlementState = SettlementState.PS_TRANSFERS_RESERVED;
+                case PS_TRANSFERS_RECORDED ->
+                    settlementState = SettlementState.PS_TRANSFERS_RESERVED;
             }
 
             for (SettlementParticipant participant : settlementParticipants) {
@@ -101,29 +107,26 @@ public class CreateSettlementHandler
                 }
             }
 
-            LOG.info("Put Update Settlement Request from op to mojaloop : settlementId : {}, request : {}",
-                     settlement.getId(),
-                     this.objectMapper.writeValueAsString(new PutUpdateSettlement.Request(settlementParticipants)));
+            LOG.info(
+                "Put Update Settlement Request from op to mojaloop : settlementId : {}, request : {}",
+                settlement.getId(), this.objectMapper.writeValueAsString(
+                    new PutUpdateSettlement.Request(settlementParticipants)));
 
             PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
-                settlement.getId(),
-                new PutUpdateSettlement.Request(settlementParticipants));
+                settlement.getId(), new PutUpdateSettlement.Request(settlementParticipants));
 
-            LOG.info("Put Update Settlement Response from mojaloop to op : {}",
-                     this.objectMapper.writeValueAsString(putUpdateSettlementResponse));
+            LOG.info(
+                "Put Update Settlement Response from mojaloop to op : {}",
+                this.objectMapper.writeValueAsString(putUpdateSettlementResponse));
 
             settlementState = SettlementState.valueOf(putUpdateSettlementResponse.state());
 
         }
 
-        return new Output(response.id(),
-                          response.settlementModel(),
-                          response.state(),
-                          response.reason(),
-                          response.createdDate(),
-                          response.changedDate(),
-                          response.settlementWindows(),
-                          response.participants());
+        return new Output(
+            response.id(), response.settlementModel(), response.state(), response.reason(),
+            response.createdDate(), response.changedDate(), response.settlementWindows(),
+            response.participants());
     }
 
 }

@@ -4,18 +4,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
 import com.thitsaworks.operation_portal.component.common.type.ReportType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.cache.ParticipantCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
-import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
-import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantErrors;
 import com.thitsaworks.operation_portal.core.participant.exception.ParticipantException;
+import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
+import com.thitsaworks.operation_portal.core.reporting.download.request.ReportDownloadRequestManager;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
 import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
@@ -30,11 +32,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateSettlementBankReportHandler
-        extends OperationPortalAuditableUseCase<GenerateSettlementBankReport.Input, GenerateSettlementBankReport.Output>
-        implements GenerateSettlementBankReport {
+    extends OperationPortalAuditableUseCase<GenerateSettlementBankReport.Input, GenerateSettlementBankReport.Output>
+    implements GenerateSettlementBankReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateSettlementBankReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateSettlementBankReportHandler.class);
 
     private final ReportDownloadRequestManager reportDownloadRequestManager;
 
@@ -55,12 +59,9 @@ public class GenerateSettlementBankReportHandler
                                                ParticipantCache participantCache,
                                                S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestManager = reportDownloadRequestManager;
         this.userQuery = userQuery;
@@ -79,11 +80,11 @@ public class GenerateSettlementBankReportHandler
         var getUser = this.userQuery.get(new UserId(input.userId()));
         ParticipantData userParticipant = this.participantCache.get(getUser.participantId());
         if (userParticipant == null) {
-            throw new ParticipantException(
-                ParticipantErrors.PARTICIPANT_NOT_FOUND.format(getUser.participantId().getId().toString()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(
+                getUser.participantId().getId().toString()));
         }
         boolean isParent = userParticipant.parentParticipantName() == null ||
-            userParticipant.parentParticipantName().isBlank();
+                               userParticipant.parentParticipantName().isBlank();
 
         Map<String, String> params = new HashMap<>();
         params.put("settlementId", input.settlementId());
@@ -94,9 +95,7 @@ public class GenerateSettlementBankReportHandler
         params.put("isParent", String.valueOf(isParent));
 
         ReportDownloadRequestManager.CreateOrReuseResult result = this.reportDownloadRequestManager.createPendingOrReuse(
-            ReportType.SETTLEMENT_BANK,
-            normalizedFileType,
-            params);
+            ReportType.SETTLEMENT_BANK, normalizedFileType, params);
 
         String fileKey = result.request().fileUrl();
         String fileUrl = null;
@@ -121,7 +120,8 @@ public class GenerateSettlementBankReportHandler
         }
 
         return new Output(
-            result.request().requestId(), result.request().status(), fileUrl, fileKey, result.paramsSignature());
+            result.request().requestId(), result.request().status(), fileUrl, fileKey,
+            result.paramsSignature());
     }
 
 }

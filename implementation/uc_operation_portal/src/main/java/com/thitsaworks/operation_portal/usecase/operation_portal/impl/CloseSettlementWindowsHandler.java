@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class CloseSettlementWindowsHandler
     extends OperationPortalAuditableUseCase<CloseSettlementWindows.Input, CloseSettlementWindows.Output>
     implements CloseSettlementWindows {
@@ -41,48 +44,43 @@ public class CloseSettlementWindowsHandler
                                          ActionAuthorizationManager actionAuthorizationManager,
                                          SettlementHubClient settlementHubClient) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.settlementHubClient = settlementHubClient;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public Output onExecute(Input input) throws DomainException, ConnectException, JsonProcessingException {
+    public Output onExecute(Input input)
+        throws DomainException, ConnectException, JsonProcessingException {
 
         PostCloseSettlementWindows.Request request = new PostCloseSettlementWindows.Request(
-            input.state(),
-            input.reason());
+            input.state(), input.reason());
 
-        LOG.info("Close Settlement Windows Request from op to mojaloop : {}",
-                 this.objectMapper.writeValueAsString(request));
+        LOG.info(
+            "Close Settlement Windows Request from op to mojaloop : {}",
+            this.objectMapper.writeValueAsString(request));
 
-        PostCloseSettlementWindows.Response
-            response =
-            this.settlementHubClient.closeSettlementWindows(input.settlementWindowId(), request);
+        PostCloseSettlementWindows.Response response = this.settlementHubClient.closeSettlementWindows(
+            input.settlementWindowId(), request);
 
-        LOG.info("Close Settlement Windows Response from mojaloop to op : {}",
-                 this.objectMapper.writeValueAsString(response));
+        LOG.info(
+            "Close Settlement Windows Response from mojaloop to op : {}",
+            this.objectMapper.writeValueAsString(response));
 
-
-        if (response.getErrorInformation() != null){
+        if (response.getErrorInformation() != null) {
             throw new HubServicesException(HubServicesErrors.SETTLEMENT_WINDOW_ERROR
                                                .code(response.getErrorInformation().getErrorCode())
-                                               .description(response.getErrorInformation().getErrorDescription()));
+                                               .description(response
+                                                                .getErrorInformation()
+                                                                .getErrorDescription()));
         }
 
-        return new Output(input.settlementWindowId(),
-                          request.getState(),
-                          request.getReason(),
-                          response.getCreatedDate(),
-                          response.getClosedDate(),
-                          response.getChangedDate(),
-                          null);
+        return new Output(
+            input.settlementWindowId(), request.getState(), request.getReason(),
+            response.getCreatedDate(), response.getClosedDate(), response.getChangedDate(), null);
     }
 
 }

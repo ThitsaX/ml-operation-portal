@@ -15,6 +15,7 @@ public interface GetActionListByRole
 
         public record ActionOption(ActionId actionId,
                                    String actionName,
+                                   String category,
                                    boolean selected,
                                    boolean mandatory) { }
 

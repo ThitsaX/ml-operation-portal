@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.UserData;
 import com.thitsaworks.operation_portal.core.participant.query.UserQuery;
@@ -18,13 +20,12 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class GetParticipantUserListByParticipantHandler
     extends OperationPortalUseCase<GetParticipantUserListByParticipant.Input, GetParticipantUserListByParticipant.Output>
     implements GetParticipantUserListByParticipant {
 
     private final UserQuery userQuery;
-
-    private final PrincipalCache principalCache;
 
     private final UserPermissionManager userPermissionManager;
 
@@ -33,11 +34,9 @@ public class GetParticipantUserListByParticipantHandler
                                                       UserQuery userQuery,
                                                       UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.userQuery = userQuery;
-        this.principalCache = principalCache;
         this.userPermissionManager = userPermissionManager;
     }
 
@@ -52,13 +51,13 @@ public class GetParticipantUserListByParticipantHandler
 
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            userDataList = this.userQuery.getUsers(new ParticipantId(currentUser.realmId()
-                                                                                .getId()));
+            userDataList = this.userQuery.getUsers(
+                new ParticipantId(currentUser.realmId().getId()));
 
             for (var userData : userDataList) {
 
-                madeByUsers.add(new Output.User(new UserId(userData.userId()
-                                                                   .getEntityId()), userData.email()));
+                madeByUsers.add(
+                    new Output.User(new UserId(userData.userId().getEntityId()), userData.email()));
 
             }
 
@@ -68,8 +67,8 @@ public class GetParticipantUserListByParticipantHandler
 
             for (var userData : userDataList) {
 
-                madeByUsers.add(new Output.User(new UserId(userData.userId()
-                                                                   .getEntityId()), userData.email()));
+                madeByUsers.add(
+                    new Output.User(new UserId(userData.userId().getEntityId()), userData.email()));
             }
 
         }

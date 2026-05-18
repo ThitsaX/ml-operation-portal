@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.LIQUIDITY_PROFILE)
 public class RemoveLiquidityProfileHandler
     extends OperationPortalAuditableUseCase<RemoveLiquidityProfile.Input, RemoveLiquidityProfile.Output>
     implements RemoveLiquidityProfile {
@@ -31,12 +34,9 @@ public class RemoveLiquidityProfileHandler
                                          ActionAuthorizationManager actionAuthorizationManager,
                                          RemoveLiquidityProfileCommand removeLiquidityProfileCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.removeLiquidityProfileCommand = removeLiquidityProfileCommand;
     }
@@ -44,10 +44,10 @@ public class RemoveLiquidityProfileHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var
-            output =
-            this.removeLiquidityProfileCommand.execute(new RemoveLiquidityProfileCommand.Input(input.participantId(),
-                                                                                               input.liquidityProfileId()));
+        var output = this.removeLiquidityProfileCommand.execute(
+            new RemoveLiquidityProfileCommand.Input(
+                input.participantId(),
+                input.liquidityProfileId()));
 
         return new Output(output.removed(), output.liquidityProfileId());
     }

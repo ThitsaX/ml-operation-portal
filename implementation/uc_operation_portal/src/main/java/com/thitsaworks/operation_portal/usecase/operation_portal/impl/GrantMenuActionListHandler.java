@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantMenuActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(
+    category = ActionCategory.ROLE_MENU_PERMISSION_IAM,
+    isMandatory = true)
 public class GrantMenuActionListHandler
     extends OperationPortalUseCase<GrantMenuActionList.Input, GrantMenuActionList.Output>
     implements GrantMenuActionList {
@@ -25,8 +30,7 @@ public class GrantMenuActionListHandler
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       GrantMenuActionCommand grantMenuActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.grantMenuActionCommand = grantMenuActionCommand;
     }
@@ -37,7 +41,8 @@ public class GrantMenuActionListHandler
         for (var menu : input.menuGrantList()) {
 
             for (var action : menu.actionList()) {
-                this.grantMenuActionCommand.execute(new GrantMenuActionCommand.Input(menu.menuName(), action));
+                this.grantMenuActionCommand.execute(
+                    new GrantMenuActionCommand.Input(menu.menuName(), action));
             }
         }
 

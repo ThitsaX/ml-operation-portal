@@ -1,8 +1,10 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.RealmId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
+import com.thitsaworks.operation_portal.component.misc.annotation.NoLogging;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.component.misc.logging.NoLogging;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.query.GetAllAuditByParticipantQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.ActionData;
@@ -19,12 +21,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.AUDIT_AND_LOGS)
 @NoLogging
 public class GetAuditListByParticipantHandler
     extends OperationPortalUseCase<GetAuditListByParticipant.Input, GetAuditListByParticipant.Output>
     implements GetAuditListByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetAuditListByParticipantHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetAuditListByParticipantHandler.class);
 
     private final IAMQuery iamQuery;
 
@@ -38,8 +42,7 @@ public class GetAuditListByParticipantHandler
                                             GetAllAuditByParticipantQuery getAllAuditByParticipantQuery,
                                             UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
         this.getAllAuditByParticipantQuery = getAllAuditByParticipantQuery;
@@ -53,36 +56,29 @@ public class GetAuditListByParticipantHandler
 
         var existingRealmId = currentUser.realmId();
 
-        var grantedActionList = this.iamQuery.getGrantedActionListByPrincipal(currentUser.principalId())
-                                             .stream()
-                                             .map(ActionData::actionId)
-                                             .toList();
+        var grantedActionList = this.iamQuery
+                                    .getGrantedActionListByPrincipal(currentUser.principalId())
+                                    .stream()
+                                    .map(ActionData::actionId)
+                                    .toList();
 
         RealmId realmId = null;
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
             realmId = existingRealmId;
         }
 
-        GetAllAuditByParticipantQuery.Output output =
-            this.getAllAuditByParticipantQuery.execute(new GetAllAuditByParticipantQuery.Input(
-                realmId,
-                input.fromDate(),
-                input.toDate(),
-                grantedActionList,
-                input.userId(),
-                input.actionid(),
-                input.page(),
-                input.pageSize()));
+        GetAllAuditByParticipantQuery.Output output = this.getAllAuditByParticipantQuery.execute(
+            new GetAllAuditByParticipantQuery.Input(
+                realmId, input.fromDate(), input.toDate(), grantedActionList, input.userId(),
+                input.actionid(), input.page(), input.pageSize()));
 
         List<Output.AuditInfo> auditInfoList = new ArrayList<>();
 
         for (var data : output.auditInfoList()) {
 
-            auditInfoList.add(new Output.AuditInfo(data.auditId(),
-                                                   data.date(),
-                                                   data.action(),
-                                                   data.madeBy(),
-                                                   data.traceId()));
+            auditInfoList.add(
+                new Output.AuditInfo(
+                    data.auditId(), data.date(), data.action(), data.madeBy(), data.traceId()));
         }
 
         return new Output(auditInfoList, output.totalElements(), output.totalPages());

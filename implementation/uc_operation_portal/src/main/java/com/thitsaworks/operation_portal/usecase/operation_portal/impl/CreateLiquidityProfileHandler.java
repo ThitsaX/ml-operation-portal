@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.LIQUIDITY_PROFILE)
 public class CreateLiquidityProfileHandler
     extends OperationPortalAuditableUseCase<CreateLiquidityProfile.Input, CreateLiquidityProfile.Output>
     implements CreateLiquidityProfile {
@@ -31,12 +34,9 @@ public class CreateLiquidityProfileHandler
                                          ActionAuthorizationManager actionAuthorizationManager,
                                          CreateLiquidityProfileCommand createLiquidityProfileCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.createLiquidityProfileCommand = createLiquidityProfileCommand;
 
@@ -45,14 +45,10 @@ public class CreateLiquidityProfileHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        var
-            output =
-            this.createLiquidityProfileCommand.execute(new CreateLiquidityProfileCommand.Input(input.participantId(),
-                                                                                               input.bankName(),
-                                                                                               input.accountName(),
-                                                                                               input.accountNumber(),
-                                                                                               input.currency(),
-                                                                                               true));
+        var output = this.createLiquidityProfileCommand.execute(
+            new CreateLiquidityProfileCommand.Input(
+                input.participantId(), input.bankName(), input.accountName(), input.accountNumber(),
+                input.currency(), true));
 
         return new Output(true, output.liquidityProfileId());
     }

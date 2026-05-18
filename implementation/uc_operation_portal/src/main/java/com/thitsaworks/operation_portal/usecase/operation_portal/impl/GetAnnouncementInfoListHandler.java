@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.participant.data.AnnouncementData;
 import com.thitsaworks.operation_portal.core.participant.query.AnnouncementQuery;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetAnnouncementInfoList;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.ANNOUNCEMENT_AND_GREETING_CONTENT)
 public class GetAnnouncementInfoListHandler implements GetAnnouncementInfoList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetAnnouncementInfoListHandler.class);
@@ -33,11 +36,9 @@ public class GetAnnouncementInfoListHandler implements GetAnnouncementInfoList {
 
         for (AnnouncementData announcementData : announcementDataList) {
 
-            announcementInfoList.add(
-                new Output.AnnouncementInfo(announcementData.announcementId(),
-                                            announcementData.announcementTitle(),
-                                            announcementData.announcementDetail(),
-                                            announcementData.announcementDate()));
+            announcementInfoList.add(new Output.AnnouncementInfo(
+                announcementData.announcementId(), announcementData.announcementTitle(),
+                announcementData.announcementDetail(), announcementData.announcementDate()));
         }
 
         return new Output(announcementInfoList);

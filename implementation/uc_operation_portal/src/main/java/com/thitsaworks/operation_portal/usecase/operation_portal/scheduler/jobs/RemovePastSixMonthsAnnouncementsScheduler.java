@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -15,10 +17,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component("RemovePastSixMonthsAnnouncementsScheduler")
+@ActionMetadata(category = ActionCategory.SYSTEM_JOBS_AND_SCHEDULED_EXECUTORS)
 public class RemovePastSixMonthsAnnouncementsScheduler
-        extends ScheduledJob<SchedulerConfigData, RemoveAnnouncementsCommand.Output> {
+    extends ScheduledJob<SchedulerConfigData, RemoveAnnouncementsCommand.Output> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(RemovePastSixMonthsAnnouncementsScheduler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        RemovePastSixMonthsAnnouncementsScheduler.class);
 
     private final RemoveAnnouncementsCommand removeAnnouncementsCommand;
 
@@ -31,8 +35,10 @@ public class RemovePastSixMonthsAnnouncementsScheduler
                                                      ObjectMapper objectMapper,
                                                      RemoveAnnouncementsCommand removeAnnouncementsCommand) {
 
-        super(createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
-              createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager, objectMapper);
+        super(
+            createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
+            createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager,
+            objectMapper);
         this.removeAnnouncementsCommand = removeAnnouncementsCommand;
     }
 

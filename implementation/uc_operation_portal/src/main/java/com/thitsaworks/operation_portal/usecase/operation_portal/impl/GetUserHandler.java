@@ -3,7 +3,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
@@ -21,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetUserHandler
-    extends OperationPortalUseCase<GetUser.Input, GetUser.Output>
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
+public class GetUserHandler extends OperationPortalUseCase<GetUser.Input, GetUser.Output>
     implements GetUser {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserHandler.class);
@@ -42,8 +44,7 @@ public class GetUserHandler
                           IAMQuery iamQuery,
                           UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.userQuery = userQuery;
         this.iamQuery = iamQuery;
@@ -57,37 +58,29 @@ public class GetUserHandler
         var currentUser = this.userPermissionManager.getCurrentUser();
 
         var userId = input.userId();
-        var participantId = new ParticipantId(this.principalCache.get(new PrincipalId(userId.getEntityId()))
-                                                                 .realmId()
-                                                                 .getId());
+        var participantId = new ParticipantId(
+            this.principalCache.get(new PrincipalId(userId.getEntityId())).realmId().getId());
 
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
-                                                                                           .getId()), participantId)) {
+            if (!this.userPermissionManager.isSameParticipant(
+                new ParticipantId(currentUser.realmId().getId()), participantId)) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
         }
 
         UserData userData = this.userQuery.get(userId);
 
-        var
-            roleList =
-            this.iamQuery.getRoleListByPrincipal(new PrincipalId(userId.getId()))
-                         .stream()
-                         .map(RoleData::name)
-                         .toList();
+        var roleList = this.iamQuery
+                           .getRoleListByPrincipal(new PrincipalId(userId.getId()))
+                           .stream()
+                           .map(RoleData::name)
+                           .toList();
 
-        return new GetUser.Output(new UserId(userData.userId()
-                                                     .getId()),
-                                  userData.name(),
-                                  userData.email(),
-                                  userData.firstName(),
-                                  userData.lastName(),
-                                  userData.jobTitle(),
-                                  roleList,
-                                  userData.participantId(),
-                                  userData.createdDate());
+        return new GetUser.Output(
+            new UserId(userData.userId().getId()), userData.name(), userData.email(),
+            userData.firstName(), userData.lastName(), userData.jobTitle(), roleList,
+            userData.participantId(), userData.createdDate());
     }
 
 }

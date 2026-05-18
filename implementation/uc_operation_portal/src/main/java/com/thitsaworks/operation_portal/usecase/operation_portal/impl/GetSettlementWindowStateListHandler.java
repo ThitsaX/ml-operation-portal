@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.SettlementWindowStateData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetSettlementWindowStateQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -16,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetSettlementWindowStateListHandler
     extends OperationPortalUseCase<GetSettlementWindowStateList.Input, GetSettlementWindowStateList.Output>
     implements GetSettlementWindowStateList {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementWindowStateListHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        GetSettlementWindowStateListHandler.class);
 
     private final GetSettlementWindowStateQuery settlementWindowStateQuery;
 
@@ -35,7 +39,8 @@ public class GetSettlementWindowStateListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
-        var output = this.settlementWindowStateQuery.execute(new GetSettlementWindowStateQuery.Input());
+        var output = this.settlementWindowStateQuery.execute(
+            new GetSettlementWindowStateQuery.Input());
 
         List<Output.SettlementWindowStateData> settlementWindowStates = new ArrayList<>();
 
@@ -45,7 +50,8 @@ public class GetSettlementWindowStateListHandler
                 if ("PENDING_SETTLEMENT".equalsIgnoreCase(state)) {
                     state = "PENDING";
                 }
-                settlementWindowStates.add(new Output.SettlementWindowStateData(data.settlementWindowStateId(), state));
+                settlementWindowStates.add(
+                    new Output.SettlementWindowStateData(data.settlementWindowStateId(), state));
             }
         }
         return new Output(settlementWindowStates);

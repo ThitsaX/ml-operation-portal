@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantPrincipalActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class GrantUserActionListHandler
     extends OperationPortalUseCase<GrantUserActionList.Input, GrantUserActionList.Output>
     implements GrantUserActionList {
@@ -21,8 +24,7 @@ public class GrantUserActionListHandler
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       GrantPrincipalActionCommand grantPrincipalActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.grantPrincipalActionCommand = grantPrincipalActionCommand;
     }
@@ -32,8 +34,8 @@ public class GrantUserActionListHandler
 
         for (var actionId : input.actionIdList()) {
 
-            this.grantPrincipalActionCommand.execute(new GrantPrincipalActionCommand.Input(input.principalId(),
-                                                                                           actionId));
+            this.grantPrincipalActionCommand.execute(
+                new GrantPrincipalActionCommand.Input(input.principalId(), actionId));
         }
 
         return new Output(true);

@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.misc.logging;
+package com.thitsaworks.operation_portal.component.misc.annotation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.util.MaskPassword;

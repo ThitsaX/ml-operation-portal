@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIdsQuery;
@@ -16,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetSettlementIdHandler extends OperationPortalUseCase<GetSettlementId.Input, GetSettlementId.Output>
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
+public class GetSettlementIdHandler
+    extends OperationPortalUseCase<GetSettlementId.Input, GetSettlementId.Output>
     implements GetSettlementId {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementIdHandler.class);
@@ -36,10 +40,9 @@ public class GetSettlementIdHandler extends OperationPortalUseCase<GetSettlement
     protected Output onExecute(Input input) throws DomainException {
 
         GetSettlementIdsQuery.Output output = this.getSettlementIdsQuery.execute(
-            new GetSettlementIdsQuery.Input(Timestamp.from(input.startDate()),
-                                            Timestamp.from(input.endDate()),
-                                            input.dfspId(),
-                                            input.timezoneOffset()));
+            new GetSettlementIdsQuery.Input(
+                Timestamp.from(input.startDate()), Timestamp.from(input.endDate()), input.dfspId(),
+                input.timezoneOffset()));
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
 

@@ -3,8 +3,10 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GetReportDownloadUrlHandler
     extends OperationPortalAuditableUseCase<GetReportDownloadUrl.Input, GetReportDownloadUrl.Output>
     implements GetReportDownloadUrl {
@@ -42,12 +45,9 @@ public class GetReportDownloadUrlHandler
                                        ReportDownloadRequestQuery reportDownloadRequestQuery,
                                        S3FileStorage s3FileStorage) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.reportDownloadRequestQuery = reportDownloadRequestQuery;
         this.s3FileStorage = s3FileStorage;
@@ -70,20 +70,20 @@ public class GetReportDownloadUrlHandler
         if (FileDownloadStatus.FAILED.equals(status)) {
             throw new ReportException(
                 ReportDownloadUtil.resolveFailedError(
-                    request.get().errorMessage(),
-                    ReportErrors.REPORT_FAILURE_EXCEPTION));
+                    request.get().errorMessage(), ReportErrors.REPORT_FAILURE_EXCEPTION));
         }
 
         if (FileDownloadStatus.READY.equals(status) && fileKey != null && !fileKey.isBlank()) {
             try {
                 fileUrl = this.s3FileStorage.generatePreSignedDownloadUrl(fileKey);
             } catch (Exception exception) {
-                LOG.warn("Failed to generate pre-signed URL for requestId [{}]: [{}]",
-                         request.get().requestId().getEntityId(),
-                         exception.getMessage());
+                LOG.warn(
+                    "Failed to generate pre-signed URL for requestId [{}]: [{}]",
+                    request.get().requestId().getEntityId(), exception.getMessage());
             }
         }
 
         return new Output(status, fileUrl, fileKey, true);
     }
+
 }

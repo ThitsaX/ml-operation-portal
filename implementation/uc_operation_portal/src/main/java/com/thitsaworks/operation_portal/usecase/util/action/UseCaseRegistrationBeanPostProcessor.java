@@ -1,5 +1,6 @@
 package com.thitsaworks.operation_portal.usecase.util.action;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,11 +15,12 @@ import java.util.List;
 @Component
 public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UseCaseRegistrationBeanPostProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        UseCaseRegistrationBeanPostProcessor.class);
 
     private static final List<String> TARGET_PACKAGE_LIST = new ArrayList<>(List.of(
-            "com.thitsaworks.operation_portal.usecase.operation_portal.impl",
-            "com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs"));
+        "com.thitsaworks.operation_portal.usecase.operation_portal.impl",
+        "com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs"));
 
     private final ObjectProvider<ActionAuthorizationManager> actionAuthorizationManager;
 
@@ -37,25 +39,42 @@ public class UseCaseRegistrationBeanPostProcessor implements BeanPostProcessor {
         }
 
         Class<?> finalClazz = clazz;
-        if (TARGET_PACKAGE_LIST.stream()
-                               .anyMatch(pkg -> finalClazz.getPackageName().startsWith(pkg))) {
+        if (TARGET_PACKAGE_LIST
+                .stream()
+                .anyMatch(pkg -> finalClazz.getPackageName().startsWith(pkg))) {
 
             String simpleName = clazz.getSimpleName();
             String actionName = simpleName.replaceFirst("(Handler|UseCase)$", "");
 
             try {
+                ActionMetadata metadata = clazz.getAnnotation(ActionMetadata.class);
+
+                String category =
+                    metadata != null ? metadata.category().getDisplayName() : "GENERAL";
+
+                String description = (metadata != null && !metadata.description().isBlank()) ?
+                                         metadata.description() :
+                                         "Automatically registered action for use case: " +
+                                             simpleName;
+
                 ActionAuthorizationManager manager = this.actionAuthorizationManager.getIfAvailable();
+
                 if (manager != null) {
+
+                    assert metadata != null;
                     manager.registerAction(
-                        actionName,
-                        "OPERATION_PORTAL",
-                        "Automatically registered action for use case: " + simpleName);
+                        actionName, "OPERATION_PORTAL", category,
+                        metadata.isMandatory(), description);
+
                 } else {
-                    LOG.warn("ActionAuthorizationManager not available when registering action: {}", actionName);
+                    LOG.warn(
+                        "ActionAuthorizationManager not available when registering action: {}",
+                        actionName);
                 }
 
             } catch (Exception e) {
-                LOG.error("Failed to register use case action [{}]: {}", actionName, e.getMessage(), e);
+                LOG.error(
+                    "Failed to register use case action [{}]: {}", actionName, e.getMessage(), e);
             }
         }
 

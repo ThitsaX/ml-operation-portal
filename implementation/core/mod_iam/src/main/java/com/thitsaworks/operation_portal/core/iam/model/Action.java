@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Getter
 public class Action extends JpaEntity<ActionId> {
+
     @EmbeddedId
     protected ActionId actionId;
 
@@ -30,17 +31,30 @@ public class Action extends JpaEntity<ActionId> {
     @Column(name = "scope")
     protected String scope;
 
+    @Column(name = "category")
+    protected String category;
+
+    @Column(name = "is_mandatory")
+    protected Boolean isMandatory = false;
+
     @Column(name = "description")
     protected String description;
 
-    public Action(ActionCode actionCode, String scope, String description) {
+    public Action(ActionCode actionCode,
+                  String scope,
+                  String category,
+                  boolean isMandatory,
+                  String description) {
 
         assert actionCode != null : "actionCode is required!";
         assert scope != null : "scope is required!";
+        assert category != null : "category is required!";
 
         this.actionId = new ActionId(Snowflake.get().nextId());
         this.actionCode = actionCode;
         this.scope = scope;
+        this.category = category;
+        this.isMandatory = isMandatory;
         this.description = description;
     }
 
@@ -54,7 +68,7 @@ public class Action extends JpaEntity<ActionId> {
     @Override
     public ActionId getId() {
 
-        return  this.actionId;
+        return this.actionId;
     }
 
     public Action scope(String scope) {
@@ -64,6 +78,19 @@ public class Action extends JpaEntity<ActionId> {
         return this;
     }
 
+    public Action category(String category) {
+
+        this.category = category;
+
+        return this;
+    }
+
+    public Action mandatory(boolean isMandatory) {
+
+        this.isMandatory = isMandatory;
+
+        return this;
+    }
 
 }
 

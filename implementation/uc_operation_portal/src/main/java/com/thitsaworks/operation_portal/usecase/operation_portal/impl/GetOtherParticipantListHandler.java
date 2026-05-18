@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
 import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class GetOtherParticipantListHandler
     extends OperationPortalUseCase<GetOtherParticipantList.Input, GetOtherParticipantList.Output>
     implements GetOtherParticipantList {
@@ -27,8 +30,7 @@ public class GetOtherParticipantListHandler
                                           ActionAuthorizationManager actionAuthorizationManager,
                                           ParticipantQuery participantQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
     }
@@ -36,8 +38,8 @@ public class GetOtherParticipantListHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        List<ParticipantData> participantDataList =
-            this.participantQuery.getOtherParticipants(input.participantId());
+        List<ParticipantData> participantDataList = this.participantQuery.getOtherParticipants(
+            input.participantId());
 
         List<ParticipantInfo> participantInfoList = new ArrayList<>();
 
@@ -46,10 +48,8 @@ public class GetOtherParticipantListHandler
             if (participantData.participantName() != null &&
                     !participantData.participantName().getValue().toLowerCase().contains("hub")) {
                 participantInfoList.add(new ParticipantInfo(
-                        participantData.participantId(),
-                        participantData.participantName(),
-                        participantData.description()
-                ));
+                    participantData.participantId(), participantData.participantName(),
+                    participantData.description()));
             }
         }
 

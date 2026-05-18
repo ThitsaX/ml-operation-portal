@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.type.PrincipalStatus;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class ModifyUserStatusHandler
     extends OperationPortalAuditableUseCase<ModifyUserStatus.Input, ModifyUserStatus.Output>
     implements ModifyUserStatus {
@@ -43,12 +46,9 @@ public class ModifyUserStatusHandler
                                    ModifyPrincipalStatusCommand modifyPrincipalStatusCommand,
                                    UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.modifyPrincipalStatusCommand = modifyPrincipalStatusCommand;
         this.principalCache = principalCache;
@@ -60,31 +60,30 @@ public class ModifyUserStatusHandler
 
         var currentUser = this.userPermissionManager.getCurrentUser();
 
-        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.userId()
-                                                                                   .getEntityId()));
+        PrincipalData principalData = this.principalCache.get(
+            new PrincipalId(input.userId().getEntityId()));
 
         var isDfsp = this.userPermissionManager.isDfsp(currentUser.principalId());
 
         if (isDfsp) {
 
-            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
-                                                                                           .getId()),
-                                                              new ParticipantId(principalData.realmId()
-                                                                                             .getId()))) {
+            if (!this.userPermissionManager.isSameParticipant(
+                new ParticipantId(currentUser.realmId().getId()),
+                new ParticipantId(principalData.realmId().getId()))) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_USER_ACCESS);
             }
 
         }
 
-        if (currentUser.principalId()
-                       .equals(principalData.principalId()) && input.activeStatus()
-                                                                    .equals(PrincipalStatus.INACTIVE)) {
+        if (currentUser.principalId().equals(principalData.principalId()) &&
+                input.activeStatus().equals(PrincipalStatus.INACTIVE)) {
             throw new IAMException(IAMErrors.INACTIVE_STATUS_CHANGE_NOT_ALLOWED);
         }
 
         this.modifyPrincipalStatusCommand.execute(
-            new ModifyPrincipalStatusCommand.Input(principalData.principalId(),
-                                                   input.activeStatus()));
+            new ModifyPrincipalStatusCommand.Input(
+                principalData.principalId(),
+                input.activeStatus()));
 
         return new Output(true, input.userId());
 

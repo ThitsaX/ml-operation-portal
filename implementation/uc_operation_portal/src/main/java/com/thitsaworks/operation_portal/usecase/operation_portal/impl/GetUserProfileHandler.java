@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
@@ -20,7 +22,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile.Input, GetUserProfile.Output>
+@ActionMetadata(category = ActionCategory.AUTHENTICATION_AND_ACCOUNT_SECURITY)
+public class GetUserProfileHandler
+    extends OperationPortalUseCase<GetUserProfile.Input, GetUserProfile.Output>
     implements GetUserProfile {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetUserProfileHandler.class);
@@ -36,7 +40,8 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
     public GetUserProfileHandler(PrincipalCache principalCache,
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  ParticipantCache participantCache,
-                                 UserCache userCache, IAMQuery iamQuery) {
+                                 UserCache userCache,
+                                 IAMQuery iamQuery) {
 
         super(principalCache, actionAuthorizationManager);
 
@@ -51,48 +56,38 @@ public class GetUserProfileHandler extends OperationPortalUseCase<GetUserProfile
 
         UserData userData = this.userCache.get(input.userId());
 
-        PrincipalData principalData = this.principalCache.get(new PrincipalId(input.userId()
-                                                                                   .getId()));
+        PrincipalData principalData = this.principalCache.get(
+            new PrincipalId(input.userId().getId()));
 
         if (userData == null || principalData == null) {
 
-            throw new ParticipantException(ParticipantErrors.USER_NOT_FOUND.format(input.userId()
-                                                                                        .getId().toString()));
+            throw new ParticipantException(
+                ParticipantErrors.USER_NOT_FOUND.format(input.userId().getId().toString()));
         }
 
         ParticipantData participantData = this.participantCache.get(userData.participantId());
 
         if (participantData == null) {
 
-            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(userData.participantId()
-                                                                                                  .getId().toString()));
+            throw new ParticipantException(ParticipantErrors.PARTICIPANT_NOT_FOUND.format(
+                userData.participantId().getId().toString()));
         }
 
-        var
-            roleList =
-            this.iamQuery.getRoleListByPrincipal(principalData.principalId())
-                         .stream()
-                         .map(RoleData::name)
-                         .toList();
+        var roleList = this.iamQuery
+                           .getRoleListByPrincipal(principalData.principalId())
+                           .stream()
+                           .map(RoleData::name)
+                           .toList();
 
-        var permittedMenuAndActionList =
-            this.iamQuery.getMenuAndActionListByUserId(principalData.principalId());
+        var permittedMenuAndActionList = this.iamQuery.getMenuAndActionListByUserId(
+            principalData.principalId());
 
-        return new Output(userData.userId(),
-                          userData.name(),
-                          userData.email(),
-                          userData.firstName(),
-                          userData.lastName(),
-                          userData.jobTitle(),
-                          userData.participantId(),
-                          userData.createdDate(),
-                          participantData.participantName()
-                                         .getValue(),
-                          participantData.description(),
-                          participantData.logoFileType(),
-                          participantData.logo(),
-                          roleList,
-                          permittedMenuAndActionList);
+        return new Output(
+            userData.userId(), userData.name(), userData.email(), userData.firstName(),
+            userData.lastName(), userData.jobTitle(), userData.participantId(),
+            userData.createdDate(), participantData.participantName().getValue(),
+            participantData.description(), participantData.logoFileType(), participantData.logo(),
+            roleList, permittedMenuAndActionList);
 
     }
 

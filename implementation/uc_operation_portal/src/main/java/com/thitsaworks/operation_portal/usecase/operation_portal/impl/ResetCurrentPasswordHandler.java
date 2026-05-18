@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -20,9 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.AUTHENTICATION_AND_ACCOUNT_SECURITY)
 public class ResetCurrentPasswordHandler
-        extends OperationPortalAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output>
-        implements ResetCurrentPassword {
+    extends OperationPortalAuditableUseCase<ResetCurrentPassword.Input, ResetCurrentPassword.Output>
+    implements ResetCurrentPassword {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResetCurrentPasswordHandler.class);
 
@@ -39,12 +42,9 @@ public class ResetCurrentPasswordHandler
                                        ResetPasswordCommand resetPasswordCommand,
                                        UserQuery userQuery) {
 
-        super(createInputAuditCommand,
-                createOutputAuditCommand,
-                createExceptionAuditCommand,
-                objectMapper,
-                principalCache,
-                actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.resetPasswordCommand = resetPasswordCommand;
         this.userQuery = userQuery;
@@ -53,22 +53,22 @@ public class ResetCurrentPasswordHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        UserData userData =
-                this.userQuery.get(input.email());
+        UserData userData = this.userQuery.get(input.email());
 
         if (userData.userId() == null) {
 
-            throw new ParticipantException(ParticipantErrors.EMAIL_NOT_FOUND.format(input.email().getValue()));
+            throw new ParticipantException(
+                ParticipantErrors.EMAIL_NOT_FOUND.format(input.email().getValue()));
         }
 
         ResetPasswordCommand.Output resetPasswordOutput = this.resetPasswordCommand.execute(
-                new ResetPasswordCommand.Input(new PrincipalId(userData.userId()
-                                                                       .getId()),
-                        input.password().getValue()));
+            new ResetPasswordCommand.Input(
+                new PrincipalId(userData.userId().getId()),
+                input.password().getValue()));
 
-        return new Output(resetPasswordOutput.accessKey(),
-                resetPasswordOutput.secretKey(),
-                resetPasswordOutput.updated());
+        return new Output(
+            resetPasswordOutput.accessKey(), resetPasswordOutput.secretKey(),
+            resetPasswordOutput.updated());
     }
 
 }

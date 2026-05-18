@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -15,11 +17,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GenerateFeeSettlementReportHandler
     extends OperationPortalAuditableUseCase<GenerateFeeSettlementReport.Input, GenerateFeeSettlementReport.Output>
     implements GenerateFeeSettlementReport {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateFeeSettlementReportHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GenerateFeeSettlementReportHandler.class);
 
     private final GenerateFeeSettlementReportCommand generateFeeSettlementReportCommand;
 
@@ -31,12 +35,9 @@ public class GenerateFeeSettlementReportHandler
                                               ActionAuthorizationManager actionAuthorizationManager,
                                               GenerateFeeSettlementReportCommand generateFeeSettlementReportCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.generateFeeSettlementReportCommand = generateFeeSettlementReportCommand;
     }
@@ -44,14 +45,10 @@ public class GenerateFeeSettlementReportHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        GenerateFeeSettlementReportCommand.Output output =
-            this.generateFeeSettlementReportCommand.execute(new GenerateFeeSettlementReportCommand.Input(input.startDate(),
-                                                                                                         input.endDate(),
-                                                                                                         input.fromFsp(),
-                                                                                                         input.toFsp(),
-                                                                                                         input.currency(),
-                                                                                                         input.timezone(),
-                                                                                                         input.fileType()));
+        GenerateFeeSettlementReportCommand.Output output = this.generateFeeSettlementReportCommand.execute(
+            new GenerateFeeSettlementReportCommand.Input(
+                input.startDate(), input.endDate(), input.fromFsp(), input.toFsp(),
+                input.currency(), input.timezone(), input.fileType()));
 
         return new Output(output.feeSettlementRptByte());
     }

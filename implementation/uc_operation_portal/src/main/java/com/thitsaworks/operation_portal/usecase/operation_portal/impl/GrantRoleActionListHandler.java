@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.GrantRoleActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(
+    category = ActionCategory.ROLE_MENU_PERMISSION_IAM,
+    isMandatory = true)
 public class GrantRoleActionListHandler
     extends OperationPortalUseCase<GrantRoleActionList.Input, GrantRoleActionList.Output>
     implements GrantRoleActionList {
@@ -25,8 +30,7 @@ public class GrantRoleActionListHandler
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       GrantRoleActionCommand grantRoleActionsCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.grantRoleActionCommand = grantRoleActionsCommand;
     }
@@ -37,8 +41,8 @@ public class GrantRoleActionListHandler
         for (var singleRoleGrant : input.roleGrantList()) {
 
             for (var action : singleRoleGrant.actionList()) {
-                this.grantRoleActionCommand.execute(new GrantRoleActionCommand.Input(singleRoleGrant.roleName(),
-                                                                                     action));
+                this.grantRoleActionCommand.execute(
+                    new GrantRoleActionCommand.Input(singleRoleGrant.roleName(), action));
 
             }
         }

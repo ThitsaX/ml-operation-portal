@@ -1,9 +1,11 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.UserRoleType;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
-import com.thitsaworks.operation_portal.core.participant.command.RemoveGreetingCommand;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
+import com.thitsaworks.operation_portal.core.participant.command.RemoveGreetingCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.core_services.RemovePastSixMonthsGreetingMessage;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -13,6 +15,7 @@ import java.net.ConnectException;
 import java.util.Set;
 
 @Service
+@ActionMetadata(category = ActionCategory.ANNOUNCEMENT_AND_GREETING_CONTENT)
 public class RemovePastSixMonthsGreetingHandler
     extends OperationPortalUseCase<RemovePastSixMonthsGreetingMessage.Input, RemovePastSixMonthsGreetingMessage.Output>
     implements RemovePastSixMonthsGreetingMessage {

@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,11 +28,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class CreateSettlementSchedulerHandler
     extends OperationPortalAuditableUseCase<CreateSettlementScheduler.Input, CreateSettlementScheduler.Output>
     implements CreateSettlementScheduler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CreateSettlementSchedulerHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        CreateSettlementSchedulerHandler.class);
 
     private final ObjectMapper objectMapper;
 
@@ -56,67 +60,72 @@ public class CreateSettlementSchedulerHandler
                                             CreateSchedulerConfigCommand createSchedulerConfigCommand,
                                             AddSettlementSchedulerCommand addSettlementSchedulerCommand) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.schedulerEngine = schedulerEngine;
         this.settlementModelQuery = settlementModelQuery;
         this.settlementSchedulerQuery = settlementSchedulerQuery;
         this.createSchedulerConfigCommand = createSchedulerConfigCommand;
         this.addSettlementSchedulerCommand = addSettlementSchedulerCommand;
-        this.objectMapper =  objectMapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
     protected Output onExecute(Input input) throws DomainException, JsonProcessingException {
 
-        LOG.info("Settlement Model Query Request : settlementModelId {}", input.settlementModelId());
+        LOG.info(
+            "Settlement Model Query Request : settlementModelId {}", input.settlementModelId());
 
-        SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(
+            input.settlementModelId());
 
-        LOG.info("Settlement Model Query Response : {}", this.objectMapper.writeValueAsString(settlementModelData));
+        LOG.info(
+            "Settlement Model Query Response : {}",
+            this.objectMapper.writeValueAsString(settlementModelData));
 
         if (!settlementModelData.autoCloseWindow()) {
-            throw new SettlementException(SettlementErrors.SETTLEMENT_MODEL_NOT_AUTO_CLOSE_WINDOW.format(
-                settlementModelData.name()));
+            throw new SettlementException(
+                SettlementErrors.SETTLEMENT_MODEL_NOT_AUTO_CLOSE_WINDOW.format(
+                    settlementModelData.name()));
         }
 
-        LOG.info("Get Settlement Schedulers Query Request : settlementModelId : {}", settlementModelData.settlementModelId());
+        LOG.info(
+            "Get Settlement Schedulers Query Request : settlementModelId : {}",
+            settlementModelData.settlementModelId());
 
         List<SchedulerConfigData> schedulerConfigDataList = this.settlementSchedulerQuery.getSettlementSchedulers(
             settlementModelData.settlementModelId());
 
-        LOG.info("Get Settlement Schedulers Query Response : {}", this.objectMapper.writeValueAsString(schedulerConfigDataList));
+        LOG.info(
+            "Get Settlement Schedulers Query Response : {}",
+            this.objectMapper.writeValueAsString(schedulerConfigDataList));
 
-        boolean isOverlap = this.schedulerEngine.isCronOverlap(schedulerConfigDataList, input.cronExpression());
+        boolean isOverlap = this.schedulerEngine.isCronOverlap(
+            schedulerConfigDataList, input.cronExpression());
 
         if (isOverlap) {
-            throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
-                settlementModelData.name()));
+            throw new SettlementException(
+                SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(settlementModelData.name()));
         }
 
-        var schedulerConfigOutput =
-            this.createSchedulerConfigCommand.execute(new CreateSchedulerConfigCommand.Input(input.name(),
-                                                                                             "CloseSettlementWindowsScheduler",
-                                                                                             input.description(),
-                                                                                             input.cronExpression(),
-                                                                                             settlementModelData.zoneId()));
+        var schedulerConfigOutput = this.createSchedulerConfigCommand.execute(
+            new CreateSchedulerConfigCommand.Input(
+                input.name(), "CloseSettlementWindowsScheduler", input.description(),
+                input.cronExpression(), settlementModelData.zoneId()));
 
-        this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(settlementModelData.settlementModelId(),
-                                                                                           schedulerConfigOutput.schedulerConfigData()
-                                                                                                                .schedulerConfigId()));
+        this.addSettlementSchedulerCommand.execute(new AddSettlementSchedulerCommand.Input(
+            settlementModelData.settlementModelId(),
+            schedulerConfigOutput.schedulerConfigData().schedulerConfigId()));
 
-        LOG.info("Scheduler Engine Schedule or Reschedule Request : {}", this.objectMapper.writeValueAsString(schedulerConfigOutput.schedulerConfigData()));
+        LOG.info(
+            "Scheduler Engine Schedule or Reschedule Request : {}",
+            this.objectMapper.writeValueAsString(schedulerConfigOutput.schedulerConfigData()));
 
         this.schedulerEngine.scheduleOrReschedule(schedulerConfigOutput.schedulerConfigData());
 
-        return new Output(schedulerConfigOutput.schedulerConfigData()
-                                               .schedulerConfigId(),
-                          true);
+        return new Output(schedulerConfigOutput.schedulerConfigData().schedulerConfigId(), true);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.reporting.report.domain.data.SettlementIdData;
 import com.thitsaworks.operation_portal.reporting.report.query.GetSettlementIdsWithParentParticipantQuery;
@@ -14,15 +16,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetSettlementIdWithParentParticipantHandler
-        extends OperationPortalUseCase<GetSettlementIdWithParentParticipant.Input, GetSettlementIdWithParentParticipant.Output>
-        implements GetSettlementIdWithParentParticipant {
+    extends OperationPortalUseCase<GetSettlementIdWithParentParticipant.Input, GetSettlementIdWithParentParticipant.Output>
+    implements GetSettlementIdWithParentParticipant {
 
     private final GetSettlementIdsWithParentParticipantQuery getSettlementIdsWithParentParticipantQuery;
 
     public GetSettlementIdWithParentParticipantHandler(PrincipalCache principalCache,
                                                        ActionAuthorizationManager actionAuthorizationManager,
                                                        GetSettlementIdsWithParentParticipantQuery getSettlementIdsWithParentParticipantQuery) {
+
         super(principalCache, actionAuthorizationManager);
         this.getSettlementIdsWithParentParticipantQuery = getSettlementIdsWithParentParticipantQuery;
     }
@@ -31,10 +35,9 @@ public class GetSettlementIdWithParentParticipantHandler
     protected Output onExecute(Input input) throws DomainException {
 
         GetSettlementIdsWithParentParticipantQuery.Output output = this.getSettlementIdsWithParentParticipantQuery.execute(
-                new GetSettlementIdsWithParentParticipantQuery.Input(Timestamp.from(input.startDate()),
-                                                                     Timestamp.from(input.endDate()),
-                                                                     input.dfspId(),
-                                                                     input.timezoneOffset()));
+            new GetSettlementIdsWithParentParticipantQuery.Input(
+                Timestamp.from(input.startDate()), Timestamp.from(input.endDate()), input.dfspId(),
+                input.timezoneOffset()));
 
         List<SettlementIdData> settlementIdData = new ArrayList<>();
         for (SettlementIdData data : output.settlementId()) {
@@ -43,4 +46,5 @@ public class GetSettlementIdWithParentParticipantHandler
 
         return new Output(settlementIdData);
     }
+
 }

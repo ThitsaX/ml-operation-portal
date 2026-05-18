@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.type.FileDownloadStatus;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.reporting.download.query.ReportDownloadRequestQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -12,12 +14,12 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.REPORTING)
 public class GetReportDownloadStatusHandler
-        extends OperationPortalUseCase<GetReportDownloadStatus.Input, GetReportDownloadStatus.Output>
-        implements GetReportDownloadStatus {
+    extends OperationPortalUseCase<GetReportDownloadStatus.Input, GetReportDownloadStatus.Output>
+    implements GetReportDownloadStatus {
 
     private final ReportDownloadRequestQuery reportDownloadRequestQuery;
-
 
     public GetReportDownloadStatusHandler(PrincipalCache principalCache,
                                           ActionAuthorizationManager actionAuthorizationManager,
@@ -39,4 +41,5 @@ public class GetReportDownloadStatusHandler
 
         return new Output(status, true);
     }
+
 }

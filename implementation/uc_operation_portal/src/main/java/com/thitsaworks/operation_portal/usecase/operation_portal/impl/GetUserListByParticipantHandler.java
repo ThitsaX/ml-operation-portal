@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.PrincipalData;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
@@ -23,11 +25,13 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class GetUserListByParticipantHandler
     extends OperationPortalUseCase<GetUserListByParticipant.Input, GetUserListByParticipant.Output>
     implements GetUserListByParticipant {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GetUserListByParticipantHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GetUserListByParticipantHandler.class);
 
     private final UserQuery userQuery;
 
@@ -43,8 +47,7 @@ public class GetUserListByParticipantHandler
                                            IAMQuery iamQuery,
                                            UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.userQuery = userQuery;
         this.principalCache = principalCache;
@@ -60,8 +63,8 @@ public class GetUserListByParticipantHandler
         List<UserData> userDataList;
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
 
-            userDataList = this.userQuery.getUsers(new ParticipantId(currentUser.realmId()
-                                                                                .getId()));
+            userDataList = this.userQuery.getUsers(
+                new ParticipantId(currentUser.realmId().getId()));
 
         } else {
             userDataList = this.userQuery.getUsers();
@@ -71,33 +74,22 @@ public class GetUserListByParticipantHandler
 
         for (UserData userData : userDataList) {
 
-            PrincipalData
-                principalData =
-                this.principalCache.get(new PrincipalId(userData.userId()
-                                                                .getId()));
+            PrincipalData principalData = this.principalCache.get(
+                new PrincipalId(userData.userId().getId()));
 
-            var
-                roleList =
-                this.iamQuery.getRoleListByPrincipal(principalData.principalId())
-                             .stream()
-                             .sorted(Comparator.comparingLong(r -> r.roleId()
-                                                                    .getId()))
-                             .map(RoleData::name)
-                             .toList();
+            var roleList = this.iamQuery
+                               .getRoleListByPrincipal(principalData.principalId())
+                               .stream()
+                               .sorted(Comparator.comparingLong(r -> r.roleId().getId()))
+                               .map(RoleData::name)
+                               .toList();
 
-            userInfoList.add(new GetUserListByParticipant.UserInfo(userData.userId(),
-                                                                   userData.name(),
-                                                                   userData.email(),
-                                                                   userData.firstName(),
-                                                                   userData.lastName(),
-                                                                   userData.jobTitle(),
-                                                                   roleList,
-                                                                   userData.participantId(),
-                                                                   userData.participantName().getValue(),
-                                                                   userData.participantDescription(),
-                                                                   principalData.principalStatus()
-                                                                                .toString(),
-                                                                   Instant.ofEpochSecond(userData.createdDate())));
+            userInfoList.add(new GetUserListByParticipant.UserInfo(
+                userData.userId(), userData.name(), userData.email(), userData.firstName(),
+                userData.lastName(), userData.jobTitle(), roleList, userData.participantId(),
+                userData.participantName().getValue(), userData.participantDescription(),
+                principalData.principalStatus().toString(),
+                Instant.ofEpochSecond(userData.createdDate())));
         }
 
         return new Output(userInfoList);

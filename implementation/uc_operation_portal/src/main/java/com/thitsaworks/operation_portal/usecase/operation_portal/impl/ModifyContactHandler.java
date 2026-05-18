@@ -2,7 +2,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.CONTACT_MANAGEMENT)
 public class ModifyContactHandler
     extends OperationPortalAuditableUseCase<ModifyContact.Input, ModifyContact.Output>
     implements ModifyContact {
@@ -42,12 +45,9 @@ public class ModifyContactHandler
                                 CreateContactHistoryCommand createContactHistoryCommand,
                                 UserPermissionManager userPermissionManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.modifyContactCommand = modifyContactCommand;
 
@@ -61,24 +61,18 @@ public class ModifyContactHandler
         var currentUser = this.userPermissionManager.getCurrentUser();
 
         if (this.userPermissionManager.isDfsp(currentUser.principalId())) {
-            if (!this.userPermissionManager.isSameParticipant(new ParticipantId(currentUser.realmId()
-                                                                                           .getId()),
-                                                              input.participantId())) {
+            if (!this.userPermissionManager.isSameParticipant(
+                new ParticipantId(currentUser.realmId().getId()), input.participantId())) {
                 throw new IAMException(IAMErrors.UNAUTHORIZED_CREATION);
             }
         }
 
-        this.createContactHistoryCommand.execute(new CreateContactHistoryCommand.Input(
-            input.contactId(),
-            input.participantId()));
+        this.createContactHistoryCommand.execute(
+            new CreateContactHistoryCommand.Input(input.contactId(), input.participantId()));
 
-        var output = this.modifyContactCommand.execute(new ModifyContactCommand.Input(input.participantId(),
-                                                                                      input.contactId(),
-                                                                                      input.name(),
-                                                                                      input.position(),
-                                                                                      input.email(),
-                                                                                      input.mobile(),
-                                                                                      input.contactType()));
+        var output = this.modifyContactCommand.execute(new ModifyContactCommand.Input(
+            input.participantId(), input.contactId(), input.name(), input.position(), input.email(),
+            input.mobile(), input.contactType()));
 
         return new ModifyContact.Output(output.modified());
     }

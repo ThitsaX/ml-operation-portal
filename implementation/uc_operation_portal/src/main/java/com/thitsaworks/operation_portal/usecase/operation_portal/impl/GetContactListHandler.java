@@ -1,15 +1,13 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
-import com.thitsaworks.operation_portal.component.common.identifier.ParticipantId;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMErrors;
-import com.thitsaworks.operation_portal.core.iam.exception.IAMException;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.query.ContactQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GetContactList;
-import com.thitsaworks.operation_portal.usecase.util.UserPermissionManager;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +17,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class GetContactListHandler extends OperationPortalUseCase<GetContactList.Input, GetContactList.Output>
+@ActionMetadata(category = ActionCategory.CONTACT_MANAGEMENT)
+public class GetContactListHandler
+    extends OperationPortalUseCase<GetContactList.Input, GetContactList.Output>
     implements GetContactList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetContactListHandler.class);
@@ -30,8 +30,7 @@ public class GetContactListHandler extends OperationPortalUseCase<GetContactList
                                  ActionAuthorizationManager actionAuthorizationManager,
                                  ContactQuery contactQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.contactQuery = contactQuery;
     }
@@ -45,14 +44,9 @@ public class GetContactListHandler extends OperationPortalUseCase<GetContactList
 
         for (ContactData contactData : contactDataList) {
 
-            contactInfoList.add(
-                new Output.ContactInfo(contactData.contactId(),
-                                       contactData.name(),
-                                       contactData.position(),
-                                       contactData.email(),
-                                       contactData.mobile(),
-                                       contactData.contactType()
-                                                  .name()));
+            contactInfoList.add(new Output.ContactInfo(
+                contactData.contactId(), contactData.name(), contactData.position(),
+                contactData.email(), contactData.mobile(), contactData.contactType().name()));
         }
 
         return new Output(contactInfoList);

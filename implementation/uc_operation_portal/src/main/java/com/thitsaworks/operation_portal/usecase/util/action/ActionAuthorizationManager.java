@@ -39,16 +39,21 @@ public class ActionAuthorizationManager {
         this.actionQuery = actionQuery;
     }
 
-    public void registerAction(String actionName, String scope, String description) {
+    public void registerAction(String actionName,
+                               String scope,
+                               String category,
+                               boolean isMandatory,
+                               String description) {
 
-        var input = new CreateOrUpdateActionCommand.Input(new ActionCode(actionName),
-                                                          scope,
-                                                          description);
+        var input = new CreateOrUpdateActionCommand.Input(
+            new ActionCode(actionName), scope,
+            category, isMandatory, description);
 
         this.createOrUpdateActionCommand.execute(input);
     }
 
-    public boolean isAuthorizedTo(PrincipalId principalId, ActionCode actionCode) throws IAMException {
+    public boolean isAuthorizedTo(PrincipalId principalId, ActionCode actionCode)
+        throws IAMException {
 
         return this.iamEngine.isGrantedAction(principalId, actionCode);
     }
@@ -65,14 +70,16 @@ public class ActionAuthorizationManager {
             String[] packages = {"com.thitsaworks.operation_portal.usecase.operation_portal"};
 
             List<String> auditableActionNames = new ArrayList<>();
-            ClassPathScanningCandidateComponentProvider scanner =
-                new ClassPathScanningCandidateComponentProvider(false);
+            ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(
+                false);
 
-            scanner.addIncludeFilter(new AssignableTypeFilter(OperationPortalAuditableUseCase.class));
+            scanner.addIncludeFilter(
+                new AssignableTypeFilter(OperationPortalAuditableUseCase.class));
             scanner.addIncludeFilter(new AssignableTypeFilter(ScheduledJob.class));
 
-            Set<String> ignoredBaseClasses = Set.of(OperationPortalAuditableUseCase.class.getName(),
-                                                    ScheduledJob.class.getName());
+            Set<String> ignoredBaseClasses = Set.of(
+                OperationPortalAuditableUseCase.class.getName(),
+                ScheduledJob.class.getName());
 
             for (String pkg : packages) {
                 for (BeanDefinition bd : scanner.findCandidateComponents(pkg)) {

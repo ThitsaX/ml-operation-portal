@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.RoleQuery;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
 public class GetRoleListByParticipantHandler
     extends OperationPortalUseCase<GetRoleListByParticipant.Input, GetRoleListByParticipant.Output>
     implements GetRoleListByParticipant {

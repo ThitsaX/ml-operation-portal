@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.TransferDetailData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetTransferDetailQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
+@ActionMetadata(category = ActionCategory.TRANSFER_OPERATIONS)
 public class GetTransferDetailHandler
     extends OperationPortalUseCase<GetTransferDetail.Input, GetTransferDetail.Output>
     implements GetTransferDetail {
@@ -24,8 +27,7 @@ public class GetTransferDetailHandler
                                     ActionAuthorizationManager actionAuthorizationManager,
                                     GetTransferDetailQuery getTransferDetailQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getTransferDetailQuery = getTransferDetailQuery;
     }
@@ -33,8 +35,8 @@ public class GetTransferDetailHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        TransferDetailData transferDetailData = this.getTransferDetailQuery.execute(input.transferId(),
-                                                                                    input.timeZone());
+        TransferDetailData transferDetailData = this.getTransferDetailQuery.execute(
+            input.transferId(), input.timeZone());
 
         return new Output(transferDetailData);
     }

@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.participant.data.ContactData;
 import com.thitsaworks.operation_portal.core.participant.data.LiquidityProfileData;
@@ -20,9 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.PARTICIPANT_MANAGEMENT)
 public class GetParticipantHandler
     extends OperationPortalUseCase<GetParticipant.Input, GetParticipant.Output>
-        implements GetParticipant {
+    implements GetParticipant {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetParticipantHandler.class);
 
@@ -38,8 +41,7 @@ public class GetParticipantHandler
                                  ContactQuery contactQuery,
                                  LiquidityProfileQuery liquidityProfileQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.participantQuery = participantQuery;
         this.contactQuery = contactQuery;
@@ -57,43 +59,30 @@ public class GetParticipantHandler
 
         for (ContactData contactData : contactDataList) {
 
-            contactInfoList.add(
-                new Output.ContactInfo(contactData.contactId(),
-                                       contactData.name(),
-                                       contactData.position(),
-                                       contactData.email(),
-                                       contactData.mobile(),
-                                       contactData.contactType()
-                                                  .name()));
+            contactInfoList.add(new Output.ContactInfo(
+                contactData.contactId(), contactData.name(), contactData.position(),
+                contactData.email(), contactData.mobile(), contactData.contactType().name()));
         }
 
-        List<LiquidityProfileData> liquidityProfileDataList =
-            this.liquidityProfileQuery.getLiquidityProfiles(input.participantId());
+        List<LiquidityProfileData> liquidityProfileDataList = this.liquidityProfileQuery.getLiquidityProfiles(
+            input.participantId());
 
         List<Output.LiquidityProfileInfo> liquidityProfileInfoList = new ArrayList<>();
 
         for (LiquidityProfileData liquidityProfileData : liquidityProfileDataList) {
 
-            liquidityProfileInfoList.add(
-                new Output.LiquidityProfileInfo(liquidityProfileData.liquidityProfileId(),
-                                                liquidityProfileData.bankName(),
-                                                liquidityProfileData.accountName(),
-                                                liquidityProfileData.accountNumber(),
-                                                liquidityProfileData.currency(),
-                                                liquidityProfileData.isActive()));
+            liquidityProfileInfoList.add(new Output.LiquidityProfileInfo(
+                liquidityProfileData.liquidityProfileId(), liquidityProfileData.bankName(),
+                liquidityProfileData.accountName(), liquidityProfileData.accountNumber(),
+                liquidityProfileData.currency(), liquidityProfileData.isActive()));
         }
 
-        return new Output(participantData.participantId(),
-                          participantData.participantName()
-                                         .getValue(),
-                          participantData.description(),
-                          participantData.address(),
-                          participantData.mobile(),
-                          participantData.logoFileType(),
-                          participantData.logo(),
-                          Instant.ofEpochSecond(participantData.createdDate()),
-                          contactInfoList,
-                          liquidityProfileInfoList);
+        return new Output(
+            participantData.participantId(), participantData.participantName().getValue(),
+            participantData.description(), participantData.address(), participantData.mobile(),
+            participantData.logoFileType(), participantData.logo(),
+            Instant.ofEpochSecond(participantData.createdDate()), contactInfoList,
+            liquidityProfileInfoList);
     }
 
 }

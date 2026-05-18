@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.settlement.data.SettlementModelData;
 import com.thitsaworks.operation_portal.core.settlement.query.SettlementModelQuery;
@@ -15,11 +17,13 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_MODEL_MANAGEMENT)
 public class GetSettlementModelListHandler
-        extends OperationPortalUseCase<GetSettlementModelList.Input, GetSettlementModelList.Output>
+    extends OperationPortalUseCase<GetSettlementModelList.Input, GetSettlementModelList.Output>
     implements GetSettlementModelList {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementModelListHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        GetSettlementModelListHandler.class);
 
     private final SettlementModelQuery settlementModelQuery;
 
@@ -36,22 +40,15 @@ public class GetSettlementModelListHandler
 
         List<SettlementModelData> settlementModelList = this.settlementModelQuery.getSettlementModels();
 
-        var output = new Output(settlementModelList.stream()
-                                                   .map(settlementModelData -> new Output.SettlementModelData(
-                                                           settlementModelData.settlementModelId(),
-                                                           settlementModelData.name(),
-                                                           settlementModelData.type(),
-                                                           settlementModelData.currencyId(),
-                                                           settlementModelData.isActive(),
-                                                           settlementModelData.autoCloseWindow(),
-                                                           settlementModelData.manualCloseWindow(),
-                                                           settlementModelData.zoneId(),
-                                                           settlementModelData.requireLiquidityCheck(),
-                                                           settlementModelData.autoPositionReset(),
-                                                           settlementModelData.adjustPosition(),
-                                                           settlementModelData.schedulerConfigIds()
-                                                   ))
-                                                   .toList());
+        var output = new Output(
+            settlementModelList.stream().map(settlementModelData -> new Output.SettlementModelData(
+                settlementModelData.settlementModelId(), settlementModelData.name(),
+                settlementModelData.type(), settlementModelData.currencyId(),
+                settlementModelData.isActive(), settlementModelData.autoCloseWindow(),
+                settlementModelData.manualCloseWindow(), settlementModelData.zoneId(),
+                settlementModelData.requireLiquidityCheck(),
+                settlementModelData.autoPositionReset(), settlementModelData.adjustPosition(),
+                settlementModelData.schedulerConfigIds())).toList());
 
         return output;
     }

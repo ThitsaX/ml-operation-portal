@@ -3,7 +3,9 @@ package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 import com.thitsaworks.operation_portal.component.common.identifier.PrincipalId;
 import com.thitsaworks.operation_portal.component.common.identifier.UserId;
 import com.thitsaworks.operation_portal.component.common.type.ActionCode;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.approval.data.ApprovalRequestData;
 import com.thitsaworks.operation_portal.core.approval.query.ApprovalRequestQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.APPROVAL_WORKFLOW)
 public class GetPendingApprovalListHandler
     extends OperationPortalUseCase<GetPendingApprovalList.Input, GetPendingApprovalList.Output>
     implements GetPendingApprovalList {
@@ -46,8 +49,7 @@ public class GetPendingApprovalListHandler
                                          ActionQuery actionQuery,
                                          IAMQuery iamQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.approvalRequestQuery = approvalRequestQuery;
         this.utility = utility;
@@ -68,39 +70,33 @@ public class GetPendingApprovalListHandler
             requests = this.approvalRequestQuery.getPendingApprovalRequests();
         } else {
 
-            requests =
-                this.approvalRequestQuery.getPendingApprovalRequestsByRequestedId(new UserId(principalId.getId()));
+            requests = this.approvalRequestQuery.getPendingApprovalRequestsByRequestedId(
+                new UserId(principalId.getId()));
         }
 
-        return new Output(requests.stream()
-                                  .map(request -> new Output.PendingApproval(
-                                      request.getApprovalRequestId(),
-                                      request.getFundInOutAction(),
-                                      request.getParticipantName(),
-                                      request.getCurrency(),
-                                      request.getAmount(),
-                                      this.utility.getEmail(new UserId(request.getRequestedBy()
-                                                                              .getId())),
-                                      request.getRequestedDtm(),
-                                      request.getAction()
-                                  ))
-                                  .toList()
-        );
+        return new Output(requests.stream().map(request -> new Output.PendingApproval(
+            request.getApprovalRequestId(), request.getFundInOutAction(),
+            request.getParticipantName(), request.getCurrency(), request.getAmount(),
+            this.utility.getEmail(new UserId(request.getRequestedBy().getId())),
+            request.getRequestedDtm(), request.getAction())).toList());
     }
 
     private boolean hasApprovalPermissions(PrincipalId principalId) throws IAMException {
 
         final var grantedActions = this.iamQuery.getGrantedActionListByPrincipal(principalId);
 
-        final var createApprovalRequest = this.actionQuery.get(new ActionCode("CreateApprovalRequest"));
-        final var modifyApprovalAction = this.actionQuery.get(new ActionCode("ModifyApprovalAction"));
+        final var createApprovalRequest = this.actionQuery.get(
+            new ActionCode("CreateApprovalRequest"));
+        final var modifyApprovalAction = this.actionQuery.get(
+            new ActionCode("ModifyApprovalAction"));
 
-        if (grantedActions.contains(createApprovalRequest)
-                && grantedActions.contains(modifyApprovalAction)) {
+        if (grantedActions.contains(createApprovalRequest) &&
+                grantedActions.contains(modifyApprovalAction)) {
             return true;
 
         } else {
-            return !grantedActions.contains(createApprovalRequest) && grantedActions.contains(modifyApprovalAction);
+            return !grantedActions.contains(createApprovalRequest) &&
+                       grantedActions.contains(modifyApprovalAction);
         }
 
     }

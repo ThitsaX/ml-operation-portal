@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.BlockPrincipalActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class BlockUserActionListHandler
     extends OperationPortalUseCase<BlockUserActionList.Input, BlockUserActionList.Output>
     implements BlockUserActionList {
@@ -25,8 +28,7 @@ public class BlockUserActionListHandler
                                       ActionAuthorizationManager actionAuthorizationManager,
                                       BlockPrincipalActionCommand blockprincipalActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.blockPrincipalActionCommand = blockprincipalActionCommand;
     }
@@ -35,8 +37,8 @@ public class BlockUserActionListHandler
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         for (var actionId : input.actionIdList()) {
-            this.blockPrincipalActionCommand.execute(new BlockPrincipalActionCommand.Input(input.principalId(),
-                                                                                           actionId));
+            this.blockPrincipalActionCommand.execute(
+                new BlockPrincipalActionCommand.Input(input.principalId(), actionId));
         }
 
         return new Output(true);

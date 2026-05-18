@@ -1,5 +1,7 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.AssignRoleToPrincipalCommand;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.USER_MANAGEMENT)
 public class AssignRoleToUserHandler
     extends OperationPortalUseCase<AssignRoleToUser.Input, AssignRoleToUser.Output>
     implements AssignRoleToUser {

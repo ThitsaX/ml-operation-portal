@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.SettlementHubClient;
 import com.thitsaworks.operation_portal.core.hub_services.support.Settlement;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -15,9 +17,10 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetSettlementListHandler
     extends OperationPortalUseCase<GetSettlementList.Input, GetSettlementList.Output>
-        implements GetSettlementList {
+    implements GetSettlementList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetSettlementListHandler.class);
 
@@ -27,8 +30,7 @@ public class GetSettlementListHandler
                                     ActionAuthorizationManager actionAuthorizationManager,
                                     SettlementHubClient settlementHubClient) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.settlementHubClient = settlementHubClient;
     }
@@ -37,15 +39,9 @@ public class GetSettlementListHandler
     protected Output onExecute(Input input) throws DomainException, ConnectException {
 
         List<Settlement> settlementList = this.settlementHubClient.getSettlementList(
-                input.currency(),
-                input.participantId(),
-                input.settlementWindowId(),
-                input.accountId(),
-                input.state(),
-                input.fromDateTime(),
-                input.toDateTime(),
-                input.fromSettlementWindowDateTime(),
-                input.toSettlementWindowDateTime());
+            input.currency(), input.participantId(), input.settlementWindowId(), input.accountId(),
+            input.state(), input.fromDateTime(), input.toDateTime(),
+            input.fromSettlementWindowDateTime(), input.toSettlementWindowDateTime());
 
         return new Output(settlementList);
     }

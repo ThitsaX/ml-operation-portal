@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,11 +28,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SCHEDULER_AND_JOB_CONFIGURATION)
 public class ModifySettlementSchedulerHandler
-        extends OperationPortalAuditableUseCase<ModifySettlementScheduler.Input, ModifySettlementScheduler.Output>
-        implements ModifySettlementScheduler {
+    extends OperationPortalAuditableUseCase<ModifySettlementScheduler.Input, ModifySettlementScheduler.Output>
+    implements ModifySettlementScheduler {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ModifySettlementSchedulerHandler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        ModifySettlementSchedulerHandler.class);
 
     private final ModifySchedulerConfigCommand modifySchedulerConfigCommand;
 
@@ -54,12 +58,9 @@ public class ModifySettlementSchedulerHandler
                                             ModifySchedulerConfigCommand modifySchedulerConfigCommand,
                                             ActionAuthorizationManager actionAuthorizationManager) {
 
-        super(createInputAuditCommand,
-              createOutputAuditCommand,
-              createExceptionAuditCommand,
-              objectMapper,
-              principalCache,
-              actionAuthorizationManager);
+        super(
+            createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+            objectMapper, principalCache, actionAuthorizationManager);
 
         this.modifySchedulerConfigCommand = modifySchedulerConfigCommand;
         this.settlementModelQuery = settlementModelQuery;
@@ -71,36 +72,37 @@ public class ModifySettlementSchedulerHandler
     @Override
     protected Output onExecute(Input input) throws DomainException {
 
-        SettlementModelData settlementModelData = this.settlementModelQuery.get(input.settlementModelId());
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(
+            input.settlementModelId());
 
-        SchedulerConfigData settlementSchedulerData = this.schedulerConfigQuery.get(input.schedulerConfigId());
+        SchedulerConfigData settlementSchedulerData = this.schedulerConfigQuery.get(
+            input.schedulerConfigId());
 
         // Validate the cron duplication if the cron expression or zone ID has changed
         if (!settlementSchedulerData.cronExpression().equals(input.cronExpression())) {
 
             List<SchedulerConfigData> settlementSchedulerList = this.settlementSchedulerQuery.getSettlementSchedulers(
-                    settlementModelData.settlementModelId());
+                settlementModelData.settlementModelId());
 
-            settlementSchedulerList.removeIf(schedulerConfigData -> schedulerConfigData.schedulerConfigId()
-                                                                                       .equals(input.schedulerConfigId()));
+            settlementSchedulerList.removeIf(schedulerConfigData -> schedulerConfigData
+                                                                        .schedulerConfigId()
+                                                                        .equals(
+                                                                            input.schedulerConfigId()));
 
-
-            boolean isOverlap = this.schedulerEngine.isCronOverlap(settlementSchedulerList, input.cronExpression());
+            boolean isOverlap = this.schedulerEngine.isCronOverlap(
+                settlementSchedulerList, input.cronExpression());
 
             if (isOverlap) {
                 throw new SettlementException(SettlementErrors.SETTLEMENT_SCHEDULER_OVERLAP.format(
-                        settlementModelData.name()));
+                    settlementModelData.name()));
             }
         }
 
-        var output =
-                this.modifySchedulerConfigCommand.execute(new ModifySchedulerConfigCommandHandler.Input(input.schedulerConfigId(),
-                                                                                                        input.name(),
-                                                                                                        "CloseSettlementWindowsScheduler",
-                                                                                                        input.description(),
-                                                                                                        input.cronExpression(),
-                                                                                                        settlementModelData.zoneId(),
-                                                                                                        input.active()));
+        var output = this.modifySchedulerConfigCommand.execute(
+            new ModifySchedulerConfigCommandHandler.Input(
+                input.schedulerConfigId(), input.name(), "CloseSettlementWindowsScheduler",
+                input.description(), input.cronExpression(), settlementModelData.zoneId(),
+                input.active()));
         this.schedulerEngine.scheduleOrReschedule(output.schedulerConfigData());
 
         return new Output(true);

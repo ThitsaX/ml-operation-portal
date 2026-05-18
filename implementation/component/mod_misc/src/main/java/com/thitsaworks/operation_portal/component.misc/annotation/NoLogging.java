@@ -1,4 +1,4 @@
-package com.thitsaworks.operation_portal.component.misc.logging;
+package com.thitsaworks.operation_portal.component.misc.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

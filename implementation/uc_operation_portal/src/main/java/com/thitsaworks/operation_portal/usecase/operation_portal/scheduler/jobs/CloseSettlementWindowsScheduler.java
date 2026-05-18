@@ -1,7 +1,9 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.scheduler.jobs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
 import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
@@ -26,10 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component("CloseSettlementWindowsScheduler")
+@ActionMetadata(category = ActionCategory.SYSTEM_JOBS_AND_SCHEDULED_EXECUTORS)
 public class CloseSettlementWindowsScheduler
     extends ScheduledJob<SchedulerConfigData, List<PostCloseSettlementWindows.Response>> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CloseSettlementWindowsScheduler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        CloseSettlementWindowsScheduler.class);
 
     private final SettlementModelQuery settlementModelQuery;
 
@@ -45,8 +49,10 @@ public class CloseSettlementWindowsScheduler
                                            SettlementModelQuery settlementModelQuery,
                                            SettlementHubClient settlementHubClient) {
 
-        super(createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
-              createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager, objectMapper);
+        super(
+            createJobExecutionLogCommand, modifyJobExecutionLogCommand, createInputAuditCommand,
+            createOutputAuditCommand, createExceptionAuditCommand, actionAuthorizationManager,
+            objectMapper);
 
         this.settlementModelQuery = settlementModelQuery;
         this.settlementHubClient = settlementHubClient;
@@ -56,48 +62,39 @@ public class CloseSettlementWindowsScheduler
     protected List<PostCloseSettlementWindows.Response> onExecute(SchedulerConfigData schedulerConfigData)
         throws DomainException, InterruptedException {
 
-        SettlementModelData settlementModelData =
-            this.settlementModelQuery.get(schedulerConfigData.schedulerConfigId());
+        SettlementModelData settlementModelData = this.settlementModelQuery.get(
+            schedulerConfigData.schedulerConfigId());
 
-        List<GetSettlementWindows.SettlementWindow> settlementWindowList =
-            this.settlementHubClient.getSettlementWindowsList(
-                null,
-                null,
-                settlementModelData.currencyId(),
-                SettlementWindowState.OPEN.toString(),
-                null,
-                new GetSettlementWindows.Request());
+        List<GetSettlementWindows.SettlementWindow> settlementWindowList = this.settlementHubClient.getSettlementWindowsList(
+            null, null, settlementModelData.currencyId(), SettlementWindowState.OPEN.toString(),
+            null, new GetSettlementWindows.Request());
 
         LOG.info("Settlement Window List: {}", settlementWindowList);
 
         List<PostCloseSettlementWindows.Response> settlementWindowsList = new ArrayList<>();
 
-        LocalDateTime
-            runningTime =
-            LocalDateTime.now(ZoneId.of(schedulerConfigData.zoneId()))
-                         .withNano(0);
+        LocalDateTime runningTime = LocalDateTime
+                                        .now(ZoneId.of(schedulerConfigData.zoneId()))
+                                        .withNano(0);
 
-        String reason =
-            String.format("Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
-                          schedulerConfigData.name(),
-                          settlementModelData.name(),
-                          runningTime,
-                          schedulerConfigData.zoneId());
+        String reason = String.format(
+            "Executed by Scheduler Config : [%s] of Settlement Model : [%s] at : [%s (%s)].",
+            schedulerConfigData.name(), settlementModelData.name(), runningTime,
+            schedulerConfigData.zoneId());
 
         for (var settlementWindow : settlementWindowList) {
 
-            var output = this.settlementHubClient.closeSettlementWindows(settlementWindow.settlementWindowId(),
-                                                                         new PostCloseSettlementWindows.Request(
-                                                                             SettlementWindowState.CLOSED.toString(),
-                                                                             reason));
+            var output = this.settlementHubClient.closeSettlementWindows(
+                settlementWindow.settlementWindowId(),
+                new PostCloseSettlementWindows.Request(
+                    SettlementWindowState.CLOSED.toString(),
+                    reason));
 
-            output = new PostCloseSettlementWindows.Response(settlementWindow.settlementWindowId(),
-                                                             output.getErrorInformation() != null ? null : SettlementWindowState.CLOSED.toString(),
-                                                             output.getReason(),
-                                                             output.getCreatedDate(),
-                                                             output.getClosedDate(),
-                                                             output.getChangedDate(),
-                                                             output.getErrorInformation());
+            output = new PostCloseSettlementWindows.Response(
+                settlementWindow.settlementWindowId(), output.getErrorInformation() != null ? null :
+                                                           SettlementWindowState.CLOSED.toString(),
+                output.getReason(), output.getCreatedDate(), output.getClosedDate(),
+                output.getChangedDate(), output.getErrorInformation());
 
             settlementWindowsList.add(output);
         }

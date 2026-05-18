@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.command.RevokeMenuActionCommand;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.net.ConnectException;
 
 @Service
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
 public class RevokeMenuActionListHandler
     extends OperationPortalUseCase<RevokeMenuActionList.Input, RevokeMenuActionList.Output>
     implements RevokeMenuActionList {
@@ -25,8 +28,7 @@ public class RevokeMenuActionListHandler
                                        ActionAuthorizationManager actionAuthorizationManager,
                                        RevokeMenuActionCommand revokeMenuActionCommand) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.revokeMenuActionCommand = revokeMenuActionCommand;
     }
@@ -36,7 +38,8 @@ public class RevokeMenuActionListHandler
 
         for (var actionCode : input.actionCodeList()) {
 
-            this.revokeMenuActionCommand.execute(new RevokeMenuActionCommand.Input(input.menuName(), actionCode));
+            this.revokeMenuActionCommand.execute(
+                new RevokeMenuActionCommand.Input(input.menuName(), actionCode));
         }
 
         return new Output(true);

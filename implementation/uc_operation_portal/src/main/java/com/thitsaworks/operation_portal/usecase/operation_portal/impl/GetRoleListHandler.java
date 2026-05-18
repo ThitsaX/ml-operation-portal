@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.data.RoleData;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
@@ -15,6 +17,9 @@ import java.net.ConnectException;
 import java.util.List;
 
 @Service
+@ActionMetadata(
+    category = ActionCategory.ROLE_MENU_PERMISSION_IAM,
+    isMandatory = true)
 public class GetRoleListHandler
     extends OperationPortalUseCase<GetRoleList.Input, GetRoleList.Output> implements GetRoleList {
 

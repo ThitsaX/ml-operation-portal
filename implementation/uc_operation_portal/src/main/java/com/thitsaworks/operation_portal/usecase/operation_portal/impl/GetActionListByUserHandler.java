@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.core.iam.query.IAMQuery;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.ROLE_MENU_PERMISSION_IAM)
 public class GetActionListByUserHandler
     extends OperationPortalUseCase<GetActionListByUser.Input, GetActionListByUser.Output>
     implements GetActionListByUser {
@@ -27,8 +30,7 @@ public class GetActionListByUserHandler
                                       IAMQuery iamQuery,
                                       UserPermissionManager userPermissionManager) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.iamQuery = iamQuery;
         this.userPermissionManager = userPermissionManager;
@@ -43,15 +45,14 @@ public class GetActionListByUserHandler
         var auditableActionNames = this.actionAuthorizationManager.findAuditableActions();
 
         List<Output.Action> actionList = this.iamQuery
-                                             .getGrantedActionListByPrincipal(currentUser.principalId())
+                                             .getGrantedActionListByPrincipal(
+                                                 currentUser.principalId())
                                              .stream()
-                                             .filter(action -> auditableActionNames.contains(action.actionCode()
-                                                                                                   .getValue()))
+                                             .filter(action -> auditableActionNames.contains(
+                                                 action.actionCode().getValue()))
                                              .map(action -> new Output.Action(
                                                  action.actionId(),
-                                                 action.actionCode()
-                                                       .getValue()
-                                             ))
+                                                 action.actionCode().getValue()))
                                              .toList();
 
         return new Output(actionList);

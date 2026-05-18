@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.data.SettlementStateData;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetSettlementStateQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
@@ -16,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@ActionMetadata(category = ActionCategory.SETTLEMENT_CORE_OPERATIONS)
 public class GetSettlementStateListHandler
-        extends OperationPortalUseCase<GetSettlementStateList.Input, GetSettlementStateList.Output>
-        implements GetSettlementStateList {
+    extends OperationPortalUseCase<GetSettlementStateList.Input, GetSettlementStateList.Output>
+    implements GetSettlementStateList {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GetSettlementStateListHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        GetSettlementStateListHandler.class);
 
     private final GetSettlementStateQuery getSettlementStateQuery;
 
@@ -40,7 +44,8 @@ public class GetSettlementStateListHandler
         List<Output.SettlementStateData> settlementStateStates = new ArrayList<>();
 
         for (SettlementStateData data : output.settlementStates()) {
-            settlementStateStates.add(new Output.SettlementStateData(data.settlementStateId(), data.enumeration()));
+            settlementStateStates.add(
+                new Output.SettlementStateData(data.settlementStateId(), data.enumeration()));
         }
 
         return new Output(settlementStateStates);

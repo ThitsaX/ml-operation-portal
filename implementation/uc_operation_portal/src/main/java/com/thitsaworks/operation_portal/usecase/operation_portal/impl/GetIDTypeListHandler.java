@@ -1,6 +1,8 @@
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
+import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
 import com.thitsaworks.operation_portal.core.hub_services.query.GetIDTypesQuery;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
 import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
@@ -11,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
-public class GetIDTypeListHandler extends OperationPortalUseCase<GetIDTypeList.Input, GetIDTypeList.Output>
+@ActionMetadata(category = ActionCategory.PARTICIPANT_PROFILE_AND_FINANCIAL_CONFIGURATION)
+public class GetIDTypeListHandler
+    extends OperationPortalUseCase<GetIDTypeList.Input, GetIDTypeList.Output>
     implements GetIDTypeList {
 
     private static final Logger LOG = LoggerFactory.getLogger(GetIDTypeListHandler.class);
@@ -22,8 +26,7 @@ public class GetIDTypeListHandler extends OperationPortalUseCase<GetIDTypeList.I
                                 ActionAuthorizationManager actionAuthorizationManager,
                                 GetIDTypesQuery getIDTypesQuery) {
 
-        super(principalCache,
-              actionAuthorizationManager);
+        super(principalCache, actionAuthorizationManager);
 
         this.getIDTypesQuery = getIDTypesQuery;
 
