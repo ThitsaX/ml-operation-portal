@@ -44,6 +44,8 @@ public class S3FileStorage implements FileStorage {
 
     private final boolean pathStyleAccess;
 
+    private final boolean resolvedPathStyleAccess;
+
     private final Duration presignedUrlLifetime;
 
     private final S3Client s3Client;
@@ -58,8 +60,9 @@ public class S3FileStorage implements FileStorage {
         this.accessKey = settings.accessKey;
         this.secretKey = settings.secretKey;
         this.prefix = settings.prefix;
-        this.endpoint = settings.endpoint;
+        this.endpoint = this.normalizeEndpoint(settings.endpoint);
         this.pathStyleAccess = settings.pathStyleAccess;
+        this.resolvedPathStyleAccess = this.pathStyleAccess || !this.endpoint.isBlank();
         this.presignedUrlLifetime = settings.presignedUrlLifetime;
 
         this.s3Client = this.enabled ? this.buildClient() : null;
@@ -103,7 +106,7 @@ public class S3FileStorage implements FileStorage {
                           .region(Region.of(this.region))
                           .serviceConfiguration(S3Configuration
                                                     .builder()
-                                                    .pathStyleAccessEnabled(this.pathStyleAccess)
+                                                    .pathStyleAccessEnabled(this.resolvedPathStyleAccess)
                                                     .build());
 
         if (!this.endpoint.isBlank()) {
@@ -123,7 +126,7 @@ public class S3FileStorage implements FileStorage {
                                           .serviceConfiguration(S3Configuration
                                                                     .builder()
                                                                     .pathStyleAccessEnabled(
-                                                                        this.pathStyleAccess)
+                                                                        this.resolvedPathStyleAccess)
                                                                     .build());
 
         if (!this.endpoint.isBlank()) {
@@ -165,6 +168,23 @@ public class S3FileStorage implements FileStorage {
             presignRequest);
 
         return presignedRequest.url().toString();
+    }
+
+    private String normalizeEndpoint(String endpoint) {
+
+        if (endpoint == null) {
+
+            return "";
+        }
+
+        String normalized = endpoint.trim();
+
+        while (normalized.endsWith("/")) {
+
+            normalized = normalized.substring(0, normalized.length() - 1);
+        }
+
+        return normalized;
     }
 
     private String contentType(String extension) {
