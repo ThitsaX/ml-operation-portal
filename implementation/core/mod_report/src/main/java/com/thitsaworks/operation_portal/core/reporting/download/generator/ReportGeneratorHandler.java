@@ -435,6 +435,7 @@ public class ReportGeneratorHandler implements ReportGenerator {
         return switch (request.getReportType()) {
             case SETTLEMENT_DETAIL -> "DFSPSettlementDetailReport-" + timestamp + "." + extension;
             case TransactionDetail -> "TransactionDetailReport-" + timestamp + "." + extension;
+            case FEE_SUMMARY -> "FeeSummaryReport-" + timestamp + "." + extension;
             case MANAGEMENT_SUMMARY -> "ManagementSummaryReport-" + timestamp + "." + extension;
             case AUDIT -> "AuditReport-" + timestamp + "." + extension;
             case SETTLEMENT_BANK -> "SettlementBankReport-" + timestamp + "." + extension;
