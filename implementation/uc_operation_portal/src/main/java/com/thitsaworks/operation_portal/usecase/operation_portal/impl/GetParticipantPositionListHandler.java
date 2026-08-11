@@ -130,15 +130,13 @@ public class GetParticipantPositionListHandler
                                               .map(v -> v.setScale(2, RoundingMode.DOWN))
                                               .orElse(roundingValue);
 
-            final ParticipantData resolved = isDfspUser ? userParticipant :
-                                                 participantDescCache.computeIfAbsent(
+            final ParticipantData resolved = participantDescCache.computeIfAbsent(
                                                      dto.dfspId(),
                                                      id -> resolveParticipantDescription(id));
 
             final ParticipantId participantId = resolved.participantId();
 
-            final String displayName =
-                isDfspUser ? userParticipant.description() : resolved.description();
+            final String displayName = resolved.description();
 
             final FinancialData updated = new FinancialData(
                 participantId, dto.dfspId(), displayName, dto.currency(), dto.balance(),
