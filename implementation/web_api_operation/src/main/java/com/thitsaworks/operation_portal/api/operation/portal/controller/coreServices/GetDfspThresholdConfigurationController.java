@@ -53,12 +53,18 @@ public class GetDfspThresholdConfigurationController {
                 new GetDfspThresholdConfiguration.Input(dfspId));
 
         var response = new Response(
-                String.valueOf(output.thresholdConfigurationId().getEntityId()),
-                output.scopeType().toString(),
+                output.thresholdConfigurationId() == null
+                    ? null
+                    : String.valueOf(output.thresholdConfigurationId().getEntityId()),
+                output.scopeType() == null
+                    ? null
+                    : output.scopeType().toString(),
                 output.dfspId(),
                 output.thresholdEnabled(),
                 output.schemeEnabled(),
-                output.status().toString(),
+                output.status() == null
+                    ? null
+                    : output.status().toString(),
                 output.createdAt(),
                 output.createdBy(),
                 output.updatedAt(),

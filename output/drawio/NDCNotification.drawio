@@ -1,0 +1,162 @@
+<mxfile host="65bd71144e">
+    <diagram id="ndc-notification-feature" name="NDC Notification Feature">
+        <mxGraphModel dx="1775" dy="816" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="configLabel" value="1. CONFIGURATION LAYERS" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#172746;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="60" width="360" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheme" value="&lt;b&gt;Scheme level&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#5A6F91&#39;&gt;Global feature gate&lt;/font&gt;&lt;br&gt;&lt;br&gt;• Enables or disables NDC threshold processing&lt;br&gt;• Controls whether scheduled NDC jobs may run&lt;br&gt;• Top-level gate for the notification feature" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=left;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="95" width="300" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="dfsp" target="4">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="dfsp" value="&lt;b&gt;DFSP / currency level&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#5A6F91&#39;&gt;Operational threshold&lt;/font&gt;&lt;br&gt;&lt;br&gt;• Defines the DFSP threshold configuration&lt;br&gt;• Controls currency-level threshold details&lt;br&gt;• Only active details are evaluated" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=left;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="390" y="95" width="300" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="user" value="&lt;b&gt;User level&lt;/b&gt;&lt;br&gt;&lt;font color=&#39;#5A6F91&#39;&gt;Recipient preference&lt;/font&gt;&lt;br&gt;&lt;br&gt;• User must be active and have an email&lt;br&gt;• &lt;code&gt;allow_notification&lt;/code&gt; must be enabled&lt;br&gt;• Hub users and breached-DFSP users are eligible" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=left;verticalAlign=top;" parent="1" vertex="1">
+                    <mxGeometry x="730" y="95" width="300" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_scheme_dfsp" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="scheme" target="dfsp" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_dfsp_user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="dfsp" target="user" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="runtimeLabel" value="2. RUNTIME NOTIFICATION WORKFLOW" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#172746;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="385" width="420" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="scheduler" value="&lt;b&gt;Scheduled job&lt;/b&gt;&lt;br&gt;Runs on the configured schedule" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="440" width="200" height="95" as="geometry"/>
+                </mxCell>
+                <mxCell id="thresholdWorker" value="&lt;b&gt;NdcThresholdWorker&lt;/b&gt;&lt;br&gt;Loads active configuration and evaluates each configured participant/currency" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="300" y="430" width="270" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="gateCheck" value="&lt;b&gt;Apply configuration gates&lt;/b&gt;&lt;br&gt;Scheme enabled?&lt;br&gt;Active DFSP/currency detail?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="625" y="430" width="190" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="skip" value="&lt;b&gt;Skip evaluation&lt;/b&gt;&lt;br&gt;No alert event is created" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F4F6FA;strokeColor=#AAB8CC;strokeWidth=2;fontColor=#5A6F91;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="625" y="585" width="190" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="readUsage" value="&lt;b&gt;Read current NDC usage&lt;/b&gt;&lt;br&gt;Get usage for the configured participant and currency" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="870" y="430" width="220" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="compare" value="&lt;b&gt;Compare used % with threshold&lt;/b&gt;&lt;br&gt;Determine whether the configured NDC limit is breached" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1145" y="430" width="240" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="breachDecision" value="&lt;b&gt;Breached?&lt;/b&gt;&lt;br&gt;used % ≥ configured threshold" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1425" y="430" width="170" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="normal" value="&lt;b&gt;Below threshold&lt;/b&gt;&lt;br&gt;Keep normal state or record recovery if the previous state was breached" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1120" y="600" width="220" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="stateDecision" value="&lt;b&gt;New breach cycle?&lt;/b&gt;&lt;br&gt;Avoid duplicate alert events" style="rhombus;whiteSpace=wrap;html=1;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1425" y="585" width="170" height="115" as="geometry"/>
+                </mxCell>
+                <mxCell id="suppress" value="&lt;b&gt;Duplicate breach&lt;/b&gt;&lt;br&gt;Keep breached state and suppress duplicate alert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1390" y="745" width="205" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="alertEvent" value="&lt;b&gt;Create alert event&lt;/b&gt;&lt;br&gt;One event represents the new breach cycle" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1100" y="745" width="220" height="85" as="geometry"/>
+                </mxCell>
+                <mxCell id="dispatchLabel" value="3. ALERT DISPATCH" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#172746;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="875" width="250" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="dispatcher" value="&lt;b&gt;NdcNotificationDispatcher&lt;/b&gt;&lt;br&gt;Finds undispatched alert events" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="920" width="230" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="recipients" value="&lt;b&gt;Select eligible recipients&lt;/b&gt;&lt;br&gt;Active user + email + allow_notification enabled&lt;br&gt;Hub users and breached-DFSP users" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="340" y="910" width="260" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="deliveryLog" value="&lt;b&gt;Create delivery log&lt;/b&gt;&lt;br&gt;Record the recipient and delivery attempt before sending" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="660" y="920" width="230" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="send" value="&lt;b&gt;Send notification&lt;/b&gt;&lt;br&gt;Email delivery is attempted for each eligible recipient" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="950" y="920" width="230" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="deliveryDecision" value="&lt;b&gt;Delivery successful?&lt;/b&gt;" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1240" y="910" width="180" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="delivered" value="&lt;b&gt;Mark delivered&lt;/b&gt;&lt;br&gt;Alert delivery completed" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1470" y="875" width="125" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="retry" value="&lt;b&gt;Retry / review&lt;/b&gt;&lt;br&gt;Mark failed or retryable; next job can retry" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FDEAEA;strokeColor=#D64545;strokeWidth=2;fontColor=#172746;fontSize=12;spacing=10;align=center;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="1470" y="975" width="125" height="75" as="geometry"/>
+                </mxCell>
+                <mxCell id="note" value="Operational visibility: evaluation results, alert events, job execution records, and notification delivery logs provide traceability for pending, failed, and retryable outcomes." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#F4F6FA;strokeColor=#CBD6E5;strokeWidth=1;fontColor=#5A6F91;fontSize=13;spacing=12;align=left;verticalAlign=middle;" parent="1" vertex="1">
+                    <mxGeometry x="50" y="1040" width="1370" height="45" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_scheduler_worker" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="scheduler" target="thresholdWorker" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_worker_gate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="thresholdWorker" target="gateCheck" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_gate_skip" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#AAB8CC;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" parent="1" source="gateCheck" target="skip" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_gate_usage" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" parent="1" source="gateCheck" target="readUsage" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_usage_compare" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="readUsage" target="compare" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_compare_breach" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="compare" target="breachDecision" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_breach_normal" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0E9F9A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#0E9F9A;fontSize=12;" parent="1" source="breachDecision" target="normal" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="1450" y="570"/>
+                            <mxPoint x="1230" y="570"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_breach_state" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7738E8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#7738E8;fontSize=12;" parent="1" source="breachDecision" target="stateDecision" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_state_suppress" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F80ED;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2F80ED;fontSize=12;" parent="1" source="stateDecision" target="suppress" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_state_alert" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7738E8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#7738E8;fontSize=12;exitX=0.206;exitY=0.739;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="stateDecision" target="alertEvent" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="1460" y="700" as="sourcePoint"/>
+                        <Array as="points">
+                            <mxPoint x="1460" y="700"/>
+                            <mxPoint x="1210" y="700"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e_alert_dispatch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7738E8;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="alertEvent" target="dispatcher" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_dispatch_recipients" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="dispatcher" target="recipients" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_recipients_log" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="recipients" target="deliveryLog" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_log_send" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="deliveryLog" target="send" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_send_decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" parent="1" source="send" target="deliveryDecision" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_delivery_success" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2BA36A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2BA36A;fontSize=12;" parent="1" source="deliveryDecision" target="delivered" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e_delivery_retry" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D64545;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D64545;fontSize=12;" parent="1" source="deliveryDecision" target="retry" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="&lt;span data-teams=&quot;true&quot;&gt;current position And ndc amount&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="900" y="545" width="210" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="4" value="NDC Thresholds&amp;nbsp;" style="whiteSpace=wrap;html=1;fontSize=14;align=left;verticalAlign=top;fillColor=#E7F0FF;strokeColor=#2F80ED;fontColor=#172746;rounded=1;arcSize=12;strokeWidth=2;spacing=14;" vertex="1" parent="1">
+                    <mxGeometry x="460" y="310" width="150" height="60" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

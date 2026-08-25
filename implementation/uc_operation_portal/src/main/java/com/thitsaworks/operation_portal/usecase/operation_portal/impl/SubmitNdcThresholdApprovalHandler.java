@@ -15,11 +15,15 @@
  */
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
+import com.thitsaworks.operation_portal.core.audit.command.CreateExceptionAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateInputAuditCommand;
+import com.thitsaworks.operation_portal.core.audit.command.CreateOutputAuditCommand;
 import com.thitsaworks.operation_portal.core.iam.cache.PrincipalCache;
-import com.thitsaworks.operation_portal.usecase.OperationPortalUseCase;
+import com.thitsaworks.operation_portal.usecase.OperationPortalAuditableUseCase;
 import com.thitsaworks.operation_portal.usecase.operation_portal.SubmitNdcThresholdApproval;
 import com.thitsaworks.operation_portal.usecase.operation_portal.approval.NdcThresholdApprovalService;
 import com.thitsaworks.operation_portal.usecase.util.action.ActionAuthorizationManager;
@@ -28,18 +32,23 @@ import org.springframework.stereotype.Service;
 @Service
 @ActionMetadata(category = ActionCategory.APPROVAL_WORKFLOW)
 public class SubmitNdcThresholdApprovalHandler
-    extends OperationPortalUseCase<SubmitNdcThresholdApproval.Input,
-                                    SubmitNdcThresholdApproval.Output>
+    extends OperationPortalAuditableUseCase<SubmitNdcThresholdApproval.Input,
+                                             SubmitNdcThresholdApproval.Output>
     implements SubmitNdcThresholdApproval {
 
     private final NdcThresholdApprovalService approvalService;
 
     public SubmitNdcThresholdApprovalHandler(
+        CreateInputAuditCommand createInputAuditCommand,
+        CreateOutputAuditCommand createOutputAuditCommand,
+        CreateExceptionAuditCommand createExceptionAuditCommand,
+        ObjectMapper objectMapper,
         PrincipalCache principalCache,
         ActionAuthorizationManager actionAuthorizationManager,
         NdcThresholdApprovalService approvalService) {
 
-        super(principalCache, actionAuthorizationManager);
+        super(createInputAuditCommand, createOutputAuditCommand, createExceptionAuditCommand,
+              objectMapper, principalCache, actionAuthorizationManager);
         this.approvalService = approvalService;
     }
 

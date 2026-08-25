@@ -1,0 +1,185 @@
+<mxfile host="app.diagrams.net" modified="2026-08-18T00:00:00.000Z" agent="Codex" version="24.7.17" type="device">
+  <diagram id="report-download" name="Report Download Feature">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Report Download Feature" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=28;fontStyle=1;fontColor=#172746;" vertex="1" parent="1">
+          <mxGeometry x="50" y="25" width="620" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Developer knowledge-sharing flow: request creation, asynchronous generation, storage, status polling, and secure download" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=14;fontColor=#5A6F91;" vertex="1" parent="1">
+          <mxGeometry x="52" y="68" width="1200" height="28" as="geometry" />
+        </mxCell>
+
+        <mxCell id="submitLabel" value="1. SUBMIT REPORT REQUEST" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#172746;" vertex="1" parent="1">
+          <mxGeometry x="50" y="115" width="400" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ui" value="&lt;b&gt;Operation Portal UI&lt;/b&gt;&lt;br&gt;User selects report filters and file format, then clicks Download" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="165" width="240" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="api" value="&lt;b&gt;Secured report API&lt;/b&gt;&lt;br&gt;Receives report type, filters, and requested file type" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="165" width="240" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="manager" value="&lt;b&gt;ReportDownloadRequestManager&lt;/b&gt;&lt;br&gt;&lt;b&gt;Always creates a new request — no report reuse.&lt;/b&gt;&lt;br&gt;Normalizes the file type, calculates the parameter signature, and saves a new PENDING request with its filters." style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=14;spacing=14;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="650" y="150" width="300" height="145" as="geometry" />
+        </mxCell>
+        <mxCell id="requestDb" value="&lt;b&gt;Core database&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;code&gt;tbl_report_request&lt;/code&gt;&lt;br&gt;• one new row for every download request&lt;br&gt;• request ID, report type, status&lt;br&gt;• file type, signature, file key/error&lt;br&gt;&lt;br&gt;&lt;code&gt;tbl_report_request_param&lt;/code&gt;&lt;br&gt;• filter key/value pairs" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1030" y="130" width="300" height="185" as="geometry" />
+        </mxCell>
+        <mxCell id="requestId" value="&lt;b&gt;Immediate response&lt;/b&gt;&lt;br&gt;Return requestId; UI shows “Queuing report…” and may leave the page" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="165" width="310" height="115" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_ui_api" value="filters + format" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" edge="1" parent="1" source="ui" target="api">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_api_manager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="api" target="manager">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_manager_db" value="NEW PENDING request + params" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" edge="1" parent="1" source="manager" target="requestDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_db_response" value="requestId" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0E9F9A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#0E9F9A;fontSize=12;" edge="1" parent="1" source="requestDb" target="requestId">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="generateLabel" value="2. BACKGROUND REPORT GENERATION" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#172746;" vertex="1" parent="1">
+          <mxGeometry x="50" y="355" width="480" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="scheduler" value="&lt;b&gt;Scheduler config: ReportGeneratorSync&lt;/b&gt;&lt;br&gt;Job: &lt;code&gt;ReportGeneratorScheduler&lt;/code&gt;&lt;br&gt;Cron: &lt;code&gt;*/5 * * * * *&lt;/code&gt; (every 5 seconds)&lt;br&gt;Dispatches available slots, maximum 3 concurrent generations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="handler" value="&lt;b&gt;ReportGeneratorHandler&lt;/b&gt;&lt;br&gt;Claims the oldest PENDING request atomically, changes it to RUNNING, starts the RUNNING heartbeat, and loads the saved request parameters" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="405" width="280" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="typeGenerator" value="&lt;b&gt;ReportTypeGenerator&lt;/b&gt;&lt;br&gt;Handler selects the generator registered for the request’s report type and loads saved parameters" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="700" y="405" width="280" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="countRows" value="&lt;b&gt;Count matching rows&lt;/b&gt;&lt;br&gt;Generator calculates the total output size before export" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="415" width="230" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="splitDecision" value="&lt;b&gt;Rows &gt; 500,000?&lt;/b&gt;&lt;br&gt;MAX_ROWS_PER_REPORT_FILE" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1350" y="405" width="190" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="singleFile" value="&lt;b&gt;Generate one report file&lt;/b&gt;&lt;br&gt;Read records in reportPageSize batches and write XLSX, CSV, or PDF output" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1450" y="580" width="270" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="parts" value="&lt;b&gt;Generate multiple parts&lt;/b&gt;&lt;br&gt;Each part contains at most 500,000 rows; each part is read in reportPageSize batches" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="580" width="280" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="zip" value="&lt;b&gt;ZIP the generated parts&lt;/b&gt;&lt;br&gt;Large outputs are packaged as one downloadable archive" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="730" y="585" width="270" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="storage" value="&lt;b&gt;FileStorage / object storage&lt;/b&gt;&lt;br&gt;Upload generated bytes and return the object key" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="390" y="580" width="250" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="ready" value="&lt;b&gt;Mark request READY&lt;/b&gt;&lt;br&gt;Persist the object key in the request record" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="580" width="260" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="failed" value="&lt;b&gt;Generation/storage error&lt;/b&gt;&lt;br&gt;Persist FAILED status and a trimmed error message" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FDEAEA;strokeColor=#D64545;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="350" y="735" width="280" height="95" as="geometry" />
+        </mxCell>
+
+        <mxCell id="pageSizeNote" value="&lt;b&gt;reportPageSize&lt;/b&gt;&lt;br&gt;Database/query batch size used while reading rows. It controls memory and query workload; it does not limit the final file to that number of rows." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#F4F6FA;strokeColor=#CBD6E5;strokeWidth=1;fontColor=#5A6F91;fontSize=12;spacing=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="720" width="260" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="maxRowsNote" value="&lt;b&gt;MAX_ROWS_PER_REPORT_FILE = 500,000&lt;/b&gt;&lt;br&gt;Maximum rows allowed in one generated report file. More rows cause file splitting and ZIP packaging." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#FFF8EA;strokeColor=#E0B55A;strokeWidth=1;fontColor=#5A6F91;fontSize=12;spacing=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="720" width="280" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="resilience" value="&lt;b&gt;Worker resilience&lt;/b&gt;&lt;br&gt;Atomic status transitions prevent two workers from claiming the same request. A RUNNING heartbeat is updated periodically, and stale RUNNING requests are recovered to FAILED." style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#F4F6FA;strokeColor=#CBD6E5;strokeWidth=1;fontColor=#5A6F91;fontSize=12;spacing=10;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="700" y="720" width="310" height="125" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_scheduler_handler" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="scheduler" target="handler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_handler_db" value="PENDING → RUNNING" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2F80ED;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2F80ED;fontSize=12;" edge="1" parent="1" source="handler" target="requestDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_handler_generator" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="handler" target="typeGenerator">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_generator_count" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="typeGenerator" target="countRows">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_count_decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="countRows" target="splitDecision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_decision_single" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2BA36A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2BA36A;fontSize=12;" edge="1" parent="1" source="splitDecision" target="singleFile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_decision_parts" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7738E8;strokeWidth=2;endArrow=block;endFill=1;fontColor=#7738E8;fontSize=12;" edge="1" parent="1" source="splitDecision" target="parts">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_parts_zip" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#7738E8;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="parts" target="zip">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_zip_storage" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="zip" target="storage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_single_storage" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2BA36A;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="singleFile" target="storage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_storage_ready" value="object key" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2BA36A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2BA36A;fontSize=12;" edge="1" parent="1" source="storage" target="ready">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_handler_failed" value="exception" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D64545;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D64545;fontSize=12;dashed=1;" edge="1" parent="1" source="handler" target="failed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="retrieveLabel" value="3. STATUS POLLING AND DOWNLOAD" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=16;fontStyle=1;fontColor=#172746;" vertex="1" parent="1">
+          <mxGeometry x="50" y="875" width="450" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="poll" value="&lt;b&gt;UI polls status&lt;/b&gt;&lt;br&gt;GET status using requestId" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F0E7FF;strokeColor=#7738E8;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="50" y="930" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="statusHandler" value="&lt;b&gt;GetReportDownloadStatusHandler&lt;/b&gt;&lt;br&gt;Reads the request status from the core database" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E7F0FF;strokeColor=#2F80ED;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="320" y="920" width="280" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="statusDecision" value="&lt;b&gt;Current status?&lt;/b&gt;&lt;br&gt;PENDING / RUNNING / READY / FAILED" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF1D9;strokeColor=#C77A00;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=10;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="665" y="915" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="keepPolling" value="&lt;b&gt;PENDING or RUNNING&lt;/b&gt;&lt;br&gt;Keep showing queued/preparing state and poll again" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#F4F6FA;strokeColor=#AAB8CC;strokeWidth=2;fontColor=#5A6F91;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="650" y="1070" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="urlHandler" value="&lt;b&gt;GetReportDownloadUrlHandler&lt;/b&gt;&lt;br&gt;For READY requests, uses the stored object key to generate a time-limited pre-signed URL" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#E6F7EF;strokeColor=#2BA36A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="940" y="910" width="300" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="directDownload" value="&lt;b&gt;Direct object-storage download&lt;/b&gt;&lt;br&gt;Browser follows the pre-signed URL and downloads the completed report" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#DDF5F2;strokeColor=#0E9F9A;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="920" width="270" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="showError" value="&lt;b&gt;FAILED&lt;/b&gt;&lt;br&gt;Resolve the stored failure message and show an error instead of polling indefinitely" style="rounded=1;whiteSpace=wrap;html=1;arcSize=12;fillColor=#FDEAEA;strokeColor=#D64545;strokeWidth=2;fontColor=#172746;fontSize=13;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="940" y="1070" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="lifecycle" value="&lt;b&gt;Request lifecycle&lt;/b&gt; &amp;nbsp; PENDING → RUNNING → READY &amp;nbsp; | &amp;nbsp; Any generation/storage failure while RUNNING → FAILED" style="rounded=1;whiteSpace=wrap;html=1;arcSize=10;fillColor=#172746;strokeColor=#172746;fontColor=#FFFFFF;fontSize=14;spacing=12;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1310" y="1070" width="410" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_poll_status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="poll" target="statusHandler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_status_db" value="read status" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" edge="1" parent="1" source="statusHandler" target="requestDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_status_decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#667A9C;strokeWidth=2;endArrow=block;endFill=1;" edge="1" parent="1" source="statusHandler" target="statusDecision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_decision_poll" value="PENDING / RUNNING" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#AAB8CC;strokeWidth=2;endArrow=block;endFill=1;fontColor=#5A6F91;fontSize=12;" edge="1" parent="1" source="statusDecision" target="keepPolling">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_decision_url" value="READY" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#2BA36A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#2BA36A;fontSize=12;" edge="1" parent="1" source="statusDecision" target="urlHandler">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_url_download" value="pre-signed URL" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#0E9F9A;strokeWidth=2;endArrow=block;endFill=1;fontColor=#0E9F9A;fontSize=12;" edge="1" parent="1" source="urlHandler" target="directDownload">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e_decision_error" value="FAILED" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#D64545;strokeWidth=2;endArrow=block;endFill=1;fontColor=#D64545;fontSize=12;" edge="1" parent="1" source="statusDecision" target="showError">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

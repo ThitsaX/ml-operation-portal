@@ -15,6 +15,7 @@
  */
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
+import com.thitsaworks.operation_portal.component.common.type.ThresholdScopeType;
 import com.thitsaworks.operation_portal.component.misc.annotation.ActionMetadata;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.ActionCategory;
@@ -52,7 +53,20 @@ public class GetDfspThresholdConfigurationHandler
         Optional<ThresholdConfigurationData> schemeConfiguration = this.thresholdConfigurationQuery.getSchemeConfiguration();
 
         boolean schemeEnabled = schemeConfiguration.map(ThresholdConfigurationData::thresholdEnabled).orElse(false);
-
+        if (thresholdConfiguration.isEmpty()) {
+            return new Output(
+                null,
+                ThresholdScopeType.DFSP,
+                input.dfspId(),
+                false,
+                schemeEnabled,
+                null,
+                null,
+                null,
+                null,
+                null
+            );
+        }
         return new Output(
                 thresholdConfiguration.get().thresholdConfigurationId(),
                 thresholdConfiguration.get().scopeType(),
