@@ -50,8 +50,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 @Primary
@@ -262,11 +264,16 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
-            writeTotals(sheet.createRow(cursor.next()), totals, columnHeaderStyle, amountCellStyle);
+            for (Map.Entry<String, CurrencyTotals> entry : totals.byCurrency().entrySet()) {
+                writeTotals(sheet.createRow(cursor.next()), entry.getKey(), entry.getValue(), columnHeaderStyle,
+                            amountCellStyle);
+            }
             cursor.next();
             cursor.next();
-            writeAggregate(sheet.createRow(cursor.next()), "Aggregated Net Transfer Amount", totals.netTransferAmount(),
-                           headerValueStyle, amountCellStyle);
+            for (Map.Entry<String, CurrencyTotals> entry : totals.byCurrency().entrySet()) {
+                writeAggregate(sheet.createRow(cursor.next()), "Aggregated Net Transfer Amount", entry.getKey(),
+                               entry.getValue().netTransferAmount(), headerValueStyle, amountCellStyle);
+            }
 
             for (int i = 0; i < COLUMN_HEADERS.length; i++) {
 
@@ -327,26 +334,31 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                                      row.useCase(),
                                      row.currencyId()));
             }
-            writer.write(csvLine("",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 "Total",
-                                 numberText(totals.receivedAmount()),
-                                 numberText(totals.sentAmount()),
-                                 "",
-                                 "",
-                                 "",
-                                 "",
-                                 ""));
+            for (Map.Entry<String, CurrencyTotals> entry : totals.byCurrency().entrySet()) {
+                writer.write(csvLine("",
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     "Total",
+                                     entry.getKey(),
+                                     numberText(entry.getValue().receivedAmount()),
+                                     numberText(entry.getValue().sentAmount()),
+                                     "",
+                                     "",
+                                     "",
+                                     "",
+                                     ""));
+            }
             writer.newLine();
-            writer.write(csvLine("Aggregated Net Transfer Amount", numberText(totals.netTransferAmount())));
+            for (Map.Entry<String, CurrencyTotals> entry : totals.byCurrency().entrySet()) {
+                writer.write(csvLine("Aggregated Net Transfer Amount", entry.getKey(),
+                                     numberText(entry.getValue().netTransferAmount())));
+            }
             writer.flush();
             return Files.readAllBytes(tempFile);
         } finally {
@@ -584,21 +596,28 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
         }
     }
 
-    private void writeTotals(Row row, SettlementTotals totals, CellStyle labelStyle, CellStyle amountStyle) {
+    private void writeTotals(Row row,
+                             String currency,
+                             CurrencyTotals totals,
+                             CellStyle labelStyle,
+                             CellStyle amountStyle) {
 
-        writeTextCell(row, 10, "Total", labelStyle);
+        writeTextCell(row, 9, "Total", labelStyle);
+        writeTextCell(row, 10, currency, labelStyle);
         writeAmountCell(row, 11, totals.receivedAmount(), amountStyle);
         writeAmountCell(row, 12, totals.sentAmount(), amountStyle);
     }
 
     private void writeAggregate(Row row,
                                 String label,
+                                String currency,
                                 BigDecimal value,
                                 CellStyle labelStyle,
                                 CellStyle amountStyle) {
 
         writeTextCell(row, 0, label, labelStyle);
-        writeAmountCell(row, 1, value, amountStyle);
+        writeTextCell(row, 1, currency, labelStyle);
+        writeAmountCell(row, 2, value, amountStyle);
     }
 
     private CellStyle headerLabelStyle(SXSSFWorkbook wb) {
@@ -759,6 +778,20 @@ public class GenerateSettlementDetailReportPoiCommandHandler implements Generate
                                        String currencyId) {}
 
     private static final class SettlementTotals {
+
+        private final Map<String, CurrencyTotals> byCurrency = new LinkedHashMap<>();
+
+        private void add(SettlementDetailRow row) {
+
+            String currency = row.currencyId() == null ? "" : row.currencyId();
+            this.byCurrency.computeIfAbsent(currency, ignored -> new CurrencyTotals()).add(row);
+        }
+
+        private Map<String, CurrencyTotals> byCurrency() { return this.byCurrency; }
+
+    }
+
+    private static final class CurrencyTotals {
 
         private BigDecimal receivedAmount = BigDecimal.ZERO;
 
