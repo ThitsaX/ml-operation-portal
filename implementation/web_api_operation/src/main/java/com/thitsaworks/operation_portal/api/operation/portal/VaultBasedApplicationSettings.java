@@ -22,6 +22,7 @@ import com.thitsaworks.operation_portal.component.infra.redis.RedisConfiguration
 import com.thitsaworks.operation_portal.component.infra.vault.Vault;
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
 import com.thitsaworks.operation_portal.component.misc.storage.S3FileStorage;
+import com.thitsaworks.operation_portal.component.misc.security.xml.MxXadesXmlSigner;
 import com.thitsaworks.operation_portal.core.email.EmailConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,20 @@ public class VaultBasedApplicationSettings {
     public S3FileStorage.Settings s3Settings(Vault vault) {
 
         return vault.get(S3FileStorage.S3_SETTINGS_PATH, S3FileStorage.Settings.class);
+    }
+
+    @Bean
+    public MxXadesXmlSigner.Settings mxXadesXmlSignerSettings(Vault vault) {
+
+        try {
+            return vault.get(
+                MxXadesXmlSigner.MX_XADES_SIGNING_SETTINGS_PATH, MxXadesXmlSigner.Settings.class);
+        } catch (RuntimeException exception) {
+            LOG.warn(
+                "MX XAdES signing settings were not loaded from Vault path [{}]. Signing remains disabled.",
+                MxXadesXmlSigner.MX_XADES_SIGNING_SETTINGS_PATH);
+            return MxXadesXmlSigner.Settings.disabled();
+        }
     }
 
     @Bean
