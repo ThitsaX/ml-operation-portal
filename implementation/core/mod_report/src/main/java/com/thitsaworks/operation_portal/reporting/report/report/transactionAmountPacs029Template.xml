@@ -1,0 +1,54 @@
+<DataPDU xmlns="urn:cma:stp:xsd:stp.1.0">
+  <Body>
+    <AppHdr xmlns="urn:iso:std:iso:20022:tech:xsd:head.001.001.02">
+      <Fr>
+        <FIId>
+          <FinInstnId>
+            <BICFI>${senderBic}</BICFI>
+            <ClrSysMmbId>
+              <ClrSysId>
+                <Cd>${senderClearingSystemCode}</Cd>
+              </ClrSysId>
+              <MmbId>${senderClearingMemberId}</MmbId>
+            </ClrSysMmbId>
+          </FinInstnId>
+        </FIId>
+      </Fr>
+      <To>
+        <FIId>
+          <FinInstnId>
+            <BICFI>${receiverBic}</BICFI>
+          </FinInstnId>
+        </FIId>
+      </To>
+      <BizMsgIdr>${messageId}</BizMsgIdr>
+      <MsgDefIdr>pacs.029.001.01</MsgDefIdr>
+      <BizSvc>swift.iap.tia.03</BizSvc>
+      <CreDt>${creationDate}</CreDt>
+      <PssblDplct>false</PssblDplct>
+      <Prty>0009</Prty>
+    </AppHdr>
+    <Document xmlns="urn:iso:std:iso:20022:tech:xsd:pacs.029.001.01">
+      <MulSttlmReq>
+        <GrpHdr>
+          <MsgId>${messageId}</MsgId>
+          <CreDtTm>${creationDate}</CreDtTm>
+          <NbOfSttlmReqs>${movementRecordCount}</NbOfSttlmReqs>
+          <CtrlSum>${controlSum}</CtrlSum>
+          <SttlmInf>
+            <SttlmMtd>CLRG</SttlmMtd>
+            <ClrSys>
+              <Cd>GNR</Cd>
+            </ClrSys>
+          </SttlmInf>
+        </GrpHdr>
+        <SttlmReq>
+          <InstrId>RA</InstrId>
+          <SttlmCycl>NimbaPayT/${transactionMtid}</SttlmCycl>
+          <NbOfMvmntRcrds>${movementRecordCount}</NbOfMvmntRcrds>
+${movementRecords}
+        </SttlmReq>
+      </MulSttlmReq>
+    </Document>
+  </Body>
+</DataPDU>
