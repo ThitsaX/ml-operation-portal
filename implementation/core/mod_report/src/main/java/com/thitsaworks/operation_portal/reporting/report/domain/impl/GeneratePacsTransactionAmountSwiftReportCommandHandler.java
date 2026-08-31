@@ -80,6 +80,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                         result.participantBic,
                         result.participantAccountNumber,
                         result.settlementAgentBic,
+                        result.isIndirectParticipant,
                         result.currencyId,
                         SUM(result.amount) AS amount,
                         result.settlementDate,
@@ -89,6 +90,11 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                             COALESCE(op.participant_name, p.name) AS participantName,
                             op.participant_id AS participantBic,
                             COALESCE(lp.account_number, '') AS participantAccountNumber,
+                            CASE
+                                WHEN op.parent_participant_name IS NULL OR op.parent_participant_name = ''
+                                    THEN 0
+                                ELSE 1
+                            END AS isIndirectParticipant,
                             CASE
                                 WHEN op.parent_participant_name IS NULL OR op.parent_participant_name = ''
                                     THEN COALESCE(lp.account_number, '')
@@ -179,6 +185,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                         result.participantBic,
                         result.participantAccountNumber,
                         result.settlementAgentBic,
+                        result.isIndirectParticipant,
                         result.currencyId,
                         result.settlementDate,
                         result.settlementCreationDate
@@ -191,6 +198,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                     rs.getString("participantBic"),
                     rs.getString("participantAccountNumber"),
                     rs.getString("settlementAgentBic"),
+                    rs.getBoolean("isIndirectParticipant"),
                     rs.getString("currencyId"),
                     rs.getBigDecimal("amount"),
                     rs.getString("settlementDate"),
@@ -295,6 +303,19 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
     }
 
     private String buildParticipantXml(SwiftParticipantAmountRow row) {
+
+        if (row.isIndirectParticipant()) {
+            return """
+            <Ptcpt>
+              <Id>
+                <OrgId>
+                  <Othr>
+                    <Id>%s</Id>
+                  </Othr>
+                </OrgId>
+              </Id>
+            </Ptcpt>""".formatted(this.escapeXml(this.normalizeAccountNumber(row.participantAccountNumber())));
+        }
 
         return """
             <Ptcpt>
@@ -480,6 +501,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                                              String participantBic,
                                              String participantAccountNumber,
                                              String settlementAgentBic,
+                                             boolean isIndirectParticipant,
                                              String currencyId,
                                              BigDecimal amount,
                                              String settlementDate,
