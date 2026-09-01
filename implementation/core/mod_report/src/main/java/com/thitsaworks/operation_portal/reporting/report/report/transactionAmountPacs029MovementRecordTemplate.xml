@@ -1,0 +1,17 @@
+          <MvmntRcrd>
+            <Id>${movementId}</Id>
+            <SeqNb>${sequenceNumber}</SeqNb>
+            <Amt>
+              <Amt Ccy="${currency}">${amount}</Amt>
+              <CdtDbt>${creditDebit}</CdtDbt>
+            </Amt>
+            <SttlmAgt>
+              <Id>
+                <OrgId>
+                  <AnyBIC>${settlementAgentBic}</AnyBIC>
+                </OrgId>
+              </Id>
+            </SttlmAgt>
+${participantXml}
+            <Ref>012</Ref>
+          </MvmntRcrd>
