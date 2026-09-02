@@ -115,22 +115,23 @@
             ]
         },
         {
-           "menuName": "DFSP Settlement Overview Report",
-           "actionCodeList": [
-                "GenerateSettlementBankOverviewReport"
-            ]
-        },
-        {
-            "menuName": "Settlement Bank Report (Use Case)",
-            "actionCodeList": [
-                "GenerateSettlementBankReportUseCase"
-            ]
-        },
+                   "menuName": "DFSP Settlement Overview Report",
+                   "actionCodeList": [
+                        "GenerateSettlementBankOverviewReport"
+                    ]
+                },
+                {
+                    "menuName": "Settlement Bank Report (Use Case)",
+                    "actionCodeList": [
+                        "GenerateSettlementBankReportUseCase"
+                    ]
+                },
         {
             "menuName": "Pending Approvals",
             "actionCodeList": [
                 "GetPendingApprovalList",
-                "ModifyApprovalAction"
+                "ModifyApprovalAction",
+                "GetNdcThresholdApprovalList"
             ]
         },
         {
@@ -147,15 +148,24 @@
             ]
         },
         {
-            "menuName": "System Settings",
+            "menuName": "NDC Alert Settings",
+            "actionCodeList": [
+                "GetSchedulerConfigByJobName"
+            ]
+        },
+        {
+            "menuName": "Notification Delivery Log",
+            "actionCodeList": [
+                "GetNdcDeliveryLogList"
+            ]
+        },
+        {
+            "menuName": "Role Permissions",
             "actionCodeList": [
                 "GetRoleList",
                 "GetActionListByRole",
                 "ModifyRoleGrantList"
             ]
-        },
-
-
-
+        }
     ]
 }
