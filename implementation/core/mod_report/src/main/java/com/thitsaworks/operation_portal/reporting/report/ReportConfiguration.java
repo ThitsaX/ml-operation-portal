@@ -33,10 +33,17 @@ public class ReportConfiguration {
     @Bean
     public ReportConfiguration.Settings reportConfiguration() {
 
-        return new ReportConfiguration.Settings(System.getProperty("RECEIVER_BIC"));
+        return new ReportConfiguration.Settings(
+            System.getProperty("RECEIVER_BIC"),
+            System.getProperty("PACS_SENDER_GUIM_BIC"),
+            System.getProperty("PACS_RECEIVER_BCRG_BIC"),
+            System.getProperty("PACS_MEMBER_ID"));
 
     }
 
-    public record Settings(String receiverBIC) { }
+    public record Settings(String receiverBIC,
+                           String senderGuiMBIC,
+                           String receiverBCRGBIC,
+                           String settlementMemberId) { }
 
 }

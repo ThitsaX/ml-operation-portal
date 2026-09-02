@@ -114,6 +114,9 @@ services:
       OPERATION_PORTAL_FRONTEND_ENDPOINT: https://operation_portal_frontend.com:1234
       REPORT_PAGE_SIZE: 100000
       RECEIVER_BIC: UNKNOWNBIC
+      PACS_SENDER_GUIM_BIC: UNKNOWNBIC
+      PACS_RECEIVER_BCRG_BIC: UNKNOWNBIC
+      PACS_MEMBER_ID: UNKNOWN
       DISPUTE_URL: https://example.com:1234
       SERVICE_REQUEST_URL: https://example.com:1234
 
