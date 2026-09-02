@@ -16,6 +16,7 @@
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
+import com.thitsaworks.operation_portal.component.misc.security.xml.MxXadesXmlSigner;
 import com.thitsaworks.operation_portal.reporting.report.ReportConfiguration;
 import com.thitsaworks.operation_portal.reporting.report.domain.GeneratePacsTransactionAmountSwiftReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
@@ -60,13 +61,17 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
 
     private final ReportConfiguration.Settings reportSettings;
 
+    private final MxXadesXmlSigner mxXadesXmlSigner;
+
     @Autowired
     public GeneratePacsTransactionAmountSwiftReportCommandHandler(
         @Qualifier(PersistenceQualifiers.Hub.READ_JDBC_TEMPLATE) JdbcTemplate jdbcTemplate,
-        ReportConfiguration.Settings reportSettings) {
+        ReportConfiguration.Settings reportSettings,
+        MxXadesXmlSigner mxXadesXmlSigner) {
 
         this.jdbcTemplate = jdbcTemplate;
         this.reportSettings = reportSettings;
+        this.mxXadesXmlSigner = mxXadesXmlSigner;
     }
 
     @Override
@@ -222,7 +227,8 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
             }
 
             String xmlReport = this.buildPacs029XmlReport(input.settlementId(), input.timezone(), rows);
-            return new Output(xmlReport.getBytes(StandardCharsets.UTF_8));
+            byte[] rptBytes = this.mxXadesXmlSigner.sign(xmlReport.getBytes(StandardCharsets.UTF_8));
+            return new Output(rptBytes);
 
         } catch (ReportException e) {
             throw e;

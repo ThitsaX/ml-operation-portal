@@ -66,7 +66,7 @@ import java.util.UUID;
 @Service
 public class MxXadesXmlSigner {
 
-    public static final String MX_XADES_SIGNING_SETTINGS_PATH = "mx-xades/signing/settings";
+    public static final String MX_XADES_SIGNING_SETTINGS_PATH = "xml-key-store/settings";
 
     private static final String XML_DSIG_NS = XMLSignature.XMLNS;
 
