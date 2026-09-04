@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.thitsaworks.operation_portal.reporting.report.domain.impl;
 
 import com.thitsaworks.operation_portal.component.misc.persistence.PersistenceQualifiers;
@@ -21,6 +22,8 @@ import com.thitsaworks.operation_portal.reporting.report.ReportConfiguration;
 import com.thitsaworks.operation_portal.reporting.report.domain.GeneratePacsTransactionAmountSwiftReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,6 +42,9 @@ import java.util.Map;
 public class GeneratePacsTransactionAmountSwiftReportCommandHandler
     implements GeneratePacsTransactionAmountSwiftReportCommand {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        GeneratePacsTransactionAmountSwiftReportCommandHandler.class);
+
     private static final String DEFAULT_SETTLEMENT_DATE = "000000";
 
     private static final String DEFAULT_CURRENCY = "XXX";
@@ -51,11 +57,13 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
 
     private static final String DEFAULT_RECEIVER_BIC = "REPCGNGA";
 
-    private static final String PACS029_TEMPLATE = "/com/thitsaworks/operation_portal/reporting/report/report/"
-        + "transactionAmountPacs029Template.xml";
+    private static final String PACS029_TEMPLATE =
+        "/com/thitsaworks/operation_portal/reporting/report/report/" +
+            "transactionAmountPacs029Template.xml";
 
-    private static final String PACS029_MOVEMENT_RECORD_TEMPLATE = "/com/thitsaworks/operation_portal/reporting/report/"
-        + "report/transactionAmountPacs029MovementRecordTemplate.xml";
+    private static final String PACS029_MOVEMENT_RECORD_TEMPLATE =
+        "/com/thitsaworks/operation_portal/reporting/report/" +
+            "report/transactionAmountPacs029MovementRecordTemplate.xml";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -126,7 +134,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                                 END,
                                 '%y%m%d'
                             ) AS settlementDate,
-
+                    
                             DATE_FORMAT(
                                 CASE
                                     WHEN SUBSTRING(?, 1, 1) = '-'
@@ -197,49 +205,43 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                         HAVING SUM(result.amount) <> 0
                     
                     ORDER BY result.participantBic ASC;
-                    """,
-                (rs, rowNum) -> new SwiftParticipantAmountRow(
-                    rs.getString("participantName"),
-                    rs.getString("participantBic"),
-                    rs.getString("participantAccountNumber"),
-                    rs.getString("settlementAgentBic"),
-                    rs.getBoolean("isIndirectParticipant"),
-                    rs.getString("currencyId"),
-                    rs.getBigDecimal("amount"),
-                    rs.getString("settlementDate"),
-                    rs.getString("settlementCreationDate")),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.timezone(),
-                input.settlementId(),
-                input.currency(),
-                input.currency());
+                    """, (rs, rowNum) -> new SwiftParticipantAmountRow(
+                    rs.getString("participantName"), rs.getString("participantBic"),
+                    rs.getString("participantAccountNumber"), rs.getString("settlementAgentBic"),
+                    rs.getBoolean("isIndirectParticipant"), rs.getString("currencyId"),
+                    rs.getBigDecimal("amount"), rs.getString("settlementDate"),
+                    rs.getString("settlementCreationDate")), input.timezone(), input.timezone(),
+                input.timezone(), input.timezone(), input.timezone(), input.timezone(),
+                input.timezone(), input.timezone(), input.timezone(), input.timezone(),
+                input.settlementId(), input.currency(), input.currency());
 
             if (rows == null || rows.isEmpty()) {
                 throw new ReportException(ReportErrors.RESULT_NOT_FOUND_EXCEPTION);
             }
 
-            String xmlReport = this.buildPacs029XmlReport(input.settlementId(), input.timezone(), rows);
-            byte[] rptBytes = this.mxXadesXmlSigner.sign(xmlReport.getBytes(StandardCharsets.UTF_8));
+            String xmlReport = this.buildPacs029XmlReport(
+                input.settlementId(), input.timezone(), rows);
+            byte[] rptBytes = this.mxXadesXmlSigner.sign(
+                xmlReport.getBytes(StandardCharsets.UTF_8));
             return new Output(rptBytes);
 
         } catch (ReportException e) {
             throw e;
         } catch (Exception e) {
-            throw new ReportException(ReportErrors.TRANSACTION_AMOUNT_REPORT_FAILURE_EXCEPTION);
+            LOGGER.error("TRANSACTION_AMOUNT_REPORT_FAILURE_EXCEPTION : [{}]", e.getMessage());
+
+            throw new ReportException(
+                ReportErrors.TRANSACTION_AMOUNT_REPORT_FAILURE_EXCEPTION.description(
+                    e.getMessage()));
         }
     }
 
-    private String buildPacs029XmlReport(String settlementId, String timezone, List<SwiftParticipantAmountRow> rows) {
+    private String buildPacs029XmlReport(String settlementId,
+                                         String timezone,
+                                         List<SwiftParticipantAmountRow> rows) {
 
-        String settlementDate = rows.stream()
+        String settlementDate = rows
+                                    .stream()
                                     .map(SwiftParticipantAmountRow::settlementDate)
                                     .filter(this::hasText)
                                     .findFirst()
@@ -253,28 +255,27 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
         String controlSum = this.toXmlAmount(this.calculateControlSum(rows));
 
         return this.populateTemplate(
-            this.loadTemplate(PACS029_TEMPLATE),
-            Map.of(
-                "senderBic", this.escapeXml(DEFAULT_SENDER_BIC),
-                "senderClearingSystemCode", this.escapeXml(DEFAULT_SENDER_CLEARING_SYSTEM_CODE),
-                "senderClearingMemberId", this.escapeXml(DEFAULT_SENDER_CLEARING_MEMBER_ID),
-                "receiverBic", this.escapeXml(receiverBic),
-                "messageId", this.escapeXml(messageId),
-                "creationDate", creationDate,
-                "controlSum", this.escapeXml(controlSum),
-                "transactionMtid", this.escapeXml(transactionMtid),
-                "movementRecordCount", String.valueOf(rows.size()),
+            this.loadTemplate(PACS029_TEMPLATE), Map.of(
+                "senderBic", this.escapeXml(DEFAULT_SENDER_BIC), "senderClearingSystemCode",
+                this.escapeXml(DEFAULT_SENDER_CLEARING_SYSTEM_CODE), "senderClearingMemberId",
+                this.escapeXml(DEFAULT_SENDER_CLEARING_MEMBER_ID), "receiverBic",
+                this.escapeXml(receiverBic), "messageId", this.escapeXml(messageId), "creationDate",
+                creationDate, "controlSum", this.escapeXml(controlSum), "transactionMtid",
+                this.escapeXml(transactionMtid), "movementRecordCount", String.valueOf(rows.size()),
                 "movementRecords", this.buildMovementRecords(rows, movementReferenceNumber)));
     }
 
-    private String buildMovementRecords(List<SwiftParticipantAmountRow> rows, String referenceNumber) {
+    private String buildMovementRecords(List<SwiftParticipantAmountRow> rows,
+                                        String referenceNumber) {
 
         String movementRecordTemplate = this.loadTemplate(PACS029_MOVEMENT_RECORD_TEMPLATE);
         StringBuilder movementRecords = new StringBuilder(rows.size() * 512);
 
         int sequenceNumber = 1;
         for (SwiftParticipantAmountRow row : rows) {
-            movementRecords.append(this.buildMovementRecord(movementRecordTemplate, row, referenceNumber, sequenceNumber));
+            movementRecords.append(
+                this.buildMovementRecord(
+                    movementRecordTemplate, row, referenceNumber, sequenceNumber));
             movementRecords.append("\n");
             sequenceNumber++;
         }
@@ -297,14 +298,11 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
         String participantXml = this.buildParticipantXml(row);
 
         return this.populateTemplate(
-            movementRecordTemplate,
-            Map.of(
+            movementRecordTemplate, Map.of(
                 "movementId", this.escapeXml(referenceNumber + "/" + sequenceNumber),
-                "sequenceNumber", String.valueOf(sequenceNumber),
-                "currency", this.escapeXml(currency),
-                "amount", this.escapeXml(amount),
-                "creditDebit", creditDebit,
-                "settlementAgentBic", this.escapeXml(settlementAgentBic),
+                "sequenceNumber", String.valueOf(sequenceNumber), "currency",
+                this.escapeXml(currency), "amount", this.escapeXml(amount), "creditDebit",
+                creditDebit, "settlementAgentBic", this.escapeXml(settlementAgentBic),
                 "participantXml", participantXml));
     }
 
@@ -312,15 +310,16 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
 
         if (row.isIndirectParticipant()) {
             return """
-            <Ptcpt>
-              <Id>
-                <OrgId>
-                  <Othr>
-                    <Id>%s</Id>
-                  </Othr>
-                </OrgId>
-              </Id>
-            </Ptcpt>""".formatted(this.escapeXml(this.normalizeAccountNumber(row.participantAccountNumber())));
+                <Ptcpt>
+                  <Id>
+                    <OrgId>
+                      <Othr>
+                        <Id>%s</Id>
+                      </Othr>
+                    </OrgId>
+                  </Id>
+                </Ptcpt>""".formatted(
+                this.escapeXml(this.normalizeAccountNumber(row.participantAccountNumber())));
         }
 
         return """
@@ -330,12 +329,14 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                   <AnyBIC>%s</AnyBIC>
                 </OrgId>
               </Id>
-            </Ptcpt>""".formatted(this.escapeXml(this.normalizeAccountNumber(row.participantAccountNumber())));
+            </Ptcpt>""".formatted(
+            this.escapeXml(this.normalizeAccountNumber(row.participantAccountNumber())));
     }
 
     private BigDecimal calculateControlSum(List<SwiftParticipantAmountRow> rows) {
 
-        return rows.stream()
+        return rows
+                   .stream()
                    .map(SwiftParticipantAmountRow::amount)
                    .map(amount -> amount == null ? BigDecimal.ZERO : amount.abs())
                    .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -361,7 +362,8 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                        .subtract(BigInteger.ONE)
                        .toString();
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("Settlement ID must be a valid number: " + settlementId, e);
+            throw new IllegalArgumentException(
+                "Settlement ID must be a valid number: " + settlementId, e);
         }
     }
 
@@ -371,10 +373,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
             return DEFAULT_CURRENCY;
         }
 
-        String
-            normalized =
-            currencyId.trim()
-                      .toUpperCase(Locale.ROOT);
+        String normalized = currencyId.trim().toUpperCase(Locale.ROOT);
         return normalized.length() > 3 ? normalized.substring(0, 3) : normalized;
     }
 
@@ -385,11 +384,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
             return "UNKNOWN";
         }
 
-        String
-            compact =
-            base.trim()
-                .toUpperCase(Locale.ROOT)
-                .replaceAll("[^A-Z0-9]", "");
+        String compact = base.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]", "");
         return compact.isEmpty() ? "UNKNOWN" : compact;
     }
 
@@ -423,16 +418,14 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
 
     private String toXmlAmount(BigDecimal amount) {
 
-        BigDecimal
-            value =
-            amount == null ? BigDecimal.ZERO : amount.abs()
-                                                     .stripTrailingZeros();
+        BigDecimal value = amount == null ? BigDecimal.ZERO : amount.abs().stripTrailingZeros();
         return value.toPlainString();
     }
 
     private String resolveCreationDate(List<SwiftParticipantAmountRow> rows, String timezone) {
 
-        String creationDate = rows.stream()
+        String creationDate = rows
+                                  .stream()
                                   .map(SwiftParticipantAmountRow::settlementCreationDate)
                                   .filter(this::hasText)
                                   .findFirst()
@@ -470,11 +463,12 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
             return "";
         }
 
-        return value.replace("&", "&amp;")
-                    .replace("<", "&lt;")
-                    .replace(">", "&gt;")
-                    .replace("\"", "&quot;")
-                    .replace("'", "&apos;");
+        return value
+                   .replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;")
+                   .replace("'", "&apos;");
     }
 
     private String loadTemplate(String path) {

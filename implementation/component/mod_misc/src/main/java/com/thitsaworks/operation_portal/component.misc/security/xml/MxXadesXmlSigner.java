@@ -44,6 +44,7 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -58,10 +59,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class MxXadesXmlSigner {
@@ -101,7 +105,7 @@ public class MxXadesXmlSigner {
         try {
             Document document = this.parse(unsignedXml);
             Document signedDocument = this.sign(document, privateKey, signerCertificate);
-            return this.serialize(signedDocument);
+            return this.insertSignatureIntoOriginalXml(unsignedXml, signedDocument);
         } catch (Exception exception) {
             throw new MxXadesXmlSigningException("Failed to sign MX XML document", exception);
         }
@@ -293,6 +297,48 @@ public class MxXadesXmlSigner {
         return outputStream.toByteArray();
     }
 
+    private byte[] insertSignatureIntoOriginalXml(byte[] unsignedXml, Document signedDocument) throws Exception {
+
+        String originalXml = new String(unsignedXml, StandardCharsets.UTF_8);
+        String signatureXml = this.serializeNode(this.findFirstElement(signedDocument, "Sgntr"));
+
+        Pattern existingSignaturePattern = Pattern.compile(
+            "<(?:[\\w.-]+:)?Sgntr\\b[^>]*/>|<(?:[\\w.-]+:)?Sgntr\\b[^>]*>.*?</(?:[\\w.-]+:)?Sgntr>",
+            Pattern.DOTALL);
+        Matcher existingSignatureMatcher = existingSignaturePattern.matcher(originalXml);
+        if (existingSignatureMatcher.find()) {
+            return existingSignatureMatcher
+                       .replaceFirst(Matcher.quoteReplacement(signatureXml))
+                       .getBytes(StandardCharsets.UTF_8);
+        }
+
+        Pattern appHeaderEndPattern = Pattern.compile("</(?:[\\w.-]+:)?AppHdr>");
+        Matcher appHeaderEndMatcher = appHeaderEndPattern.matcher(originalXml);
+        if (!appHeaderEndMatcher.find()) {
+            return this.serialize(signedDocument);
+        }
+
+        String signedXml =
+            originalXml.substring(0, appHeaderEndMatcher.start()) +
+                signatureXml +
+                originalXml.substring(appHeaderEndMatcher.start());
+        return signedXml.getBytes(StandardCharsets.UTF_8);
+    }
+
+    private String serializeNode(Node node) throws Exception {
+
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        var transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        transformer.transform(new DOMSource(node), new StreamResult(outputStream));
+        return outputStream.toString(StandardCharsets.UTF_8);
+    }
+
     private SigningCredentials getSigningCredentials() {
 
         SigningCredentials current = this.signingCredentials;
@@ -316,10 +362,7 @@ public class MxXadesXmlSigner {
 
         try {
             KeyStore keyStore = KeyStore.getInstance(this.settings.resolvedKeystoreType());
-            try (var inputStream = Files.newInputStream(
-                Path.of(this.settings.requiredKeystorePath()))) {
-                keyStore.load(inputStream, this.settings.requiredKeystorePassword());
-            }
+            this.loadKeyStore(keyStore);
 
             Key key = keyStore.getKey(
                 this.settings.requiredKeyAlias(), this.settings.resolvedKeyPassword());
@@ -341,6 +384,19 @@ public class MxXadesXmlSigner {
         } catch (Exception exception) {
             throw new MxXadesXmlSigningException(
                 "Failed to load MX XAdES signing credentials", exception);
+        }
+    }
+
+    private void loadKeyStore(KeyStore keyStore) throws Exception {
+
+        Path keyStorePath = Path.of(this.settings.requiredKeystorePath());
+        byte[] keyStoreBytes = Files.readAllBytes(keyStorePath);
+        if (keyStorePath.getFileName().toString().endsWith(".b64")) {
+            keyStoreBytes = Base64.getMimeDecoder().decode(new String(keyStoreBytes, StandardCharsets.UTF_8));
+        }
+
+        try (var inputStream = new ByteArrayInputStream(keyStoreBytes)) {
+            keyStore.load(inputStream, this.settings.requiredKeystorePassword());
         }
     }
 

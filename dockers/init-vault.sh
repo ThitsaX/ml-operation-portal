@@ -112,6 +112,18 @@ EMAIL_SETTINGS_DATA='{
   "sslEnable": false
 }'
 
+# MX XAdES XML Signing Settings
+XML_KEY_STORE_SETTINGS_PATH="operation_portal/xml-key-store/settings"
+XML_KEY_STORE_SETTINGS_DATA='{
+  "enabled": true,
+  "ignoreLineBreaks": true,
+  "keyAlias": "op_tw",
+  "keyPassword": "1234",
+  "keystorePassword": "1234",
+  "keystorePath": "/your/path/op_tw.p12.b64",
+  "keystoreType": "PKCS12"
+}'
+
 
 echo "Adding Redis Settings to Vault at path '$REDIS_SETTINGS_PATH'..."
 vault kv put $REDIS_SETTINGS_PATH @<(echo "$REDIS_SETTINGS_DATA")
@@ -148,6 +160,9 @@ vault kv put $S3_SETTINGS_PATH @<(echo "$S3_SETTINGS_DATA")
 echo "Adding Email Settings to Vault at path '$EMAIL_SETTINGS_PATH'..."
 vault kv put $EMAIL_SETTINGS_PATH @<(echo "$EMAIL_SETTINGS_DATA")
 
+echo "Adding MX XAdES XML Signing Settings to Vault at path '$XML_KEY_STORE_SETTINGS_PATH'..."
+vault kv put $XML_KEY_STORE_SETTINGS_PATH @<(echo "$XML_KEY_STORE_SETTINGS_DATA")
+
 
 
 # Verify all secrets
@@ -162,6 +177,7 @@ vault kv get $MONGO_DB_HUB_DATA_WRITE_SETTINGS_PATH
 vault kv get $MONGO_DB_HUB_DATA_READ_SETTINGS_PATH
 vault kv get $S3_SETTINGS_PATH
 vault kv get $EMAIL_SETTINGS_PATH
+vault kv get $XML_KEY_STORE_SETTINGS_PATH
 
 
 echo "Vault initialization and secret creation complete."

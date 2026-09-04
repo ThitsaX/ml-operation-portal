@@ -21,6 +21,8 @@ import com.thitsaworks.operation_portal.reporting.report.ReportConfiguration;
 import com.thitsaworks.operation_portal.reporting.report.domain.GeneratePacsFeeAmountSwiftReportCommand;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportErrors;
 import com.thitsaworks.operation_portal.reporting.report.exception.ReportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -40,6 +42,9 @@ import java.util.Map;
 @Service
 public class GeneratePacsFeeAmountSwiftReportCommandHandler
     implements GeneratePacsFeeAmountSwiftReportCommand {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(
+        GeneratePacsFeeAmountSwiftReportCommandHandler.class);
 
     private static final String DEFAULT_SETTLEMENT_DATE = "000000";
 
@@ -313,7 +318,9 @@ public class GeneratePacsFeeAmountSwiftReportCommandHandler
         } catch (ReportException e) {
             throw e;
         } catch (Exception e) {
-            throw new ReportException(ReportErrors.FEE_AMOUNT_REPORT_FAILURE_EXCEPTION);
+            LOGGER.error("TRANSACTION_AMOUNT_REPORT_FAILURE_EXCEPTION : [{}]", e.getMessage());
+
+            throw new ReportException(ReportErrors.FEE_AMOUNT_REPORT_FAILURE_EXCEPTION.description(e.getMessage()));
         }
     }
 
