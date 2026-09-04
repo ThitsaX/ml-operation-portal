@@ -22,9 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.thitsaworks.operation_portal.api.operation.portal.security.UserContext;
 import com.thitsaworks.operation_portal.component.misc.exception.DomainException;
 import com.thitsaworks.operation_portal.component.misc.util.TimeZoneOffsetFormater;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateSettlementBankReport;
+import com.thitsaworks.operation_portal.usecase.operation_portal.GeneratePacsTransactionAmountSwiftReport;
 import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionAmountSwiftReport;
-import com.thitsaworks.operation_portal.usecase.operation_portal.GenerateTransactionDetailReport;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,19 +35,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.time.Instant;
 
 @RestController
 @RequiredArgsConstructor
-public class GenerateTransactionAmountSwiftReportController {
+public class GeneratePacsTransactionAmountSwiftReportController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GenerateTransactionAmountSwiftReportController.class);
+    private static final Logger LOG = LoggerFactory.getLogger(
+        GeneratePacsTransactionAmountSwiftReportController.class);
 
-    private final GenerateTransactionAmountSwiftReport generateTransactionAmountSwiftReport;
+    private final GeneratePacsTransactionAmountSwiftReport generatePacsTransactionAmountSwiftReport;
 
     private final ObjectMapper objectMapper;
 
-    @PostMapping("/secured/generateTransactionAmountReport")
+    @PostMapping("/secured/generatePacsTransactionAmountReport")
     public ResponseEntity<Response> execute(@RequestParam("settlementId") String settlementId,
                                             @RequestParam("currencyId") String currencyId,
 
@@ -56,7 +55,7 @@ public class GenerateTransactionAmountSwiftReportController {
         throws DomainException, JsonProcessingException {
 
         LOG.info(
-            "Generate Pacs 029 Transaction Amount Report : settlementId = [{}], currencyId = [{}], timezoneOffset = [{}]",
+            "Generate Transaction Amount Report : settlementId = [{}], currencyId = [{}], timezoneOffset = [{}]",
             settlementId,
             currencyId,
             timezoneOffset);
@@ -68,17 +67,16 @@ public class GenerateTransactionAmountSwiftReportController {
                                                .getAuthentication()
                                                .getDetails();
 
-        GenerateTransactionAmountSwiftReport.Output output = this.generateTransactionAmountSwiftReport.execute(
-            new GenerateTransactionAmountSwiftReport.Input(settlementId,
+        GeneratePacsTransactionAmountSwiftReport.Output output = this.generatePacsTransactionAmountSwiftReport.execute(
+            new GeneratePacsTransactionAmountSwiftReport.Input(settlementId,
                                                            currencyId,
-
                                                            timezone,
                                                            userContext.userId()
                                                                       .getId()));
 
         var response = new Response(output.reportData());
 
-        LOG.info("Generate Pacs 029 Transaction Amount Report Response : [{}]", response);
+        LOG.info("Generate Transaction Amount Report Response : [{}]", response);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
 
