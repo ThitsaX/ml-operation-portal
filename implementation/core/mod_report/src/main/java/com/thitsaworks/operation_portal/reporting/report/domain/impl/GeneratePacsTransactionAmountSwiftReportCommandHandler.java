@@ -49,9 +49,9 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
 
     private static final String DEFAULT_CURRENCY = "XXX";
 
-    private static final String DEFAULT_SENDER_BIC = "REPCGNGA";
-
     private static final String DEFAULT_SENDER_CLEARING_SYSTEM_CODE = "GINPA";
+
+    private static final String DEFAULT_SENDER_BIC = "REPCGNGA";
 
     private static final String DEFAULT_SENDER_CLEARING_MEMBER_ID = "REPCGNGAASM";
 
@@ -250,18 +250,21 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
         String transactionMtid = this.calculateTransactionMtid(settlementId);
         String messageId = "NimbaPayT-" + settlementDate + "-" + transactionMtid;
         String movementReferenceNumber = settlementDate + "/" + transactionMtid;
-        String receiverBic = this.resolveReceiverBic();
         String creationDate = this.resolveCreationDate(rows, timezone);
         String controlSum = this.toXmlAmount(this.calculateControlSum(rows));
 
         return this.populateTemplate(
-            this.loadTemplate(PACS029_TEMPLATE), Map.of(
-                "senderBic", this.escapeXml(DEFAULT_SENDER_BIC), "senderClearingSystemCode",
-                this.escapeXml(DEFAULT_SENDER_CLEARING_SYSTEM_CODE), "senderClearingMemberId",
-                this.escapeXml(DEFAULT_SENDER_CLEARING_MEMBER_ID), "receiverBic",
-                this.escapeXml(receiverBic), "messageId", this.escapeXml(messageId), "creationDate",
-                creationDate, "controlSum", this.escapeXml(controlSum), "transactionMtid",
-                this.escapeXml(transactionMtid), "movementRecordCount", String.valueOf(rows.size()),
+            this.loadTemplate(PACS029_TEMPLATE),
+            Map.of(
+                "senderBic", this.escapeXml(this.reportSettings.senderGuiMBIC()),
+                "senderClearingSystemCode", this.escapeXml(DEFAULT_SENDER_CLEARING_SYSTEM_CODE),
+                "senderClearingMemberId", this.escapeXml(this.reportSettings.settlementMemberId()),
+                "receiverBic", this.escapeXml(this.reportSettings.receiverBCRGBIC()),
+                "messageId", this.escapeXml(messageId),
+                "creationDate", creationDate,
+                "controlSum", this.escapeXml(controlSum),
+                "transactionMtid", this.escapeXml(transactionMtid),
+                "movementRecordCount", String.valueOf(rows.size()),
                 "movementRecords", this.buildMovementRecords(rows, movementReferenceNumber)));
     }
 
@@ -342,14 +345,6 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
                    .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private String resolveReceiverBic() {
-
-        if (!this.hasText(this.reportSettings.receiverBIC())) {
-            return DEFAULT_RECEIVER_BIC;
-        }
-        return this.normalizeReceiverBicFi(this.reportSettings.receiverBIC());
-    }
-
     private String calculateTransactionMtid(String settlementId) {
 
         if (settlementId == null || settlementId.isBlank()) {
@@ -377,35 +372,12 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
         return normalized.length() > 3 ? normalized.substring(0, 3) : normalized;
     }
 
-    private String normalizeBicFi(String participantSwiftCode, String participantName) {
-
-        String base = this.hasText(participantSwiftCode) ? participantSwiftCode : participantName;
-        if (!this.hasText(base)) {
-            return "UNKNOWN";
-        }
-
-        String compact = base.trim().toUpperCase(Locale.ROOT).replaceAll("[^A-Z0-9]", "");
-        return compact.isEmpty() ? "UNKNOWN" : compact;
-    }
-
     private String normalizeAccountNumber(String accountNumber) {
 
         if (!this.hasText(accountNumber)) {
             return "";
         }
         return accountNumber.trim();
-    }
-
-    private String normalizeReceiverBicFi(String receiverBic) {
-
-        String normalized = this.normalizeBicFi(receiverBic, DEFAULT_RECEIVER_BIC);
-        if (normalized.startsWith("I971") && normalized.length() > 4) {
-            normalized = normalized.substring(4);
-        }
-        if (normalized.endsWith("XXXXN") && normalized.length() > 8) {
-            return normalized.substring(0, 8);
-        }
-        return normalized;
     }
 
     private String creditDebitIndicator(BigDecimal amount) {
@@ -435,7 +407,7 @@ public class GeneratePacsTransactionAmountSwiftReportCommandHandler
             return creationDate + this.toIsoTimezoneOffset(timezone);
         }
 
-        return "1970-01-01T00:00:00+00:00";
+        return "";
     }
 
     private String toIsoTimezoneOffset(String timezone) {

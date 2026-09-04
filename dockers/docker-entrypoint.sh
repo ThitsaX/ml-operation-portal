@@ -14,6 +14,9 @@ java \
   "-DRECEIVER_BIC=${RECEIVER_BIC}" \
   "-DDISPUTE_URL=${DISPUTE_URL}" \
   "-DSERVICE_REQUEST_URL=${SERVICE_REQUEST_URL}" \
+  "-DPACS_SENDER_GUIM_BIC=${PACS_SENDER_GUIM_BIC}" \
+  "-DPACS_RECEIVER_BCRG_BIC=${PACS_RECEIVER_BCRG_BIC}" \
+  "-DPACS_MEMBER_ID=${PACS_MEMBER_ID}" \
   -cp operation_api.jar:lib/* \
   com.thitsaworks.operation_portal.api.operation.portal.WebApiOperationPortalApplication
 ## Wait for any process to exit
