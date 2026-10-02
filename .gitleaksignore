@@ -1,0 +1,7 @@
+# Reviewed legacy password-hash assignments in Flyway migrations.
+implementation/component/mod_infra/src/main/resources/all/db/core/V1_13__alter_init_user_password.sql:generic-api-key:2
+implementation/component/mod_infra/src/main/resources/all/db/core/V1_12__alter_init_user_data.sql:generic-api-key:2
+
+# False positives: Java PrivateKey declarations, not private-key material.
+implementation/component/mod_misc/src/main/java/com/thitsaworks/operation_portal/component.misc/security/xml/MxXadesXmlSigner.java:generic-api-key:466
+implementation/core/mod_report/src/test/java/com/thitsaworks/operation_portal/reporting/report/command/GeneratePacsSwiftReportCommandHandlerUnitTest.java:generic-api-key:299
