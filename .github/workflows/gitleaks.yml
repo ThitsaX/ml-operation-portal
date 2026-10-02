@@ -1,0 +1,81 @@
+name: Secret scan
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  GITLEAKS_IMAGE: ghcr.io/gitleaks/gitleaks:v8.30.1
+  GITLEAKS_SCAN_FLAGS: >-
+    --config /repo/.gitleaks.toml
+    --max-decode-depth 3
+    --max-archive-depth 2
+    --redact=100
+    --no-banner
+    --no-color
+    --verbose
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch base ref for pull requests
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: git fetch --no-tags origin "$BASE_REF"
+
+      - name: Ensure Gitleaks config exists
+        run: test -f .gitleaks.toml
+
+      - name: Scan current tree
+        run: |
+          docker run --rm \
+            --volume "$PWD:/repo" \
+            --workdir /repo \
+            "$GITLEAKS_IMAGE" \
+            dir . \
+            $GITLEAKS_SCAN_FLAGS
+
+      - name: Select commit range
+        id: scan-range
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_BEFORE: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            base_sha="$PR_BASE_SHA"
+          elif [ -n "$EVENT_BEFORE" ] && ! printf '%s' "$EVENT_BEFORE" | grep -Eq '^0+$'; then
+            base_sha="$EVENT_BEFORE"
+          else
+            base_sha="$(git merge-base HEAD "origin/$DEFAULT_BRANCH")"
+          fi
+
+          printf 'range=%s..%s\n' "$base_sha" "$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Scan introduced commits
+        env:
+          SCAN_RANGE: ${{ steps.scan-range.outputs.range }}
+        run: |
+          docker run --rm \
+            --volume "$PWD:/repo" \
+            --workdir /repo \
+            "$GITLEAKS_IMAGE" \
+            git . \
+            --log-opts="$SCAN_RANGE" \
+            $GITLEAKS_SCAN_FLAGS
