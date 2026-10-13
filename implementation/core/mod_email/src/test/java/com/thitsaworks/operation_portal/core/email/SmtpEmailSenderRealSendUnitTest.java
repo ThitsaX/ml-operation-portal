@@ -21,15 +21,15 @@ import java.util.Locale;
 
 public class SmtpEmailSenderRealSendUnitTest {
 
-    private static final String RECIPIENT_EMAIL = "phyuzinhtet14@gmail.com";
-    private static final String SMTP_HOST = "smtp.office365.com";
-    private static final int SMTP_PORT = 587;
+    private static final String RECIPIENT_EMAIL = "";
+    private static final String SMTP_HOST = "";
+    private static final int SMTP_PORT = ;
     private static final String SENDER_NAME = "Operation Portal";
-    private static final String SENDER_EMAIL = "noreply.notifications.operationportal@thitsaworks.com";
+    private static final String SENDER_EMAIL = "";
     private static final boolean SMTP_AUTH = true;
     private static final boolean SMTP_STARTTLS_ENABLE = true;
     private static final boolean SMTP_SSL_ENABLE = false;
-    private static final String EMAIL_SENDER_PASSWORD = "lNW9Cf4gh0J'";
+    private static final String EMAIL_SENDER_PASSWORD = "'";
 
     @Test
     public void test_sendRealNdcAlertMailWithEnvironmentTagSubjectSuccessfully() {
