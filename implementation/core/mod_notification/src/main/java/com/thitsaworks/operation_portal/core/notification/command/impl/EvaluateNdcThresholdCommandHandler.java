@@ -154,9 +154,20 @@ public class EvaluateNdcThresholdCommandHandler
 
     private String buildSubject(String participantName) {
 
-        String environment = System.getProperty("OPERATION_PORTAL_ENV", "LOCAL");
-        String environmentTag = environment.trim().toUpperCase(Locale.ENGLISH);
+        String environmentTag = resolveOperationPortalEnvironment()
+            .trim()
+            .toUpperCase(Locale.ENGLISH);
         return "[ALERT][" + environmentTag + "][" + participantName + "] " + NDC_THRESHOLD_FUNCTION;
+    }
+
+    private static String resolveOperationPortalEnvironment() {
+
+        String environment = System.getProperty("OPERATION_PORTAL_ENV");
+        if (environment == null || environment.isBlank()) {
+            environment = System.getenv("OPERATION_PORTAL_ENV");
+        }
+
+        return environment == null || environment.isBlank() ? "LOCAL" : environment;
     }
 
     private String formatPercent(BigDecimal value) {
