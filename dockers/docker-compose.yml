@@ -109,6 +109,7 @@ services:
       VAULT_TOKEN: example-token
       ENGINE_PATH: operation_portal
       OPERATION_PORTAL_PORT_NO: 8003
+      OPERATION_PORTAL_ENV: LOCAL
       CENTRAL_LEDGER_ENDPOINT: https://mojaloop_central_ledger:1234
       SETTLEMENT_ENDPOINT: https://mojaloop_central_settlement:1234
       OPERATION_PORTAL_FRONTEND_ENDPOINT: https://operation_portal_frontend.com:1234
