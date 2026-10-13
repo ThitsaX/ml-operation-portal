@@ -23,7 +23,7 @@ public class SmtpEmailSenderRealSendUnitTest {
 
     private static final String RECIPIENT_EMAIL = "";
     private static final String SMTP_HOST = "";
-    private static final int SMTP_PORT = ;
+    private static final int SMTP_PORT = 123 ;
     private static final String SENDER_NAME = "Operation Portal";
     private static final String SENDER_EMAIL = "";
     private static final boolean SMTP_AUTH = true;
