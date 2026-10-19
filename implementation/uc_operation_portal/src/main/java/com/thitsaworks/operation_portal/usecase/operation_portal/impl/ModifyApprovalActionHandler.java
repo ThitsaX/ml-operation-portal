@@ -145,7 +145,8 @@ public class ModifyApprovalActionHandler
 
         ModifyApprovalActionCommand.Output output;
 
-        if (input.action().equals(ApprovalActionType.REJECTED)) {
+        if (input.action()
+                 .equals(ApprovalActionType.REJECTED)) {
 
             output = this.executeApprovalAction(input);
 
@@ -168,15 +169,18 @@ public class ModifyApprovalActionHandler
 
         Money money = new Money()
                           .currency(Currency.valueOf(approvalRequestData.getCurrency()))
-                          .amount(approvalRequestData.getAmount().toString());
+                          .amount(approvalRequestData.getAmount()
+                                                     .toString());
 
         ExtensionList extensionList = new ExtensionList();
         Extension extension = new Extension();
         extension.setKey("requestUser");
         extension.setValue(
-            this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy().getId())));
+            this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
+                                                                .getId())));
         extension.setKey("approveUser");
-        extension.setValue(this.utility.getEmail(new UserId(input.responseUserId().getId())));
+        extension.setValue(this.utility.getEmail(new UserId(input.responseUserId()
+                                                                 .getId())));
         extensionList.addExtensionItem(extension);
         boolean toRecalculateNDC = false;
 
@@ -184,26 +188,34 @@ public class ModifyApprovalActionHandler
 
             LOG.info(
                 "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
-                toRecalculateNDC, this.objectMapper.writeValueAsString(approvalRequestData),
-                participantName, currency, actionType);
+                toRecalculateNDC,
+                this.objectMapper.writeValueAsString(approvalRequestData),
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(
                 toRecalculateNDC, approvalRequestData,
-                participantName, currency, actionType,
-                this.utility.getEmail(new UserId(input.responseUserId().getId())));
+                participantName, currency, actionType, false,
+                this.utility.getEmail(new UserId(input.responseUserId()
+                                                      .getId())));
 
         } else if (actionType == PositionActionType.UPDATE_NDC_PERCENTAGE) {
             toRecalculateNDC = true;
 
             LOG.info(
                 "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
-                toRecalculateNDC, this.objectMapper.writeValueAsString(approvalRequestData),
-                participantName, currency, actionType);
+                toRecalculateNDC,
+                this.objectMapper.writeValueAsString(approvalRequestData),
+                participantName,
+                currency,
+                actionType);
 
             this.handleUpdateNdc.handleUpdateNdc(
                 toRecalculateNDC, approvalRequestData,
-                participantName, currency, actionType,
-                this.utility.getEmail(new UserId(input.responseUserId().getId())));
+                participantName, currency, actionType,false,
+                this.utility.getEmail(new UserId(input.responseUserId()
+                                                      .getId())));
 
         } else {
 
@@ -268,11 +280,11 @@ public class ModifyApprovalActionHandler
 
                 // If NDC is a fixed amount (ndcPercent is 0), check remaining balance against NDC
                 BigDecimal remainingBalance = currentBalance.subtract(withdrawalAmount);
-                //if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
+                if (ndcPercent.compareTo(BigDecimal.ZERO) == 0) {
 
                     if (remainingBalance.compareTo(currentParticipantLimit) < 0) {
                         throw new ParticipantException(ParticipantErrors.BALANCE_BELOW_NDC);
-                  //  }
+                    }
                 }
                 if (participantPosition.compareTo(BigDecimal.ZERO) > 0) {
 
@@ -287,7 +299,8 @@ public class ModifyApprovalActionHandler
 
             PostParticipantBalance.Request request = new PostParticipantBalance.Request(
                 TransferIdGenerator.generateTransferId(),
-                this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy().getId())),
+                this.utility.getEmail(new UserId(approvalRequestData.getRequestedBy()
+                                                                    .getId())),
                 action, reason, money, extensionList);
 
             LOG.info(
@@ -322,12 +335,17 @@ public class ModifyApprovalActionHandler
 
                 LOG.info(
                     "Handle Update NDC Request : toRecalculateNDC : {}, approvalRequestData : {}, participantName : {}, currency : {}, actionType : {}",
-                    toRecalculateNDC, this.objectMapper.writeValueAsString(approvalRequestData),
-                    participantName, currency, actionType);
+                    toRecalculateNDC,
+                    this.objectMapper.writeValueAsString(approvalRequestData),
+                    participantName,
+                    currency,
+                    actionType);
 
                 this.handleUpdateNdc.handleUpdateNdc(
                     toRecalculateNDC, approvalRequestData, participantName, currency, actionType,
-                    this.utility.getEmail(new UserId(input.responseUserId().getId())));
+                    false,
+                    this.utility.getEmail(new UserId(input.responseUserId()
+                                                          .getId())));
             }
 
             this.ndcThresholdWorker.executeOnDemand();
@@ -347,7 +365,8 @@ public class ModifyApprovalActionHandler
 
         try {
 
-            return PositionActionType.valueOf(value.trim().toUpperCase(Locale.ROOT));
+            return PositionActionType.valueOf(value.trim()
+                                                   .toUpperCase(Locale.ROOT));
 
         } catch (IllegalArgumentException ex) {
 
@@ -357,7 +376,8 @@ public class ModifyApprovalActionHandler
 
     private boolean isSelfApprovalAttempt(UserId requestedByUserId, UserId respondedByUserId) {
 
-        return requestedByUserId.getId().equals(respondedByUserId.getId());
+        return requestedByUserId.getId()
+                                .equals(respondedByUserId.getId());
     }
 
     private ModifyApprovalActionCommand.Output executeApprovalAction(Input input)

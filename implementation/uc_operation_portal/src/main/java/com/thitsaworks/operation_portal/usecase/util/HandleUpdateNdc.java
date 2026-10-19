@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.thitsaworks.operation_portal.usecase.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -81,7 +82,7 @@ public class HandleUpdateNdc {
     public void handleUpdateNdc(Boolean ToCalculateNdc,
                                 ApprovalRequestData approvalRequestData,
                                 String participantName,
-                                String currency, PositionActionType actionType, String madeBy
+                                String currency, PositionActionType actionType, Boolean isSettlement, String madeBy
                                )
         throws HubServicesException, ParticipantException, ParticipantNDCException, JsonProcessingException {
 
@@ -141,7 +142,7 @@ public class HandleUpdateNdc {
             calculatedNdcLimit = approvalRequestData.getAmount();
         }
 
-        if (!ToCalculateNdc) {
+        if (!isSettlement) {
             if (positionInfo.getParticipantBalanceData()
                             .value()
                             .compareTo(BigDecimal.ZERO) > 0) {

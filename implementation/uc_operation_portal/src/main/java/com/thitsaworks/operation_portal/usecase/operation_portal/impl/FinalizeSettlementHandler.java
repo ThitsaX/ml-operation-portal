@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.thitsaworks.operation_portal.usecase.operation_portal.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -96,7 +97,8 @@ public class FinalizeSettlementHandler
 
     private final NdcThresholdWorker ndcThresholdWorker;
 
-    private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery participantPositionsDataByParticipantNameAndCurrencyQuery;
+    private final GetParticipantPositionsDataByParticipantNameAndCurrencyQuery
+        participantPositionsDataByParticipantNameAndCurrencyQuery;
 
     private final UserPermissionManager userPermissionManager;
 
@@ -131,7 +133,8 @@ public class FinalizeSettlementHandler
         this.participantNDCQuery = participantNDCQuery;
         this.handleUpdateNdc = handleUpdateNdc;
         this.ndcThresholdWorker = ndcThresholdWorker;
-        this.participantPositionsDataByParticipantNameAndCurrencyQuery = participantPositionsDataByParticipantNameAndCurrencyQuery;
+        this.participantPositionsDataByParticipantNameAndCurrencyQuery =
+            participantPositionsDataByParticipantNameAndCurrencyQuery;
         this.userPermissionManager = userPermissionManager;
         this.utility = utility;
         this.objectMapper = objectMapper;
@@ -146,8 +149,10 @@ public class FinalizeSettlementHandler
             {
                 var currentUser = this.userPermissionManager.getCurrentUser();
 
-                GetNetTransferAmountBySettlementIdQuery.Output output = this.getNetTransferAmountBySettlementIdQuery.execute(
-                    new GetNetTransferAmountBySettlementIdQuery.Input(input.settlementId()));
+                GetNetTransferAmountBySettlementIdQuery.Output
+                    output =
+                    this.getNetTransferAmountBySettlementIdQuery.execute(
+                        new GetNetTransferAmountBySettlementIdQuery.Input(input.settlementId()));
 
                 List<GetNetTransferAmountBySettlementId.Detail> details = new ArrayList<>();
 
@@ -212,8 +217,7 @@ public class FinalizeSettlementHandler
 
                     switch (settlementState) {
 
-                        case PS_TRANSFERS_RESERVED ->
-                            settlementState = SettlementState.PS_TRANSFERS_COMMITTED;
+                        case PS_TRANSFERS_RESERVED -> settlementState = SettlementState.PS_TRANSFERS_COMMITTED;
                         case PS_TRANSFERS_COMMITTED -> settlementState = SettlementState.SETTLED;
                     }
 
@@ -228,9 +232,11 @@ public class FinalizeSettlementHandler
                         settlement.getId(), this.objectMapper.writeValueAsString(
                             new PutUpdateSettlement.Request(settlementParticipants)));
 
-                    PutUpdateSettlement.Response putUpdateSettlementResponse = this.settlementHubClient.putUpdateSettlement(
-                        settlement.getId(),
-                        new PutUpdateSettlement.Request(settlementParticipants));
+                    PutUpdateSettlement.Response
+                        putUpdateSettlementResponse =
+                        this.settlementHubClient.putUpdateSettlement(
+                            settlement.getId(),
+                            new PutUpdateSettlement.Request(settlementParticipants));
 
                     LOG.info(
                         "Put Update Settlement Response from mojaloop to op : {}",
@@ -249,7 +255,9 @@ public class FinalizeSettlementHandler
                     LOG.info("Get Hub Participant Detail Data List Query Request : [no param]");
 
                     // call postParticipantBalance for participant accounts
-                    List<HubParticipantDetailData> hubParticipantDetailDataList = this.hubParticipantQuery.getHubParticipantDetailDataList();
+                    List<HubParticipantDetailData>
+                        hubParticipantDetailDataList =
+                        this.hubParticipantQuery.getHubParticipantDetailDataList();
 
                     LOG.info(
                         "Get Hub Participant Detail Data List Query Response : {}",
@@ -257,7 +265,9 @@ public class FinalizeSettlementHandler
 
                     ExtensionList extensionList = new ExtensionList();
                     extensionList.addExtensionItem(
-                        new Extension().key("settlementId").value(settlement.getId().toString()));
+                        new Extension().key("settlementId")
+                                       .value(settlement.getId()
+                                                        .toString()));
                     extensionList.addExtensionItem(new Extension().key(
                                                                       "approveUser") //actually it is login user but in order to see at report
                                                                   .value(this.utility.getEmail(
@@ -277,7 +287,8 @@ public class FinalizeSettlementHandler
                             // if net amount is positive -> sender
                             // if net amount is negative -> receiver
                             BigDecimal amount = new BigDecimal(
-                                account.getNetSettlementAmount().getAmount());
+                                account.getNetSettlementAmount()
+                                       .getAmount());
                             if (amount.signum() == 0) {
                                 continue;
                             }
@@ -289,7 +300,9 @@ public class FinalizeSettlementHandler
                                 amount.signum() > 0 ? PositionActionType.WITHDRAW :
                                     PositionActionType.DEPOSIT;
 
-                            account.getNetSettlementAmount().setAmount(amount.abs().toString());
+                            account.getNetSettlementAmount()
+                                   .setAmount(amount.abs()
+                                                    .toString());
 
                             HubParticipantDetailData hubParticipantDetailData = hubParticipantDetailDataList
                                                                                     .stream()
@@ -340,14 +353,18 @@ public class FinalizeSettlementHandler
                                             "] on Hub"));
                             }
 
-                            PostParticipantBalance.Request postParticipantBalanceRequest = new PostParticipantBalance.Request(
-                                UUID.randomUUID().toString(), externalReference,
-                                settlementAction.toString(), reason,
-                                account.getNetSettlementAmount(), extensionList);
+                            PostParticipantBalance.Request
+                                postParticipantBalanceRequest =
+                                new PostParticipantBalance.Request(
+                                    UUID.randomUUID()
+                                        .toString(), externalReference,
+                                    settlementAction.toString(), reason,
+                                    account.getNetSettlementAmount(), extensionList);
 
                             LOG.info(
                                 "Post Participant Balance Request from op to mojaloop : participantName : {}, settleAccountId : {}, request : {}",
-                                hubParticipantDetailData.getParticipantName(), settleAccountId,
+                                hubParticipantDetailData.getParticipantName(),
+                                settleAccountId,
                                 this.objectMapper.writeValueAsString(
                                     postParticipantBalanceRequest));
 
@@ -361,11 +378,15 @@ public class FinalizeSettlementHandler
                             LOG.info(
                                 "Get ParticipantNDC Query Request : participantName : {}, currency : {}",
                                 hubParticipantDetailData.getParticipantName(),
-                                account.getNetSettlementAmount().getCurrency().toString());
+                                account.getNetSettlementAmount()
+                                       .getCurrency()
+                                       .toString());
 
                             var ndcData = this.participantNDCQuery.get(
                                 hubParticipantDetailData.getParticipantName(),
-                                account.getNetSettlementAmount().getCurrency().toString());
+                                account.getNetSettlementAmount()
+                                       .getCurrency()
+                                       .toString());
 
                             LOG.info("Get ParticipantNDC Query Response : {}", ndcData);
 
@@ -377,19 +398,26 @@ public class FinalizeSettlementHandler
 
                             toRecalculateNDC = ndcPercent.compareTo(BigDecimal.ZERO) != 0;
 
-                            GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Output participantPositionData = this.participantPositionsDataByParticipantNameAndCurrencyQuery.execute(
-                                new GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Input(
-                                    hubParticipantDetailData.getParticipantName(),
-                                    account.getNetSettlementAmount().getCurrency().toString()));
+                            GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Output
+                                participantPositionData =
+                                this.participantPositionsDataByParticipantNameAndCurrencyQuery.execute(
+                                    new GetParticipantPositionsDataByParticipantNameAndCurrencyQuery.Input(
+                                        hubParticipantDetailData.getParticipantName(),
+                                        account.getNetSettlementAmount()
+                                               .getCurrency()
+                                               .toString()));
 
                             String positionCurrencyId = "0";
                             String settlementCurrencyId = "0";
 
                             ApprovalRequestData approvalRequestData = new ApprovalRequestData();
                             approvalRequestData.setAmount(
-                                new BigDecimal(account.getNetSettlementAmount().getAmount()));
+                                new BigDecimal(account.getNetSettlementAmount()
+                                                      .getAmount()));
                             approvalRequestData.setCurrency(
-                                account.getNetSettlementAmount().getCurrency().toString());
+                                account.getNetSettlementAmount()
+                                       .getCurrency()
+                                       .toString());
                             approvalRequestData.setParticipantName(
                                 hubParticipantDetailData.getParticipantName());
                             approvalRequestData.setFundInOutAction(positionActionType.toString());
@@ -429,22 +457,25 @@ public class FinalizeSettlementHandler
                                     toRecalculateNDC,
                                     this.objectMapper.writeValueAsString(approvalRequestData),
                                     hubParticipantDetailData.getParticipantName(),
-                                    account.getNetSettlementAmount().getCurrency().toString(),
+                                    account.getNetSettlementAmount()
+                                           .getCurrency()
+                                           .toString(),
                                     positionActionType);
 
                                 this.handleUpdateNdc.handleUpdateNdc(
                                     toRecalculateNDC, approvalRequestData,
                                     hubParticipantDetailData.getParticipantName(),
-                                    account.getNetSettlementAmount().getCurrency().toString(),
-                                    positionActionType, this.utility.getEmail(
-                                        new UserId(currentUser.principalId().getId())));
+                                    account.getNetSettlementAmount()
+                                           .getCurrency()
+                                           .toString(),
+                                    positionActionType, true, this.utility.getEmail(
+                                        new UserId(currentUser.principalId()
+                                                              .getId())));
                             }
                         }
                     }
 
                 }
-
-
 
                 LOG.info(
                     "Successfully settled net amounts to participants for settlementId: [{}].",
