@@ -144,7 +144,7 @@ public class EvaluateNdcThresholdCommandHandler
     private String buildNdcUsageAlertEventMessage(Input input) {
 
         return NDC_USAGE_ALERT_EVENT_TEMPLATE
-            .replace("{{subject}}", buildSubject(input.participantName()))
+            .replace("{{subject}}", buildSubject(input.dfspDisplayName()))
             .replace("{{eventTime}}", ALERT_EVENT_TIME_FORMATTER.format(input.evaluatedAt()))
             .replace("{{function}}", NDC_THRESHOLD_FUNCTION)
             .replace("{{thresholdValue}}", formatPercent(input.thresholdPercent()))
@@ -152,12 +152,12 @@ public class EvaluateNdcThresholdCommandHandler
             .replace("{{currency}}", input.currency());
     }
 
-    private String buildSubject(String participantName) {
+    private String buildSubject(String dfspName) {
 
         String environmentTag = resolveOperationPortalEnvironment()
             .trim()
             .toUpperCase(Locale.ENGLISH);
-        return "[ALERT][" + environmentTag + "][" + participantName + "] " + NDC_THRESHOLD_FUNCTION;
+        return "[ALERT][" + environmentTag + "][" + dfspName + "] " + NDC_THRESHOLD_FUNCTION;
     }
 
     private static String resolveOperationPortalEnvironment() {

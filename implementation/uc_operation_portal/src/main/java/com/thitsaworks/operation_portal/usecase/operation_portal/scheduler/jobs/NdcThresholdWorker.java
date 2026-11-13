@@ -35,6 +35,8 @@ import com.thitsaworks.operation_portal.core.notification.data.ThresholdGateDeci
 import com.thitsaworks.operation_portal.core.notification.model.ThresholdDetail;
 import com.thitsaworks.operation_portal.core.notification.model.repository.ThresholdDetailRepository;
 import com.thitsaworks.operation_portal.core.notification.query.ThresholdConfigurationQuery;
+import com.thitsaworks.operation_portal.core.participant.data.ParticipantData;
+import com.thitsaworks.operation_portal.core.participant.query.ParticipantQuery;
 import com.thitsaworks.operation_portal.core.scheduler.command.CreateJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.command.ModifyJobExecutionLogCommand;
 import com.thitsaworks.operation_portal.core.scheduler.data.SchedulerConfigData;
@@ -82,6 +84,8 @@ public class NdcThresholdWorker
 
     private final ThresholdDetailRepository thresholdDetailRepository;
 
+    private final ParticipantQuery participantQuery;
+
     public NdcThresholdWorker(
         CreateJobExecutionLogCommand createJobExecutionLogCommand,
         ModifyJobExecutionLogCommand modifyJobExecutionLogCommand,
@@ -93,7 +97,8 @@ public class NdcThresholdWorker
         ThresholdConfigurationQuery thresholdConfigurationQuery,
         EvaluateNdcThresholdCommand evaluateNdcThresholdCommand,
         GetNdcUsedDataQuery getNdcUsedDataQuery,
-        ThresholdDetailRepository thresholdDetailRepository) {
+        ThresholdDetailRepository thresholdDetailRepository,
+        ParticipantQuery participantQuery) {
 
         super(
             createJobExecutionLogCommand,
@@ -111,6 +116,7 @@ public class NdcThresholdWorker
         this.evaluationLogModifyCommand = modifyJobExecutionLogCommand;
         this.ndcUsedDataQuery = getNdcUsedDataQuery;
         this.thresholdDetailRepository = thresholdDetailRepository;
+        this.participantQuery = participantQuery;
     }
 
     @Override
@@ -209,6 +215,12 @@ public class NdcThresholdWorker
 
             ndcUsedRecords += ndcUsedByCurrency.size();
 
+            String dfspDisplayName = participantQuery.get(dfspId)
+                .map(ParticipantData::description)
+                .map(String::trim)
+                .filter(name -> !name.isBlank())
+                .orElse(dfspId);
+
             for (ThresholdDetail detail : entry.getValue()) {
 
                 NdcUsedData ndcUsedData = ndcUsedByCurrency.get(detail.getCurrency());
@@ -241,6 +253,7 @@ public class NdcThresholdWorker
                 EvaluateNdcThresholdCommand.Output thresholdOutput = evaluateNdcThresholdCommand.execute(
                     new EvaluateNdcThresholdCommand.Input(
                         dfspId,
+                        dfspDisplayName,
                         detail.getCurrency(),
                         ndcUsedData.currentPosition(),
                         ndcUsedData.ndc(),

@@ -11,6 +11,7 @@ public interface EvaluateNdcThresholdCommand {
 
     record Input(
         String participantName,
+        String dfspDisplayName,
         String currency,
         BigDecimal currentPosition,
         BigDecimal ndcLimit,
